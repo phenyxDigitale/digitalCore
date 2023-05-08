@@ -1,7 +1,7 @@
 {
-    "name": "phenyxDigitale/digitalCore",
+    "name": "phenyxdigitale/digitalCore",
     "description": "Deploy Ephenyx Digital Core",  
-    "homepage": "https://github.com/phenyxDigitale/digitalCore",
+    "homepage": "https://github.com/phenyxdigitale/digitalCore",
     "type": "library",
     "license": "MIT",
     "authors": [

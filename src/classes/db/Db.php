@@ -830,6 +830,24 @@ abstract class Db {
 
         return array_shift($result);
     }
+    
+    public function prepare($query, $args) {
+        
+        if (is_null($query)) {
+            return;
+        }            
+       
+        $args = func_get_args();
+        array_shift($args);
+        if (isset($args[0]) && is_array($args[0]))
+            $args = $args[0];
+        $query = str_replace("'%s'", '%s', $query); 
+        $query = str_replace('"%s"', '%s', $query); 
+        $query = preg_replace('|(?<!%)%f|', '%F', $query); 
+        $query = preg_replace('|(?<!%)%s|', "'%s'", $query);
+        array_walk($args, array($this, 'escape_by_ref'));
+        return @vsprintf($query, $args);
+    }
 
     /**
      * Get number of rows for last result
