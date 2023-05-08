@@ -1,0 +1,19 @@
+{
+    "name": "phenyxDigitale/digitalCore",
+    "description": "Deploy Ephenyx Digital Core",  
+    "homepage": "https://github.com/phenyxDigitale/digitalCore",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jeff Hunger",
+            "homepage": "https://ephenyx.com"
+        }
+    ],    
+    "require": {
+        "php": "^8.0"
+    },  
+	"autoload": {
+		"classmap": {"digitalCore": "src/"}
+	}
+}
