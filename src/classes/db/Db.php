@@ -1,5 +1,6 @@
 <?php
 
+namespace digitalCore\db;
 /**
  * Class Db
  *

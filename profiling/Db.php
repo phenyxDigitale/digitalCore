@@ -1,5 +1,7 @@
 <?php
 
+namespace digitalCore\db;
+
 class Db extends Db {
 
     /**
