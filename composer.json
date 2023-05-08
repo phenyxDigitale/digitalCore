@@ -14,6 +14,10 @@
         "php": "^8.0"
     },  
 	"autoload": {
-		"classmap": {"digitalCore": "src/"}
+		"classmap": {"digitalCore": "src/"},
+        "files": ["digitalcore.composer.php"],
+        "exclude-from-classmap": [
+            "/profiling/"
+        ]
 	}
 }
