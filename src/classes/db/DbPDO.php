@@ -272,6 +272,24 @@ class DbPDO extends Db {
 
         return $this->getValue('SELECT VERSION()');
     }
+    
+    public function escape_by_ref(&$string)  {
+        
+        if (!is_float($string)) {
+            $string = $this->_real_escape($string);
+        }
+            
+    }
+    
+    public function _real_escape($string) {
+         
+        if (is_int($string) || is_float($string)) {
+            return $string;
+        }
+        $string = str_replace("'", "''", $string);
+        return addcslashes($string, "\000\n\r\\\032");
+         
+    }
 
     /**
      * Escapes illegal characters in a string.

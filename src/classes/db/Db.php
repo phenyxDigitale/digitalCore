@@ -967,7 +967,8 @@ abstract class Db {
         array_walk($args, [$this, 'escape_by_ref']);
         return @vsprintf($query, $args);
     }
-
+    
+    
     /**
      * Get number of rows for last result
      *
