@@ -71,7 +71,7 @@ class DbQuery {
 
         return $this;
     }
-    
+
     public function delete($fields) {
 
         if (!empty($fields)) {
@@ -80,7 +80,7 @@ class DbQuery {
 
         return $this;
     }
-    
+
     public function insert($args) {
 
         if (!empty($args)) {
@@ -89,7 +89,7 @@ class DbQuery {
 
         return $this;
     }
-    
+
     public function fields($fields) {
 
         if (!empty($fields)) {
@@ -98,7 +98,7 @@ class DbQuery {
 
         return $this;
     }
-    
+
     public function values($fields) {
 
         if (!empty($fields)) {
@@ -107,7 +107,7 @@ class DbQuery {
 
         return $this;
     }
-    
+
     public function args($args) {
 
         if (!empty($args)) {
@@ -139,20 +139,26 @@ class DbQuery {
             if (empty($this->query['from'])) {
                 $this->query['from'] = [];
             }
+
             if (!empty($table2)) {
+
                 if (strncmp(_DB_PREFIX_, $table2, strlen(_DB_PREFIX_)) !== 0) {
                     $table2 = _DB_PREFIX_ . $table2;
                 }
+
             }
 
             $this->query['from'][] = '`' . bqSQL($table) . '`' . ($alias ? ' ' . $alias : '');
-            
+
             if (!empty($table2)) {
+
                 if (strncmp(_DB_PREFIX_, $table2, strlen(_DB_PREFIX_)) !== 0) {
                     $table2 = _DB_PREFIX_ . $table2;
                 }
+
                 $this->query['from'][] .= ' `' . bqSQL($table2) . '`' . ($alias2 ? ' ' . $alias2 : '');
             }
+
         }
 
         return $this;
@@ -282,7 +288,7 @@ class DbQuery {
 
         return $this->join('RIGHT JOIN `' . bqSQL($table) . '`' . ($alias ? ' `' . pSQL($alias) . '`' : '') . ($on ? ' ON ' . $on : ''));
     }
-    
+
     public function straightJoin($table, $alias = null, $on = null) {
 
         if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
@@ -291,8 +297,9 @@ class DbQuery {
 
         return $this->join('STRAIGHT_JOIN `' . bqSQL($table) . '`' . ($alias ? ' `' . pSQL($alias) . '`' : '') . ($on ? ' ON ' . $on : ''));
     }
-    
+
     public function set($fields) {
+
         if (!empty($fields)) {
             $this->query['set'][] = $fields;
         }
@@ -416,9 +423,11 @@ class DbQuery {
 
         if ($this->query['type'] == 'SELECT') {
             $sql = 'SELECT ' . ((($this->query['select'])) ? implode(",\n", $this->query['select']) : '*') . "\n";
-        } else if ($this->query['type'] == 'DELETE') {
+        } else
+        if ($this->query['type'] == 'DELETE') {
             $sql = 'DELETE ' . (($this->query['delete']) ? implode(",\n", $this->query['delete']) : '') . "\n";
-        } else if ($this->query['type'] == 'INSERT') {
+        } else
+        if ($this->query['type'] == 'INSERT') {
             $sql = 'INSERT ' . (isset($this->query['insert']) ? implode(",\n", $this->query['insert']) : '') . "\n";
         } else {
             $sql = $this->query['type'] . ' ';
@@ -426,14 +435,14 @@ class DbQuery {
 
         if (!$this->query['from']) {
             throw new PhenyxException('Table name not set in DbQuery object. Cannot build a valid SQL query.');
-        }       
-        
-        if ($this->query['type'] == 'UPDATE') {
-           $sql .= implode(', ', $this->query['from']) .' SET '. implode(', ', $this->query['set']). "\n";
-        } else if($this->query['type'] == 'INSERT') {
-            $sql .= 'INTO ' .implode(', ', $this->query['from']) .' ('. implode(', ', $this->query['fields']).') VALUES ('. implode(', ', $this->query['values']).') '. "\n";
         }
-        else {
+
+        if ($this->query['type'] == 'UPDATE') {
+            $sql .= implode(', ', $this->query['from']) . ' SET ' . implode(', ', $this->query['set']) . "\n";
+        } else
+        if ($this->query['type'] == 'INSERT') {
+            $sql .= 'INTO ' . implode(', ', $this->query['from']) . ' (' . implode(', ', $this->query['fields']) . ') VALUES (' . implode(', ', $this->query['values']) . ') ' . "\n";
+        } else {
             $sql .= 'FROM ' . implode(', ', $this->query['from']) . "\n";
         }
 
@@ -461,9 +470,9 @@ class DbQuery {
             $limit = $this->query['limit'];
             $sql .= 'LIMIT ' . ($limit['offset'] ? $limit['offset'] . ', ' : '') . $limit['limit'];
         }
-        
-        if($this->query['args']) {
-            $sql .= "\n".implode(', ', $this->query['args']) ;
+
+        if ($this->query['args']) {
+            $sql .= "\n" . implode(', ', $this->query['args']);
         }
 
         return $sql;

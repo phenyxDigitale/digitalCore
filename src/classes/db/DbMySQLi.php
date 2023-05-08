@@ -34,6 +34,7 @@ class DbMySQLi extends Db {
             }
 
         } else
+
         if (Tools::strpos($this->server, '/') !== false) {
             $socket = $this->server;
         }
@@ -41,6 +42,7 @@ class DbMySQLi extends Db {
         if ($socket) {
             $this->link = @new mysqli(null, $this->user, $this->password, $this->database, null, $socket);
         } else
+
         if ($port) {
             $this->link = @new mysqli($server, $this->user, $this->password, $this->database, $port);
         } else {

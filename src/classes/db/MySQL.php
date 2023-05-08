@@ -99,6 +99,7 @@ class MySQL extends Db {
         if (is_resource($result) && $result) {
             $return = mysql_fetch_assoc($result);
         } else
+
         if (is_resource($this->_result) && $this->_result) {
             $return = mysql_fetch_assoc($this->_result);
         }

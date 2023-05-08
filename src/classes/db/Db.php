@@ -46,8 +46,8 @@ abstract class Db {
 
     /** @var array List of DB instances */
     public static $instance = [];
-	
-	public static $crmInstance = [];
+
+    public static $crmInstance = [];
 
     /** @var array List of server settings */
     public static $_servers = [];
@@ -158,7 +158,7 @@ abstract class Db {
      * @return string
      */
     abstract public function _escape($str);
-    
+
     abstract public function _sescape($str);
 
     /**
@@ -198,7 +198,7 @@ abstract class Db {
      * @return string
      */
     abstract public function setTimeZone($timezone);
-    
+
     public $disableCache = true;
 
     /**
@@ -228,7 +228,6 @@ abstract class Db {
      * @var array
      */
     public $tables = [];
-
 
     /**
      * Returns database object instance.
@@ -361,8 +360,6 @@ abstract class Db {
         if (static::$_slave_servers_loaded !== null) {
             return;
         }
-
-       
 
         static::$_slave_servers_loaded = true;
     }
@@ -523,7 +520,7 @@ abstract class Db {
      * @throws PhenyxException
      */
     public function query($sql) {
-        
+
         if (_EPH_DEBUG_PROFILING_ || _EPH_ADMIN_DEBUG_PROFILING_) {
             return $this->profillingQuery($sql);
         }
@@ -531,7 +528,7 @@ abstract class Db {
         if ($sql instanceof DbQuery) {
             $sql = $sql->build();
         }
-       
+
         $this->result = $this->_query($sql);
 
         if (!$this->result && $this->getNumberError() == 2006) {
@@ -548,7 +545,7 @@ abstract class Db {
 
         return $this->result;
     }
-    
+
     public function profillingQuery($sql) {
 
         $explain = false;
@@ -588,8 +585,26 @@ abstract class Db {
             $start = microtime(true);
         }
 
+        if ($sql instanceof DbQuery) {
+            $sql = $sql->build();
+        }
+
+        $this->result = $this->_query($sql);
+
+        if (!$this->result && $this->getNumberError() == 2006) {
+
+            if ($this->connect()) {
+                $this->result = $this->_query($sql);
+            }
+
+        }
+
+        if (_EPH_DEBUG_SQL_) {
+            $this->displayError($sql);
+        }
+
         // Execute query
-        $result = parent::query($sql);
+        $result = $this->result;
 
         if (!$explain) {
             $end = microtime(true);
@@ -635,8 +650,6 @@ abstract class Db {
      */
     public function insert($table, $data, $nullValues = false, $useCache = true, $type = self::INSERT, $addPrefix = true) {
 
-       
-
         if (!$data && !$nullValues) {
             return true;
         }
@@ -647,11 +660,14 @@ abstract class Db {
 
         if ($type == static::INSERT) {
             $insertKeyword = 'INSERT';
-        } else if ($type == static::INSERT_IGNORE) {
+        } else
+        if ($type == static::INSERT_IGNORE) {
             $insertKeyword = 'INSERT IGNORE';
-        } else if ($type == static::REPLACE) {
+        } else
+        if ($type == static::REPLACE) {
             $insertKeyword = 'REPLACE';
-        } else if ($type == static::ON_DUPLICATE_KEY) {
+        } else
+        if ($type == static::ON_DUPLICATE_KEY) {
             $insertKeyword = 'INSERT';
         } else {
             throw new PhenyxDatabaseExceptionException('Bad keyword, must be static::INSERT or static::INSERT_IGNORE or static::REPLACE');
@@ -716,7 +732,6 @@ abstract class Db {
         if ($type == static::ON_DUPLICATE_KEY) {
             $sql .= ' ON DUPLICATE KEY UPDATE ' . substr($duplicateKeyStringified, 0, -1);
         }
-		
 
         return (bool) $this->q($sql, $useCache);
     }
@@ -742,7 +757,7 @@ abstract class Db {
         if (!$data) {
             return true;
         }
-		
+
         if ($addPrefix && strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
             $table = _DB_PREFIX_ . $table;
         }
@@ -772,8 +787,7 @@ abstract class Db {
         if ($limit) {
             $sql .= ' LIMIT ' . (int) $limit;
         }
-		
-        
+
         return (bool) $this->q($sql, $useCache);
     }
 
@@ -932,22 +946,25 @@ abstract class Db {
 
         return array_shift($result);
     }
-    
+
     public function prepare($query, $args) {
-        
+
         if (is_null($query)) {
             return;
-        }            
-       
+        }
+
         $args = func_get_args();
         array_shift($args);
-        if (isset($args[0]) && is_array($args[0]))
+
+        if (isset($args[0]) && is_array($args[0])) {
             $args = $args[0];
-        $query = str_replace("'%s'", '%s', $query); 
-        $query = str_replace('"%s"', '%s', $query); 
-        $query = preg_replace('|(?<!%)%f|', '%F', $query); 
+        }
+
+        $query = str_replace("'%s'", '%s', $query);
+        $query = str_replace('"%s"', '%s', $query);
+        $query = preg_replace('|(?<!%)%f|', '%F', $query);
         $query = preg_replace('|(?<!%)%s|', "'%s'", $query);
-        array_walk($args, array($this, 'escape_by_ref'));
+        array_walk($args, [$this, 'escape_by_ref']);
         return @vsprintf($query, $args);
     }
 
@@ -1004,7 +1021,7 @@ abstract class Db {
 
         global $webserviceCall;
 
-         $errno = $this->getNumberError();
+        $errno = $this->getNumberError();
 
         if (_EPH_DEBUG_SQL_ && $errno && !defined('EPH_INSTALLATION_IN_PROGRESS')) {
 
@@ -1014,6 +1031,7 @@ abstract class Db {
 
             throw new PhenyxDatabaseExceptionException($this->getMsgError());
         }
+
     }
 
     /**
@@ -1027,12 +1045,11 @@ abstract class Db {
      */
     public function escape($string, $htmlOk = false, $bqSql = false) {
 
-       
         if (!is_numeric($string)) {
             $string = $this->_escape($string);
 
             if (!$htmlOk && !is_null($string) && is_string($string)) {
-                 $string = strip_tags(Tools::nl2br($string));				
+                $string = strip_tags(Tools::nl2br($string));
             }
 
             if ($bqSql === true) {
@@ -1043,24 +1060,23 @@ abstract class Db {
 
         return $string;
     }
+
     public function sescape($string) {
 
-       
         if (!is_numeric($string)) {
-            $string = $this->_sescape($string);            
+            $string = $this->_sescape($string);
         }
 
         return $string;
     }
-	
-	public function escapeTranslation($string, $htmlOk = false, $bqSql = false) {
 
-        
+    public function escapeTranslation($string, $htmlOk = false, $bqSql = false) {
+
         if (!is_numeric($string)) {
             $string = $this->_escape($string);
 
             if (!$htmlOk && !is_null($string)) {
-               $string = str_replace('\'', '‘',Tools::nl2br($string));
+                $string = str_replace('\'', '‘', Tools::nl2br($string));
             }
 
             if ($bqSql === true) {
@@ -1071,7 +1087,6 @@ abstract class Db {
 
         return $string;
     }
-
 
     /**
      * Try a connection to the database

@@ -37,7 +37,8 @@ class DbPDO extends Db {
 
         if (preg_match('/^(.*):([0-9]+)$/', $host, $matches)) {
             $dsn .= 'host=' . $matches[1] . ';port=' . $matches[2];
-        } else if (preg_match('#^.*:(/.*)$#', $host, $matches)) {
+        } else
+        if (preg_match('#^.*:(/.*)$#', $host, $matches)) {
             $dsn .= 'unix_socket=' . $matches[1];
         } else {
             $dsn .= 'host=' . $host;
@@ -131,7 +132,7 @@ class DbPDO extends Db {
      */
     protected function _query($sql) {
 
-       return isset($this->link) ? $this->link->query($sql) :null;
+        return isset($this->link) ? $this->link->query($sql) : null;
     }
 
     /**
@@ -284,24 +285,24 @@ class DbPDO extends Db {
      */
     public function _escape($str) {
 
-		if(!is_null($str) && !is_array($str)) {
-			$search = ["\\", "\0", "\n", "\r", "\x1a", "'", '"'];
-        	$replace = ["\\\\", "\\0", "\\n", "\\r", "\Z", "‘", '\"'];
+        if (!is_null($str) && !is_array($str)) {
+            $search = ["\\", "\0", "\n", "\r", "\x1a", "'", '"'];
+            $replace = ["\\\\", "\\0", "\\n", "\\r", "\Z", "‘", '\"'];
 
-        	return str_replace($search, $replace, $str);
-		}
-        
+            return str_replace($search, $replace, $str);
+        }
+
     }
-    
+
     public function _sescape($str) {
 
-		if(!is_null($str)) {
-			$search = ["\\", "\0", "\n", "\r", "\x1a", "'", '"'];
-        	$replace = ["\\\\", "\\0", "\\n", "\\r", "\Z", "\'", '\"'];
+        if (!is_null($str)) {
+            $search = ["\\", "\0", "\n", "\r", "\x1a", "'", '"'];
+            $replace = ["\\\\", "\\0", "\\n", "\\r", "\Z", "\'", '\"'];
 
-        	return str_replace($search, $replace, $str);
-		}
-        
+            return str_replace($search, $replace, $str);
+        }
+
     }
 
     /**
