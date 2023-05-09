@@ -1459,7 +1459,7 @@ abstract class PhenyxController {
 
        $this->content_ajax .= '<div id="phenyxshop_profiling" class="bootstrap">';
 
-        $this->content_ajax .= $this->la('Summary').'<div class="row">';
+        $this->content_ajax .= 'Summary'.'<div class="row">';
         $this->displayProfilingSummary();
         $this->displayProfilingConfiguration();
         $this->displayProfilingRun();
