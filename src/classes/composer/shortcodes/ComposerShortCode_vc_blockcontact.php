@@ -1,7 +1,7 @@
 <?php
 
 
-class ComposerShortCode_vc_column extends ComposerShortCode {
+class ComposerShortCode_vc_blockcontact extends ComposerShortCode {
 
 	protected function outputTitle($title) {
 
