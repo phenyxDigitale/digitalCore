@@ -2230,8 +2230,9 @@ class RevLoader {
 
             if ($response['info']['http_code'] == '200') {
                 $res = $response['body'];
-                $addons = utf8_encode($res);
+                $addons = mb_convert_encoding($res, 'UTF-8');
                 $results = (array) json_decode($addons);
+                
                 $new_counter = count($results);
                 RevLoader::update_option('rs-addons-counter', $new_counter);
             }
