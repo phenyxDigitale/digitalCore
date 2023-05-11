@@ -2216,5 +2216,33 @@ class RevLoader {
         Db::getInstance()->execute(Db::getInstance()->prepare("DELETE FROM " . _DB_PREFIX_ . "revslider_backup_slides WHERE slider_id = %s", [$id]));
 
     }
+    
+    public static function update_addon_json() {
+
+        if (RevLoader::_isCurl()) {
+
+            $url = 'http://revapi.smartdatasoft.net/v6/call/json.php?type=addons';
+            $response = RevLoader::wp_remote_post($url, [
+                'user-agent' => 'php/;' . RevLoader::get_bloginfo('url'),
+                'body'       => '',
+                'timeout'    => 400,
+            ]);
+
+            if ($response['info']['http_code'] == '200') {
+                $res = $response['body'];
+                $addons = utf8_encode($res);
+                $results = (array) json_decode($addons);
+                $new_counter = count($results);
+                RevLoader::update_option('rs-addons-counter', $new_counter);
+            }
+
+            
+            RevLoader::update_option('revslider-addons', $addons);
+           
+
+        }
+
+    }
+
 
 }
