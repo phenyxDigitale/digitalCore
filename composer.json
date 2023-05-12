@@ -20,8 +20,8 @@
         "exclude-from-classmap": [
             "/profiling/"
         ],
-        "psr-4": {
-            "digitalCore\\": "pageCache/"
+        "psr-0": {
+            "pageCache\\": "pageCache/"
         }
 	}
 }
