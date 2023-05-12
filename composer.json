@@ -16,11 +16,6 @@
     },  
 	"autoload": {
 		"classmap": {"digitalCore": "src/"},
-        "files": ["digitalcore.composer.php"],
-        "exclude-from-classmap": [
-            "/profiling/",
-            "/pageCache/"
-        ],
-        "psr-0": {"PageCache": "src/"}
+        "files": ["digitalcore.composer.php"]
 	}
 }
