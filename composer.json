@@ -19,6 +19,9 @@
         "files": ["digitalcore.composer.php"],
         "exclude-from-classmap": [
             "/profiling/"
-        ]
+        ],
+        "psr-4": {
+            "digitalCore\\": "pageCache"
+        }
 	}
 }

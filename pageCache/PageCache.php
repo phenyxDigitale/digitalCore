@@ -1,5 +1,5 @@
 <?php
-
+namespace digitalCore\PageCache;
 /**
  * Class PageCache
  *

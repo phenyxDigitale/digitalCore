@@ -1,5 +1,6 @@
 <?php
 
+namespace digitalCore\PageCacheKey;
 /**
  * Class PageCacheKey - composite key for full page cache
  *
