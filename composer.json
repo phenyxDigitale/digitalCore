@@ -21,7 +21,7 @@
             "/profiling/"
         ],
         "psr-4": {
-            "digitalCore\\": "pageCache"
+            "digitalCore\\": "pageCache/"
         }
 	}
 }
