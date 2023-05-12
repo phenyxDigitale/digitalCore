@@ -21,7 +21,7 @@
             "/profiling/"
         ],
         "psr-0": {
-            "pageCache\\": "pageCache/"
+            "PageCache\\": "pageCache/"
         }
 	}
 }
