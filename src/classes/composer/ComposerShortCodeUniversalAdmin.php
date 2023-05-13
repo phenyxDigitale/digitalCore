@@ -296,7 +296,7 @@ $param_line .= ob_get_clean();
 
 		if ($param['type'] == 'textarea_raw_code') {
 			// $param_value = $param_value;
-            $param_line .= '<input type="hidden" id="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-textarea_raw_html ' . $param['param_name'] . ' ' . $param['type'] . '"  name="' . $param['param_name'] . '" value="' . htmlentities(rawurldecode(base64_decode($param_value)), ENT_COMPAT, 'UTF-8') . '">';
+            $param_line .= '<input type="hidden" id="ace' . $param['param_name'] . '" class="wpb_vc_param_value wpb-textarea_raw_html ' . $param['param_name'] . ' ' . $param['type'] . '"  name="' . $param['param_name'] . '" value="' . htmlentities(rawurldecode(base64_decode($param_value)), ENT_COMPAT, 'UTF-8') . '">';
 			$param_line .= '<div class="ace-editor" data-name="' . $param['param_name'] . '" id="ace_' . $param['param_name'] . '">' . htmlentities(rawurldecode(base64_decode($param_value)), ENT_COMPAT, 'UTF-8') . '</div>';
             $param_line .= '<script>
 		  (function () {
