@@ -296,7 +296,7 @@ $param_line .= ob_get_clean();
 
 		if ($param['type'] == 'textarea_raw_code') {
 			// $param_value = $param_value;
-            $param_line .= '<input type="hidden" id="' . $param['param_name'] . '" name="' . $param['param_name'] . '" value="' . htmlentities(rawurldecode(base64_decode($param_value)), ENT_COMPAT, 'UTF-8') . '">';
+            $param_line .= '<input type="hidden" id="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-textarea_raw_html ' . $param['param_name'] . ' ' . $param['type'] . '"  name="' . $param['param_name'] . '" value="' . htmlentities(rawurldecode(base64_decode($param_value)), ENT_COMPAT, 'UTF-8') . '">';
 			$param_line .= '<div class="ace-editor" data-name="' . $param['param_name'] . '" id="ace_' . $param['param_name'] . '">' . htmlentities(rawurldecode(base64_decode($param_value)), ENT_COMPAT, 'UTF-8') . '</div>';
             $param_line .= '<script>
 		  (function () {
@@ -317,7 +317,11 @@ $param_line .= ob_get_clean();
 						enableSnippets: false,
 						enableLiveAutocompletion: false
 					});
-					editor.setReadOnly(true);
+					var input_name = $("#ace' . $param['param_name'] . '").attr("data-name");
+					$("#" +' . $param['param_name'] . ').val(editor.getValue());
+					editor.on("change", function () {
+						$("#" + input_name).val(editor.getValue());
+					});
 				}
     			initAce();
 	       })();
