@@ -128,16 +128,14 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
 		if ($param['type'] == 'animation') {
             $param_line .= '<link rel="stylesheet" href="/content/backoffice/composer/animate.min.css" type="text/css" media="all" />';
 			$param_line .= '<div class="vc_row">';
-            $file = fopen("testTypeAnimation.txt","w");
+           
 			$styles = $this->animationStyles();
-            fwrite($file,'seetings : '.PHP_EOL.print_r($this->settings, true));
-            fwrite($file,'param_value : '.PHP_EOL.print_r($param_value, true));
             
             if(is_array($param_value)) {
                 $key = array_keys($param_value);
                 $param_value = $param_value[$key[0]];
             }
-            fwrite($file,'param_value : '.PHP_EOL.print_r($param_value, true));
+            
 			if (isset($this->settings['settings']['type'])) {
 				$styles = $this->groupStyleByType($styles, $this->settings['settings']['type']);
 			}
@@ -296,8 +294,8 @@ $param_line .= ob_get_clean();
 
 		if ($param['type'] == 'textarea_raw_code') {
 			// $param_value = $param_value;
-            $param_line .= '<input type="hidden" id="ace' . $param['param_name'] . '" class="wpb_vc_param_value wpb-textarea_raw_html ' . $param['param_name'] . ' ' . $param['type'] . '"  name="' . $param['param_name'] . '" value="' . htmlentities(rawurldecode(base64_decode($param_value)), ENT_COMPAT, 'UTF-8') . '">';
-			$param_line .= '<div class="ace-editor" data-name="' . $param['param_name'] . '" id="ace_' . $param['param_name'] . '">' . htmlentities(rawurldecode(base64_decode($param_value)), ENT_COMPAT, 'UTF-8') . '</div>';
+            $param_line .= '<input type="hidden" id="ace_textarea_raw_code" class="wpb_vc_param_value wpb-textarea_code_html ' . $param['param_name'] . ' ' . $param['type'] . '"  name="' . $param['param_name'] . '" value="' . htmlentities(rawurldecode(base64_decode($param_value)), ENT_COMPAT, 'UTF-8') . '">';
+			$param_line .= '<div class="ace-editor" id="ace_' . $param['param_name'] . '">' . htmlentities(rawurldecode(base64_decode($param_value)), ENT_COMPAT, 'UTF-8') . '</div>';
             $param_line .= '<script>
 		  (function () {
 				function initAce() {
@@ -317,10 +315,10 @@ $param_line .= ob_get_clean();
 						enableSnippets: false,
 						enableLiveAutocompletion: false
 					});
-					var input_name = $("#ace' . $param['param_name'] . '").attr("data-name");
-					$("#ace" +' . $param['param_name'] . ').val(editor.getValue());
+					
+					$("#ace_textarea_raw_code").val(editor.getValue());
 					editor.on("change", function () {
-						$("#ace" + input_name).val(editor.getValue());
+						$("#ace_textarea_raw_code").val(editor.getValue());
 					});
 				}
     			initAce();
@@ -402,6 +400,7 @@ $param_line .= ob_get_clean();
 
 			$param_line .= '</select>';
 		} else {
+
 
 			$param_line .= do_shortcode_param_settings_field($param['type'], $param, $param_value);
 		}
