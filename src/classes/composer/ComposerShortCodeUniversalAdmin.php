@@ -318,9 +318,9 @@ $param_line .= ob_get_clean();
 						enableLiveAutocompletion: false
 					});
 					var input_name = $("#ace' . $param['param_name'] . '").attr("data-name");
-					$("#" +' . $param['param_name'] . ').val(editor.getValue());
+					$("#ace" +' . $param['param_name'] . ').val(editor.getValue());
 					editor.on("change", function () {
-						$("#" + input_name).val(editor.getValue());
+						$("#ace" + input_name).val(editor.getValue());
 					});
 				}
     			initAce();
