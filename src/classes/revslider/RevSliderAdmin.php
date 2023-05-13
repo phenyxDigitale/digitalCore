@@ -178,12 +178,11 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 		$slider = new RevSliderSlider();
 		$slide = new RevSliderSlide();
 
-		$action = $this->get_request_var('client_action');
-		$data = $this->get_request_var('data');
+		$action = Tools::getValue('client_action');
+		$data = Tools::getValue('data');
 		$data = ($data == '') ? [] : $data;
-		$nonce = $this->get_request_var('nonce');
-		$nonce = (empty($nonce)) ? $this->get_request_var('rs-nonce') : $nonce;
-
+		$nonce = Tools::getValue('nonce');
+		$nonce = (empty($nonce)) ? Tools::getValue('rs-nonce') : $nonce;
 		try {
 
 			if (RS_DEMO) {
@@ -561,9 +560,26 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 				$this->ajax_response_error($this->l('Duplication Failed'));
 				break;
 			case 'save_slide':
-				$slide_id = $this->get_val($data, 'slide_id');
-				$slider_id = $this->get_val($data, 'slider_id');
-				$return = $slide->save_slide($slide_id, $data, $slider_id);
+                $slide_id = $data['slide_id'];
+                $slide = new RevSliderSlide($slide_id);
+                $params = $this->get_val($data, 'params', []);
+		        $params = $this->json_decode_slashes($params);
+		        $settings = $this->get_val($data, 'settings', []);
+		        $settings = $this->json_decode_slashes($settings);
+		        $settings['version'] = $this->get_val($params, 'version', $this->get_val($settings, 'version', RS_REVISION));
+                $slide->settings = Tools::jsonEncode($settings);
+
+		        if (isset($params['version'])) {
+                    unset($params['version']);
+		        }
+                $slide->params = Tools::jsonEncode($params);
+
+		        $layers = $this->get_val($data, 'layers', []);
+                $layers = $this->json_decode_slashes($layers);
+                $layers = (empty($layers) || !is_array($layers)) ? [] : $layers;
+		        $slide->layers = Tools::jsonEncode($layers);
+                
+				$return = $slide->update();
 
 				if ($return) {
 					$this->ajax_response_success($this->l('Slide Saved'));
@@ -586,32 +602,49 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 				break;
 			case 'save_slider':
 				$slider_id = $this->get_val($data, 'slider_id');
-				$slider_params = $this->get_val($data, 'params');
-				$slider_params = json_decode($slider_params, true);
+                $slider = new RevSliderSlider($slider_id);
+                $params = $this->get_val($data, 'params');
+		        $params = $this->json_decode_slashes($params);
+		        $settings = $this->get_val($data, 'settings');
+		        $settings = $this->json_decode_slashes($settings);
+		        $settings['version'] = $this->get_val($params, 'version', $this->get_val($settings, 'version'));
+
+		        $title = RevLoader::sanitize_text_field($this->get_val($params, 'title'));
+		        $alias = RevLoader::sanitize_text_field($this->get_val($params, 'alias'));
+
+		        $this->validate_not_empty($title, 'Title');
+		        $this->validate_not_empty($alias, 'Alias');
+
+		        if (empty($slider_id) && $this->check_alias($alias)) {
+			        $this->throw_error($this->l('A Slider with the given alias already exists'));
+		        }
+                $slider->title = $title;
+		        $slider->alias = $alias;
+		        $slider->params = Tools::jsonEncode($params);
+		        $slider->settings = Tools::jsonEncode($settings);
+                $return = $slider->update();
+               
 				$mod_obj = Plugin::getInstanceByName('revslider');
 
 				if (isset($slider_params['layout']['displayhook']) && $slider_params['layout']['displayhook'] != '') {
 					$mod_obj->registerHook($slider_params['layout']['displayhook']);
 				}
-
-				$slide_ids = $this->get_val($data, 'slide_ids', []);
-				$return = $slider->save_slider($slider_id, $data);
+				
 				$missing_slides = [];
 				$delete_slides = [];
 
 				if ($return !== false) {
-
+                    $slide_ids = $this->get_val($data, 'slide_ids', []);
 					if (!empty($slide_ids)) {
 						$slides = $slider->get_slides(false, true);
-
 						// get the missing Slides (if any at all)
 
 						foreach ($slide_ids as $slide_id) {
 							$found = false;
-
+                            $slide = new RevSliderSlide($slide_id);
 							foreach ($slides as $_slide) {
 
-								if ($_slide->get_id() !== $slide_id) {
+								if ($_slide->id !== $slide->id) {
 									continue;
 								}
 
@@ -627,7 +660,7 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 						// get the Slides that are no longer needed and delete them
 
 						foreach ($slides as $key => $_slide) {
-							$id = $_slide->get_id();
+							$id = $_slide->id;
 
 							if (!in_array($id, $slide_ids)) {
 								$delete_slides[] = $id;
@@ -639,7 +672,7 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 						if (!empty($delete_slides)) {
 
 							foreach ($delete_slides as $delete_slide) {
-								$slide->delete_slide_by_id($delete_slide);
+								$slide->delete();
 							}
 
 						}
@@ -647,9 +680,11 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 						// change the order of slides
 
 						foreach ($slides as $order => $_slide) {
-                            $id = $_slide->get_id();
-							$new_order = $order + 1;
-							$_slide->change_slide_order($id, $new_order);
+							$_slide->slide_order = $order + 1;
+                            $_slide->params = Tools::jsonEncode($_slide->params);
+                            $_slide->layers = Tools::jsonEncode($_slide->layers);
+                            $_slide->settings = Tools::jsonEncode($_slide->settings);
+                            $_slide->update();
 						}
 
 					}

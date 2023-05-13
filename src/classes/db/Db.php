@@ -478,6 +478,7 @@ abstract class Db {
             return $this->insert($table, $data, $useNull, $useCache, static::INSERT_IGNORE, false);
 
         case 'REPLACE':
+
             return $this->insert($table, $data, $useNull, $useCache, static::REPLACE, false);
 
         case 'UPDATE':
@@ -757,7 +758,8 @@ abstract class Db {
         if (!$data) {
             return true;
         }
-
+        
+        
         if ($addPrefix && strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
             $table = _DB_PREFIX_ . $table;
         }
@@ -770,10 +772,10 @@ abstract class Db {
                 $value = ['type' => 'text', 'value' => $value];
             }
 
-            if ($value['type'] == 'sql') {
+            if (isset($value['type']) && $value['type'] == 'sql') {
                 $sql .= '`' . bqSQL($key) . "` = {$value['value']},";
             } else {
-                $sql .= ($nullValues && ($value['value'] === '' || is_null($value['value']))) ? '`' . bqSQL($key) . '` = NULL,' : '`' . bqSQL($key) . "` = '{$value['value']}',";
+                $sql .= ($nullValues && (isset($value['value']) && ($value['value'] === '' || is_null($value['value'])))) ? '`' . bqSQL($key) . '` = NULL,' : '`' . bqSQL($key) . "` = '{$value['value']}',";
             }
 
         }
@@ -787,7 +789,7 @@ abstract class Db {
         if ($limit) {
             $sql .= ' LIMIT ' . (int) $limit;
         }
-
+        
         return (bool) $this->q($sql, $useCache);
     }
 
