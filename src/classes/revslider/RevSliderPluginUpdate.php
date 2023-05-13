@@ -1698,14 +1698,15 @@ class RevSliderPluginUpdate extends RevSliderFunction {
 	 */
 	public function add_general_settings($sliders = false) {
 
-		$sr = new RevSliderSlider();
-		$sl = new RevSliderSlide();
+		$sr = RevSliderSlider::getInstance();
+		$sl = RevSliderSlide::getInstance();
 		$sliders = ($sliders === false) ? $sr->get_sliders() : $sliders = [$sliders]; //do it on all Sliders if false
-
+        
 		if (!empty($sliders) && is_array($sliders)) {
 			$fonts = RevLoader::get_option('tp-google-fonts', []);
 
 			foreach ($sliders as $slider) {
+                
 				$settings = $slider->get_settings();
 				$bg_freeze = $slider->get_param('parallax_bg_freeze', 'off');
 				$google_fonts = $slider->get_param('google_font', []);
@@ -1823,7 +1824,7 @@ class RevSliderPluginUpdate extends RevSliderFunction {
 						$slider->update_params(['start_with_slide_enable' => 'on']);
 					}
 
-					$settings['version'] = '5.0.7';
+					
 					$slider->update_settings(['version' => '5.0.7']);
 				}
 

@@ -6,6 +6,17 @@
  * @since 1.9.1.0
  */
 class RevSliderFunction extends RevsliderData {
+    
+    protected static $instance;
+    
+    public static function getInstance() {
+
+		if (!RevSliderFunction::$instance) {
+			RevSliderFunction::$instance = new RevSliderFunction();
+		}
+
+		return RevSliderFunction::$instance;
+	}
 
 	public static function getVal($arr, $key, $default = '') {
 
@@ -798,6 +809,59 @@ class RevSliderFunction extends RevsliderData {
 
 		return $image;
 	}
+    
+    public function import_media($file_url, $folder_name) {
+		//require_once(ABSPATH . 'wp-admin/includes/image.php');
+		
+		$ul_dir	 = RevLoader::wp_upload_dir();
+		$art_dir = 'revslider/';
+		$return	 = false;
+
+
+
+		//if the directory doesn't exist, create it	
+		if(!file_exists($ul_dir['basedir'].'/'.$art_dir)) mkdir($ul_dir['basedir'].'/'.$art_dir);
+		if(!file_exists($ul_dir['basedir'].'/'.$art_dir.$folder_name)) mkdir($ul_dir['basedir'].'/'.$art_dir.$folder_name);
+		
+		//rename the file... alternatively, you could explode on "/" and keep the original file name
+		$filename = basename($file_url);
+		
+		$s_dir = str_replace('//', '/', $art_dir.$folder_name.$filename);
+		$_s_dir = false;
+
+
+		if(@fclose(@fopen($file_url, 'r'))){ //make sure the file actually exists
+			$save_dir	= $ul_dir['basedir'].'/'.$s_dir;
+			$_atc_id	= $this->get_image_id_by_url($s_dir);
+			$atc_id		= ($_atc_id === false || $_atc_id === NULL) ? false : $_atc_id;
+			
+			if($atc_id == false || $atc_id == NULL){
+				@copy($file_url, $save_dir);
+				$file_info = getimagesize($save_dir);
+				//track
+				$attach_id = '';
+			}else{
+				$attach_id = $atc_id;
+			}
+			
+			if($_s_dir !== false){
+				$s_dir = 'uploads/'.$_s_dir;
+				$s_dir = str_replace('//', '/', $s_dir);
+			}else{
+				$art_dir = 'uploads/'.$art_dir;
+				$s_dir = str_replace('//', '/', $art_dir.$folder_name.$filename);
+			}
+			
+			$return	 = array('id' => $attach_id, 'path' => $s_dir);
+		}
+		
+		return $return;
+	}
+    public function get_image_id_by_url($image_url){
+		
+        return false;
+	}
+	
 
 	/**
 	 * temporary remove image sizes so that only the needed thumb will be created

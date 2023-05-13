@@ -148,7 +148,7 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 
 		?>
 <p>
-    <?php RevLoader::_e('Activate Slider Revolution for <a href="https://classydevs.com/slider-revolution-phenyxshop/" target="_blank">Premium Benefits (e.g. Live Updates)</a>.');?>
+    <?php $this->l('Activate Slider Revolution for <a href="https://classydevs.com/slider-revolution-phenyxshop/" target="_blank">Premium Benefits (e.g. Live Updates)</a>.');?>
 </p>
 <?php
 }
@@ -160,7 +160,7 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 	 */
 	public function get_default_privacy_content() {
 
-		return RevLoader::__(
+		return $this->l(
 			'<h2>In case you’re using Google Web Fonts (default) or playing videos or sounds via YouTube or Vimeo in Slider Revolution we recommend to add the corresponding text phrase to your privacy police:</h2>
 		<h3>YouTube</h3> <p>Our website uses plugins from YouTube, which is operated by Google. The operator of the pages is YouTube LLC, 901 Cherry Ave., San Bruno, CA 94066, USA.</p> <p>If you visit one of our pages featuring a YouTube plugin, a connection to the YouTube servers is established. Here the YouTube server is informed about which of our pages you have visited.</p> <p>If you\'re logged in to your YouTube account, YouTube allows you to associate your browsing behavior directly with your personal profile. You can prevent this by logging out of your YouTube account.</p> <p>YouTube is used to help make our website appealing. This constitutes a justified interest pursuant to Art. 6 (1) (f) DSGVO.</p> <p>Further information about handling user data, can be found in the data protection declaration of YouTube under <a href="https://www.google.de/intl/de/policies/privacy" target="_blank">https://www.google.de/intl/de/policies/privacy</a>.</p>
 		<h3>Vimeo</h3> <p>Our website uses features provided by the Vimeo video portal. This service is provided by Vimeo Inc., 555 West 18th Street, New York, New York 10011, USA.</p> <p>If you visit one of our pages featuring a Vimeo plugin, a connection to the Vimeo servers is established. Here the Vimeo server is informed about which of our pages you have visited. In addition, Vimeo will receive your IP address. This also applies if you are not logged in to Vimeo when you visit our plugin or do not have a Vimeo account. The information is transmitted to a Vimeo server in the US, where it is stored.</p> <p>If you are logged in to your Vimeo account, Vimeo allows you to associate your browsing behavior directly with your personal profile. You can prevent this by logging out of your Vimeo account.</p> <p>For more information on how to handle user data, please refer to the Vimeo Privacy Policy at <a href="https://vimeo.com/privacy" target="_blank">https://vimeo.com/privacy</a>.</p>
@@ -218,55 +218,7 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 
 			switch ($action) {
 
-			case 'activate_plugin':
-				$result = false;
-				$code = trim($this->get_val($data, 'code'));
-				$selling = $this->get_addition('selling');
-				$rs_license = new RevSliderLicense();
-
-				if (!empty($code)) {
-					$result = $rs_license->activate_plugin($code, false);
-				} else {
-					$error = ($selling === true) ? $this->l('The License Key needs to be set!') : $this->l('The Purchase Code needs to be set!');
-					$this->ajax_response_error($error);
-					exit;
-				}
-
-				if ($result === true) {
-					$this->ajax_response_success($this->l('Plugin successfully activated'));
-				} else
-
-				if ($result === false) {
-					$error = ($selling === true) ? $this->l('License Key is invalid') : $this->l('Purchase Code is invalid');
-					$this->ajax_response_error($error);
-				} else {
-
-					if ($result == 'exist') {
-						$error = ($selling === true) ? $this->l('License Key already registered!') : $this->l('Purchase Code already registered!');
-						$this->ajax_response_error($error);
-					} else
-
-					if ($result == 'banned') {
-						$error = ($selling === true) ? $this->l('License Key was locked, please contact the ClassyDevs support!') : $this->l('Purchase Code was locked, please contact the ClassyDevs support!');
-						$this->ajax_response_error($error);
-					}
-
-					$error = ($selling === true) ? $this->l('License Key could not be validated') : $this->l('Purchase Code could not be validated');
-					$this->ajax_response_error($error);
-				}
-
-				break;
-			case 'deactivate_plugin':
-				$rs_license = new RevSliderLicense();
-				$result = $rs_license->deactivate_plugin();
-
-				if ($result) {
-					$this->ajax_response_success($this->l('Plugin deregistered'));
-				} else {
-					$this->ajax_response_error($this->l('Deregistration failed!'));
-				}
-
-				break;
+			
 			case 'add_custom_hook':
 
 				$hookname = trim($this->get_val($data, 'hookname'));
@@ -437,8 +389,7 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 							$folder->add_slider_to_folder($new_id, $folder_id, false);
 						}
 
-						$new_slider = new RevSliderSlider();
-						$new_slider->init_by_id($new_id);
+						$new_slider = new RevSliderSlider($new_id);
 						$data = $new_slider->get_overview_data();
 
 						$this->ajax_response_data(
@@ -574,15 +525,17 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 
 				break;
 			case 'export_slider':
-				$export = new RevSliderSliderExport();
-				$id = (int) ($this->get_request_var('id'));
+                $id = (int) ($this->get_request_var('id'));
+				$export = new RevSliderSliderExport($id);
+				
 				$return = $export->export_slider($id);
 				// will never be called if all is good
 				$this->ajax_response_data($return);
 				break;
 			case 'export_slider_html':
-				$export = new RevSliderSliderExportHtml();
-				$id = (int) ($this->get_request_var('id'));
+                $id = (int) ($this->get_request_var('id'));
+				$export = new RevSliderSliderExportHtml($id);
+				
 				$return = $export->export_slider_html($id);
 
 				// will never be called if all is good
@@ -1906,6 +1859,7 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 					$html = ob_get_contents();
 					ob_clean();
 					ob_end_clean();
+
 
 					$result = (!empty($slider_class) && $html !== '') ? true : false;
 
