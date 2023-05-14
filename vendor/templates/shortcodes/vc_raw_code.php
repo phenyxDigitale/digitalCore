@@ -21,31 +21,12 @@ $output .= "\n\t".'<div class="'.$css_class.'">';
         $output .= "\n\t\t\t".$content;
         $output .= "\n\t\t".'</div> '.$this->endBlockComment('.wpb_wrapper');
     $output .= "\n\t".'</div> '.$this->endBlockComment('.wpb_raw_code');
-  $output .= '<script>
+  $output .= '\n<script>
 		  $(document).ready(function(){
-            initAce();
+            initComposerAce('.$code_id.');
           })
-			function initAce() {
-					if (typeof ace === "undefined") {
-						setTimeout(initAce, 100);
-						return;
-					}
-					var editor = ace.edit("ace_' . Tools::htmlentitiesUTF8( $el_id ) . '");
-					editor.setTheme("ace/theme/twilight");
-					editor.getSession().setMode("ace/mode/php");
-					editor.setOptions({
-						fontSize: 14,
-						minLines: 16,
-						maxLines: 50,
-						showPrintMargin: false,
-						enableBasicAutocompletion: false,
-						enableSnippets: false,
-						enableLiveAutocompletion: false
-					});
-					editor.setReadOnly(true)
-				}
+			
     			
     </script>';
-$output .= ' <script type="text/javascript" src="https://cdn.ephenyx.io/ace/ace.js"></script>';
 
 echo $output;

@@ -148,6 +148,7 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
             $selectId = $this->generateRandomString();
             $param_line .= '<link rel="stylesheet" href="/content/backoffice/composer/animate.min.css" type="text/css" media="all" />';
 			$param_line .= '<div class="vc_row">';
+            
            
 			$styles = $this->animationStyles();
             
@@ -166,6 +167,7 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
             
 			if (is_array($styles) && !empty($styles)) {
 				$left_side = '<div class="vc_col-sm-6">';
+                $param_line .= '<input type="hidden" class="wpb_vc_param_value animation-style" data-id="'.$selectId.'" name="' . $param['param_name'] . '" value="'.$param_value.'">';
 				$build_style_select = '<select id="'.$selectId.'" name="' . $param['param_name'] . '" class="vc_param-animation-style">';
 
 				foreach ($styles as $style) {
@@ -208,8 +210,21 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
 				width: 300,
                 classes: {
                     "ui-selectmenu-menu": "selectComposer"
+                },
+                change: function( event, ui ) {
+                    $(".wpb_vc_param_value.animation-style").val(ui.item.value);
+                    var animation = ui.item.value;
+                    if("none" !== animation) {
+                        animation_style_test($(".vc_param-animation-style-preview"), "vc_param-animation-style-preview " + animation)
+                    }
+                    
                 }
           });
+          function animation_style_test(el, x) {
+                    $(el).removeClass().addClass(x + " animated").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend", function() {
+                        $(this).removeClass().addClass("vc_param-animation-style-preview")
+                    })
+                }
         </script>';
             
 		}
