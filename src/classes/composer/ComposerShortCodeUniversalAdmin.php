@@ -136,7 +136,7 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
 
 			$param_line .= '</select>';
             $param_line .= '<script type="text/javascript">
-		      $("#"+'.$selectId.').selectmenu({
+		      $("#'.$selectId.'").selectmenu({
 				width: 645,
                 classes: {
                     "ui-selectmenu-menu": "selectComposer"
@@ -204,7 +204,7 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
 			$param_line .= '</div>'; // Close Row
 			$param_line .= sprintf('<input name="%s" class="wpb_vc_param_value  %s %s_field" type="hidden" value="%s"  />', htmlspecialchars($param['param_name']), htmlspecialchars($param['param_name']), htmlspecialchars($param['type']), $param_value);
             $param_line .= '<script type="text/javascript">
-		      $("#"+'.$selectId.').selectmenu({
+		      $("#'.$selectId.'").selectmenu({
 				width: 300,
                 classes: {
                     "ui-selectmenu-menu": "selectComposer"
