@@ -84,6 +84,16 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
 		$output .= '</div>';
 		return $output;
 	}
+    
+    protected function generateRandomString($length = 5) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
 
 	protected function singleParamEditForm($param, $param_value) {
 
@@ -101,8 +111,9 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
 		else
 
 		if ($param['type'] == 'dropdown') {
+            $selectId = $this->generateRandomString();
 			$css_option = get_dropdown_option($param, $param_value);
-			$param_line .= '<select name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-input wpb-select ' . $param['param_name'] . ' ' . $param['type'] . ' ' . $css_option . '" data-option="' . $css_option . '">';
+			$param_line .= '<select id="'.$selectId.'" name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-input wpb-select ' . $param['param_name'] . ' ' . $param['type'] . ' ' . $css_option . '" data-option="' . $css_option . '">';
 
 			if (isset($param['value'])) {
 
@@ -124,8 +135,17 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
 			}
 
 			$param_line .= '</select>';
+            $param_line .= '<script type="text/javascript">
+		      $("#"+'.$selectId.').selectmenu({
+				width: 645,
+                classes: {
+                    "ui-selectmenu-menu": "selectComposer"
+                }
+          });
+        </script>';
 		} else
 		if ($param['type'] == 'animation') {
+            $selectId = $this->generateRandomString();
             $param_line .= '<link rel="stylesheet" href="/content/backoffice/composer/animate.min.css" type="text/css" media="all" />';
 			$param_line .= '<div class="vc_row">';
            
@@ -146,7 +166,7 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
             
 			if (is_array($styles) && !empty($styles)) {
 				$left_side = '<div class="vc_col-sm-6">';
-				$build_style_select = '<select name="' . $param['param_name'] . '" class="vc_param-animation-style">';
+				$build_style_select = '<select id="'.$selectId.'" name="' . $param['param_name'] . '" class="vc_param-animation-style">';
 
 				foreach ($styles as $style) {
 					$build_style_select .= '<optgroup ' . (isset($style['label']) ? 'label="' . htmlspecialchars($style['label']) . '"' : '') . '>';
@@ -183,6 +203,14 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
 
 			$param_line .= '</div>'; // Close Row
 			$param_line .= sprintf('<input name="%s" class="wpb_vc_param_value  %s %s_field" type="hidden" value="%s"  />', htmlspecialchars($param['param_name']), htmlspecialchars($param['param_name']), htmlspecialchars($param['type']), $param_value);
+            $param_line .= '<script type="text/javascript">
+		      $("#"+'.$selectId.').selectmenu({
+				width: 300,
+                classes: {
+                    "ui-selectmenu-menu": "selectComposer"
+                }
+          });
+        </script>';
             
 		}
 
