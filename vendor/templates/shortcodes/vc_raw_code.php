@@ -21,7 +21,7 @@ $output .= "\n\t".'<div class="'.$css_class.'">';
         $output .= "\n\t\t\t".$content;
         $output .= "\n\t\t".'</div> '.$this->endBlockComment('.wpb_wrapper');
     $output .= "\n\t".'</div> '.$this->endBlockComment('.wpb_raw_code');
-  $output .= '\n<script>
+  $output .= "\n\t".'<script>
 		  $(document).ready(function(){
             initComposerAce('.$code_id.');
           })
