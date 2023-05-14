@@ -61,7 +61,7 @@ switch ($tabs_mode) {
             
            $tab_atts = Composer::shortcode_parse_atts($tab[0]);
            $href = isset( $tab_atts['tab_id'] ) ? $tab_atts['tab_id'] : Tools::safeOutput( $tab_atts['title'] );
-           $index[] =  $href = 'tab-'.$href;
+           $index[] =  'tab-'.$href;
                      
         }
         
@@ -72,29 +72,24 @@ switch ($tabs_mode) {
         $output .= "\n\t\t" . '<div class="wpb_wrapper wpb_tour_tabs_wrapper ui-tabs vc_clearfix">';
         $output .= widget_title( array( 'title' => $title, 'extraclass' => $element . '_heading' ) );
        
-        $content = js_remove_wpautop( $content );
-        $content = Tools::strReplaceFirst('wpb_ui-tabs-hide', '', $content);	
-        $content = preg_replace('/wpb_ui-tabs-hide/', '', $content, 1);
         $output .= "\n\t\t\t" . js_remove_wpautop( $content );
-        $output .= "\n\t\t\t" . '<div class="vc_clearfix"> <span class="wpb_prev_slide"><button class="btn" onClick="showPreviousTab()">' . $vc_manager->l('Previous tab') . '</button></span> <span class="wpb_next_slide"><button class="btn" onClick="showNextTab()">' . $vc_manager->l('Next tab') . '</a></span></div>';
+        $output .= "\n\t\t\t" . '<div class="wp_navigate vc_clearfix"> <span class="wpb_prev_slide"><button class="btn" onClick="showPreviousTab()"><i class="fa-duotone fa-chevron-left"></i>' . $vc_manager->l('Previous tab') . '</button></span> <span class="wpb_next_slide"><button class="btn" onClick="showNextTab()">' . $vc_manager->l('Next tab') . '</a><i class="fa-duotone fa-angle-right"></i></span></div>';
        
         $output .= "\n\t\t" . '</div> ' . $this->endBlockComment( '.wpb_wrapper' );
         $output .= "\n\t" . '</div>' . $this->endBlockComment( $element );
         $output .= '<script type="text/javascript">
 		  var tabs = '.$index.';
           $(document).ready(function(){
-            $.each(tabs , function( index, value ) {
-                
-                if(index > 0) {
-                
+          $(".wpb_prev_slide").addClass("hidden");
+            $.each(tabs , function( index, value ) {                
+                if(index > 0) {                
                     $("#"+value).addClass("hidden");
                 } else {
                     $("#"+value).addClass("active");
-                }
-            
+                }            
             });
-})
-    </script>';
+        })
+        </script>';
         break;
 }
 
