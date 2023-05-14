@@ -84,10 +84,12 @@ switch ($tabs_mode) {
 		  var tabs = '.$index.';
           $(document).ready(function(){
             $.each(tabs , function( index, value ) {
-                console.log( index + ": " + value );
+                
                 if(index > 0) {
-                console.log( value + " hidden: " );
+                
                     $("#"+value).addClass("hidden");
+                } else {
+                    $("#"+value).addClass("active");
                 }
             
             });
