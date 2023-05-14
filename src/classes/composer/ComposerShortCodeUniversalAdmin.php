@@ -339,35 +339,14 @@ $param_line .= ob_get_clean();
            
             $param_line .= '<input type="hidden" id="ace_textarea_raw_code" class="wpb_vc_param_value wpb-textarea_code_html ' . $param['param_name'] . ' ' . $param['type'] . '"  name="' . $param['param_name'] . '" value="' . $param_value . '">';
 			$param_line .= '<div class="ace-editor" id="ace_' . $param['param_name'] . '">' . $param_value . '</div>';
-            $param_line .= '<script>
-		  (function () {
-				function initAce() {
-					if (typeof ace === "undefined") {
-						setTimeout(initAce, 100);
-						return;
-					}
-					var editor = ace.edit("ace_' . $param['param_name'] . '");
-					editor.setTheme("ace/theme/twilight");
-					editor.getSession().setMode("ace/mode/php");
-					editor.setOptions({
-						fontSize: 14,
-						minLines: 16,
-						maxLines: 30,
-						showPrintMargin: false,
-						enableBasicAutocompletion: false,
-						enableSnippets: false,
-						enableLiveAutocompletion: false
-					});
-					
-					$("#ace_textarea_raw_code").val(editor.getValue());
-					editor.on("change", function () {
-						$("#ace_textarea_raw_code").val(editor.getValue());
-					});
-				}
-    			initAce();
-	       })();
-    </script>';
+            $param_line .= '<script type="text/javascript">
+		      $(document).ready(function(){
+                initComposerAce(ace_' . $param['param_name'] . ');
+				
+	           });
+            </script>';
 		}
+
 
 		// Big Regular textarea
 		else

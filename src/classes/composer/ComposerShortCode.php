@@ -99,7 +99,7 @@ abstract class ComposerShortCode extends ComposerShortCodeAbstract {
 		}
       
 		// Check template in theme directory
-		$user_template = DIGITAL_CORE_DIR. '/vendor/templates/shortcodes/'.($this->getFilename().'.php');
+		$user_template = DIGITAL_CORE_DIR. '/src/classes/shortcodes/'.($this->getFilename().'.php');
        
 		if (is_file($user_template)) {
               
