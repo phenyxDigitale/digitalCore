@@ -1,49 +1,101 @@
 <?php
 $vc_manager = ephenyx_manager();
 
-$output = $title = $interval = $el_class = '';
+$output = $title = $tabs_mode = $el_class = '';
 extract( Composer::shortcode_atts( array(
 	'title' => '',
-	'interval' => 0,
+	'tabs_mode' => 0,
 	'el_class' => ''
 ), $atts ) );
 
-Context::getContext()->controller->addJqueryUI('ui.effect');
-Context::getContext()->controller->addJqueryUI('effects.core');
-Context::getContext()->controller->addJqueryUI('ui.tabs');
-
-
 $el_class = $this->getExtraClass( $el_class );
-
 $element = 'wpb_tabs';
-if ( 'vc_tour' == $this->shortcode ) $element = 'wpb_tour';
-
 preg_match_all( '/vc_tab([^\]]+)/i', $content, $matches, PREG_OFFSET_CAPTURE );
 $tab_titles = array();
 if ( isset( $matches[1] ) ) {
-	$tab_titles = $matches[1];
+    $tab_titles = $matches[1];
 }
-$tabs_nav = '';
-$tabs_nav .= '<ul class="wpb_tabs_nav ui-tabs-nav vc_clearfix">';
-foreach ( $tab_titles as $tab ) {
-	$tab_atts = Composer::shortcode_parse_atts($tab[0]);
-	if(isset($tab_atts['title'])) {
-		$tabs_nav .= '<li><a href="#tab-' . ( isset( $tab_atts['tab_id'] ) ? $tab_atts['tab_id'] : Tools::safeOutput( $tab_atts['title'] ) ) . '">' . $tab_atts['title'] . '</a></li>';
-	}
-}
-$tabs_nav .= '</ul>' . "\n";
+switch ($tabs_mode) {
+    case 0:
+        
+        if ( 'vc_tour' == $this->shortcode ) $element = 'wpb_tour';
 
-$css_class =  trim( $element . ' wpb_content_element ' . $el_class );
+        
+        $tabs_nav = '<div id="content_tabs" class="Tabs">';
+        $tabs_nav .= '<ul class="wpb_tabs_nav ui-tabs-nav vc_clearfix">';
+        foreach ( $tab_titles as $tab ) {
+            $tab_atts = Composer::shortcode_parse_atts($tab[0]);
+            $href = isset( $tab_atts['tab_id'] ) ? $tab_atts['tab_id'] : Tools::safeOutput( $tab_atts['title'] );
+            if(isset($tab_atts['title'])) {
+                $tabs_nav .= '<li id="li_' . $href. '"><a href="#tab-' . $href. '">' . $tab_atts['title'] . '</a></li>';
+            }
+        }
+        $tabs_nav .= '</ul>' . "\n".'<div id="tabs-content" class="tabs-controller-content">'. "\n";
 
-$output .= "\n\t" . '<div class="' . $css_class . '" data-interval="' . $interval . '">';
-$output .= "\n\t\t" . '<div class="wpb_wrapper wpb_tour_tabs_wrapper ui-tabs vc_clearfix">';
-$output .= widget_title( array( 'title' => $title, 'extraclass' => $element . '_heading' ) );
-$output .= "\n\t\t\t" . $tabs_nav;
-$output .= "\n\t\t\t" . js_remove_wpautop( $content );
-if ( 'vc_tour' == $this->shortcode ) {
-	$output .= "\n\t\t\t" . '<div class="wpb_tour_next_prev_nav vc_clearfix"> <span class="wpb_prev_slide"><a href="#prev" title="' . $vc_manager->l('Previous tab') . '">' . $vc_manager->l('Previous tab') . '</a></span> <span class="wpb_next_slide"><a href="#next" title="' . $vc_manager->l('Next tab') . '">' . $vc_manager->l('Next tab') . '</a></span></div>';
+        $css_class =  trim( $element . ' wpb_content_element ' . $el_class );
+
+        $output .= "\n\t" . '<div class="' . $css_class . '">';
+        $output .= "\n\t\t" . '<div class="wpb_wrapper wpb_tour_tabs_wrapper ui-tabs vc_clearfix">';
+        $output .= widget_title( array( 'title' => $title, 'extraclass' => $element . '_heading' ) );
+        $output .= "\n\t\t\t" . $tabs_nav;
+        $output .= "\n\t\t\t" . js_remove_wpautop( $content );
+        if ( 'vc_tour' == $this->shortcode ) {
+            $output .= "\n\t\t\t" . '<div class="wpb_tour_next_prev_nav vc_clearfix"> <span class="wpb_prev_slide"><a href="#prev" title="' . $vc_manager->l('Previous tab') . '">' . $vc_manager->l('Previous tab') . '</a></span> <span class="wpb_next_slide"><a href="#next" title="' . $vc_manager->l('Next tab') . '">' . $vc_manager->l('Next tab') . '</a></span></div>';
+        }
+        $output .= "\n\t\t" . '</div> ' . $this->endBlockComment( '.wpb_wrapper' );
+        $output .= "\n\t" . '</div></div></div>' . $this->endBlockComment( $element );
+        $output .= '<script type="text/javascript">
+		  $(document).ready(function(){
+          $("#content_tabs").tabs({
+			show: {
+				effect: "blind", 
+				duration: 800
+			}
+          });
+    </script>';
+        break;
+    case 1:
+        
+        $index = [];
+        foreach ( $tab_titles as $key =>$tab ) {
+            
+           $tab_atts = Composer::shortcode_parse_atts($tab[0]);
+           $href = isset( $tab_atts['tab_id'] ) ? $tab_atts['tab_id'] : Tools::safeOutput( $tab_atts['title'] );
+           $index[] =  $href = 'tab-'.$href;
+                     
+        }
+        
+        $index = Tools::jsonEncode($index);
+        $css_class =  trim( $element . ' wpb_content_element ' . $el_class );
+
+        $output .= "\n\t" . '<div class="' . $css_class . '">';
+        $output .= "\n\t\t" . '<div class="wpb_wrapper wpb_tour_tabs_wrapper ui-tabs vc_clearfix">';
+        $output .= widget_title( array( 'title' => $title, 'extraclass' => $element . '_heading' ) );
+       
+        $content = js_remove_wpautop( $content );
+        $content = Tools::strReplaceFirst('wpb_ui-tabs-hide', '', $content);	
+        $content = preg_replace('/wpb_ui-tabs-hide/', '', $content, 1);
+        $output .= "\n\t\t\t" . js_remove_wpautop( $content );
+        $output .= "\n\t\t\t" . '<div class="vc_clearfix"> <span class="wpb_prev_slide"><button class="btn" onClick="showPreviousTab()">' . $vc_manager->l('Previous tab') . '</button></span> <span class="wpb_next_slide"><button class="btn" onClick="showNextTab()">' . $vc_manager->l('Next tab') . '</a></span></div>';
+       
+        $output .= "\n\t\t" . '</div> ' . $this->endBlockComment( '.wpb_wrapper' );
+        $output .= "\n\t" . '</div>' . $this->endBlockComment( $element );
+        $output .= '<script type="text/javascript">
+		  var tabs = '.$index.';
+          $(document).ready(function(){
+            $.each(tabs , function( index, value ) {
+                console.log( index + ": " + value );
+                if(index > 0) {
+                console.log( value + " hidden: " );
+                    $("#"+value).addClass("hidden");
+                }
+            
+            });
+})
+    </script>';
+        break;
 }
-$output .= "\n\t\t" . '</div> ' . $this->endBlockComment( '.wpb_wrapper' );
-$output .= "\n\t" . '</div> ' . $this->endBlockComment( $element );
+
+
 
 echo $output;

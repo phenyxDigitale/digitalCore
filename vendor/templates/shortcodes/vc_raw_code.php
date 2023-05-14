@@ -22,8 +22,10 @@ $output .= "\n\t".'<div class="'.$css_class.'">';
         $output .= "\n\t\t".'</div> '.$this->endBlockComment('.wpb_wrapper');
     $output .= "\n\t".'</div> '.$this->endBlockComment('.wpb_raw_code');
   $output .= '<script>
-		  (function () {
-				function initAce() {
+		  $(document).ready(function(){
+            initAce();
+          })
+			function initAce() {
 					if (typeof ace === "undefined") {
 						setTimeout(initAce, 100);
 						return;
@@ -34,7 +36,7 @@ $output .= "\n\t".'<div class="'.$css_class.'">';
 					editor.setOptions({
 						fontSize: 14,
 						minLines: 16,
-						maxLines: 30,
+						maxLines: 50,
 						showPrintMargin: false,
 						enableBasicAutocompletion: false,
 						enableSnippets: false,
@@ -42,8 +44,7 @@ $output .= "\n\t".'<div class="'.$css_class.'">';
 					});
 					editor.setReadOnly(true)
 				}
-    			initAce();
-	       })();
+    			
     </script>';
 $output .= ' <script type="text/javascript" src="https://cdn.ephenyx.io/ace/ace.js"></script>';
 
