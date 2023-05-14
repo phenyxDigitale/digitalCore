@@ -17,16 +17,14 @@ if ( ! empty( $el_id ) ) {
 }
 
 $output .= "\n\t".'<div class="'.$css_class.'">';
-    $output .= "\n\t\t".'<div class="wpb_wrapper ace-editor" '.$code_id.'>';
-        $output .= "\n\t\t\t".$content;
-        $output .= "\n\t\t".'</div> '.$this->endBlockComment('.wpb_wrapper');
-    $output .= "\n\t".'</div> '.$this->endBlockComment('.wpb_raw_code');
-  $output .= "\n\t".'<script>
-		  $(document).ready(function(){
-            initComposerAce('.$code_id.');
-          })
-			
-    			
-    </script>';
+$output .= "\n\t\t".'<div class="wpb_wrapper ace-editor" '.$code_id.'>';
+$output .= "\n\t\t\t".$content;
+$output .= "\n\t\t".'</div> '.$this->endBlockComment('.wpb_wrapper');
+$output .= "\n\t".'</div> '.$this->endBlockComment('.wpb_raw_code');
+$output .= "\n".'<script type="text/javascript">';
+$output .= "\n\t".'$(document).ready(function(){';
+$output .= "\n\t\t".'initComposerAce('.$code_id.');';
+$output .= "\n\t".'})';
+$output .= "\n".'</script>';
 
 echo $output;
