@@ -142,6 +142,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
      */
     protected static $cache_objects = true;
     // @codingStandardsIgnoreEnd
+    
+    public static $debug_list = [];
 
     
     public static function getRepositoryClassName() {
@@ -192,12 +194,37 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             $this->id_lang = (Language::getLanguage($idLang) !== false) ? $idLang : Configuration::get(Configuration::LANG_DEFAULT);
         }
 
+        if (_EPH_DEBUG_PROFILING_ || _EPH_ADMIN_DEBUG_PROFILING_) {
+            if (!isset(self::$debug_list[$classname])) {
+                self::$debug_list[$classname] = [];
+            }
+            
+            $backtrace = debug_backtrace();
+
+            foreach ($backtrace as $trace_id => $row) {
+
+                if (!isset($backtrace[$trace_id]['class']) || !in_array($backtrace[$trace_id]['class'], $class_list)) {
+                    break;
+                }
+
+            }
+
+            $trace_id--;
+
+            self::$debug_list[$classname][] = [
+                'file' => @$backtrace[$trace_id]['file'],
+                'line' => @$backtrace[$trace_id]['line'],
+            ];
+         }
         
 
         if ($id) {
             $entityMapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");
             $entityMapper->load($id, $idLang, $this, $this->def, static::$cache_objects);
         }
+        
+        
+
 
         
     }
