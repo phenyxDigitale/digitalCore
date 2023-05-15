@@ -195,6 +195,9 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         }
 
         if (_EPH_DEBUG_PROFILING_ || _EPH_ADMIN_DEBUG_PROFILING_) {
+            
+            $className = get_class($this);
+            
             if (!isset(self::$debug_list[$classname])) {
                 self::$debug_list[$classname] = [];
             }
