@@ -77,7 +77,7 @@ $this->setLinktarget( $grid_link_target );
 			$categories_array = $this->getFilterCategories();
 			?>
 			<ul class="categories_filter vc_col-sm-12 vc_clearfix">
-				<li class="active"><a href="#" data-filter="*"><?php echo $vc_manager->l('All') ?></a></li>
+				<li class="active"><a href="#" data-filter="*"><?php echo $this->l('All') ?></a></li>
 				<?php foreach ( $this->getFilterCategories() as $cat ): ?>
 				<li><a href="#"
 					   data-filter=".grid-cat-<?php echo $cat->term_id ?>"><?php echo esc_attr( $cat->name ) ?></a></li>
@@ -108,7 +108,7 @@ $this->setLinktarget( $grid_link_target );
 					</li> <?php echo $this->endBlockComment( 'single teaser' ); ?>
 					<?php endforeach; ?>
 				<?php else: ?>
-				<li class="<?php echo $this->spanClass( 1 ); ?>"><?php echo $vc_manager->l('Nothing found.') ?></li>
+				<li class="<?php echo $this->spanClass( 1 ); ?>"><?php echo $this->l('Nothing found.') ?></li>
 				<?php endif; ?>
 			</ul>
 		</div>

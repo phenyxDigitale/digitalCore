@@ -7,7 +7,7 @@ extract( Composer::shortcode_atts( array(
 	'size' => '',
 	'target' => '',
 	'href' => '',
-	'title' => $vc_manager->l( 'Text on the button' ),
+	'title' => $this->l( 'Text on the button' ),
 	'call_text' => '',
 	'position' => 'cta_align_right',
 	'el_class' => '',

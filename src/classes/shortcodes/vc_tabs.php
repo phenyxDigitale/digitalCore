@@ -40,7 +40,7 @@ switch ($tabs_mode) {
         $output .= "\n\t\t\t" . $tabs_nav;
         $output .= "\n\t\t\t" . js_remove_wpautop( $content );
         if ( 'vc_tour' == $this->shortcode ) {
-            $output .= "\n\t\t\t" . '<div class="wpb_tour_next_prev_nav vc_clearfix"> <span class="wpb_prev_slide"><a href="#prev" title="' . $vc_manager->l('Previous tab') . '">' . $vc_manager->l('Previous tab') . '</a></span> <span class="wpb_next_slide"><a href="#next" title="' . $vc_manager->l('Next tab') . '">' . $vc_manager->l('Next tab') . '</a></span></div>';
+            $output .= "\n\t\t\t" . '<div class="wpb_tour_next_prev_nav vc_clearfix"> <span class="wpb_prev_slide"><a href="#prev" title="' . $this->l('Previous tab') . '">' . $this->l('Previous tab') . '</a></span> <span class="wpb_next_slide"><a href="#next" title="' . $this->l('Next tab') . '">' . $this->l('Next tab') . '</a></span></div>';
         }
         $output .= "\n\t\t" . '</div> ' . $this->endBlockComment( '.wpb_wrapper' );
         $output .= "\n\t" . '</div></div></div>' . $this->endBlockComment( $element );
@@ -73,7 +73,7 @@ switch ($tabs_mode) {
         $output .= widget_title( array( 'title' => $title, 'extraclass' => $element . '_heading' ) );
        
         $output .= "\n\t\t\t" . js_remove_wpautop( $content );
-        $output .= "\n\t\t\t" . '<div class="wp_navigate vc_clearfix"> <span class="wpb_prev_slide"><button class="btn" onClick="showPreviousTab()"><i class="fa-duotone fa-chevron-left"></i>' . $vc_manager->l('Previous tab') . '</button></span> <span class="wpb_next_slide"><button class="btn" onClick="showNextTab()">' . $vc_manager->l('Next tab') . '</a><i class="fa-duotone fa-angle-right"></i></span></div>';
+        $output .= "\n\t\t\t" . '<div class="wp_navigate vc_clearfix"> <span class="wpb_prev_slide"><button class="btn" onClick="showPreviousTab()"><i class="fa-duotone fa-chevron-left"></i>' . $this->l('Previous tab') . '</button></span> <span class="wpb_next_slide"><button class="btn" onClick="showNextTab()">' . $this->l('Next tab') . '</a><i class="fa-duotone fa-angle-right"></i></span></div>';
        
         $output .= "\n\t\t" . '</div> ' . $this->endBlockComment( '.wpb_wrapper' );
         $output .= "\n\t" . '</div>' . $this->endBlockComment( $element );

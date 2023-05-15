@@ -10,7 +10,7 @@ extract(Composer::shortcode_atts(array(
     'txt_align' => '',
     'accent_color' => '',
     'link' => '',
-    'title' => $vc_manager->l('Text on the button'),
+    'title' => $this->l('Text on the button'),
     'color' => '',
     'icon' => '',
     'size' => '',
