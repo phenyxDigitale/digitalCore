@@ -17,6 +17,13 @@ abstract class ComposerShortCodeAbstract {
 
 		self::$config = (array) $settings;
 	}
+    
+    public function l($string, $idLang = null, Context $context = null) {
+
+        $class = 'ComposerShortCodeAbstract';
+
+        return Translate::getClassTranslation($string, $class);
+    }
 
 	public function addAction($action, $method, $priority = 10) {
 
