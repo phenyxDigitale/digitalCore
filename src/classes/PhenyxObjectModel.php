@@ -173,8 +173,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         if (!isset(PhenyxObjectModel::$loaded_classes[$className])) {
             $this->def = PhenyxObjectModel::getDefinition($className);
-            $this->setDefinitionRetrocompatibility();
-
+            
             if (!Validate::isTableOrIdentifier($this->def['primary']) || !Validate::isTableOrIdentifier($this->def['table'])) {
                 throw new PhenyxException('Identifier or table format not valid for class ' . $className);
             }
@@ -1416,88 +1415,6 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         }
 
         return Cache::retrieve($cacheId);
-    }
-
-    protected function setDefinitionRetrocompatibility() {
-
-        if (isset($this->def['table'])) {
-            $this->table = $this->def['table'];
-        } else {
-            $this->def['table'] = $this->table;
-        }
-
-        if (isset($this->def['primary'])) {
-            $this->identifier = $this->def['primary'];
-        } else {
-            $this->def['primary'] = $this->identifier;
-        }
-
-        if (method_exists($this, 'getTranslationsFieldsChild')) {
-            $this->def['multilang'] = true;
-        }
-
-        if (isset($this->def['fields'])) {
-
-            foreach ($this->def['fields'] as $field => $data) {
-                $suffix = (isset($data['lang']) && $data['lang']) ? 'Lang' : '';
-
-                if (isset($data['validate'])) {
-                    $this->{'fieldsValidate' . $suffix}
-
-                    [$field] = $data['validate'];
-                }
-
-                if (isset($data['required']) && $data['required']) {
-                    $this->{'fieldsRequired' . $suffix}
-
-                    [] = $field;
-                }
-
-                if (isset($data['size'])) {
-                    $this->{'fieldsSize' . $suffix}
-
-                    [$field] = $data['size'];
-                }
-
-            }
-
-        } else {
-            $this->def['fields'] = [];
-            $suffixs = ['', 'Lang'];
-
-            foreach ($suffixs as $suffix) {
-
-                foreach ($this->{'fieldsValidate' . $suffix} as $field => $validate) {
-                    $this->def['fields'][$field]['validate'] = $validate;
-
-                    if ($suffix == 'Lang') {
-                        $this->def['fields'][$field]['lang'] = true;
-                    }
-
-                }
-
-                foreach ($this->{'fieldsRequired' . $suffix} as $field) {
-                    $this->def['fields'][$field]['required'] = true;
-
-                    if ($suffix == 'Lang') {
-                        $this->def['fields'][$field]['lang'] = true;
-                    }
-
-                }
-
-                foreach ($this->{'fieldsSize' . $suffix} as $field => $size) {
-                    $this->def['fields'][$field]['size'] = $size;
-
-                    if ($suffix == 'Lang') {
-                        $this->def['fields'][$field]['lang'] = true;
-                    }
-
-                }
-
-            }
-
-        }
-
     }
 
     public function getFieldByLang($fieldName, $idLang = null) {

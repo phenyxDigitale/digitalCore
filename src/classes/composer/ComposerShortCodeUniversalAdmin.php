@@ -341,7 +341,7 @@ $param_line .= ob_get_clean();
 			$param_line .= '<div class="ace-editor" id="ace_' . $param['param_name'] . '">' . $param_value . '</div>';
             $param_line .= '<script type="text/javascript">
 		      $(document).ready(function(){
-                initComposerAce(ace_' . $param['param_name'] . ', false, true);
+                initComposerAce("ace_' . $param['param_name'] . '", false, true);
 				
 	           });
             </script>';
