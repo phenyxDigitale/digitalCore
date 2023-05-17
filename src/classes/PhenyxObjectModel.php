@@ -218,18 +218,12 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                 'file' => @$backtrace[$trace_id]['file'],
                 'line' => @$backtrace[$trace_id]['line'],
             ];
-         }
-        
+         }        
 
         if ($id) {
             $entityMapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");
             $entityMapper->load($id, $idLang, $this, $this->def, static::$cache_objects);
-        }
-        
-        
-
-
-        
+        }        
     }
 
     
