@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Class ValidateCore
+ * Class Validate
  *
  * @since 1.9.1.0
  */
-class ValidateCore {
+class Validate {
 
     const ADMIN_PASSWORD_LENGTH = 8;
     const PASSWORD_LENGTH = 5;
