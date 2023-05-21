@@ -2,7 +2,7 @@
 
 namespace Eph\Jaybizzle\CrawlerDetect\Fixtures;
 
-include_once _EPH_THEME_MANAGER_DIR_ . 'lib/crawler-detect/Fixtures/AbstractProvider.php';
+include_once DIGITAL_CORE_DIR. '/lib/Fixtures/AbstractProvider.php';
 
 class Exclusions extends AbstractProvider {
 

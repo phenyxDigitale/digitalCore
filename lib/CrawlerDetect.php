@@ -3,9 +3,9 @@
 namespace Eph\Jaybizzle\CrawlerDetect;
 
 include_once DIGITAL_CORE_DIR . '/lib/Fixtures/Headers.php';
-include_once _EPH_THEME_MANAGER_DIR_ . '/lib/Fixtures/Crawlers.php';
-include_once _EPH_THEME_MANAGER_DIR_ . '/lib/Fixtures/Exclusions.php';
-include_once _EPH_THEME_MANAGER_DIR_ . '/lib/Fixtures/AbstractProvider.php';
+include_once DIGITAL_CORE_DIR .  '/lib/Fixtures/Crawlers.php';
+include_once DIGITAL_CORE_DIR .  '/lib/Fixtures/Exclusions.php';
+include_once DIGITAL_CORE_DIR .  '/lib/Fixtures/AbstractProvider.php';
 
 use Eph\Jaybizzle\CrawlerDetect\Fixtures\Crawlers;
 use Eph\Jaybizzle\CrawlerDetect\Fixtures\Exclusions;
