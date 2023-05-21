@@ -460,7 +460,7 @@ abstract class Db {
      * @param bool   $useNull
      *
      * @return bool
-     * @throws PhenyxDatabaseExceptionException
+     * @throws PhenyxDatabaseException
      * @throws PhenyxException
      *
      * @since 1.9.1.0
@@ -485,7 +485,7 @@ abstract class Db {
             return $this->update($table, $data, $where, $limit, $useNull, $useCache, false);
 
         default:
-            throw new PhenyxDatabaseExceptionException('Wrong argument (miss type) in static::autoExecute()');
+            throw new PhenyxDatabaseException('Wrong argument (miss type) in static::autoExecute()');
         }
 
     }
@@ -500,7 +500,7 @@ abstract class Db {
      * @param int    $limit  LIMIT clause (optional)
      *
      * @return bool
-     * @throws PhenyxDatabaseExceptionException
+     * @throws PhenyxDatabaseException
      *
      * @since 1.9.1.0
      * @version 1.8.1.0 Initial version
@@ -517,7 +517,7 @@ abstract class Db {
      * @param string|DbQuery $sql
      *
      * @return bool|PDOStatement
-     * @throws PhenyxDatabaseExceptionException
+     * @throws PhenyxDatabaseException
      * @throws PhenyxException
      */
     public function query($sql) {
@@ -643,7 +643,7 @@ abstract class Db {
      * @param bool   $addPrefix  Add or not _DB_PREFIX_ before table name
      *
      * @return bool
-     * @throws PhenyxDatabaseExceptionException
+     * @throws PhenyxDatabaseException
      *
      * @since 1.9.1.0
      * @version 1.8.1.0 Initial version
@@ -671,7 +671,7 @@ abstract class Db {
         if ($type == static::ON_DUPLICATE_KEY) {
             $insertKeyword = 'INSERT';
         } else {
-            throw new PhenyxDatabaseExceptionException('Bad keyword, must be static::INSERT or static::INSERT_IGNORE or static::REPLACE');
+            throw new PhenyxDatabaseException('Bad keyword, must be static::INSERT or static::INSERT_IGNORE or static::REPLACE');
         }
 
         // Check if $data is a list of row
@@ -695,11 +695,11 @@ abstract class Db {
                     // Check if row array mapping are the same
 
                     if (!in_array("`$key`", $keys)) {
-                        throw new PhenyxDatabaseExceptionException('Keys form $data subarray don\'t match');
+                        throw new PhenyxDatabaseException('Keys form $data subarray don\'t match');
                     }
 
                     if ($duplicateKeyStringified != '') {
-                        throw new PhenyxDatabaseExceptionException('On duplicate key cannot be used on insert with more than 1 VALUE group');
+                        throw new PhenyxDatabaseException('On duplicate key cannot be used on insert with more than 1 VALUE group');
                     }
 
                 } else {
@@ -750,7 +750,7 @@ abstract class Db {
      *
      * @return bool
      *
-     * @throws PhenyxDatabaseExceptionException
+     * @throws PhenyxDatabaseException
      * @throws PhenyxException
      */
     public function update($table, $data, $where = '', $limit = 0, $nullValues = false, $useCache = true, $addPrefix = true) {
@@ -803,7 +803,7 @@ abstract class Db {
      * @param bool   $addPrefix Add or not _DB_PREFIX_ before table name
      *
      * @return bool
-     * @throws PhenyxDatabaseExceptionException
+     * @throws PhenyxDatabaseException
      * @throws PhenyxException
      */
     public function delete($table, $where = '', $limit = 0, $useCache = true, $addPrefix = true) {
@@ -847,7 +847,7 @@ abstract class Db {
      * @param bool           $useCache Deprecated, the internal query cache is no longer used
      *
      * @return array|false|null|PDOStatement
-     * @throws PhenyxDatabaseExceptionException
+     * @throws PhenyxDatabaseException
      * @throws PhenyxException
      */
     public function executeS($sql, $array = true, $useCache = true) {
@@ -864,7 +864,7 @@ abstract class Db {
         if (!preg_match('#^\s*\(?\s*(select|show|explain|describe|desc)\s#i', $sql)) {
 
             if (defined('_EPH_MODE_DEV_') && _EPH_MODE_DEV_) {
-                throw new PhenyxDatabaseExceptionException('Db->executeS() must be used only with select, show, explain or describe queries');
+                throw new PhenyxDatabaseException('Db->executeS() must be used only with select, show, explain or describe queries');
             }
 
             return $this->execute($sql, $useCache);
@@ -897,7 +897,7 @@ abstract class Db {
      * @param bool           $useCache Deprecated, the internal query cache is no longer used
      *
      * @return array|bool|object|null
-     * @throws PhenyxDatabaseExceptionException
+     * @throws PhenyxDatabaseException
      * @throws PhenyxException
      */
     public function getRow($sql, $useCache = true) {
@@ -995,7 +995,7 @@ abstract class Db {
      * @param bool           $useCache Deprecated, the internal query cache is no longer used
      *
      * @return bool|PDOStatement
-     * @throws PhenyxDatabaseExceptionException
+     * @throws PhenyxDatabaseException
      * @throws PhenyxException
      */
     protected function q($sql, $useCache = true) {
@@ -1018,7 +1018,7 @@ abstract class Db {
      * Displays last SQL error
      *
      * @param string|bool $sql
-     * @throws PhenyxDatabaseExceptionException
+     * @throws PhenyxDatabaseException
      */
     public function displayError($sql = false) {
 
@@ -1029,10 +1029,10 @@ abstract class Db {
         if (_EPH_DEBUG_SQL_ && $errno && !defined('EPH_INSTALLATION_IN_PROGRESS')) {
 
             if ($sql) {
-                throw new PhenyxDatabaseExceptionException($this->getMsgError() . '<br /><br /><pre>' . $sql . '</pre>');
+                throw new PhenyxDatabaseException($this->getMsgError() . '<br /><br /><pre>' . $sql . '</pre>');
             }
 
-            throw new PhenyxDatabaseExceptionException($this->getMsgError());
+            throw new PhenyxDatabaseException($this->getMsgError());
         }
 
     }
@@ -1177,7 +1177,7 @@ abstract class Db {
      * @param bool           $useCache
      *
      * @return array|bool|PDOStatement
-     * @throws PhenyxDatabaseExceptionException
+     * @throws PhenyxDatabaseException
      *
      * @deprecated 2.0.0
      * @throws PhenyxException
