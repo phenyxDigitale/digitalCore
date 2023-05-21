@@ -150,12 +150,11 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
 			$param_line .= '<div class="vc_row">';
             
            
-			$styles = $this->animationStyles();
-            
+			$styles = $this->animationStyles();            
             if(is_array($param_value)) {
-                $key = array_keys($param_value);
-                $param_value = $param_value[$key[0]];
-            }
+                
+                $param_value = 'none';
+            } 
             
 			if (isset($this->settings['settings']['type'])) {
 				$styles = $this->groupStyleByType($styles, $this->settings['settings']['type']);
@@ -540,6 +539,7 @@ $param_line .= ob_get_clean();
 						'value' => 'bounceOutRight',
 						'type'  => 'out',
 					],
+
 					$vc_manager->l('bounceOutUp')    => [
 						'value' => 'bounceOutUp',
 						'type'  => 'out',
@@ -698,6 +698,7 @@ $param_line .= ob_get_clean();
 					$vc_manager->l('rotateOut')          => [
 						'value' => 'rotateOut',
 						'type'  => 'out',
+
 					],
 					$vc_manager->l('rotateOutDownLeft')  => [
 						'value' => 'rotateOutDownLeft',
