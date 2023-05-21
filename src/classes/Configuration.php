@@ -498,7 +498,7 @@ class Configuration extends PhenyxObjectModel {
 
     protected static function validateKey($key) {
 
-        if (!Tools::isConfigName($key)) {
+        if (!Validate::isConfigName($key)) {
             $e = new PhenyxException(sprintf(
                 Tools::displayError('[%s] is not a valid configuration key'),
                 Tools::htmlentitiesUTF8($key)
