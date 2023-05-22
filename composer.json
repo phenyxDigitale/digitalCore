@@ -16,7 +16,7 @@
         "nicolab/php-ftp-client": "^2",
         "smarty/smarty": "^4",
         "php-curl-class/php-curl-class": "^9",
-		"sendinblue/api-v3-sdk":"7.4"
+        "phpmailer/phpmailer": "^6.6"
     },  
 	"autoload": {
 		"classmap": {"digitalCore": "src/"},
