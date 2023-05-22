@@ -6,4 +6,7 @@ if (!defined('DIGITAL_CORE_DIR')) {
 if (!defined('DIGITAL_CORE_CLASS_DIR')) {
     define('DIGITAL_CORE_CLASS_DIR', dirname(__FILE__).'/src/classes/');
 }
+if (!defined('DIGITAL_CORE_ASSETS_DIR')) {
+    define('DIGITAL_CORE_ASSETS_DIR', dirname(__FILE__).'/assets/');
+}
 
