@@ -403,7 +403,8 @@ class Tools {
 
     
     public static function redirectLink($url) {
-        
+       
+        $url = str_replace(PHP_EOL, '', $url);
         if (_EPH_DEBUG_PROFILING_ || _EPH_ADMIN_DEBUG_PROFILING_) {
             return Profiling::redirectLink($url);
         }
@@ -425,8 +426,7 @@ class Tools {
                 $url .= '?' . $explode[1];
             }
 
-        }
-
+        }        
         header('Location: ' . $url);
         exit;
     }
