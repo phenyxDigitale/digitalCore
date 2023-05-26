@@ -1,8 +1,5 @@
 <?php
 
-use CommerceGuys\Intl\Currency\CurrencyRepository;
-use CommerceGuys\Intl\Formatter\NumberFormatter;
-use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
 use PHPSQLParser\PHPSQLParser;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -1349,9 +1346,9 @@ class Tools {
             return $str;
         }
 
-        $str = utf8_decode($str);
-
-        return (utf8_encode(substr($str, 0, $maxLength - mb_strlen($suffix)) . $suffix));
+       
+        $str = mb_convert_encoding($str, 'ISO-8859-1', 'UTF-8');
+        return mb_convert_encoding((substr($str, 0, $maxLength - mb_strlen($suffix)) . $suffix), 'UTF-8', 'ISO-8859-1');
     }
     
     public static function strlen($str, $encoding = 'UTF-8') {
