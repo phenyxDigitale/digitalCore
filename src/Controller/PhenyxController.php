@@ -608,7 +608,7 @@ abstract class PhenyxController {
                'https://cdn.ephenyx.io/paramgrid/pqgrid.ui.min.css',
             ]
         );    
-        $this->addJquery();
+        $this->addJS('https://code.jquery.com/jquery-3.6.4.min.js');
         $this->addJS(_EPH_JS_DIR_ . 'jquery-ui/jquery-ui.js');
         
         $this->addJS([
