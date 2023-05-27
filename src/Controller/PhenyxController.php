@@ -608,10 +608,10 @@ abstract class PhenyxController {
                'https://cdn.ephenyx.io/paramgrid/pqgrid.ui.min.css',
             ]
         );    
-        $this->addJS('https://code.jquery.com/jquery-3.6.4.min.js');
-        $this->addJS(_EPH_JS_DIR_ . 'jquery-ui/jquery-ui.js');
-        
+      
         $this->addJS([
+            'https://code.jquery.com/jquery-3.6.4.min.js',
+            _EPH_JS_DIR_ . 'jquery-ui/jquery-ui.js',
            	'https://cdn.ephenyx.io/paramgrid/pqSelect/pqselect.min.js',
            	'https://cdn.ephenyx.io/paramgrid/pqgrid.min.js',
            	'https://cdn.ephenyx.io/paramgrid/localize/pq-localize-fr.js',
