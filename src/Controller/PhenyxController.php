@@ -74,6 +74,169 @@ abstract class PhenyxController {
     protected $profiler = [];
 
     public $content_ajax = '';
+    
+    public $controller_name;
+    
+    protected $paragridScript;
+    
+    public $contextMenuItems = [];
+    
+    public $paramToolBarItems = [];
+    
+    public $paramClassName;
+	
+	public $paramController_name;
+	
+	public $paramTable;
+	
+	public $paramIdentifier;
+    
+    public $uppervar;    
+    
+	public $paramDataModel;
+	
+	public $paramColModel;
+    
+    public $requestModel;
+    
+    public $requestField = null;
+    
+    public $requestCustomModel = null;
+    
+    public $requestComplementaryModel;
+    
+    public $paramHeight;
+    
+    public $paramWidth;
+    
+    public $heightModel = 217;
+    
+    public $paramPageModel = [
+        'type'       => '\'local\'',
+        'rPP'        => 100,
+        'rPPOptions' => [10, 20, 40, 50, 100, 200, 500],
+    ];
+    
+    public $showTop = 1;
+    
+    public $paramCreate = '';
+    
+    public $refresh;
+    
+    public $paramComplete;
+    
+    public $paramSelectModelType = 'row';
+    
+    public $paramToolbar = [];
+    
+    public $columnBorders = 0;
+    
+    public $rowBorders = 0;
+    
+    public $filterModel = [
+        'on'          => true,
+        'mode'        => '\'AND\'',
+        'header'      => true,
+        'type'        => '\'local\'',
+        'menuIcon'    => 0,
+        'gridOptions' => [
+            'numberCell' => [
+                'show' => 0,
+            ],
+            'width'      => '\'flex\'',
+            'flex'       => [
+                'one' => true,
+            ],
+        ],
+    ];
+    
+    public $editorBegin;
+    
+    public $editorBlur;
+    
+    public $editorEnd;
+    
+    public $editorFocus;
+    
+    public $rowInit = '';
+    
+    public $rowSelect;
+
+    public $rowDblClick = '';
+    
+    public $paramChange = '';
+    
+    public $showTitle = true;
+    
+    public $paramTitle;
+    
+    public $summaryData = '';
+    
+    public $editModel;
+    
+    public $sortModel;
+
+    public $beforeSort;
+
+    public $beforeFilter;
+
+    public $beforeTableView;
+    
+    public $dropOn = false;
+
+    public $dragOn = false;
+    
+     public $dragdiHelper;
+
+    public $dragclsHandle;
+    
+     public $dragModel;
+
+    public $dropModel;
+    
+    public $moveNode;   
+
+    public $treeModel;
+    
+    public $treeExpand;
+    
+    public $paramCheck;
+    
+    public $groupModel;
+
+    public $summaryTitle;
+    
+    public $postRenderInterval;
+    
+    public $paramContextMenu;
+    
+    public $paramExtraFontcion = '';
+    
+    public $gridAfterLoadFunction;
+	    
+    public $gridFunction;
+    
+    public $is_subModel = false;
+    
+    public $onlyObject = false;
+    
+    public $needRequestModel = true;
+    
+    public $detailModel;
+    
+    public $subDetailModel;
+    
+    public $detailContextMenu;    
+    
+    public $showHeader = 1;
+    
+    public $maxHeight;
+    
+    public $showToolbar = true;
+    
+    public $formulas = false;
+    
+    public $paramEditable = 1;
 
     public function __construct() {
         
@@ -110,12 +273,182 @@ abstract class PhenyxController {
         if (_EPH_DEBUG_PROFILING_ || _EPH_ADMIN_DEBUG_PROFILING_) {
             $this->profiler[] = $this->stamp('__construct');
         }
+        
+        $this->paramCreate = 'function (evt, ui) {
+            buildHeadingAction(\'' . 'grid_' . $this->controller_name . '\', \'' . $this->controller_name . '\');
+        }';
 
     }
 
     public static function getController($className, $auth = false, $ssl = false) {
 
         return new $className($auth, $ssl);
+    }
+    
+    public function generateParaGridToolBar() {
+        
+        $toolBar = new ParamToolBar();
+        
+        $paramToolBarItems = Hook::exec('action' . $this->controller_name . 'generateParaGridToolBar');
+        
+        if(is_array($paramToolBarItems)) {
+            $this->paramToolBarItems = array_merge($this->paramToolBarItems, $paramToolBarItems);
+        }
+        
+        $toolBar->items = $this->paramToolBarItems;        
+        
+        return $toolBar->buildToolBar();
+    }
+
+    
+    public function generateParaGridContextMenu() {
+        
+        $contextMenu = new ParamContextMenu($this->className, $this->controller_name);
+       
+        $contextMenuItems = Hook::exec('action' . $this->controller_name . 'generateParaGridContextMenu', ['class' => $this->className], null, true);
+        if(is_array($contextMenuItems)) {
+            $contextMenuItems = array_shift($contextMenuItems);
+            foreach($contextMenuItems as $key => $values) {
+                $this->contextMenuItems[$key] = $values;
+            }
+           
+        }
+        
+        $contextMenu->items = $this->contextMenuItems;       
+        
+        return $contextMenu->buildContextMenu();
+    }
+
+    public function generateParaGridScript($idObjet = null) {
+
+        
+		$paragrid = new ParamGrid(
+			(!empty($this->paramClassName) ?$this->paramClassName : $this->className), 
+			(!empty($this->paramController_name) ?$this->paramController_name : $this->controller_name), 
+			(!empty($this->paramTable) ?$this->paramTable : $this->table), 
+			(!empty($this->paramIdentifier) ?$this->paramIdentifier : $this->identifier)
+		);
+        $paragrid->paramTable = (!empty($this->paramTable) ?$this->paramTable : $this->table);
+        $paragrid->paramController = (!empty($this->paramController_name) ?$this->paramController_name : $this->controller_name);
+
+        $paragrid->uppervar = $this->uppervar;
+		
+		$paragrid->dataModel = $this->paramDataModel;
+		$paragrid->colModel = $this->paramColModel;
+
+        $paragrid->requestModel = $this->requestModel;
+        $paragrid->requestField = $this->requestField;
+        $paragrid->requestCustomModel = $this->requestCustomModel;
+        $paragrid->requestComplementaryModel = $this->requestComplementaryModel;
+        $paragrid->width = $this->paramWidth;
+		$paragrid->height = $this->paramHeight;
+        $paragrid->heightModel = $this->heightModel;
+        $paragrid->showNumberCell = 0;
+        $paragrid->pageModel = $this->paramPageModel;
+        $paragrid->showTop = $this->showTop;
+
+        $paragrid->create = $this->paramCreate;
+
+        $paragrid->refresh = $this->refresh;
+
+        $paragrid->complete = $this->paramComplete;
+        $paragrid->selectionModelType = $this->paramSelectModelType;
+
+        $paragrid->toolbar = $this->paramToolbar;
+
+        $paragrid->columnBorders = $this->columnBorders;
+        $paragrid->rowBorders = $this->rowBorders;
+
+        $paragrid->filterModel = $this->filterModel;
+		
+		$paragrid->editorBegin = $this->editorBegin;
+
+        $paragrid->editorBlur = $this->editorBlur;
+		
+		$paragrid->editorEnd = $this->editorEnd;
+		
+		$paragrid->editorFocus = $this->editorFocus;
+
+        $paragrid->rowInit = $this->rowInit;
+        $paragrid->rowSelect = $this->rowSelect;
+        $paragrid->rowDblClick = $this->rowDblClick;
+        $paragrid->change = $this->paramChange;
+        $paragrid->showTitle = $this->showTitle;
+        $paragrid->title = $this->paramTitle;
+        $paragrid->fillHandle = '\'all\'';
+        $paragrid->summaryData = $this->summaryData;
+        $paragrid->editModel = $this->editModel;
+
+        $paragrid->sortModel = $this->sortModel;
+        $paragrid->beforeSort = $this->beforeSort;
+        $paragrid->beforeFilter = $this->beforeFilter;
+        $paragrid->beforeTableView = $this->beforeTableView;
+
+        $paragrid->dropOn = $this->dropOn;
+
+        $paragrid->dragOn = $this->dragOn;
+
+        $paragrid->dragdiHelper = $this->dragdiHelper;
+
+        $paragrid->dragclsHandle = $this->dragclsHandle;
+
+        $paragrid->dragModel = $this->dragModel;
+
+        $paragrid->dropModel = $this->dropModel;
+
+        $paragrid->moveNode = $this->moveNode;
+
+        $paragrid->treeModel = $this->treeModel;
+        
+        $paragrid->treeExpand = $this->treeExpand;
+
+        $paragrid->check = $this->paramCheck;
+
+        $paragrid->groupModel = $this->groupModel;
+
+        $paragrid->summaryTitle = $this->summaryTitle;
+		
+		$paragrid->postRenderInterval = $this->postRenderInterval;
+
+        $paragrid->contextMenu = $this->paramContextMenu;
+
+        $paragrid->gridExtraFunction = $this->paramExtraFontcion;
+
+        $paragrid->gridAfterLoadFunction = $this->gridAfterLoadFunction;
+        
+        $paragrid->gridFunction = $this->gridFunction;
+        
+        $paragrid->is_subModel = $this->is_subModel;
+        
+        $paragrid->onlyObject = $this->onlyObject;
+        
+        $paragrid->needRequestModel = $this->needRequestModel;
+        
+        $paragrid->detailModel = $this->detailModel;
+        
+        $paragrid->subDetailModel = $this->subDetailModel;
+        
+        $paragrid->detailContextMenu = $this->detailContextMenu;
+        
+        $paragrid->showHeader = $this->showHeader;
+        
+        $paragrid->maxHeight = $this->maxHeight;
+        
+        $paragrid->showToolbar = $this->showToolbar;
+        
+        $paragrid->formulas = $this->formulas;
+        
+        $paragrid->editable = $this->paramEditable;
+
+        $option = $paragrid->generateParaGridOption();
+        
+        $script = $paragrid->generateParagridScript();
+
+        $this->paragridScript = $script;
+        if($this->is_subModel) {
+            return $this->paragridScript;
+        }
+        return '<script type="text/javascript">' . PHP_EOL . $this->paragridScript . PHP_EOL . '</script>';
     }
 
     public static function myErrorHandler($errno, $errstr, $errfile, $errline) {
