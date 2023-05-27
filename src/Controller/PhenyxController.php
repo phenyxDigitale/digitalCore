@@ -265,11 +265,32 @@ abstract class PhenyxController {
         }
 
     }
+    
+    public function setMedia($isNewTheme = false) {
+
+        $this->addCSS(
+            [
+               'https://cdn.ephenyx.io/paramgrid/pqSelect/pqselect.min.css',
+               'https://cdn.ephenyx.io/paramgrid/pqgrid.min.css',
+               'https://cdn.ephenyx.io/paramgrid/pqgrid.ui.min.css',
+            ]
+        );       
+        
+        $this->addJS([
+           	'https://cdn.ephenyx.io/paramgrid/pqSelect/pqselect.min.js',
+           	'https://cdn.ephenyx.io/paramgrid/pqgrid.min.js',
+           	'https://cdn.ephenyx.io/paramgrid/localize/pq-localize-fr.js',
+           	'https://cdn.ephenyx.io/paramgrid/pqTouch/pqtouch.min.js',
+           	'https://cdn.ephenyx.io/paramgrid/jsZip-2.5.0/jszip.min.js',
+           	'https://cdn.ephenyx.io/paramgrid/FileSaver.js',
+           	'https://cdn.ephenyx.io/paramgrid/javascript-detect-element-resize/detect-element-resize.js',
+           	'https://cdn.ephenyx.io/paramgrid/javascript-detect-element-resize/jquery.resize.js',			
+
+        ]);       
+    }
 
     abstract public function checkAccess();
-
-    abstract public function setMedia();
-
+    
     abstract public function postProcess();
 
     abstract protected function redirect();
