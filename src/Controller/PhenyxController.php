@@ -34,6 +34,8 @@ abstract class PhenyxController {
     public $table = 'configuration';
     
     public $className;
+    
+    public $identifier = false;
 
     public $link_rewrite;
 
