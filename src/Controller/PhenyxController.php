@@ -651,7 +651,7 @@ abstract class PhenyxController {
 
     abstract public function initCursedPage();
 
-    protected function smartyOutputContent($content) {
+     protected function smartyOutputContent($content) {
 
         $this->context->cookie->write();
         $html = '';
@@ -671,15 +671,12 @@ abstract class PhenyxController {
         $html = trim($html);
 
         if (!empty($html)) {
-            $javasFooter = '';
+
             $domAvailable = extension_loaded('dom') ? true : false;
             $defer = (bool) Configuration::get('EPH_JS_DEFER');
 
             if ($defer && $domAvailable) {
                 $html = Media::deferInlineScripts($html);
-            }
-            if(count($this->js_footers)) {
-                $this->js_files = array_diff($this->js_files, $this->js_footers);
             }
 
             $html = trim(str_replace(['</body>', '</html>'], '', $html)) . "\n";
@@ -692,26 +689,16 @@ abstract class PhenyxController {
                 ]
             );
             $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
-            if(count($this->js_footers)) {
-                $this->context->smarty->assign([
-                    'js_def' => null, 
-                    'js_files' => [], 
-                    'js_inline' => [],
-                    'js_footers' => $defer ? array_unique($this->js_footers) : [], 
-                ]);
-
-                $javasFooter = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
-            }
 
             if ($defer && (!isset($this->ajax) || !$this->ajax)) {
-                echo $html . $javascript.$javasFooter;
+                echo $html . $javascript;
             } else
             if ($defer && $this->ajax) {
 
-                die(Tools::jsonEncode(['html', $html . $javascript.$javasFooter]));
+                die(Tools::jsonEncode(['html', $html . $javascript]));
 
             } else {
-                echo preg_replace('/(?<!\$)' . $jsTag . '/', $javascript.$javasFooter, $html);
+                echo preg_replace('/(?<!\$)' . $jsTag . '/', $javascript, $html);
             }
 
             echo ((!Tools::getIsset($this->ajax) || !$this->ajax) ? '</body></html>' : '');
