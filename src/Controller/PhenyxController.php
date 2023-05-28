@@ -30,6 +30,10 @@ abstract class PhenyxController {
     public $controller_type;
 
     public $php_self;
+    
+    public $table = 'configuration';
+    
+    public $className;
 
     public $link_rewrite;
 
