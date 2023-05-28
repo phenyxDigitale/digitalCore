@@ -694,6 +694,9 @@ abstract class PhenyxController {
             $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
             if(count($this->js_footers)) {
                 $this->context->smarty->assign([
+                    'js_def' => null, 
+                    'js_files' => [], 
+                    'js_inline' => [],
                     'js_footers' => $defer ? array_unique($this->js_footers) : [], 
                 ]);
 
