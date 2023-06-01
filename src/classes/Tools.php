@@ -4344,6 +4344,8 @@ FileETag none
             'content/css', 
             'content/fonts', 
             'content/js',
+            'content/mails',
+            'content/pdf',
 			'includes/classes',		
             'includes/controllers',		
             'includes/plugins',	
