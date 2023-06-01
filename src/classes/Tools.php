@@ -4390,7 +4390,7 @@ FileETag none
             if (str_contains($filePath, '/uploads/')) {
 				continue;
 			}
-             if (str_contains($filePath, '/cache/') !== false) {
+             if (str_contains($filePath, '/cache/')) {
 				continue;
 			}              
 
