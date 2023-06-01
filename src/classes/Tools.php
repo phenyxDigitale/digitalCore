@@ -4339,14 +4339,11 @@ FileETag none
 
         
 		$recursive_directory = [
-            'app/composer',
             'app/xml',
             'content/backoffice',                       
             'content/css', 
             'content/fonts', 
-            'content/js', 
-            'content/mails', 
-            'content/pdf',   
+            'content/js',
 			'includes/classes',		
             'includes/controllers',		
             'includes/plugins',	
@@ -4370,7 +4367,7 @@ FileETag none
             $filePath = $file->getPathname();
             $filePath = str_replace(_EPH_ROOT_DIR_, '', $filePath);
 			
-            if (in_array($file->getFilename(), ['.', '..', '.htaccess', '.user.ini', 'defines.inc.php','settings.inc.php', 'root.css', 'custom.css', 'polygon.css', 'layout.css', 'custom_menu.css', 'root.js', '.php-ini', '.php-version'])) {
+            if (in_array($file->getFilename(), ['.', '..', '.htaccess', '.user.ini', 'defines.inc.php','settings.inc.php', '.php-ini', '.php-version'])) {
                 continue;
             }
 			
@@ -4388,32 +4385,12 @@ FileETag none
 				continue;
 			}
 			
-            if (strpos($filePath, '/uploads/') !== false) {
+            if (str_contains($filePath, '/uploads/')) {
 				continue;
 			}
-             if (strpos($filePath, '/phenyx-theme-default/cache/') !== false) {
+             if (str_contains($filePath, '/cache/') !== false) {
 				continue;
-			}
-            if (strpos($filePath, '/backend/cache/') !== false) {
-				continue;
-			}
-            
-            if (strpos($filePath, '/phenyx-theme-default/css/plugins/') !== false) {
-				continue;
-			}
-            if (strpos($filePath, '/phenyx-theme-default/js/plugins/') !== false) {
-				continue;
-			}
-			if (strpos($filePath, '/phenyx-theme-default/img/') !== false) {
-				continue;
-			}
-            if (strpos($filePath, '/phenyx-theme-default/plugins/') !== false) {
-				continue;
-			}
-            
-            if (str_contains($filePath, '/config_') && $ext == 'xml') {			
-                continue;				
-            }
+			}              
 
             $md5List[$filePath] = md5_file($file->getPathname());
         }
