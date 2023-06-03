@@ -3921,9 +3921,11 @@ FileETag none
 
         $htmlContent = $postfields['htmlContent'];
         $tpl = $context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'header.tpl');
+        $bckImg = !empty(Configuration::get('EPH_BCK_LOGO_MAIL')) ? 'https://' . Configuration::get('EPH_SHOP_URL') . '/content/img/' . Configuration::get('EPH_BCK_LOGO_MAIL') : false;
         $tpl->assign([
             'title'        => $postfields['subject'],
             'css_dir'      => 'https://' . $context->company->domain_ssl._THEME_CSS_DIR_,
+            'bckImg'       => $bckImg,
             'logoMailLink' => 'https://' . Configuration::get('EPH_SHOP_URL') . '/content/img/' . Configuration::get('EPH_LOGO_MAIL'),
         ]);
         if(!is_null($meta_description)) {
