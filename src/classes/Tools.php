@@ -3930,8 +3930,9 @@ FileETag none
         ]);
         if(!is_null($meta_description)) {
             $tpl->assign([
-            'meta_description'        => $meta_description
-        ]);
+                'meta_description'        => $meta_description
+            ]);
+        }
         $header = $tpl->fetch();
         $tpl = $context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'footer.tpl');
         $tpl->assign([
