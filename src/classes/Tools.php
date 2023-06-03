@@ -3914,7 +3914,7 @@ FileETag none
 
    
 
-    public static function sendEmail($postfields) {
+    public static function sendEmail($postfields, $meta_description = null) {
 
         
         $context = Context::getContext();
@@ -3925,6 +3925,10 @@ FileETag none
             'title'        => $postfields['subject'],
             'css_dir'      => 'https://' . $context->company->domain_ssl._THEME_CSS_DIR_,
             'logoMailLink' => 'https://' . Configuration::get('EPH_SHOP_URL') . '/content/img/' . Configuration::get('EPH_LOGO_MAIL'),
+        ]);
+        if(!is_null($meta_description)) {
+            $tpl->assign([
+            'meta_description'        => $meta_description
         ]);
         $header = $tpl->fetch();
         $tpl = $context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'footer.tpl');
