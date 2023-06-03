@@ -2682,7 +2682,7 @@ abstract class Plugin {
         $this->context->controller->informations[] = $msg;
     }
     
-     public function l($string, $idLang = null, Context $context = null) {
+     public function lp($string, $idLang = null, Context $context = null) {
 
        
        $class = get_class($this);
