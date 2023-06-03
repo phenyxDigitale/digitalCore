@@ -3923,6 +3923,7 @@ FileETag none
         $tpl = $context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'header.tpl');
         $tpl->assign([
             'title'        => $postfields['subject'],
+            'css_dir'      => 'https://' . $context->company->domain_ssl._THEME_CSS_DIR_,
             'logoMailLink' => 'https://' . Configuration::get('EPH_SHOP_URL') . '/content/img/' . Configuration::get('EPH_LOGO_MAIL'),
         ]);
         $header = $tpl->fetch();
