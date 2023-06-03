@@ -2682,6 +2682,17 @@ abstract class Plugin {
         $this->context->controller->informations[] = $msg;
     }
     
+     public function l($string, $idLang = null, Context $context = null) {
+
+       
+       $class = get_class($this);
+		if (strtolower(substr($class, -4)) == 'core') {
+            $class = substr($class, 0, -4);
+        }
+        
+       return Translate::getClassTranslation($string, $class);
+    }
+    
     
 
 }
