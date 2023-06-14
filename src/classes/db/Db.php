@@ -158,6 +158,8 @@ abstract class Db {
      * @return string
      */
     abstract public function _escape($str);
+    
+    abstract public function _translate_escape($str);
 
     abstract public function _sescape($str);
 
@@ -1076,7 +1078,8 @@ abstract class Db {
     public function escapeTranslation($string, $htmlOk = false, $bqSql = false) {
 
         if (!is_numeric($string)) {
-            $string = $this->_escape($string);
+            
+            $string = $this->_translate_escape($string);
 
             if (!$htmlOk && !is_null($string)) {
                 $string = str_replace('\'', '‘', Tools::nl2br($string));

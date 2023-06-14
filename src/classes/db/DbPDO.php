@@ -311,6 +311,17 @@ class DbPDO extends Db {
         }
 
     }
+    
+    public function _translate_escape($str) {
+
+        if (!is_null($str) && !is_array($str)) {
+            $search = ["'", '&#39;'];
+            $replace = ["‘", '‘'];
+
+            return str_replace($search, $replace, $str);
+        }
+
+    }
 
     public function _sescape($str) {
 
