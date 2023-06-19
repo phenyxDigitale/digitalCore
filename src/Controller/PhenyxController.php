@@ -377,6 +377,7 @@ abstract class PhenyxController {
 
         $paragrid->rowInit = $this->rowInit;
         $paragrid->rowSelect = $this->rowSelect;
+        $paragrid->selectEnd = $this->selectEnd;
         $paragrid->rowDblClick = $this->rowDblClick;
         $paragrid->change = $this->paramChange;
         $paragrid->showTitle = $this->showTitle;

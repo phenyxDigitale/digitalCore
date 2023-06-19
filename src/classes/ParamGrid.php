@@ -160,6 +160,8 @@ class ParamGrid {
 	public $ajaxUrl;
 
 	public $rowSelect;
+    
+    public $selectEnd;
 
 	public $rowDblClick;
 
@@ -312,6 +314,9 @@ class ParamGrid {
 
 			if (!empty($this->rowSelect)) {
 				$values['builder']['rowSelect'] = $this->rowSelect;
+			}
+            if (!empty($this->selectEnd)) {
+				$values['builder']['selectEnd'] = $this->selectEnd;
 			}
 
 			if (!empty($this->rowDblClick)) {
