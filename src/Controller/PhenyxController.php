@@ -167,6 +167,8 @@ abstract class PhenyxController {
     public $rowInit = '';
     
     public $rowSelect;
+    
+    public $selectEnd;
 
     public $rowDblClick = '';
     
