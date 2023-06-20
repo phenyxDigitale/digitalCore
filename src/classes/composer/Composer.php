@@ -1293,8 +1293,8 @@ class Composer {
         $target = $params['target'];
 
         $autolaunch = $params['autolaunch'];
-        $file = fopen("testrenderComposer.txt", "w");
-        fwrite($file, $controller);
+        $language = $params['language'];
+      
 
         switch ($controller) {
         case 'adminsuppliers':
@@ -1347,6 +1347,7 @@ class Composer {
                 'navBar'         => $navBar->render(),
                 'editor'         => ephenyx_manager(),
                 'target'         => $target,
+                'language'       => $language,
                 'autolaunch'     => $autolaunch,
                 'controller'     => $controller,
                 'id_lang'        => $id_lang,
@@ -1357,7 +1358,6 @@ class Composer {
         $content = $data->fetch();
         ob_get_clean();
 
-        //$content .= $this->renderEditorFooter();
         return $content;
     }
 
