@@ -398,6 +398,26 @@ $param_line .= ob_get_clean();
 			$param_line .= '</div>';
 			$param_line .= '<a class="gallery_widget_add_images" href="#" use-single="true" title="' . $vc_manager->l('Add image') . '">' . $vc_manager->l('Add image') . '</a>';
 		}
+		else
+
+		if ($param['type'] == 'attach_media') {
+			$param_line .= '<input type="hidden" class="wpb_vc_param_value widget_attached_pdf ' . $param['param_name'] . ' ' . $param['type'] . '" name="' . $param['param_name'] . '" value="' . $param_value . '"/>';
+			$src = '<img src="/content/backoffice/blacktie/img/pdf-downbload.png" width="300" id="imageMedia">';
+			$param_line .= '<script type="text/javascript">';
+			$param_line .= 'var totalPdfs = [];';
+			$param_line .= '</script>';
+			$param_line .= '<script type="text/javascript" src="/content/js/pdfuploadify.min.js"></script>';
+			$param_line .= '<div class="imageuploadify imageuploadify-container-image">' . $src . '</div><input id="MediaFile" type="file" data-target="imageMedia" accept="application/pdf" multiple>';
+			$param_line .= '<script type="text/javascript">';
+            $param_line .= '$(document).ready(function() {';
+            $param_line .= '$("#MediaFile").pdfuplodify({
+        		afterreadAsDataURL: function() {
+					proceedSaveAttachment();            
+        		}
+    		});';
+            $param_line .= '});';
+            $param_line .= '</script>';
+		}
 
 		//
 		else
