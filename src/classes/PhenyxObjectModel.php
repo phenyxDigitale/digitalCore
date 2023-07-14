@@ -320,6 +320,29 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         
         return $fields;
     }
+    
+    public function getUpdatableFields() {
+        
+        $fields = [];
+       
+        foreach ($this->def['fields'] as $field => $data) {
+            if ((!empty($data['updatable']) && $data['updatable'])) {
+                $fields[$field] = $this->getFieldsUpdatableParams($field);
+            }            
+        }
+        
+        return $fields;
+        
+    }
+    
+    public function getFieldsUpdatableParams($field) {
+        
+        if (method_exists($this, 'getFieldsUpdatableParams')) {
+            return $this->getFieldsUpdatableParams($field);
+        }
+        
+        return null;
+    }
 
     public function getFieldsLang() {
 
