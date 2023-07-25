@@ -130,6 +130,8 @@ class ParamGrid {
 	public $gridExtraFunction;
 
 	public $gridAfterLoadFunction;
+    
+    public $load;
 
 	public $summaryData;
 
@@ -162,6 +164,8 @@ class ParamGrid {
 	public $rowSelect;
     
     public $selectEnd;
+    
+    public $rowClick;
 
 	public $rowDblClick;
 
@@ -319,7 +323,11 @@ class ParamGrid {
 				$values['builder']['selectEnd'] = $this->selectEnd;
 			}
 
-			if (!empty($this->rowDblClick)) {
+			if (!empty($this->rowClick)) {
+				$values['builder']['rowClick'] = $this->rowClick;
+			}
+            
+            if (!empty($this->rowDblClick)) {
 				$values['builder']['rowDblClick'] = $this->rowDblClick;
 			}
 
@@ -407,6 +415,11 @@ class ParamGrid {
 			if (!empty($this->cellClick)) {
 				$values['builder']['cellClick'] = $this->cellClick;
 			}
+            
+            if (!empty($this->load)) {
+				$values['builder']['load'] = $this->load;
+			}
+
 
 			if (!empty($this->cellDblClick)) {
 				$values['builder']['cellDblClick'] = $this->cellDblClick;

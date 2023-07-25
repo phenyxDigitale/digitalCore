@@ -131,6 +131,8 @@ abstract class PhenyxController {
     
     public $paramComplete;
     
+    public $paramLoad;
+    
     public $paramSelectModelType = 'row';
     
     public $paramToolbar = [];
@@ -169,6 +171,8 @@ abstract class PhenyxController {
     public $rowSelect;
     
     public $selectEnd;
+    
+    public $rowClick = '';
 
     public $rowDblClick = '';
     
@@ -381,12 +385,15 @@ abstract class PhenyxController {
         $paragrid->rowSelect = $this->rowSelect;
         $paragrid->selectEnd = $this->selectEnd;
         $paragrid->rowDblClick = $this->rowDblClick;
+        $paragrid->rowClick = $this->rowClick;
         $paragrid->change = $this->paramChange;
         $paragrid->showTitle = $this->showTitle;
         $paragrid->title = $this->paramTitle;
         $paragrid->fillHandle = '\'all\'';
         $paragrid->summaryData = $this->summaryData;
         $paragrid->editModel = $this->editModel;
+        
+        $paragrid->load = $this->paramLoad;
 
         $paragrid->sortModel = $this->sortModel;
         $paragrid->beforeSort = $this->beforeSort;
