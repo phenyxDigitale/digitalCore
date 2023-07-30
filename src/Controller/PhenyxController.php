@@ -1465,7 +1465,7 @@ abstract class PhenyxController {
             if (preg_match('/^\s*select\s+/i', $data['query'])) {
                 $explain = Db::getInstance()->executeS('explain ' . $data['query']);
 
-                if (stristr($explain[0]['Extra'], 'filesort')) {
+                if (isset($explain[0]['Extra']) && stristr($explain[0]['Extra'], 'filesort')) {
                     $query_row['filesort'] = true;
                 }
 

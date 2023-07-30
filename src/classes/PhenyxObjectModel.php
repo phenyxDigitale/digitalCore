@@ -1722,6 +1722,82 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         
        return Translate::getClassTranslation($string, $class);
     }
+    
+    public function getStaticPrefix($piece_type) {
+
+        switch ($piece_type) {
+
+        case 'QUOTATION':
+            return $this->l('QR');
+            break;
+        case 'ORDER':
+            return $this->l('OR');
+            break;
+        case 'DELIVERYFORM':
+            return $this->l('DF');
+            break;
+        case 'DOWNPINVOICE':
+            return $this->l('FAC');
+            break;
+        case 'INVOICE':
+            return $this->l('IN');
+            break;
+        case 'ASSET':
+            return $this->l('AST');
+            break;
+        }
+
+    }
+    
+    public function getPieceType($pieceType) {
+
+        switch ($pieceType) {
+
+        case 'QUOTATION':
+            return $this->l('Quotation');
+            break;
+        case 'ORDER':
+            return $this->l('Order');
+            break;
+        case 'DELIVERYFORM':
+            return $this->l('Delivery Form');
+            break;
+        case 'INVOICE':
+            return $this->l('Invoice');
+            break;
+        case 'ASSET':
+            return $this->l('Asset');
+            break;
+        }
+
+    }
+    
+    public function getTypeName() {
+
+        switch ($this->piece_type) {
+
+        case 'QUOTATION':
+            return $this->l('Quotation');
+            break;
+        case 'ORDER':
+            return $this->l('Order');
+            break;
+        case 'DELIVERYFORM':
+            return $this->l('Delivery Form');
+            break;
+        case 'DOWNPINVOICE':
+            return $this->l('Deposit Invoice');
+            break;
+        case 'INVOICE':
+            return $this->l('Commercial Invoice');
+            break;
+        case 'ASSET':
+            return $this->l('Commercial assets');
+            break;
+        }
+
+    }
+
 	
 	
 
