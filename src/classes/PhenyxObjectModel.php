@@ -41,6 +41,20 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     public $id_lang = null;
     
     public $is_archivable = false;
+    
+    public $use_session;
+    
+    public $use_education_device;
+    
+    public $use_sale_agent;
+    
+    public $use_education_platform;
+    
+    public $use_education_step;
+    
+    public $ephenyx_shop_active;
+
+    public $ephenyx_education_active;
 
 
     /** @var array|null Holds required fields for each PhenyxObjectModel class */
@@ -239,6 +253,14 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                 $this->compileArchive();
             }
         }
+        
+        $this->use_session = Configuration::get('EPH_USE_SESSION_DAY');
+        $this->use_education_device = Configuration::get('EPH_USE_EDUCATION_DEVICE');
+        $this->use_sale_agent = Configuration::get('EPH_USE_SALE_AGENT');
+        $this->use_education_platform = Configuration::get('EPH_USE_EDUCATION_PLATFORM');
+        $this->use_education_step = Configuration::get('EPH_USE_EDUCATION_STEP');
+        $this->ephenyx_shop_active = Configuration::get('_EPHENYX_SHOP_ACTIVE_');
+        $this->ephenyx_education_active = Configuration::get('_EPHENYX_EDUCATION_ACTIVE_');
     }
 
     
