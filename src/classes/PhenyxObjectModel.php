@@ -39,6 +39,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
     /** @var int Language ID */
     public $id_lang = null;
+    
+    public $is_archivable = false;
 
 
     /** @var array|null Holds required fields for each PhenyxObjectModel class */
@@ -222,7 +224,21 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         if ($id) {
             $entityMapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");
             $entityMapper->load($id, $idLang, $this, $this->def, static::$cache_objects);
-        }        
+        }       
+        
+        if($this->is_archivable == true) {
+            $idRequest = ParagridRequest::getRequestIdBy($className);
+            if ($idRequest > 0) {
+                $request = new ParagridRequest($idRequest);
+
+                if (empty($request->archive)) {
+                    $this->compileArchive();
+                }
+
+            } else {
+                $this->compileArchive();
+            }
+        }
     }
 
     
