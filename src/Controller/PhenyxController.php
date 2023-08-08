@@ -103,6 +103,8 @@ abstract class PhenyxController {
 	
 	public $paramColModel;
     
+    public $paramCellSave;
+    
     public $requestModel;
     
     public $requestField = null;
@@ -213,6 +215,8 @@ abstract class PhenyxController {
     public $treeExpand;
     
     public $paramCheck;
+    
+    public $showNumberCell = 0;
     
     public $groupModel;
 
@@ -355,7 +359,7 @@ abstract class PhenyxController {
         $paragrid->width = $this->paramWidth;
 		$paragrid->height = $this->paramHeight;
         $paragrid->heightModel = $this->heightModel;
-        $paragrid->showNumberCell = 0;
+        $paragrid->showNumberCell = $this->showNumberCell;
         $paragrid->pageModel = $this->paramPageModel;
         $paragrid->showTop = $this->showTop;
 
@@ -385,6 +389,7 @@ abstract class PhenyxController {
         $paragrid->rowSelect = $this->rowSelect;
         $paragrid->selectEnd = $this->selectEnd;
         $paragrid->rowDblClick = $this->rowDblClick;
+        $paragrid->cellSave = $this->paramCellSave;
         $paragrid->rowClick = $this->rowClick;
         $paragrid->change = $this->paramChange;
         $paragrid->showTitle = $this->showTitle;
