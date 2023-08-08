@@ -224,6 +224,8 @@ abstract class PhenyxController {
     
     public $postRenderInterval;
     
+    public $cellDblClick;
+    
     public $paramContextMenu;
     
     public $paramExtraFontcion = '';
@@ -391,6 +393,7 @@ abstract class PhenyxController {
         $paragrid->rowDblClick = $this->rowDblClick;
         $paragrid->cellSave = $this->paramCellSave;
         $paragrid->rowClick = $this->rowClick;
+        $paragrid->cellDblClick = $this->cellDblClick,
         $paragrid->change = $this->paramChange;
         $paragrid->showTitle = $this->showTitle;
         $paragrid->title = $this->paramTitle;
