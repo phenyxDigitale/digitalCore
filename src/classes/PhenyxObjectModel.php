@@ -56,21 +56,23 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
     public $ephenyx_education_active;
     
-    public $deft_vat_collected;
+    public $deft_vat_collected = null;
     
     public $deft_vat_collected_account;
     
-    public $deft_vat_deduct;
+    public $deft_vat_deduct = null;
     
     public $deft_vat_deduct_account;
     
-    public $deft_profit;
+    public $deft_profit = null;
     
     public $deft_profit_account;
     
-    public $deft_purchase;
+    public $deft_purchase = null;
     
     public $deft_purchase_account;
+    
+    
 
 
     /** @var array|null Holds required fields for each PhenyxObjectModel class */
@@ -279,14 +281,16 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         $this->ephenyx_education_active = Configuration::get('_EPHENYX_EDUCATION_ACTIVE_');
         
         $this->deft_vat_collected = Configuration::get('EPH_COLLECTED_VAT_DEFAULT_ACCOUNT') ? Configuration::get('EPH_COLLECTED_VAT_DEFAULT_ACCOUNT') :423;
-        $this->deft_vat_collected_account = new StdAccount($this->deft_vat_collected, $this->id_lang);
+        
         $this->deft_vat_deduct = Configuration::get('EPH_DEDUCTIBLE_VAT_DEFAULT_ACCOUNT') ? Configuration::get('EPH_DEDUCTIBLE_VAT_DEFAULT_ACCOUNT') : 415; 
-        $this->deft_vat_deduct_account = new StdAccount($this->deft_vat_deduct, $this->id_lang);
+        
         $this->deft_profit = Configuration::get('EPH_PROFIT_DEFAULT_ACCOUNT') ? Configuration::get('EPH_PROFIT_DEFAULT_ACCOUNT') : 817;
-        $this->deft_profit_account = new StdAccount($this->deft_profit, $this->id_lang);
+        
         $this->deft_purchase = Configuration::get('EPH_PURCHASE_DEFAULT_ACCOUNT') ? Configuration::get('EPH_PURCHASE_DEFAULT_ACCOUNT') : 582;
-        $this->deft_purchase_account = new StdAccount($this->deft_purchase, $this->id_lang);
+        
     }
+    
+    
 
     
     public function &__get($property) {
