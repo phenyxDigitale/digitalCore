@@ -307,7 +307,8 @@ class ParamGrid {
             if (!empty($this->title) && $this->showTitle) {
 				$values['builder']['title'] = $this->title;
 			}
-
+            
+            $values['builder']['showTitle'] = $this->showTitle;
 			if (!empty($this->pageModel)) {
 				$values['builder']['pageModel'] = $this->pageModel;
 			}
