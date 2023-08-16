@@ -358,10 +358,12 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
             foreach ($requests as $key => $object) {
 
-                foreach ($object as $field => $value) {
+                if(is_array($object)) {
+                    foreach ($object as $field => $value) {
 
-                    if (in_array($field, $fields)) {
-                        $objects[$key][$field] = $value;
+                        if (in_array($field, $fields)) {
+                            $objects[$key][$field] = $value;
+                        }
                     }
                 }
             }
