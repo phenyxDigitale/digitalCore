@@ -255,6 +255,8 @@ abstract class PhenyxController {
     public $formulas = false;
     
     public $paramEditable = 1;
+    
+    public $editorKeyUp;
 
     public function __construct() {
         
@@ -463,6 +465,8 @@ abstract class PhenyxController {
         $paragrid->formulas = $this->formulas;
         
         $paragrid->editable = $this->paramEditable;
+        
+        $paragrid->editorKeyUp = $this->editorKeyUp;
 
         $option = $paragrid->generateParaGridOption();
         

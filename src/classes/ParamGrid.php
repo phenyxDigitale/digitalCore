@@ -208,6 +208,8 @@ class ParamGrid {
 	public $is_subModel = false;
     
     public $maxHeight;
+    
+    public $editorKeyUp;
 
 	public function __construct($paramClass, $paramController, $paramTable, $paramIdentifier) {
 
@@ -506,6 +508,10 @@ class ParamGrid {
 
 			if (!empty($this->postRenderInterval)) {
 				$values['builder']['postRenderInterval'] = $this->postRenderInterval;
+			}
+            
+            if (!empty($this->editorKeyUp)) {
+				$values['builder']['editorKeyUp'] = $this->editorKeyUp;
 			}
 
 		}
