@@ -257,6 +257,8 @@ abstract class PhenyxController {
     public $paramEditable = 1;
     
     public $editorKeyUp;
+    
+    public $cellClick;
 
     public function __construct() {
         
@@ -396,6 +398,7 @@ abstract class PhenyxController {
         $paragrid->cellSave = $this->paramCellSave;
         $paragrid->rowClick = $this->rowClick;
         $paragrid->cellDblClick = $this->cellDblClick;
+        $paragrid->cellClick( = $this->cellClick(;
         $paragrid->change = $this->paramChange;
         $paragrid->showTitle = $this->showTitle;
         $paragrid->title = $this->paramTitle;
