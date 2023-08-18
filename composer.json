@@ -18,7 +18,7 @@
         "php-curl-class/php-curl-class": "^9",
         "phpmailer/phpmailer": "^6.6",
         "pear/archive_tar": "^1.4",
-        "phenyxdigitale/digitalspreadsheet": "^3",
+        "phenyxdigitale/digitalspreadsheet": "^4",
         "rosell-dk/webp-convert": "^2",			
         "rosell-dk/webp-convert-cloud-service": "^2",
         "rosell-dk/dom-util-for-webp": "^0.6"
