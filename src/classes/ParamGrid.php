@@ -210,6 +210,8 @@ class ParamGrid {
     public $maxHeight;
     
     public $editorKeyUp;
+    
+    public $minWidth;
 
 	public function __construct($paramClass, $paramController, $paramTable, $paramIdentifier) {
 
@@ -305,6 +307,9 @@ class ParamGrid {
 
 			if (!empty($this->maxHeight)) {
 				$values['builder']['maxHeight'] = $this->maxHeight;
+			}
+            if (!empty($this->minWidth)) {
+				$values['builder']['minWidth'] = $this->minWidth;
 			}
             if (!empty($this->title) && $this->showTitle) {
 				$values['builder']['title'] = $this->title;

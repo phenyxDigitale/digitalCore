@@ -250,6 +250,8 @@ abstract class PhenyxController {
     
     public $maxHeight;
     
+    public $paramMinWidth;
+    
     public $showToolbar = true;
     
     public $formulas = false;
@@ -463,6 +465,8 @@ abstract class PhenyxController {
         
         $paragrid->maxHeight = $this->maxHeight;
         
+        $paragrid->minWidth = $this->paramMinWidth;
+        
         $paragrid->showToolbar = $this->showToolbar;
         
         $paragrid->formulas = $this->formulas;
@@ -470,6 +474,8 @@ abstract class PhenyxController {
         $paragrid->editable = $this->paramEditable;
         
         $paragrid->editorKeyUp = $this->editorKeyUp;
+        
+        
 
         $option = $paragrid->generateParaGridOption();
         
