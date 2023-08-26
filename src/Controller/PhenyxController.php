@@ -261,6 +261,8 @@ abstract class PhenyxController {
     public $editorKeyUp;
     
     public $cellClick;
+    
+    public $animModel = [];
 
     public function __construct() {
         
@@ -468,6 +470,8 @@ abstract class PhenyxController {
         $paragrid->minWidth = $this->paramMinWidth;
         
         $paragrid->showToolbar = $this->showToolbar;
+        
+        $paragrid->animModel = $this->animModel;
         
         $paragrid->formulas = $this->formulas;
         
