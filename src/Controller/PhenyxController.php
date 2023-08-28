@@ -262,7 +262,7 @@ abstract class PhenyxController {
     
     public $cellClick;
     
-    public $autoAddRow = false;
+    public $autoAddRow = 0;
     
     public $animModel = [];
 
