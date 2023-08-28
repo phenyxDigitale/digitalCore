@@ -212,6 +212,8 @@ class ParamGrid {
     public $editorKeyUp;
     
     public $minWidth;
+    
+    public $autoAddRow;
 
 	public function __construct($paramClass, $paramController, $paramTable, $paramIdentifier) {
 
@@ -294,6 +296,7 @@ class ParamGrid {
 				'columnBorders'  => $this->columnBorders,
 				'collapsible'    => $this->collapsible,
 				'freezeCols'     => $this->freezeCols,
+                'autoAddRow'     => $this->autoAddRow,
 				'rowBorders'     => $this->rowBorders,
 				'stripeRows'     => $this->stripeRows,
 				'selectionModel' => $this->selectionModel,

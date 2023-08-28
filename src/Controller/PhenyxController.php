@@ -262,6 +262,8 @@ abstract class PhenyxController {
     
     public $cellClick;
     
+    public $autoAddRow = false;
+    
     public $animModel = [];
 
     public function __construct() {
@@ -478,6 +480,8 @@ abstract class PhenyxController {
         $paragrid->editable = $this->paramEditable;
         
         $paragrid->editorKeyUp = $this->editorKeyUp;
+        
+        $paragrid->autoAddRow = $this->autoAddRow;
         
         
 
