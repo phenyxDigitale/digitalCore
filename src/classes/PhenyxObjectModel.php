@@ -72,7 +72,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     
     public $deft_purchase_account;
     
-    
+     protected $context;
 
 
     /** @var array|null Holds required fields for each PhenyxObjectModel class */
@@ -271,7 +271,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                 $this->compileArchive();
             }
         }
-        
+        $this->context = Context::getContext();
         $this->use_session = Configuration::get('EPH_USE_SESSION_DAY');
         $this->use_education_device = Configuration::get('EPH_USE_EDUCATION_DEVICE');
         $this->use_sale_agent = Configuration::get('EPH_USE_SALE_AGENT');
