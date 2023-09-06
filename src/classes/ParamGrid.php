@@ -566,7 +566,8 @@ class ParamGrid {
 				if (isset($value['paramGridVar'])) {
 					$paramGridVar = $value['paramGridVar'];
 					$jsScript .= 'var ' . $value['paramGridVar'] . ';' . PHP_EOL;
-					$jsScript .= '  var ' . $this->paramGridObj . ';' . PHP_EOL;
+					$jsScript .= 'var ' . $this->paramGridObj . ';' . PHP_EOL;
+                    $jsScript .= 'var sel' . $this->paramGridVar . '' . PHP_EOL;
 				}
 
 			}
@@ -634,7 +635,7 @@ class ParamGrid {
 						if (!$this->onlyObject) {
 							$jsScript .= '  ' . $this->paramGridVar . ' = pq.grid(\'#' . $this->paramGridId . '\', ' . $this->paramGridObj . ');' . PHP_EOL;
 
-							$jsScript .= '  var sel' . $this->paramGridVar . ' = ' . $this->paramGridVar . '.SelectRow();' . PHP_EOL;
+							$jsScript .= '   sel' . $this->paramGridVar . ' = ' . $this->paramGridVar . '.SelectRow();' . PHP_EOL;
 							$jsScript .= ' $(\'#' . $this->paramGridId . '\').pqGrid("refresh");' . PHP_EOL;
 
 							if (isset($this->gridAfterLoadFunction)) {
