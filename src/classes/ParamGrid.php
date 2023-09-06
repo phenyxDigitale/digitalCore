@@ -641,10 +641,8 @@ class ParamGrid {
 								$jsScript .= $this->gridAfterLoadFunction . PHP_EOL;
 							}
 
-							if (isset($values['contextMenu'])) {
-                                if($this->functionContextMenu) {
-                                    $jsScript .= 'function launch'.$this->paramClass.'ContextMenu() {' . PHP_EOL;
-                                }
+							if (isset($values['contextMenu']) && !$this->functionContextMenu) {
+                                
 								foreach ($values['contextMenu'] as $contextMenu => $value) {
 									$jsScript .= '  $("' . $contextMenu . '").contextMenu({' . PHP_EOL;
 
@@ -660,9 +658,7 @@ class ParamGrid {
 
 									$jsScript .= '  });' . PHP_EOL;
 								}
-                                if($this->functionContextMenu) {
-                                    $jsScript .= '}' . PHP_EOL;
-                                }
+                               
 
 							}
 
@@ -712,20 +708,6 @@ class ParamGrid {
 
 				}
 
-				if ($key == 'extraFunction') {
-
-					foreach ($this->paragrid_option[$key] as $function) {
-						$jsScript .= $function;
-
-					}
-
-				}
-               
-                 
-                
-               
-
-
 			}
 
 			$jsScript .= '});' . PHP_EOL . PHP_EOL;
@@ -763,6 +745,23 @@ class ParamGrid {
 			}
 
 		}
+        
+        if (isset($values['contextMenu']) && $this->functionContextMenu) {
+            $jsScript .= 'function launch'.$this->paramClass.'ContextMenu() {' . PHP_EOL;
+            foreach ($values['contextMenu'] as $contextMenu => $value) {
+				$jsScript .= '  $("' . $contextMenu . '").contextMenu({' . PHP_EOL;
+                foreach ($value as $option => $value) {
+                    if (is_array($value)) {
+					   $jsScript .= '      ' . $this->deployArrayScript($option, $value) . PHP_EOL;
+				    } else {
+					   $jsScript .= '      ' . $option . ': ' . $value . ',' . PHP_EOL;
+				    }
+                }
+                $jsScript .= '  });' . PHP_EOL;
+            }
+            $jsScript .= '}' . PHP_EOL;
+
+        }
         
         
 
