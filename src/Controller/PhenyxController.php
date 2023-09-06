@@ -228,6 +228,8 @@ abstract class PhenyxController {
     
     public $paramContextMenu;
     
+    public $functionContextMenu = false;
+    
     public $paramExtraFontcion = '';
     
     public $gridAfterLoadFunction;
@@ -446,6 +448,7 @@ abstract class PhenyxController {
 		$paragrid->postRenderInterval = $this->postRenderInterval;
 
         $paragrid->contextMenu = $this->paramContextMenu;
+        $paragrid->functionContextMenu = $this->functionContextMenu,
 
         $paragrid->gridExtraFunction = $this->paramExtraFontcion;
 

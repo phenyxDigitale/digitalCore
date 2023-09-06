@@ -98,6 +98,8 @@ class ParamGrid {
 	public $paragridScript;
 
 	public $contextMenuoption;
+    
+    public $functionContextMenu = false;
 
 	public $dragOn = 0;
 
@@ -640,7 +642,9 @@ class ParamGrid {
 							}
 
 							if (isset($values['contextMenu'])) {
-
+                                if($this->functionContextMenu) {
+                                    $jsScript .= 'function launch'.$this->paramClass.'ContextMenu() {' . PHP_EOL;
+                                }
 								foreach ($values['contextMenu'] as $contextMenu => $value) {
 									$jsScript .= '  $("' . $contextMenu . '").contextMenu({' . PHP_EOL;
 
@@ -656,6 +660,9 @@ class ParamGrid {
 
 									$jsScript .= '  });' . PHP_EOL;
 								}
+                                *if($this->functionContextMenu) {
+                                    $jsScript .= '}' . PHP_EOL;
+                                }
 
 							}
 
