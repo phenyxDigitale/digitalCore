@@ -660,7 +660,7 @@ class ParamGrid {
 
 									$jsScript .= '  });' . PHP_EOL;
 								}
-                                *if($this->functionContextMenu) {
+                                if($this->functionContextMenu) {
                                     $jsScript .= '}' . PHP_EOL;
                                 }
 
