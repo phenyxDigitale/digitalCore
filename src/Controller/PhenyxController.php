@@ -448,7 +448,7 @@ abstract class PhenyxController {
 		$paragrid->postRenderInterval = $this->postRenderInterval;
 
         $paragrid->contextMenu = $this->paramContextMenu;
-        $paragrid->functionContextMenu = $this->functionContextMenu,
+        $paragrid->functionContextMenu = $this->functionContextMenu;
 
         $paragrid->gridExtraFunction = $this->paramExtraFontcion;
 
