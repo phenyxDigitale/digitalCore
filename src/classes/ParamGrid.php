@@ -216,6 +216,8 @@ class ParamGrid {
     public $minWidth;
     
     public $autoAddRow;
+    
+    public $beforeCellClick;
 
 	public function __construct($paramClass, $paramController, $paramTable, $paramIdentifier) {
 
@@ -361,6 +363,11 @@ class ParamGrid {
 
 			if (!empty($this->beforeFilter)) {
 				$values['builder']['beforeFilter'] = $this->beforeFilter;
+
+			}
+            
+            if (!empty($this->beforeCellClick)) {
+				$values['builder']['beforeCellClick'] = $this->beforeCellClick;
 
 			}
 

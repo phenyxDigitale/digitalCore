@@ -264,6 +264,8 @@ abstract class PhenyxController {
     
     public $cellClick;
     
+    public $beforeCellClick;
+    
     public $autoAddRow = 0;
     
     public $animModel = [];
@@ -485,6 +487,7 @@ abstract class PhenyxController {
         $paragrid->editorKeyUp = $this->editorKeyUp;
         
         $paragrid->autoAddRow = $this->autoAddRow;
+        $paragrid->beforeCellClick = $this->beforeCellClick;
         
         
 
