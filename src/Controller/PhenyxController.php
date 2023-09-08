@@ -661,7 +661,7 @@ abstract class PhenyxController {
         );    
       
         $this->addJS([
-            'https://code.jquery.com/jquery-3.6.4.min.js',
+            'https://code.jquery.com/jquery-3.7.1.min.js',
             'https://code.jquery.com/ui/1.13.2/jquery-ui.min.js',
            	'https://cdn.ephenyx.io/paramgrid/pqSelect/pqselect.min.js',
            	'https://cdn.ephenyx.io/paramgrid/pqgrid.min.js',
