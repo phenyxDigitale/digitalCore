@@ -6,6 +6,7 @@ use Thunder\Shortcode\Shortcode\ShortcodeInterface;
 
 class Composer {
 
+    protected static $instance;
     public $context;
     public $post_custom_css;
     public $cawobj;
@@ -76,6 +77,15 @@ class Composer {
 
         $this->front_js[] = _EPH_JS_DIR_ . 'composer/composer_front.js';
 
+    }
+    
+    public static function getInstance() {
+
+        if (!Composer::$instance) {
+            Composer::$instance = new Composer();
+        }
+
+        return Composer::$instance;
     }
 
     public function buildHandler() {
