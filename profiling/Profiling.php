@@ -1,6 +1,6 @@
 <?php
 
-class ProfilingCore {
+class Profiling {
 
     public static function redirect($url, $base_uri = __EPH_BASE_URI__, Link $link = null, $headers = null) {
 
