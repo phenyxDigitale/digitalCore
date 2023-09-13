@@ -5147,6 +5147,13 @@ FileETag none
 
     }
     
+    public static function renderComposerFooter() {
+        
+        $composer = Composer::getInstance();
+        
+        return $composer->renderEditorFooter();
+    }
+    
     
     
 
