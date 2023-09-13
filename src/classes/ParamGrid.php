@@ -204,6 +204,8 @@ class ParamGrid {
 	public $postRenderInterval;
 
 	public $needRequestModel = true;
+    
+    public $needColModel = true;
 
 	public $check;
 
@@ -273,8 +275,9 @@ class ParamGrid {
 		$this->heightModel = (!empty($this->heightModel)) ? $this->heightModel : '';
 
 		$this->dataModel = (!empty($this->dataModel)) ? $this->dataModel : $this->paramController . 'Model';
-
-		$this->colModel = (!empty($this->colModel)) ? $this->colModel : 'get' . $this->paramClass . 'Fields()';
+        if ($this->needColModel) {
+		  $this->colModel = (!empty($this->colModel)) ? $this->colModel : 'get' . $this->paramClass . 'Fields()';
+        }
 
 		$this->scrollModel = [
 			'autoFit' => $this->autoFit,
@@ -835,7 +838,7 @@ class ParamGrid {
 
 		if ($is_function == false) {
 
-			if (is_null($this->requestField)) {
+			if (is_null($this->requestField) && $this->needColModel) {
 				$jsScript .= 'function get' . $this->paramClass . 'Fields() {' . PHP_EOL;
 				$jsScript .= '  var result;' . PHP_EOL;
 				$jsScript .= '  $.ajax({' . PHP_EOL;
@@ -879,10 +882,6 @@ class ParamGrid {
 				$jsScript .= $this->requestCustomModel;
 			}
 
-			$jsScript .= 'function reload' . $this->paramClass . 'Grid() {' . PHP_EOL;
-			$jsScript .= '  ' . $this->paramGridVar . '.option(\'dataModel.data\', get' . $this->paramClass . 'Request());' . PHP_EOL;
-			$jsScript .= '  ' . $this->paramGridVar . '.refreshView();' . PHP_EOL;
-			$jsScript .= '}' . PHP_EOL;
 
 		}
 

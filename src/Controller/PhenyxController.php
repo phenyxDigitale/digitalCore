@@ -242,6 +242,8 @@ abstract class PhenyxController {
     
     public $needRequestModel = true;
     
+    public $needColModel = true;
+    
     public $detailModel;
     
     public $subDetailModel;
@@ -266,6 +268,8 @@ abstract class PhenyxController {
     
     public $beforeCellClick;
     
+    public $stripeRows;
+    
     public $autoAddRow = 0;
     
     public $autoAddCol = 0;
@@ -281,6 +285,8 @@ abstract class PhenyxController {
     public $paramhistory;
     
     public $paramAutoRow;
+    
+    public $paramWrap;
 
     public function __construct() {
         
@@ -434,6 +440,7 @@ abstract class PhenyxController {
         $paragrid->beforeSort = $this->beforeSort;
         $paragrid->beforeFilter = $this->beforeFilter;
         $paragrid->beforeTableView = $this->beforeTableView;
+        $paragrid->stripeRows = $this->stripeRows;
 
         $paragrid->dropOn = $this->dropOn;
 
@@ -446,7 +453,6 @@ abstract class PhenyxController {
         $paragrid->dragModel = $this->dragModel;
 
         $paragrid->dropModel = $this->dropModel;
-
         $paragrid->moveNode = $this->moveNode;
 
         $paragrid->treeModel = $this->treeModel;
@@ -458,6 +464,7 @@ abstract class PhenyxController {
         $paragrid->groupModel = $this->groupModel;
 
         $paragrid->summaryTitle = $this->summaryTitle;
+        $paragrid->wrap = $this->paramWrap;
 		
 		$paragrid->postRenderInterval = $this->postRenderInterval;
 
@@ -475,6 +482,7 @@ abstract class PhenyxController {
         $paragrid->onlyObject = $this->onlyObject;
         
         $paragrid->needRequestModel = $this->needRequestModel;
+        $paragrid->needColModel = $this->needColModel;
         
         $paragrid->detailModel = $this->detailModel;
         
