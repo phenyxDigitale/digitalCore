@@ -739,11 +739,6 @@ class Composer {
         $this->backendEditor()->addHooksSettings();
     }
 
-    public static function getInstance() {
-
-        return new Composer();
-    }
-
     public function updateCSSValues() {
 
         $post_id = Tools::getValue('post_id');
