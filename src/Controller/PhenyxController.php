@@ -268,7 +268,19 @@ abstract class PhenyxController {
     
     public $autoAddRow = 0;
     
+    public $autoAddCol = 0;
+    
     public $animModel = [];
+    
+    public $columnTemplate;
+    
+    public $tabModel;
+    
+    public $paramEditor = true;
+    
+    public $paramhistory;
+    
+    public $paramAutoRow;
 
     public function __construct() {
         
@@ -487,6 +499,12 @@ abstract class PhenyxController {
         $paragrid->editorKeyUp = $this->editorKeyUp;
         
         $paragrid->autoAddRow = $this->autoAddRow;
+        $paragrid->autoAddCol = $this->autoAddCol;
+        $paragrid->columnTemplate = $this->columnTemplate;
+        $paragrid->tabModel = $this->tabModel;
+        $paragrid->editor = $this->paramEditor;
+        $paragrid->history = $this->paramhistory;
+        $paragrid->autoRow = $this->paramAutoRow;
         $paragrid->beforeCellClick = $this->beforeCellClick;
         
         

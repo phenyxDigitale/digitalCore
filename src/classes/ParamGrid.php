@@ -174,8 +174,14 @@ class ParamGrid {
 	public $summaryTitle;
 
 	public $autoRowHead = true;
+    
+    public $autoRow = true;
 
 	public $refresh;
+    
+    public $editor;
+    
+    public $history;
 
 	public $editorBlur;
 
@@ -215,9 +221,15 @@ class ParamGrid {
     
     public $minWidth;
     
-    public $autoAddRow;
+    public $autoAddRow = 0;
+    
+    public $autoAddCol = 0;
+    
+    public $columnTemplate;
     
     public $beforeCellClick;
+    
+    public $tabModel;
 
 	public function __construct($paramClass, $paramController, $paramTable, $paramIdentifier) {
 
@@ -301,10 +313,12 @@ class ParamGrid {
 				'collapsible'    => $this->collapsible,
 				'freezeCols'     => $this->freezeCols,
                 'autoAddRow'     => $this->autoAddRow,
+                'autoAddCol'     => $this->autoAddCol,
 				'rowBorders'     => $this->rowBorders,
 				'stripeRows'     => $this->stripeRows,
 				'selectionModel' => $this->selectionModel,
 				'editable'       => $this->editable,
+                'editor'         => $this->editor,
 			],
 			'gridAfterLoadFunction'     => $this->gridAfterLoadFunction,
 
@@ -399,6 +413,12 @@ class ParamGrid {
 			if (!empty($this->autoRowHead)) {
 				$values['builder']['autoRowHead'] = $this->autoRowHead;
 			}
+            if (!empty($this->history)) {
+				$values['builder']['history'] = $this->history;
+			}
+            if (!empty($this->autoRow)) {
+				$values['builder']['autoRow'] = $this->autoRow;
+			}
 
 			if (!empty($this->groupModel)) {
 				$values['builder']['groupModel'] = $this->groupModel;
@@ -459,6 +479,12 @@ class ParamGrid {
 
 			if (!empty($this->formulas)) {
 				$values['builder']['formulas'] = $this->formulas;
+			}
+            if (!empty($this->columnTemplate)) {
+				$values['builder']['columnTemplate'] = $this->columnTemplate;
+			}
+            if (!empty($this->tabModel)) {
+				$values['builder']['tabModel'] = $this->tabModel;
 			}
            
 
