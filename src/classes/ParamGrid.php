@@ -306,7 +306,6 @@ class ParamGrid {
 				'animModel'      => $this->animModel,
 				'wrap'           => $this->wrap,
 				'autofill'       => $this->autofill,
-				'colModel'       => $this->colModel,
 				'numberCell'     => $this->numberCell,
 				'showHeader'     => $this->showHeader,
                 'showToolbar'    => $this->showToolbar,
@@ -328,6 +327,10 @@ class ParamGrid {
 		];
 
 		foreach ($this->paragrid_option['paragrids'] as &$values) {
+            
+            if ($this->needColModel) {
+                $values['builder']['colModel'] = $this->colModel;
+            }
 
 			if (!empty($this->maxHeight)) {
 				$values['builder']['maxHeight'] = $this->maxHeight;
