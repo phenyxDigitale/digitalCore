@@ -269,12 +269,13 @@ class ParamGrid {
 					return { data: dataJSON };
             	}
         	}';
+            $this->dataModel = (!empty($this->dataModel)) ? $this->dataModel : $this->paramController . 'Model';
 
 		}
 
 		$this->heightModel = (!empty($this->heightModel)) ? $this->heightModel : '';
 
-		$this->dataModel = (!empty($this->dataModel)) ? $this->dataModel : $this->paramController . 'Model';
+		
         if ($this->needColModel) {
 		  $this->colModel = (!empty($this->colModel)) ? $this->colModel : 'get' . $this->paramClass . 'Fields()';
         }
@@ -301,7 +302,6 @@ class ParamGrid {
 			'builder'                   => [
 				'height'         => (!empty($this->heightModel)) ? $this->heightModel : '\'flex\'',
                 'width'          => '\'' . $this->width . '\'',
-				'dataModel'      => $this->dataModel,
 				'scrollModel'    => $this->scrollModel,
 				'animModel'      => $this->animModel,
 				'wrap'           => $this->wrap,
@@ -330,6 +330,9 @@ class ParamGrid {
             
             if ($this->needColModel) {
                 $values['builder']['colModel'] = $this->colModel;
+            }
+            if ($this->needRequestModel) {
+                $values['builder']['dataModel'] = $this->dataModel;
             }
 
 			if (!empty($this->maxHeight)) {
