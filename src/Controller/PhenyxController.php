@@ -286,7 +286,7 @@ abstract class PhenyxController {
     
     public $paramAutoRow;
     
-    public $paramWrap;
+    public $paramWrap = true;
 
     public function __construct() {
         
