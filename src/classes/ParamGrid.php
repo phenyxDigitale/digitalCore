@@ -670,7 +670,7 @@ class ParamGrid {
 
 						$jsScript .= '  };' . PHP_EOL;
 
-						if (!empty($this->requestComplementaryModel)) {
+						if (!empty($this->requestComplementaryModel) && $this->needRequestModel) {
 							$jsScript .= $this->paramGridObj . '.dataModel = ' . $this->paramController . 'ComplementaryModel;' . PHP_EOL;
 						}
 
