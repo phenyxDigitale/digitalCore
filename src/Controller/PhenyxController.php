@@ -268,7 +268,7 @@ abstract class PhenyxController {
     
     public $beforeCellClick;
     
-    public $stripeRows;
+    public $stripeRows =1;
     
     public $autoAddRow = 0;
     
