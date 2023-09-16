@@ -320,7 +320,6 @@ class ParamGrid {
 				'stripeRows'     => $this->stripeRows,
 				'selectionModel' => $this->selectionModel,
 				'editable'       => $this->editable,
-                'editor'         => $this->editor,
 			],
 			'gridAfterLoadFunction'     => $this->gridAfterLoadFunction,
 
@@ -334,6 +333,9 @@ class ParamGrid {
             if ($this->needRequestModel) {
                 $values['builder']['dataModel'] = $this->dataModel;
             }
+            if (!empty($this->editor)) {
+				$values['builder']['editor'] = $this->editor;
+			}
 
 			if (!empty($this->maxHeight)) {
 				$values['builder']['maxHeight'] = $this->maxHeight;
