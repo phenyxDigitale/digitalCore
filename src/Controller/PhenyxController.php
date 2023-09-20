@@ -280,7 +280,7 @@ abstract class PhenyxController {
     
     public $tabModel;
     
-    public $paramEditor = false;
+    public $paramEditor = 1;
     
     public $paramhistory;
     
