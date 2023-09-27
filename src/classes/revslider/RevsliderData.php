@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('WP_MAX_MEMORY_LIMIT')) {
+define('WP_MAX_MEMORY_LIMIT', '2048M');
+}
+
 /**
  * Class RevsliderDataCore
  *
