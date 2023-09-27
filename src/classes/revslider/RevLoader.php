@@ -5,6 +5,9 @@ $revslider_is_preview_mode = false;
 $revslider_save_post = false;
 $revslider_addon_notice_merged = 0;
 
+if (!defined('RS_PLUGIN_URL')) {
+define('RS_PLUGIN_URL', RevLoader::url());
+}
 class RevLoader {
 
     public static $hook_args;
@@ -20,6 +23,9 @@ class RevLoader {
     const TABLE_CSS = 'revslider_css';
     const TABLE_LAYER_ANIMATIONS = 'revslider_layer_animations';
     const TABLE_NAVIGATIONS = 'revslider_navigations';
+    
+    
+
 
     public function __construct() {
 
