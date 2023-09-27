@@ -1,7 +1,18 @@
 <?php
 
 if (!defined('WP_MAX_MEMORY_LIMIT')) {
-define('WP_MAX_MEMORY_LIMIT', '2048M');
+    define('WP_MAX_MEMORY_LIMIT', '2048M');
+}
+
+if (!defined('RS_PLUGIN_SLUG')) {
+    define('RS_PLUGIN_SLUG', 'revslider');
+}
+
+if (!defined('RS_PLUGIN_URL_CLEAN')) {
+    define('RS_PLUGIN_URL_CLEAN', str_replace(['http://', 'https://'], '//', RS_PLUGIN_URL));
+}
+if (!defined('RS_TP_TOOLS')) {
+    define('RS_TP_TOOLS', '6.2.21.7');
 }
 
 /**

@@ -6,52 +6,52 @@ $revslider_save_post = false;
 $revslider_addon_notice_merged = 0;
 
 if (!defined('RS_PLUGIN_URL')) {
-define('RS_PLUGIN_URL', RevLoader::url());
+    define('RS_PLUGIN_URL', RevLoader::url());
 }
 if (!defined('KB_IN_BYTES')) {
-define('KB_IN_BYTES', 1024);
+    define('KB_IN_BYTES', 1024);
 }
 if (!defined('MB_IN_BYTES')) {
-define('MB_IN_BYTES', 1024 * KB_IN_BYTES);
+    define('MB_IN_BYTES', 1024 * KB_IN_BYTES);
 }
 if (!defined('GB_IN_BYTES')) {
-define('GB_IN_BYTES', 1024 * MB_IN_BYTES);
+    define('GB_IN_BYTES', 1024 * MB_IN_BYTES);
 }
 if (!defined('TB_IN_BYTES')) {
-define('TB_IN_BYTES', 1024 * GB_IN_BYTES);
+    define('TB_IN_BYTES', 1024 * GB_IN_BYTES);
 }
 if (!defined('RS_T')) {
-define('RS_T', '	');
+    define('RS_T', '	');
 }
 if (!defined('RS_T2')) {
-define('RS_T2', '		');
+    define('RS_T2', '		');
 }
 if (!defined('RS_T3')) {
-define('RS_T3', '			');
+    define('RS_T3', '			');
 }
 if (!defined('RS_T4')) {
-define('RS_T4', '				');
+    define('RS_T4', '				');
 }
 if (!defined('RS_T5')) {
-define('RS_T5', '					');
+    define('RS_T5', '					');
 }
 if (!defined('RS_T6')) {
-define('RS_T6', '						');
+    define('RS_T6', '						');
 }
 if (!defined('RS_T7')) {
-define('RS_T7', '							');
+    define('RS_T7', '							');
 }
 if (!defined('RS_T8')) {
-define('RS_T8', '								');
+    define('RS_T8', '								');
 }
 if (!defined('RS_T9')) {
-define('RS_T9', '									');
+    define('RS_T9', '									');
 }
 if (!defined('RS_T10')) {
-define('RS_T10', '										');
+    define('RS_T10', '										');
 }
 if (!defined('RS_T11')) {
-define('RS_T11', '											');
+    define('RS_T11', '											');
 }
 
 class RevLoader {
