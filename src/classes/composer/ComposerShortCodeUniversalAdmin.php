@@ -407,7 +407,7 @@ $param_line .= ob_get_clean();
 			$param_line .= 'var totalPdfs = [];';
 			$param_line .= '</script>';
 			$param_line .= '<script type="text/javascript" src="/content/js/pdfuploadify.min.js"></script>';
-			$param_line .= '<div class="imageuploadify imageuploadify-container-image">' . $src . '</div><input id="MediaFile" type="file" data-target="imageMedia" accept="application/pdf" multiple>';
+			$param_line .= '<div id="pdf-dragBox"><div class="imageuploadify imageuploadify-container-image">' . $src . '</div></div><input id="MediaFile" type="file" data-target="imageMedia" accept="application/pdf" multiple>';
 			$param_line .= '<script type="text/javascript">';
             $param_line .= '$(document).ready(function() {';
             $param_line .= '$("#MediaFile").pdfuplodify({
