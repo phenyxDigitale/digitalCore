@@ -438,7 +438,7 @@ abstract class PhenyxController {
         
         $paragrid->load = $this->paramLoad;
         
-        $paragrid->sort = $this->paramSort,
+        $paragrid->sort = $this->paramSort;
 
         $paragrid->sortModel = $this->sortModel;
         $paragrid->beforeSort = $this->beforeSort;
