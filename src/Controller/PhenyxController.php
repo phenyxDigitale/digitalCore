@@ -191,6 +191,8 @@ abstract class PhenyxController {
     public $sortModel;
 
     public $beforeSort;
+    
+    public $paramSort;
 
     public $beforeFilter;
 
@@ -435,6 +437,8 @@ abstract class PhenyxController {
         $paragrid->editModel = $this->editModel;
         
         $paragrid->load = $this->paramLoad;
+        
+        $paragrid->sort = $this->paramSort,
 
         $paragrid->sortModel = $this->sortModel;
         $paragrid->beforeSort = $this->beforeSort;

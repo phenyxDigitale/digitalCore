@@ -232,6 +232,8 @@ class ParamGrid {
     public $beforeCellClick;
     
     public $tabModel;
+    
+    public $sort;
 
 	public function __construct($paramClass, $paramController, $paramTable, $paramIdentifier) {
 
@@ -335,6 +337,9 @@ class ParamGrid {
             }
             if (!empty($this->editor)) {
 				$values['builder']['editor'] = $this->editor;
+			}
+             if (!empty($this->sort)) {
+				$values['builder']['sort'] = $this->sort;
 			}
 
 			if (!empty($this->maxHeight)) {
