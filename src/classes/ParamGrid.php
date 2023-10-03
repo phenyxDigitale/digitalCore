@@ -334,7 +334,7 @@ class ParamGrid {
             if ($this->needColModel) {
                 $values['builder']['colModel'] = $this->colModel;
             }
-            if ($this->needRequestModel) {
+            if (!empty($this->dataModel)) {
                 $values['builder']['dataModel'] = $this->dataModel;
             }
             if (!empty($this->editor)) {
