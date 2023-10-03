@@ -271,9 +271,11 @@ class ParamGrid {
 					return { data: dataJSON };
             	}
         	}';
-            $this->dataModel = (!empty($this->dataModel)) ? $this->dataModel : $this->paramController . 'Model';
+            
 
 		}
+        
+        $this->dataModel = (is_array($this->dataModel) && count($this->dataMode)) ? $this->dataModel : $this->paramController . 'Model';
 
 		$this->heightModel = (!empty($this->heightModel)) ? $this->heightModel : '';
 
