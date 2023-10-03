@@ -275,7 +275,7 @@ class ParamGrid {
 
 		}
         
-        $this->dataModel = (is_array($this->dataModel) && count($this->dataMode)) ? $this->dataModel : $this->paramController . 'Model';
+        $this->dataModel = (is_array($this->dataModel) && count($this->dataModel)) ? $this->dataModel : $this->paramController . 'Model';
 
 		$this->heightModel = (!empty($this->heightModel)) ? $this->heightModel : '';
 
