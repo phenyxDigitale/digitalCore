@@ -303,7 +303,7 @@ class DbPDO extends Db {
      */
     public function _escape($str) {
 
-        if (!is_null($str) && !is_array($str)) {
+        if (!is_null($str) && !is_array($str) && !is_object($str)) {
             $search = ["\\", "\0", "\n", "\r", "\x1a", "'", '"'];
             $replace = ["\\\\", "\\0", "\\n", "\\r", "\Z", "‘", '\"'];
 
@@ -314,7 +314,7 @@ class DbPDO extends Db {
     
     public function _translate_escape($str) {
 
-        if (!is_null($str) && !is_array($str)) {
+        if (!is_null($str) && !is_array($str) && !is_object($str)) {
             $search = ["'", '&#39;'];
             $replace = ["‘", '‘'];
 
