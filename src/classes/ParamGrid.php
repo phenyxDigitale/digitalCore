@@ -234,6 +234,8 @@ class ParamGrid {
     public $tabModel;
     
     public $sort;
+    
+    public $showBottom = true;
 
 	public function __construct($paramClass, $paramController, $paramTable, $paramIdentifier) {
 
@@ -314,6 +316,8 @@ class ParamGrid {
 				'showHeader'     => $this->showHeader,
                 'showToolbar'    => $this->showToolbar,
 				'showTop'        => $this->showTop,
+                'showTop'        => $this->showTop,
+                'showBottom'     => $this->showBottom,
 				'resizable'      => $this->resizable,
 				'columnBorders'  => $this->columnBorders,
 				'collapsible'    => $this->collapsible,

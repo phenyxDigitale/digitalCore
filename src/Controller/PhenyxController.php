@@ -288,6 +288,8 @@ abstract class PhenyxController {
     
     public $paramAutoRow;
     
+    public $showBottom = true;
+    
     public $paramWrap = true;
 
     public function __construct() {
@@ -435,6 +437,8 @@ abstract class PhenyxController {
         $paragrid->fillHandle = '\'all\'';
         $paragrid->summaryData = $this->summaryData;
         $paragrid->editModel = $this->editModel;
+        
+        $paragrid->showBottom = $this->showBottom;
         
         $paragrid->load = $this->paramLoad;
         
