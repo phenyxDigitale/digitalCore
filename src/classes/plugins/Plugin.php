@@ -1104,12 +1104,12 @@ abstract class Plugin {
 
         }
         
-        $this->updateIoIsolangs();
+        $this->updateIoPlugins();
 
         return true;
     }
     
-    public function updateIoIsolangs() {
+    public function updateIoPlugins() {
         
         $context = Context::getContext();
         $installed_plugins = Plugin::getPluginsInstalled();
@@ -1740,7 +1740,7 @@ abstract class Plugin {
         }
 
         Db::getInstance(_EPH_USE_SQL_SLAVE_)->execute('UPDATE `' . _DB_PREFIX_ . 'plugin` SET active = 1 WHERE `id_plugin` = ' . $this->id);
-
+        $this->updateIoPlugins();
         return true;
     }
 
@@ -1752,6 +1752,7 @@ abstract class Plugin {
     public function disable($forceAll = false) {
 
         Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'plugin` SET `active` = 0 WHERE `id_plugin` = ' . $this->id);
+        $this->updateIoPlugins();
         $this->inActivateTab();
     }
 
@@ -1813,7 +1814,7 @@ abstract class Plugin {
 
             return true;
         }
-        $this->updateIoIsolangs();
+        $this->updateIoPlugins();
         return false;
     }
     
