@@ -1112,7 +1112,7 @@ abstract class Plugin {
     public function updateIoPlugins() {
         
         $context = Context::getContext();
-        $installed_plugins = Plugin::getPluginsInstalled();
+        $installed_plugins = Plugin::getPluginsDirOnDisk();
         $plugins = [];
 
         foreach ($installed_plugins as $plugin) {
