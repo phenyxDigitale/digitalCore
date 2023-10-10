@@ -1117,7 +1117,7 @@ abstract class Plugin {
 
         foreach ($installed_plugins as $plugin) {
 
-           if(file_exists(_EPH_PLUGIN_DIR_.$plugin.'/'.$plugin.'.php')) {
+           if(file_exists(_EPH_PLUGIN_DIR_.$plugin['name'].'/'.$plugin['name'].'.php')) {
                $plugins[] = $plugin['name'];
            }
         }
