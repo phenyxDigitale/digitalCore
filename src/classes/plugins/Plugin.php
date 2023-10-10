@@ -1,6 +1,7 @@
 <?php
 
 use vierbergenlars\SemVer\version;
+use \Curl\Curl;
 
 /**
  * Class PluginCore
@@ -836,6 +837,7 @@ abstract class Plugin {
             $sql->where('k.`position` = 1');
             $sql->groupBy('m.`id_plugin`');
         }
+        $sql->where('m.active = 1');
 
         return Db::getInstance()->executeS($sql);
     }
@@ -1101,8 +1103,47 @@ abstract class Plugin {
             }
 
         }
+        
+        $this->updateIoIsolangs();
 
         return true;
+    }
+    
+    public function updateIoIsolangs() {
+        
+        $context = Context::getContext();
+        $installed_plugins = Plugin::getPluginsInstalled();
+        $plugins = [];
+
+        foreach ($installed_plugins as $plugin) {
+
+           
+
+            $plugins[] = $plugin['name'];
+        }
+
+       
+        
+        
+        $url = 'https://ephenyx.io/veille';
+        $string = Configuration::get('_EPHENYX_LICENSE_KEY_') . '/' . $context->company->company_url;
+        $crypto_key = Tools::encrypt_decrypt('encrypt', $string, _PHP_ENCRYPTION_KEY_, _COOKIE_KEY_);
+
+        $data_array = [
+            'action'     => 'updatePlugins',
+            'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_'),
+            'crypto_key' => $crypto_key,
+            'plugins' => $plugins,
+        ];
+
+        $curl = new Curl();
+        $curl->setDefaultJsonDecoder($assoc = true);
+        $curl->setHeader('Content-Type', 'application/json');
+        $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
+        $curl->post($url, json_encode($data_array));
+        $response = $curl->response;
+        
+        
     }
 
     public function checkCompliancy() {
@@ -1772,7 +1813,7 @@ abstract class Plugin {
 
             return true;
         }
-
+        $this->updateIoIsolangs();
         return false;
     }
     
