@@ -5154,6 +5154,28 @@ FileETag none
         return $composer->renderEditorFooter();
     }
     
+    public static function getIoPlugins() {
+        
+        $plugins = [];
+        $installed_plugins = Plugin::getPluginsDirOnDisk();
+        foreach ($installed_plugins as $plugin) {
+            $plugins[$plugin] = Plugin::isInstalled($plugin);
+        }
+        
+        return $plugins;
+    }
+    
+    public static function getIoLangs() {
+        
+        $langs = [];
+        $languages = Language::getLanguages(false);
+        foreach ($languages as $language) {
+            $langs[] = $language['iso_code'];
+        }
+                
+        return $langs;
+    }
+    
     
     
 
