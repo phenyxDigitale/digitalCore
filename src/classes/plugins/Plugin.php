@@ -1116,7 +1116,7 @@ abstract class Plugin {
         $plugins = [];
 
         foreach ($installed_plugins as $plugin) {
-            $plugins[] = $plugin;
+            $plugins[$plugin] = Plugin::isInstalled($plugin);
         }
 
        
