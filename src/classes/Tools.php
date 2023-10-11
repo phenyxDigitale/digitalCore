@@ -5170,7 +5170,7 @@ FileETag none
         $langs = [];
         $languages = Language::getLanguages(false);
         foreach ($languages as $language) {
-            $langs[] = $language['iso_code'];
+            $langs[$language['iso_code']] = $language['name'];
         }
                 
         return $langs;
