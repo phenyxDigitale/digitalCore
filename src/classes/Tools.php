@@ -5126,10 +5126,12 @@ FileETag none
             $db = Db::getInstance();
             $context = Context::getContext();
             $id_lang = (int) Context::getContext()->language->id;
-            $db_results = $db->getRow("SELECT `legend`  
-            FROM eph_vc_media vm 
-            INNER JOIN `eph_vc_media_lang` vml ON `vml`.`id_vc_media` = `vml`.`id_vc_media` 
-            WHERE vm.id_vc_media={$id} AND `vml`.id_lang = " . $id_lang, true, false);
+            $sql = new DbQuery();
+		    $sql->select('`legend`');
+		    $sql->from('vc_media', 'vm');
+            $sql->innerJoin('vc_media_lang', 'vml', '`vml`.`id_vc_media` = `vml`.`id_vc_media` AND `vml`.`id_lang` = '.$id_lang);
+		    $sql->where('vm.id_vc_media = '.(int)$id);
+            $db_results = $db->getRow($sql);
             return isset($db_results['legend']) ? $db_results['legend'] : '';
         } else {
             return '';
