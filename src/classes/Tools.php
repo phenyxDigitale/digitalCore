@@ -4672,8 +4672,11 @@ FileETag none
         if (isset($id) && !empty($id)) {
             $db = Db::getInstance();
             $tablename = _DB_PREFIX_ .'vc_media';
-
-            $db_results = $db->executeS("SELECT `file_name`, `subdir` FROM eph_vc_media WHERE id_vc_media={$id}", true, false);
+            $sql = new DbQuery();
+		    $sql->select('`file_name`, `subdir`');
+		    $sql->from(('vc_media'));
+		    $sql->where('id_vc_media = ' .(int)$id);
+            $db_results = $db->executeS($sql);
 
             $url = isset($db_results[0]['subdir']) && !empty($db_results[0]['subdir']) ? $db_results[0]['subdir'] . '/' : '';
             return $url .= isset($db_results[0]['file_name']) ? $db_results[0]['file_name'] : '';
