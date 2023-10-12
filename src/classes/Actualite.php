@@ -23,6 +23,7 @@ class Actualite extends PhenyxObjectModel {
             'date_upd'       => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
 
             /* Lang fields */
+            'generated'                 => ['type' => self::TYPE_BOOL, 'lang' => true],
             'title'          => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
             'content'        => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 3999999999999],
         ],
@@ -32,6 +33,7 @@ class Actualite extends PhenyxObjectModel {
     public $active;
     public $date_add;
     public $date_upd;
+    public $generated;
     public $title;
     public $content;
 

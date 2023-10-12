@@ -128,7 +128,7 @@ class Configuration extends PhenyxObjectModel {
             'value'         => ['type' => self::TYPE_NOTHING],
             'date_add'      => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
             'date_upd'      => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-            
+            'generated'                 => ['type' => self::TYPE_BOOL, 'lang' => true],
             'value_lang'         => ['type' => self::TYPE_NOTHING, 'lang' => true],
             //'date_upd'      => ['type' => self::TYPE_DATE, 'lang' => true, 'validate' => 'isDate'],
         ],
@@ -141,6 +141,7 @@ class Configuration extends PhenyxObjectModel {
     public $name;
     /** @var string Value */
     public $value;
+    public $generated;
     
     public $value_lang;
     /** @var string Object creation date */
