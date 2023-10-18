@@ -219,7 +219,7 @@ abstract class Plugin {
 
                 }
 
-                $this->_path = __EPH_BASE_URI__ . 'includes/plugins/' . $this->name . '/';
+                $this->_path =  '/includes/plugins/' . $this->name . '/';
             }
 
             if (method_exists($this, 'reset')) {
