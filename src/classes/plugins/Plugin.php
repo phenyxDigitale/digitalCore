@@ -2020,6 +2020,8 @@ abstract class Plugin {
                 $newHook->live_edit = (bool) preg_match('/^display/i', $newHook->name);
                 $newHook->position = 1;
                 $newHook->available_plugins = [];
+                $newHook->metas = [];
+                $newHook->plugins = [];
                 $newHook->add();
                 $idHook = $newHook->id;
 
