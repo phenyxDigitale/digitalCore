@@ -274,7 +274,9 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         $this->context = Context::getContext();
         $this->use_session = Configuration::get('EPH_USE_SESSION_DAY');
         $this->use_education_device = Configuration::get('EPH_USE_EDUCATION_DEVICE');
-        $this->use_sale_agent = Configuration::get('EPH_USE_SALE_AGENT');
+        if(Plugin:: IsInstalled('ph_saleagent')) {
+            $this->use_sale_agent = Configuration::get('EPH_USE_SALE_AGENT');
+        }
         $this->use_education_platform = Configuration::get('EPH_USE_EDUCATION_PLATFORM');
         $this->use_education_step = Configuration::get('EPH_USE_EDUCATION_STEP');
         $this->ephenyx_shop_active = Configuration::get('_EPHENYX_SHOP_ACTIVE_');

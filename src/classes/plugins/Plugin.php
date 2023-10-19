@@ -145,6 +145,20 @@ abstract class Plugin {
     public $favorite = false;
     
     public $context;
+    
+    public $use_session;
+    
+    public $use_education_device;
+    
+    public $use_sale_agent;
+    
+    public $use_education_platform;
+    
+    public $use_education_step;
+    
+    public $ephenyx_shop_active;
+
+    public $ephenyx_education_active;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -175,6 +189,16 @@ abstract class Plugin {
         }
 
         $this->context = $context ? $context : Context::getContext();
+        
+        $this->use_session = Configuration::get('EPH_USE_SESSION_DAY');
+        $this->use_education_device = Configuration::get('EPH_USE_EDUCATION_DEVICE');
+        if(Plugin:: IsInstalled('ph_saleagent')) {
+            $this->use_sale_agent = Configuration::get('EPH_USE_SALE_AGENT');
+        }
+        $this->use_education_platform = Configuration::get('EPH_USE_EDUCATION_PLATFORM');
+        $this->use_education_step = Configuration::get('EPH_USE_EDUCATION_STEP');
+        $this->ephenyx_shop_active = Configuration::get('_EPHENYX_SHOP_ACTIVE_');
+        $this->ephenyx_education_active = Configuration::get('_EPHENYX_EDUCATION_ACTIVE_');
 
         if (is_object($this->context->smarty)) {
             $this->smarty = $this->context->smarty->createData($this->context->smarty);
