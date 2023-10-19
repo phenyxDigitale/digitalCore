@@ -2029,31 +2029,23 @@ abstract class Plugin {
 
             }
 
-            $sql = 'SELECT hm.`id_plugin`
-                    FROM `' . _DB_PREFIX_ . 'hook_plugin` hm, `' . _DB_PREFIX_ . 'hook` h
-                    WHERE hm.`id_plugin` = ' . (int) $this->id . ' AND h.`id_hook` = ' . $idHook . '
-                    AND h.`id_hook` = hm.`id_hook`';
+            
+            $sql = (new DbQuery())
+                ->select('hm.`id_plugin`')
+                ->from('hook_plugin', 'hm')
+                ->lefyJoin('hook', 'h', 'h.`id_hook` = hm.`id_hook`')
+                ->where('hm.`id_plugin` = ' . (int) $this->id)
+                ->where('h.`id_hook` = ' . $idHook);
 
             if (Db::getInstance()->getRow($sql)) {
                 continue;
             }
 
-            $sql = 'SELECT MAX(`position`) AS position
-                    FROM `' . _DB_PREFIX_ . 'hook_plugin`
-                    WHERE `id_hook` = ' . (int) $idHook;
+            $hookPlugin = new HookPlugin();
+            $hookPlugin->id_plugin = $this->id;
+            $hookPlugin->id_hook = (int) $idHook;
+            $return &= $hookPlugin->add();
 
-            if (!$position = Db::getInstance()->getValue($sql)) {
-                $position = 0;
-            }
-
-            $return &= Db::getInstance()->insert(
-                'hook_plugin',
-                [
-                    'id_plugin' => (int) $this->id,
-                    'id_hook'   => (int) $idHook,
-                    'position'  => (int) ($position + 1),
-                ]
-            );
 
             $hook = new Hook($idHook);
             $hook->getPlugins(true);
