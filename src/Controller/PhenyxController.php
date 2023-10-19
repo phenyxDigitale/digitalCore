@@ -1164,9 +1164,7 @@ abstract class PhenyxController {
     }
 
     public function pushJS($jsUri, $checkPath = true) {
-
-        $this->push_js_files = [];
-
+        
         if (is_array($jsUri)) {
 
             foreach ($jsUri as $jsFile) {
