@@ -2059,7 +2059,7 @@ abstract class Plugin {
             $sql = (new DbQuery())
                 ->select('hm.`id_plugin`')
                 ->from('hook_plugin', 'hm')
-                ->lefyJoin('hook', 'h', 'h.`id_hook` = hm.`id_hook`')
+                ->leftJoin('hook', 'h', 'h.`id_hook` = hm.`id_hook`')
                 ->where('hm.`id_plugin` = ' . (int) $this->id)
                 ->where('h.`id_hook` = ' . $idHook);
 
