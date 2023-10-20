@@ -1053,7 +1053,7 @@ abstract class Plugin {
             $result = Plugin::isInstalled($this->name);
 
             if ($result) {
-
+                Tools::generateIndex();
                 $return = [
                     'success' => false,
                     'message' => Tools::displayError('This plugin has already been installed.'),
