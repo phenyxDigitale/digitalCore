@@ -1808,17 +1808,13 @@ abstract class Plugin {
         if(!$this->uninstallOverrplaces()) {
             return false;
         }
+        
+        $hooks = new PhenyxCollection('HookPlugin');
+        $hooks->where('id_plugin', '=', (int) $this->id);       
 
-        $result = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
-            (new DbQuery())
-                ->select('`id_hook`')
-                ->from('hook_plugin')
-                ->where('`id_plugin` = ' . (int) $this->id)
-        );
-
-        foreach ($result as $row) {
-            $this->unregisterHook((int) $row['id_hook']);
-            $this->unregisterExceptions((int) $row['id_hook']);
+        foreach ($hooks as $hook) {
+            $this->unregisterHook((int) $hook);
+            $this->unregisterExceptions((int) $hook->id_hook);
         }
 
         foreach ($this->controllers as $controller) {
@@ -1890,38 +1886,17 @@ abstract class Plugin {
         }        
     }
 
-    public function unregisterHook($hookId) {
+    public function unregisterHook(HookPlugin $hook) {
+        
+        $id_hook = $hook->id_hook;
 
-        if (!is_numeric($hookId)) {
-            $hookName = (string) $hookId;
+        $hook->delete();        
 
-            $hookId = Hook::getIdByName($hookName);
-
-            if (!$hookId) {
-                return false;
-            }
-
-        } else {
-            $hookName = Hook::getNameById((int) $hookId);
-        }
-
-        Hook::exec('actionPluginUnRegisterHookBefore', ['object' => $this, 'hook_name' => $hookName]);
-
-        $result = Db::getInstance()->delete(
-            'hook_plugin',
-            '`id_plugin` = ' . (int) $this->id . ' AND `id_hook` = ' . (int) $hookId
-        );
-
-        $this->cleanPositions($hookId);
-
-        $hook = new Hook($hookId);
+        $hook = new Hook($id_hook);
         $hook->plugins = $hook->getPlugins(true);
         $hook->available_plugins = $hook->getPossiblePluginList(true);
         $hook->update();
 
-        Hook::exec('actionPluginUnRegisterHookAfter', ['object' => $this, 'hook_name' => $hookName]);
-
-        return $result;
     }
 
     public function cleanPositions($idHook) {
