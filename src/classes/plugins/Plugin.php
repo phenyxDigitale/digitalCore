@@ -280,6 +280,22 @@ abstract class Plugin {
         foreach ($sql as $query) {
             Db::getInstance()->execute(trim($query));
         }
+        $isoCodes = Language::loadIsoCodesLanguages();
+        foreach($isoCodes as $isoCode => $idLang) {
+            if (file_exists($this->local_path . 'sql/'.$isoCode.'/' . $isoCode.'.sql')) {
+                $sql = Tools::file_get_contents($this->local_path . 'sql/'.$isoCode.'/' . $isoCode.'.sql');
+                $replace = [
+                    'PREFIX_'        => _DB_PREFIX_,
+                    'idLang' => $idLang,
+                ];
+                $sql = strtr($sql, $replace);
+                $sql = preg_split("/;\s*[\r\n]+/", $sql);
+                foreach ($sql as $query) {
+                    Db::getInstance()->execute(trim($query));
+                }
+            } 
+            
+        }
 
         return true;
     }
