@@ -2060,6 +2060,15 @@ class Tools {
             }
 
             // Redirections to dispatcher
+            
+            $addrewrite_settings = Hook::exec('addRewriteSeetings', [], null, true, false);
+            if(is_array($addrewrite_settings)) {  
+                foreach($addrewrite_settings as $key => $settings) {
+                    foreach ($settings as $setting) {
+                        fwrite($write_fd, $setting."\n");
+                    }
+                }                
+            }
 
             if ($rewrite_settings) {
                 fwrite($write_fd, "\n# Dispatcher\n");
