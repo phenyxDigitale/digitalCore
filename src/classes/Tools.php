@@ -2052,16 +2052,12 @@ class Tools {
                 }
 
 
-                fwrite($write_fd, "# AlphaImageLoader for IE and fancybox\n");
-
                 
-
-                fwrite($write_fd, 'RewriteRule ^images_ie/?([^/]+)\.(jpe?g|png|gif)$ js/jquery/plugins/fancybox/images/$1.$2 [L]' . "\n");
             }
 
             // Redirections to dispatcher
             
-            $addrewrite_settings = Hook::exec('addRewriteSeetings', [], null, true, false);
+            $addrewrite_settings = Hook::exec('addRewriteSeetings', ['media_domains'=> $media_domains, 'domain_rewrite_cond' => $domain_rewrite_cond, 'uri' => $uri, 'rewrite_settings' => $rewrite_settings], null, true, false);
             if(is_array($addrewrite_settings)) {  
                 foreach($addrewrite_settings as $key => $settings) {
                     foreach ($settings as $setting) {
@@ -2069,19 +2065,17 @@ class Tools {
                     }
                 }                
             }
+            if ($rewrite_settings) {
+                fwrite($write_fd, "# AlphaImageLoader for IE and fancybox\n");
+                fwrite($write_fd, 'RewriteRule ^images_ie/?([^/]+)\.(jpe?g|png|gif)$ js/jquery/plugins/fancybox/images/$1.$2 [L]' . "\n");
+            }
 
             if ($rewrite_settings) {
                 fwrite($write_fd, "\n# Dispatcher\n");
                 fwrite($write_fd, "RewriteCond %{REQUEST_FILENAME} -s [OR]\n");
                 fwrite($write_fd, "RewriteCond %{REQUEST_FILENAME} -l [OR]\n");
                 fwrite($write_fd, "RewriteCond %{REQUEST_FILENAME} -d\n");
-
-                
-
                 fwrite($write_fd, "RewriteRule ^.*$ - [NC,L]\n");
-
-               
-
                 fwrite($write_fd, "RewriteRule ^.*\$ %{ENV:REWRITEBASE}index.php [NC,L]\n");
 
             }
