@@ -263,6 +263,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                 'line' => @$backtrace[$trace_id]['line'],
             ];
          }     
+        $this->getExtraVars();
         
         Hook::exec('action' . $className . 'ObjectConstruct');
 
