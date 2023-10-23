@@ -171,7 +171,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     
     public $paramFields = [];
     
-    public function getExtraVars() {
+    public function getExtraVars($className) {
     
         $vars = Hook::exec('action' . $className . 'GetExtraVars', [], null, true);
         if(is_array($vars)) {
@@ -263,7 +263,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                 'line' => @$backtrace[$trace_id]['line'],
             ];
          }     
-        $this->getExtraVars();
+        $this->getExtraVars($className);
         
         Hook::exec('action' . $className . 'ObjectConstruct');
 
