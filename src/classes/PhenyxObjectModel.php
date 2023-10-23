@@ -171,12 +171,16 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     
     public $paramFields = [];
     
-    public function getExtraVars($className) {
+    public $className;
     
-        $vars = Hook::exec('action' . $className . 'GetExtraVars', [], null, true);
-        if(is_array($vars)) {
-            foreach(array_shift($vars) as $key => $value) {
-                $this->{$key} =  $value;
+    public $extraVars;
+    
+    public function getExtraVars($className) {
+        $this->className = $className;
+        $this->extraVars = Hook::exec('action' . $this->className . 'GetExtraVars', [], null, true);
+        if(is_array($this->extraVars)) {
+            foreach(array_shift($this->extraVars) as $key => $value) {
+                $this->{$key} = $value;
             }
             
         }     
@@ -215,18 +219,18 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     public function __construct($id = null, $idLang = null) {
 
         $className = get_class($this);
-
-        if (!isset(PhenyxObjectModel::$loaded_classes[$className])) {
-            $this->def = PhenyxObjectModel::getDefinition($className);
+        $this->getExtraVars($className);
+        if (!isset(PhenyxObjectModel::$loaded_classes[$this->className])) {
+            $this->def = PhenyxObjectModel::getDefinition($this->className);
             
             if (!Validate::isTableOrIdentifier($this->def['primary']) || !Validate::isTableOrIdentifier($this->def['table'])) {
-                throw new PhenyxException('Identifier or table format not valid for class ' . $className);
+                throw new PhenyxException('Identifier or table format not valid for class ' . $this->className);
             }
 
-            PhenyxObjectModel::$loaded_classes[$className] = get_object_vars($this);
+            PhenyxObjectModel::$loaded_classes[$this->className] = get_object_vars($this);
         } else {
 
-            foreach (PhenyxObjectModel::$loaded_classes[$className] as $key => $value) {
+            foreach (PhenyxObjectModel::$loaded_classes[$this->className] as $key => $value) {
                 $this->{$key}
 
                 = $value;
@@ -242,10 +246,10 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             
             $classname = get_class($this);
             
-            if (!isset(self::$debug_list[$classname])) {
-                self::$debug_list[$classname] = [];
+            if (!isset(self::$debug_list[$this->classname])) {
+                self::$debug_list[$this->classname] = [];
             }
-            $class_list = ['PhenyxObjectModel', $classname, $classname . 'Core'];
+            $class_list = ['PhenyxObjectModel', $this->classname, $this->classname . 'Core'];
             $backtrace = debug_backtrace();
 
             foreach ($backtrace as $trace_id => $row) {
@@ -263,9 +267,9 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                 'line' => @$backtrace[$trace_id]['line'],
             ];
          }     
-        $this->getExtraVars($className);
         
-        Hook::exec('action' . $className . 'ObjectConstruct');
+        
+        Hook::exec('action' . $this->className . 'ObjectConstruct');
 
         if ($id) {
             $entityMapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");
@@ -310,7 +314,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     }
 
     
-    public function __set($property, $value) {
+    public function __set($property, $value): void {
 
         
         $snakeCaseProperty = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $property))));
@@ -318,7 +322,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         if (property_exists($this, $snakeCaseProperty)) {
             $this->$snakeCaseProperty = $value;
         } else {
-            $this->$property = $value;
+            $this->{$property} = $value;
         }
 
     }
