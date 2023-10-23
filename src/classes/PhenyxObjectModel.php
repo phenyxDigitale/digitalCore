@@ -170,6 +170,17 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     public $request_admin = false;
     
     public $paramFields = [];
+    
+    public function getExtraVars() {
+    
+        $vars = Hook::exec('action' . $className . 'GetExtraVars', [], null, true);
+        if(is_array($vars)) {
+            foreach(array_shift($vars) as $key => $value) {
+                $this->{$key} =  $value;
+            }
+            
+        }     
+    }
 
     /**
      * @var bool If true, objects are cached in memory.
@@ -253,26 +264,14 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             ];
          }     
         
-        Hook::exec('action' . $this->controller_name . 'ObjectConstruct');
+        Hook::exec('action' . $className . 'ObjectConstruct');
 
         if ($id) {
             $entityMapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");
             $entityMapper->load($id, $idLang, $this, $this->def, static::$cache_objects);
         }       
         
-        if($this->is_archivable == true) {
-            $idRequest = ParagridRequest::getRequestIdBy($className);
-            if ($idRequest > 0) {
-                $request = new ParagridRequest($idRequest);
-
-                if (empty($request->archive)) {
-                    $this->compileArchive();
-                }
-
-            } else {
-                $this->compileArchive();
-            }
-        }
+        
         $this->context = Context::getContext();
         $this->use_session = Configuration::get('EPH_USE_SESSION_DAY');
         $this->use_education_device = Configuration::get('EPH_USE_EDUCATION_DEVICE');
