@@ -293,7 +293,7 @@ abstract class PhenyxController {
     public $paramWrap = true;
     
     public function getExtraPhenyxVars() {
-        $extraVars = Hook::exec('actionPhenyxControllerGetExtraVars', [], null, true);
+        $extraVars = Hook::exec('actionPhenyxControllerGetExtraVars', ['controller_type' => $this->controller_type], null, true);
         if(is_array($extraVars)) {
             foreach(array_shift($extraVars) as $key => $value) {
                 if(isset($value)) {
