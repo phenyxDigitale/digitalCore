@@ -176,11 +176,15 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     public $extraVars;
     
     public function getExtraVars($className) {
-        $this->className = $className;
+        $this->className = $this->className;
         $this->extraVars = Hook::exec('action' . $this->className . 'GetExtraVars', [], null, true);
-        if(is_array($this->extraVars)) {
-            foreach(array_shift($this->extraVars) as $key => $value) {
-                $this->{$key} = $value;
+        if(is_array($this->extraVars) && count($this->extraVars)) {
+            foreach($this->extraVars as $plugin => $vars) {
+                if(is_array($vars) && count($vars)) {
+                    foreach($vars as $key => $value) {
+                        $this->{$key} = $value;
+                    }
+                }
             }
             
         }     
@@ -218,8 +222,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
    
     public function __construct($id = null, $idLang = null) {
 
-        $className = get_class($this);
-        $this->getExtraVars($className);
+        $this->className = get_class($this);
+        $this->getExtraVars($this->className);
         if (!isset(PhenyxObjectModel::$loaded_classes[$this->className])) {
             $this->def = PhenyxObjectModel::getDefinition($this->className);
             
@@ -244,7 +248,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         if (_EPH_DEBUG_PROFILING_ || _EPH_ADMIN_DEBUG_PROFILING_) {
             
-            $classname = get_class($this);
+            $this->className = get_class($this);
             
             if (!isset(self::$debug_list[$this->classname])) {
                 self::$debug_list[$this->classname] = [];
@@ -262,7 +266,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
             $trace_id--;
 
-            self::$debug_list[$classname][] = [
+            self::$debug_list[$this->className][] = [
                 'file' => @$backtrace[$trace_id]['file'],
                 'line' => @$backtrace[$trace_id]['line'],
             ];
@@ -329,8 +333,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     
     public function getRequest() {
         
-        $className = get_class($this);
-        $request = Hook::exec('action' . $className . 'getRequestModifier', [], null, true);
+        $this->className = get_class($this);
+        $request = Hook::exec('action' . $this->className . 'getRequestModifier', [], null, true);
         
         if(!empty($request)) {
             return array_shift($request);
@@ -340,8 +344,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     
     public function getParamFields() {
         
-        $className = get_class($this);
-        $fields = Hook::exec('action' . $className . 'getFieldsModifier', [], null, true);
+        $this->className = get_class($this);
+        $fields = Hook::exec('action' . $this->className . 'getFieldsModifier', [], null, true);
         
         if(is_array($fields) && count($fields)) {
             foreach(array_shift($fields) as $key => $values) {
@@ -1556,9 +1560,9 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         PhenyxObjectModel::$cache_objects = false;
     }
     
-    public static function updateMultiTable($classname, $data, $where = '', $specific_where = '')  {
+    public static function updateMultiTable($className, $data, $where = '', $specific_where = '')  {
         
-        $def = PhenyxObjectModel::getDefinition($classname);
+        $def = PhenyxObjectModel::getDefinition($this->className);
         $update_data = array();
         foreach ($data as $field => $value) {
             if (!isset($def['fields'][$field])) {
@@ -1584,11 +1588,11 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $success = true;
 
-        if (empty($className)) {
-            $className = get_called_class();
+        if (empty($this->className)) {
+            $this->className = get_called_class();
         }
 
-        $definition = static::getDefinition($className);
+        $definition = static::getDefinition($this->className);
         $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . bqSQL($definition['table']) . '` (';
         $sql .= '`' . $definition['primary'] . '` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,';
 
@@ -1648,7 +1652,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         try {
             $success &= Db::getInstance()->execute($sql);
         } catch (\PhenyxDatabaseExceptionException $exception) {
-            static::dropDatabase($className);
+            static::dropDatabase($this->className);
 
             return false;
         }
@@ -1686,7 +1690,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             try {
                 $success &= Db::getInstance()->execute($sql);
             } catch (\PhenyxDatabaseExceptionException $exception) {
-                static::dropDatabase($className);
+                static::dropDatabase($this->className);
 
                 return false;
             }
@@ -1701,11 +1705,11 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $success = true;
 
-        if (empty($className)) {
-            $className = get_called_class();
+        if (empty($this->className)) {
+            $this->className = get_called_class();
         }
 
-        $definition = \PhenyxObjectModel::getDefinition($className);
+        $definition = \PhenyxObjectModel::getDefinition($this->className);
 
         $success &= Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . bqSQL($definition['table']) . '`');
 
@@ -1718,11 +1722,11 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
     public static function getDatabaseColumns($className = null) {
 
-        if (empty($className)) {
-            $className = get_called_class();
+        if (empty($this->className)) {
+            $this->className = get_called_class();
         }
 
-        $definition = \PhenyxObjectModel::getDefinition($className);
+        $definition = \PhenyxObjectModel::getDefinition($this->className);
 
         $sql = 'SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=\'' . _DB_NAME_ . '\' AND TABLE_NAME=\'' . _DB_PREFIX_ . pSQL($definition['table']) . '\'';
 
@@ -1731,11 +1735,11 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
     public static function createColumn($name, $columnDefinition, $className = null) {
 
-        if (empty($className)) {
-            $className = get_called_class();
+        if (empty($this->className)) {
+            $this->className = get_called_class();
         }
 
-        $definition = static::getDefinition($className);
+        $definition = static::getDefinition($this->className);
         $sql = 'ALTER TABLE `' . _DB_PREFIX_ . bqSQL($definition['table']) . '`';
         $sql .= ' ADD COLUMN `' . bqSQL($name) . '` ' . bqSQL($columnDefinition['db_type']) . '';
 
@@ -1758,13 +1762,13 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
     public static function createMissingColumns($className = null) {
 
-        if (empty($className)) {
-            $className = get_called_class();
+        if (empty($this->className)) {
+            $this->className = get_called_class();
         }
 
         $success = true;
 
-        $definition = static::getDefinition($className);
+        $definition = static::getDefinition($this->className);
         $columns = static::getDatabaseColumns();
 
         foreach ($definition['fields'] as $columnName => $columnDefinition) {

@@ -291,6 +291,20 @@ abstract class PhenyxController {
     public $showBottom = true;
     
     public $paramWrap = true;
+    
+    public function getExtraPhenyxVars() {
+        $extraVars = Hook::exec('actionPhenyxControllerGetExtraVars', [], null, true);
+        if(is_array($extraVars)) {
+            foreach(array_shift($extraVars) as $key => $value) {
+                if(isset($value)) {
+                    $this->{$key} = $value;
+                } else {
+                    $this->{$key};
+                }
+            }
+            
+        }     
+    }
 
     public function __construct() {
         
@@ -313,6 +327,7 @@ abstract class PhenyxController {
 
         $this->context = Context::getContext();
         $this->context->controller = $this;
+        $this->getExtraPhenyxVars();
 
         $this->ajax = Tools::getValue('ajax') || Tools::isSubmit('ajax');
 
