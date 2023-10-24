@@ -177,7 +177,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     
     public function getExtraVars($className) {
         $this->className = $this->className;
-        $this->extraVars = Hook::exec('action' . $this->className . 'GetExtraVars', [], null, true);
+        $this->extraVars = Hook::exec('action' . $this->className . 'GetExtraVars', ['controller_type' => $this->controller_type], null, true);
         if(is_array($this->extraVars) && count($this->extraVars)) {
             foreach($this->extraVars as $plugin => $vars) {
                 if(is_array($vars) && count($vars)) {
