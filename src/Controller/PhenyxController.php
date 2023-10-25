@@ -361,7 +361,10 @@ abstract class PhenyxController {
         $paramToolBarItems = Hook::exec('action' . $this->controller_name . 'generateParaGridToolBar');
         
         if(is_array($paramToolBarItems)) {
-            $this->paramToolBarItems = array_merge($this->paramToolBarItems, $paramToolBarItems);
+            $paramToolBarItems = array_shift($paramToolBarItems);
+            foreach($paramToolBarItems as $toolBars) {
+                $this->paramToolBarItems[] = $toolBars;
+            }
         }
         
         $toolBar->items = $this->paramToolBarItems;        
