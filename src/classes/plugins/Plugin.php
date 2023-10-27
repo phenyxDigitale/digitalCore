@@ -1886,11 +1886,10 @@ abstract class Plugin {
         }        
     }
 
-    public function unregisterHook(HookPlugin $hook) {
+    public function unregisterHook($id_hook) {
         
-        $id_hook = $hook->id_hook;
-
-        $hook->delete();        
+        $hookPlugin = new HookPlugin($id_hook);
+        $hookPlugin->delete();        
 
         $hook = new Hook($id_hook);
         $hook->plugins = $hook->getPlugins(true);
