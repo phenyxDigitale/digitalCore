@@ -1813,7 +1813,7 @@ abstract class Plugin {
         $hooks->where('id_plugin', '=', (int) $this->id);       
 
         foreach ($hooks as $hook) {
-            $this->unregisterHook((int) $hook);
+            $this->unregisterHook((int) $hook->id);
             $this->unregisterExceptions((int) $hook->id_hook);
         }
 
