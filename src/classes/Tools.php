@@ -3989,7 +3989,7 @@ FileETag none
             $curl = curl_init();
 
             curl_setopt_array($curl, [
-                CURLOPT_URL            => "https://api.sendinblue.com/v3/smtp/email",
+                CURLOPT_URL            => "https://api.brevo.com/v3/smtp/email",
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING       => "",
                 CURLOPT_MAXREDIRS      => 10,
