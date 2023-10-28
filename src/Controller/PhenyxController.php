@@ -365,8 +365,10 @@ abstract class PhenyxController {
         
         if(is_array($paramToolBarItems)) {
             $paramToolBarItems = array_shift($paramToolBarItems);
-            foreach($paramToolBarItems as $toolBars) {
-                $this->paramToolBarItems[] = $toolBars;
+            if(is_array($paramToolBarItems)) {
+                foreach($paramToolBarItems as $toolBars) {
+                    $this->paramToolBarItems[] = $toolBars;
+                }
             }
         }
         
