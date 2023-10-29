@@ -1878,6 +1878,20 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         }
 
     }
+    protected function getLogo() {
+
+        $logo = '';
+        
+        if (Configuration::get('EPH_LOGO_INVOICE') != false && file_exists(_EPH_IMG_DIR_ . Configuration::get('EPH_LOGO_INVOICE'))) {
+            $logo = '/content/img/' . Configuration::get('EPH_LOGO_INVOICE');
+        } else
+
+        if (Configuration::get('EPH_LOGO') != false && file_exists(_EPH_IMG_DIR_ . Configuration::get('EPH_LOGO'))) {
+            $logo = '/content/img/' . Configuration::get('EPH_LOGO');
+        }
+
+        return $logo;
+    }
 
 	
 	
