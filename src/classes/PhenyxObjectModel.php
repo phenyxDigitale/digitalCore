@@ -1878,7 +1878,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         }
 
     }
-    protected function getLogo() {
+    public function getLogo() {
 
         $logo = '';
         
