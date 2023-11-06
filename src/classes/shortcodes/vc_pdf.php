@@ -1,7 +1,6 @@
 <?php
 
 $vc = ephenyx_manager();
-
 extract( Composer::shortcode_atts( array(
 	'id' => '',
 	'attach_pdf' => '',
@@ -12,14 +11,14 @@ extract( Composer::shortcode_atts( array(
 $context = Context::getContext();
 $context->controller->addJS(_EPH_JS_DIR_ . 'pdfWorker/flipbook.min.js');
 $context->controller->addCSS(_EPH_CSS_DIR_ . 'flipbook.style.css');
-$path = ComposerMedia::getPathMediaById($id);
+$path = _MEDIA_DIR_.ComposerMedia::getPathMediaById($id);
 $data = $context->smarty->createTemplate(_EPH_ALL_THEMES_DIR_. 'script.tpl');
 
 $data->assign([
 	'pdf_dir'           => $path, 
-	'btnDownloadPdf' => $btnDownloadPdf,
-	'btnPrint' => $btnPrint,
-	'btnShare'             => $btnShare,
+	'btnDownloadPdf' => isset($btnDownloadPdf) ? 1 : 0,
+	'btnPrint' => isset($btnPrint) ? 1 : 0,
+	'btnShare'             => isset($btnShare) ? 1 : 0,
 ]);
-
-echo $data->fetch();
+$script = $data->fetch();
+$context->smarty->assign('script', $script);
