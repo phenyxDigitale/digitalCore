@@ -138,6 +138,7 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
             $param_line .= '<script type="text/javascript">
 		      $("#'.$selectId.'").selectmenu({
 				width: 645,
+                icons: { button: "fa-duotone fa-bars" },
                 classes: {
                     "ui-selectmenu-menu": "selectComposer"
                 }
@@ -398,10 +399,53 @@ $param_line .= ob_get_clean();
 			$param_line .= '</div>';
 			$param_line .= '<a class="gallery_widget_add_images" href="#" use-single="true" title="' . $vc_manager->l('Add image') . '">' . $vc_manager->l('Add image') . '</a>';
 		}
+        else
+
+		if ($param['type'] == 'media_dropdown') {
+			$css_option = get_dropdown_option($param, $param_value);
+			$param_line .= '<select id="widget_select-media" name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-input widget_select-media ' . $param['param_name'] . ' ' . $param['type'] . ' ' . $css_option . '" data-option="' . $css_option . '">';
+
+			if (isset($param['value'])) {
+
+				foreach ($param['value'] as $text_val => $val) {
+
+					if (is_numeric($text_val) && (is_string($val) || is_numeric($val))) {
+						$text_val = $val;
+					}
+
+					$selected = '';
+
+					if ($param_value !== '' && (string) $val === (string) $param_value) {
+						$selected = ' selected="selected"';
+					}
+
+					$param_line .= '<option class="' . $val . '" value="' . $val . '"' . $selected . '>' . htmlspecialchars($text_val) . '</option>';
+				}
+
+			}
+
+			$param_line .= '</select>';
+            $param_line .= '<script type="text/javascript">
+		      $("#widget_select-media").selectmenu({
+				width: 645,
+                icons: { button: "fa-duotone fa-bars" },
+                classes: {
+                    "ui-selectmenu-menu": "selectComposer"
+                },
+                change: function(event, ui) {
+                    if (ui.item.value > 0) {
+                         $("#widget_attached_pdf").val(ui.item.label);
+                    }
+                
+                }
+          });
+        </script>';
+		}
 		else
 
 		if ($param['type'] == 'attach_media') {
-			$param_line .= '<input type="hidden" class="wpb_vc_param_value widget_attached_pdf ' . $param['param_name'] . ' ' . $param['type'] . '" name="' . $param['param_name'] . '" value="' . $param_value . '"/>';
+			$param_line .= '<input type="hidden" id="widget_attached_pdf" class="wpb_vc_param_value widget_attached_pdf ' . $param['param_name'] . ' ' . $param['type'] . '" name="' . $param['param_name'] . '" value="' . $param_value . '"/>';
+            
 			$src = '<img src="/content/backoffice/blacktie/img/pdf-downbload.png" width="300" id="imageMedia">';
 			$param_line .= '<script type="text/javascript">';
 			$param_line .= 'var totalPdfs = [];';
