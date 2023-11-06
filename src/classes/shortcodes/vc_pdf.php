@@ -13,7 +13,7 @@ $context = Context::getContext();
 $context->controller->addJS(_EPH_JS_DIR_ . 'pdfWorker/flipbook.min.js');
 $context->controller->addCSS(_EPH_CSS_DIR_ . 'flipbook.style.css');
 $path = ComposerMedia::getPathMediaById($id);
-$data = $context->smarty->createTemplate(_EPH_THEME_DIR_. 'script.tpl');
+$data = $context->smarty->createTemplate(_EPH_ALL_THEMES_DIR_. 'script.tpl');
 
 $data->assign([
 	'pdf_dir'           => $path, 
