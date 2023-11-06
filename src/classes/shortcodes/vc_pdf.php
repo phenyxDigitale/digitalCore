@@ -9,11 +9,10 @@ extract( Composer::shortcode_atts( array(
 	'btnShare'     => false
 ), $atts ) );
 $context = Context::getContext();
-$context->controller->addJS(_EPH_JS_DIR_ . 'pdfWorker/flipbook.min.js');
+$context->controller->addJS('https://cdn.ephenyx.io/pdfWorker/flipbook.min.js');
 $context->controller->addCSS(_EPH_CSS_DIR_ . 'flipbook.style.css');
 $path = _MEDIA_DIR_.ComposerMedia::getPathMediaById($id);
 $data = $context->smarty->createTemplate(_EPH_ALL_THEMES_DIR_. 'script.tpl');
-
 $data->assign([
 	'pdf_dir'           => $path, 
 	'btnDownloadPdf' => isset($btnDownloadPdf) ? 1 : 0,
