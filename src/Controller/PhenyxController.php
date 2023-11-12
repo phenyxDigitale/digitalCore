@@ -387,7 +387,12 @@ abstract class PhenyxController {
         if(!empty($contextMenuItems)) {
             $contextMenuItems = array_shift($contextMenuItems);
             foreach($contextMenuItems as $key => $values) {
-                $this->contextMenuItems[$key] = $values;
+                foreach($this->contextMenuItems as $k => $item) {
+                    if($k == $key) {
+                        unset($this->contextMenuItems[$k]);
+                    } 
+                    $this->contextMenuItems[$key] = $values;
+                }
             }
            
         }
