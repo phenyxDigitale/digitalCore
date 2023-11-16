@@ -2511,6 +2511,7 @@ FileETag none
     
     public static function cleanFrontCache() {
 
+        
         $context = Context::getContext();
 		$recursive_directory = [
 			'app/cache/smarty/cache',
@@ -2525,7 +2526,13 @@ FileETag none
 			}
         }
 		foreach ($iterator as $file) {
-            Tools::deleteDirectory($file->getPathname());
+            if (is_dir($file->getPathname())) {	
+                Tools::deleteDirectory($file->getPathname());
+            } else {
+                
+                unlink($file->getPathname());
+            }
+            
         }
 		
 		mkdir(_EPH_ROOT_DIR_ .'/app/cache/smarty/cache', 0777, true);
@@ -2540,20 +2547,27 @@ FileETag none
         $iterator = new AppendIterator();
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/backoffice/backend/cache/'));
         foreach ($iterator as $file) {
-             $filePath = $file->getPathname();
+             
             if (in_array($file->getFilename(), ['.', '..', 'index.php'])) {
                 continue;
             }
-            unlink($filePath);
+            if (is_dir($file->getPathname())) {
+								
+                continue;
+            }
+            unlink($file->getPathname());
         }
          $iterator = new AppendIterator();
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/themes/'.$context->theme->name.'/cache/'));
         foreach ($iterator as $file) {
-             $filePath = $file->getPathname();
             if (in_array($file->getFilename(), ['.', '..', 'index.php'])) {
                 continue;
             }
-            unlink($filePath);
+            if (is_dir($file->getPathname())) {
+								
+                continue;
+            }
+            unlink($file->getPathname());
         }
         
     }
