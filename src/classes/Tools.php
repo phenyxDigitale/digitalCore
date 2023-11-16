@@ -2511,6 +2511,7 @@ FileETag none
     
     public static function cleanFrontCache() {
 
+        $context = Context::getContext();
 		$recursive_directory = [
 			'app/cache/smarty/cache',
 			'app/cache/smarty/compile',
@@ -2544,13 +2545,13 @@ FileETag none
             }
         }
         Tools::generateIndexFiles(_EPH_ROOT_DIR_ .'/content/backoffice/backend/cache/');
-        $files = glob(_EPH_ROOT_DIR_ .'/content/themes/phenyx-theme-default/cache/*'); 
+        $files = glob(_EPH_ROOT_DIR_ .'/content/themes/'.$context->theme->name.'/cache/*'); 
         foreach($files as $file){ 
             if(is_file($file)) {
                 unlink($file); 
             }
         }
-        Tools::generateIndexFiles(_EPH_ROOT_DIR_ .'/content/themes/phenyx-theme-default/cache/');
+        Tools::generateIndexFiles(_EPH_ROOT_DIR_ .'/content/themes/'.$context->theme->name.'/cache/');
     }
     
     public static function reGenerateilesIndex() {
