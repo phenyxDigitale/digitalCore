@@ -2537,21 +2537,25 @@ FileETag none
 		mkdir(_EPH_ROOT_DIR_ .'/app/cache/purifier/URI', 0777, true);
 		Tools::generateIndexFiles(_EPH_ROOT_DIR_ .'/app/cache/purifier/URI/');
         mkdir(_EPH_ROOT_DIR_ .'/content/backoffice/backend/cache', 0777, true);
+        $iterator = new AppendIterator();
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/backoffice/backend/cache/'));
+        foreach ($iterator as $file) {
+             $filePath = $file->getPathname();
+            if (in_array($file->getFilename(), ['.', '..', 'index.php'])) {
+                continue;
+            }
+            unlink($filePath);
+        }
+         $iterator = new AppendIterator();
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/themes/'.$context->theme->name.'/cache/'));
+        foreach ($iterator as $file) {
+             $filePath = $file->getPathname();
+            if (in_array($file->getFilename(), ['.', '..', 'index.php'])) {
+                continue;
+            }
+            unlink($filePath);
+        }
         
-        $files = glob(_EPH_ROOT_DIR_ .'/content/backoffice/backend/cache/*'); 
-        foreach($files as $file){ 
-            if(is_file($file)) {
-                unlink($file); 
-            }
-        }
-        Tools::generateIndexFiles(_EPH_ROOT_DIR_ .'/content/backoffice/backend/cache/');
-        $files = glob(_EPH_ROOT_DIR_ .'/content/themes/'.$context->theme->name.'/cache/*'); 
-        foreach($files as $file){ 
-            if(is_file($file)) {
-                unlink($file); 
-            }
-        }
-        Tools::generateIndexFiles(_EPH_ROOT_DIR_ .'/content/themes/'.$context->theme->name.'/cache/');
     }
     
     public static function reGenerateilesIndex() {
