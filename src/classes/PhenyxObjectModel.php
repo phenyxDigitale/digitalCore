@@ -1,5 +1,5 @@
 <?php
-
+#[AllowDynamicProperties]
 /**
  * Class PhenyxObjectModel
  *
@@ -224,6 +224,17 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $this->className = get_class($this);
         $this->getExtraVars($this->className);
+        $extraDef = Hook::exec('action' . $this->className . 'ExtraDefinition', [], null, true);
+        if(is_array($extraDef) && count($extraDef)) {
+            foreach($extraDef as $plugin => $defs) {
+                if(is_array($defs) && count($defs)) {
+                    foreach($defs as $key => $value) {
+                        self::$definition['fields'][$key] = $value;
+                    }
+                }
+            }
+            
+        }     
         if (!isset(PhenyxObjectModel::$loaded_classes[$this->className])) {
             $this->def = PhenyxObjectModel::getDefinition($this->className);
             
