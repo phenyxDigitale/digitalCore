@@ -159,6 +159,23 @@ abstract class Plugin {
     public $ephenyx_shop_active;
 
     public $ephenyx_education_active;
+    
+    public function getPluginExtraVars() {
+        $extraVars = Hook::exec('actionPluginGetExtraVars', [], null, true);
+        if(is_array($extraVars)) {
+            $extraVars = array_shift($extraVars);
+            if(is_array($extraVars)) {
+                foreach(array_shift($extraVars) as $key => $value) {
+                    if(isset($value)) {
+                        $this->{$key} = $value;
+                    } else {
+                        $this->{$key};
+                    }
+                }
+            }
+            
+        }     
+    }
     // @codingStandardsIgnoreEnd
 
     /**
@@ -189,6 +206,8 @@ abstract class Plugin {
         }
 
         $this->context = $context ? $context : Context::getContext();
+        
+        $this->getPluginExtraVars();
         
         $this->use_session = Configuration::get('EPH_USE_SESSION_DAY');
         $this->use_education_device = Configuration::get('EPH_USE_EDUCATION_DEVICE');
