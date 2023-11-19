@@ -165,7 +165,7 @@ abstract class Plugin {
         if(is_array($extraVars)) {
             $extraVars = array_shift($extraVars);
             if(is_array($extraVars)) {
-                foreach(array_shift($extraVars) as $key => $value) {
+                foreach($extraVars as $key => $value) {
                     if(isset($value)) {
                         $this->{$key} = $value;
                     } else {
