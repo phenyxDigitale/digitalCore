@@ -213,9 +213,6 @@ class PhenyxAutoload {
 			if(is_dir($rootDir. 'includes/plugins/'.$plugin['name'])) {
 				$folder[] = $plugin['name'];
 			}
-            if(is_dir($rootDir. 'includes/specific_plugins/'.$plugin['name'])) {
-				$folder[] = $plugin['name'];
-			}
 		}
 		
 		$iterator = new AppendIterator();
