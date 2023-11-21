@@ -279,7 +279,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             ];
         }
 
-        Hook::exec('action' . $this->className . 'ObjectConstruct');
+        
         $extraDef = Hook::exec('action' . $this->className . 'ExtraDefinition', [], null, true);
 
         if (is_array($extraDef) && count($extraDef)) {
@@ -297,6 +297,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             }
 
         }
+        Hook::exec('action' . $this->className . 'ObjectConstruct', ['id' => $id, 'object' => $this]);
 
         if ($id) {
             $entityMapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");

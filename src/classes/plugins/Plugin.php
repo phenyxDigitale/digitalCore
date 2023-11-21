@@ -285,8 +285,11 @@ abstract class Plugin {
             if ($this->context->controller instanceof Controller) {
                 static::$plugins_cache = null;
             }
-
-            $this->local_path = _EPH_PLUGIN_DIR_ . $this->name . '/';
+            if(is_dir(_EPH_PLUGIN_DIR_ .$this->name . '/')) {
+                $this->local_path = _EPH_PLUGIN_DIR_ . $this->name . '/';
+            } else if(is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ .$this->name . '/')) {
+                $this->local_path = _EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/';
+            }
         }
 
     }
@@ -422,7 +425,9 @@ abstract class Plugin {
         if (!isset(static::$_INSTANCE[$pluginName])) {
 
             if (!Tools::file_exists_no_cache(_EPH_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php')) {
-                return false;
+                if (!Tools::file_exists_no_cache(_EPH_SPECIFIC_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php')) {
+                    return false;
+                }
             }
 
             return Plugin::coreLoadPlugin($pluginName, $full);
@@ -447,8 +452,11 @@ abstract class Plugin {
             $timeStart = microtime(true);
             $memoryStart = memory_get_usage(true);
         }
-
-        include_once _EPH_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php';
+        if(file_exists(_EPH_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php')) {
+            include_once _EPH_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php';
+        } else if(file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php')) {
+            include_once _EPH_SPECIFIC_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php';
+        }
 
         $r = false;
 
@@ -536,6 +544,7 @@ abstract class Plugin {
             $reflectionClass = new ReflectionClass($currentClass);
             $filePath = realpath($reflectionClass->getFileName());
             $realpathPluginDir = realpath(_EPH_PLUGIN_DIR_);
+            $specificpathPluginDir = realpath(_EPH_SPECIFIC_PLUGIN_DIR_);
 
             if (substr(realpath($filePath), 0, strlen($realpathPluginDir)) == $realpathPluginDir) {
 
@@ -552,7 +561,22 @@ abstract class Plugin {
                     $_PLUGINS = !empty($_PLUGINS) ? array_merge($_PLUGINS, $_PLUGIN) : $_PLUGIN;
                 }
 
-            } else {
+            } else if (substr(realpath($filePath), 0, strlen($specificpathPluginDir)) == $specificpathPluginDir) {
+
+                if (basename(dirname(dirname($filePath))) == 'controllers') {
+                    static::$classInPlugin[$currentClass] = basename(dirname(dirname(dirname($filePath))));
+                } else {
+
+                    static::$classInPlugin[$currentClass] = substr(dirname($filePath), strlen($specificpathPluginDir) + 1);
+                }
+
+                $file = _EPH_SPECIFIC_PLUGIN_DIR_ . static::$classInPlugin[$currentClass] . '/' . Context::getContext()->language->iso_code . '.php';
+
+                if (file_exists($file) && include_once ($file)) {
+                    $_PLUGINS = !empty($_PLUGINS) ? array_merge($_PLUGINS, $_PLUGIN) : $_PLUGIN;
+                }
+
+            }else {
                 static::$classInPlugin[$currentClass] = false;
             }
 
@@ -672,8 +696,13 @@ abstract class Plugin {
             
                 if (!class_exists($plugin, false)) {
 
-                    $filePath = _EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
-                    $file = trim(file_get_contents(_EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php'));
+                    if(file_exists(_EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php')) {
+                        $filePath = _EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
+                        $file = trim(file_get_contents(_EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php'));
+                    } else if(file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php')) {
+                        $filePath = _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
+                        $file = trim(file_get_contents(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php'));
+                    }
 
                     if (substr($file, 0, 5) == '<?php') {
                         $file = substr($file, 5);
@@ -686,7 +715,11 @@ abstract class Plugin {
                     $file = preg_replace('/\n[\s\t]*?use\s.*?;/', '', $file);
 
                     if (eval('if (false){   ' . $file . "\n" . ' }') !== false) {
-                        require_once _EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
+                        if(file_exists(_EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php')) {
+                            require_once _EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
+                        } else if(file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php')) {
+                            require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
+                        }
                     } else {
                         $errors[] = sprintf(Tools::displayError('%1$s (parse error in %2$s)'), $plugin, substr($filePath, strlen(_EPH_ROOT_DIR_)));
                     }
@@ -776,7 +809,11 @@ abstract class Plugin {
         $languageCode = str_replace('_', '-', mb_strtolower(Context::getContext()->language->language_code));
 
         foreach ($pluginList as $key => &$plugin) {
-            require_once _EPH_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php';
+            if(file_exists(_EPH_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php')) {
+                require_once _EPH_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php';
+            } else if(file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php')) {
+                require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php';
+            }
             $tmpPlugin = Adapter_ServiceLocator::get($plugin->name);
 
             if (isset($pluginsInstalled[$plugin->name])) {
@@ -838,6 +875,23 @@ abstract class Plugin {
                 continue;
             } else
             if (is_dir(_EPH_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR) && file_exists(_EPH_PLUGIN_DIR_ . $name . '/' . $name . '.php')) {
+
+                if (!Validate::isPluginName($name)) {
+                    throw new PhenyxException(sprintf('Plugin %s is not a valid plugin name', $name));
+                }
+
+                $pluginList[] = $name;
+            }
+
+        }
+        $plugins = scandir(_EPH_SPECIFIC_PLUGIN_DIR_);
+
+        foreach ($plugins as $name) {
+
+            if (is_file(_EPH_SPECIFIC_PLUGIN_DIR_ . $name)) {
+                continue;
+            } else
+            if (is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR) && file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $name . '/' . $name . '.php')) {
 
                 if (!Validate::isPluginName($name)) {
                     throw new PhenyxException(sprintf('Plugin %s is not a valid plugin name', $name));
@@ -1095,6 +1149,18 @@ abstract class Plugin {
             if (function_exists('opcache_invalidate') && file_exists(_EPH_PLUGIN_DIR_ . $this->name)) {
 
                 foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_PLUGIN_DIR_ . $this->name)) as $file) {
+
+                    if (substr($file->getFilename(), -4) !== '.php' || $file->isLink()) {
+                        continue;
+                    }
+
+                    opcache_invalidate($file->getPathname());
+                }
+
+            }
+            if (function_exists('opcache_invalidate') && file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name)) {
+
+                foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name)) as $file) {
 
                     if (substr($file->getFilename(), -4) !== '.php' || $file->isLink()) {
                         continue;
@@ -2418,6 +2484,15 @@ abstract class Plugin {
         } else
         if (file_exists(_EPH_PLUGIN_DIR_ . $plugin_name . '/' . $template)) {
             return false;
+        } else
+        if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ .  $plugin_name . '/views/templates/hook/' . $template)) {
+            return false;
+        } else
+        if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ .  $plugin_name . '/views/templates/front/' . $template)) {
+            return false;
+        } else
+        if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ .  $plugin_name . '/' . $template)) {
+            return false;
         }
 
         return null;
@@ -2456,6 +2531,15 @@ abstract class Plugin {
         } else
         if (file_exists(_EPH_PLUGIN_DIR_ . $this->name . '/' . $template)) {
             return _EPH_PLUGIN_DIR_ . $this->name . '/' . $template;
+        } else
+        if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/views/templates/hook/' . $template)) {
+            return _EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/views/templates/hook/' . $template;
+        }  else
+        if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/views/templates/front/' . $template)) {
+            return _EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/views/templates/front/' . $template;
+        }  else
+        if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/' . $template)) {
+            return _EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/' . $template;
         } else {
             return null;
         }
@@ -2631,7 +2715,11 @@ abstract class Plugin {
 
     protected function _getApplicableTemplateDir($template) {
 
-        return $this->_isTemplateOverloaded($template) ? _EPH_THEME_DIR_ : _EPH_PLUGIN_DIR_ . $this->name . '/';
+        if(is_dir(_EPH_PLUGIN_DIR_ . $this->name . '/')) {
+            return $this->_isTemplateOverloaded($template) ? _EPH_THEME_DIR_ : _EPH_PLUGIN_DIR_ . $this->name . '/';
+        } else if(is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/')) {
+            return $this->_isTemplateOverloaded($template) ? _EPH_THEME_DIR_ : _EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/';
+        }
     }
 
     protected function _clearCache($template, $cacheId = null, $compileId = null) {
@@ -2734,13 +2822,22 @@ abstract class Plugin {
 
             
         }
-
-        if (is_writable(_EPH_PLUGIN_DIR_ . $this->name . '/')) {
-            $iso = substr(Context::getContext()->language->iso_code, 0, 2);
-            $file = _EPH_PLUGIN_DIR_ . $this->name . '/' . ($iso == 'en' ? 'config.xml' : 'config_' . $iso . '.xml');
-            @unlink($file);
-            @file_put_contents($file, $xml->saveXml());
-            @chmod($file, 0664);
+        if(is_dir(_EPH_PLUGIN_DIR_ . $this->name . '/')) {
+            if (is_writable(_EPH_PLUGIN_DIR_ . $this->name . '/')) {
+                $iso = substr(Context::getContext()->language->iso_code, 0, 2);
+                $file = _EPH_PLUGIN_DIR_ . $this->name . '/' . ($iso == 'en' ? 'config.xml' : 'config_' . $iso . '.xml');
+                @unlink($file);
+                @file_put_contents($file, $xml->saveXml());
+                @chmod($file, 0664);
+            }
+        } else if(is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/')) {
+            if (is_writable(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/')) {
+                $iso = substr(Context::getContext()->language->iso_code, 0, 2);
+                $file = _EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/' . ($iso == 'en' ? 'config.xml' : 'config_' . $iso . '.xml');
+                @unlink($file);
+                @file_put_contents($file, $xml->saveXml());
+                @chmod($file, 0664);
+            }
         }
 
     }

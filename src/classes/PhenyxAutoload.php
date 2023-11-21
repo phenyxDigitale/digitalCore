@@ -213,6 +213,9 @@ class PhenyxAutoload {
 			if(is_dir($rootDir. 'includes/plugins/'.$plugin['name'])) {
 				$folder[] = $plugin['name'];
 			}
+            if(is_dir($rootDir. 'includes/specific_plugins/'.$plugin['name'])) {
+				$folder[] = $plugin['name'];
+			}
 		}
 		
 		$iterator = new AppendIterator();
@@ -227,6 +230,60 @@ class PhenyxAutoload {
             }
 			
 			$fileName = str_replace($rootDir. 'includes/plugins/', '', $filePath);
+			$filPathExplode = explode('/', $fileName);
+			
+			if (strpos($filePath, $filPathExplode[0].'/override/') !== false) {
+            	continue;
+        	}
+			if(strpos($filePath, $filPathExplode[0].'/classes/') !== false || strpos($filePath, $filPathExplode[0].'/controllers/admin/') !== false || strpos($filePath, $filPathExplode[0].'/controllers/front/') !== false) {
+				$fileName = $file->getFilename();
+				if (substr($fileName, -4) == '.php') {
+                    $content = file_get_contents($file);
+
+                    $namespacePattern = '[\\a-z0-9_]*[\\]';
+                    $pattern = '#\W((abstract\s+)?class|interface)\s+(?P<classname>' . basename($fileName, '.php') . '(?:Core)?)'
+                        . '(?:\s+extends\s+' . $namespacePattern . '[a-z][a-z0-9_]*)?(?:\s+implements\s+' . $namespacePattern . '[a-z][\\a-z0-9_]*(?:\s*,\s*' . $namespacePattern . '[a-z][\\a-z0-9_]*)*)?\s*\{#i';
+
+                    if (preg_match($pattern, $content, $m)) {
+						$file = str_replace(_EPH_ROOT_DIR_, '', $file);
+                        $classes[$m['classname']] = [
+                            'path'     => $file,
+                            'type'     => trim($m[1]),
+                            'override' => $hostMode,
+                        ];
+
+                        if (substr($m['classname'], -4) == 'Core') {
+                            $classes[substr($m['classname'], 0, -4)] = [
+                                'path'     => '',
+                                'type'     => $classes[$m['classname']]['type'],
+                                'override' => $hostMode,
+                            ];
+                        }
+
+                    }
+
+                }
+			}
+           
+        }		
+        $folder = [];
+        foreach($plugins as $plugin) {
+			
+            if(is_dir($rootDir. 'includes/specific_plugins/'.$plugin['name'])) {
+				$folder[] = $plugin['name'];
+			}
+		}
+        $iterator = new AppendIterator();
+		foreach ($folder as $key => $directory) {
+			$iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootDir. 'includes/specific_plugins/'.$directory . '/')));
+        }
+        foreach ($iterator as $file) {
+            $filePath = $file->getPathname();
+			 if (in_array($file->getFilename(), ['.', '..', 'index.php', '.htaccess', 'dwsync.xml', 'settings.inc.php'])) {
+                continue;
+            }
+			
+			$fileName = str_replace($rootDir. 'includes/specific_plugins/', '', $filePath);
 			$filPathExplode = explode('/', $fileName);
 			
 			if (strpos($filePath, $filPathExplode[0].'/override/') !== false) {

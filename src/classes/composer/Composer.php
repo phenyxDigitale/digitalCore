@@ -1624,6 +1624,8 @@ class Composer {
             return _EPH_THEME_DIR_ . 'plugins/' . $plugin_name . '/views/templates/front/' . $template;
         } else if (Tools::file_exists_cache(_EPH_PLUGIN_DIR_ . $plugin_name . '/views/templates/front/' . $template)) {
             return _EPH_PLUGIN_DIR_ . $plugin_name . '/views/templates/front/' . $template;
+        } else if (Tools::file_exists_cache(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin_name . '/views/templates/front/' . $template)) {
+            return _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin_name . '/views/templates/front/' . $template;
         }
 
         return false;
