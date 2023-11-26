@@ -57,30 +57,29 @@ class PhenyxLogger extends PhenyxObjectModel {
      */
     public function sendByMail($log) {
         
-        $tpl = $this->context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'log_alert.tpl');
-		$tpl->assign([
-            'message'         => $log->message,
-            'firstname'          => 'Jeff',
-			'lastname' => 'Hunger',
-		]);
-        $postfields = [
-            'sender'      => [
-				'name'  => sprintf($this->l("Administrative department of %s"), Configuration::get('EPH_SHOP_NAME')),
-				'email' => Configuration::get('EPH_SHOP_EMAIL'),
-			],
-			'to'          => [
-				[
-					'name'  => 'Jeff Hunger',
-					'email' => 'jeff@ephenyx.com',
-				],
-			],
-            'subject'     => $this->l('Warning! New log alert'),
-			"htmlContent" => $tpl->fetch()
-        ];
-        Tools::sendEmail($postfields);
-
-        
-
+        if ((int)Configuration::get('PS_LOGS_BY_EMAIL') <= (int)$log->severity) {
+            $tpl = $this->context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'log_alert.tpl');
+            $tpl->assign([
+                'message'         => $log->message,
+                'firstname'          => 'Jeff',
+                'lastname' => 'Hunger',
+            ]);
+            $postfields = [
+                'sender'      => [
+				    'name'  => sprintf($this->l("Administrative department of %s"), Configuration::get('EPH_SHOP_NAME')),
+				    'email' => Configuration::get('EPH_SHOP_EMAIL'),
+                ],
+                'to'          => [
+                    [
+                        'name'  => 'Jeff Hunger',
+                        'email' => 'jeff@ephenyx.com',
+                    ],
+                ],
+                'subject'     => $this->l('Warning! New log alert'),
+                "htmlContent" => $tpl->fetch()
+            ];
+            Tools::sendEmail($postfields);
+         }
     }
 
     public static function addLog($message, $severity = 1, $error_code = null, $object_type = null, $object_id = null, $allow_duplicate = false, $id_employee = null) {
