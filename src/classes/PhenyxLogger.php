@@ -57,7 +57,7 @@ class PhenyxLogger extends PhenyxObjectModel {
      */
     public function sendByMail($log) {
         
-        if ((int)Configuration::get('PS_LOGS_BY_EMAIL') <= (int)$log->severity) {
+        if ((int)Configuration::get('EPH_LOGS_BY_EMAIL') <= (int)$log->severity) {
             $tpl = $this->context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'log_alert.tpl');
             $tpl->assign([
                 'message'         => $log->message,
