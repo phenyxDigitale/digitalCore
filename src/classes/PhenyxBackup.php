@@ -9,7 +9,7 @@ class PhenyxBackup {
 
     // @codingStandardsIgnoreStart
     /** @var string default backup directory. */
-    public static $backupDir = '/backups/';
+    public static $backupDir = '/app/backup/';
     /** @var int Object id */
     public $id;
     /** @var string Last error messages */
