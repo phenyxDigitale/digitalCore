@@ -55,8 +55,8 @@ class PhenyxLogger extends PhenyxObjectModel {
      * @param Logger
      * @param PhenyxLogger $log
      */
-    public static function sendByMail($log) {
-
+    public function sendByMail($log) {
+        
         $tpl = $this->context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'log_alert.tpl');
 		$tpl->assign([
             'message'         => $log->message,
@@ -105,7 +105,7 @@ class PhenyxLogger extends PhenyxObjectModel {
             $log->object_id = (int) $object_id;
         }
 
-        PhenyxLogger::sendByMail($log);
+        $log->sendByMail($log);
 
         if ($allow_duplicate || !$log->_isPresent()) {
             $res = $log->add();
