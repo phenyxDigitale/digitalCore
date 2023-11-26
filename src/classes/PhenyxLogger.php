@@ -1,6 +1,6 @@
 <?php
 
-class PhenyxLoggerCore extends PhenyxObjectModel {
+class PhenyxLogger extends PhenyxObjectModel {
 
     /** @var int Log id */
     public $id_log;
