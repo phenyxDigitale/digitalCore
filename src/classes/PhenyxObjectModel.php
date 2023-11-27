@@ -927,7 +927,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             $message = $this->validateField($field, $this->$field);
 
             if ($message !== true) {
-                PhenyxLogger::addLog($message, 3, null, 'ObjectModel');
+                PhenyxLogger::addLog($message, 3, null, get_class($this));
                 $return = [
                     'success' => false,
                     'message' => $message,
@@ -970,7 +970,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                 $message = $this->validateField($field, $value, $idLang);
 
                 if ($message !== true) {
-                    PhenyxLogger::addLog($message, 3, null, 'ObjectModel');
+                    PhenyxLogger::addLog($message, 3, null, get_class($this));
                     $return = [
                         'success' => false,
                         'message' => $message,
@@ -1015,7 +1015,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                     } else {
                         $message = 'Property ' . get_class($this) . '->' . $field . ' is empty';
                     }
-                     PhenyxLogger::addLog($message, 3, null, 'ObjectModel');
+                     PhenyxLogger::addLog($message, 3, null, get_class($this));
                     $return = [
                         'success' => false,
                         'message' => $message,
@@ -1061,7 +1061,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                     } else {
                         $message = sprintf(Tools::displayError('The %1$s field is too long (%2$d chars max).'), $this->displayFieldName($field, get_class($this)), $size['max']);
                     }
-                     PhenyxLogger::addLog($message, 3, null, 'ObjectModel');
+                     PhenyxLogger::addLog($message, 3, null, get_class($this));
                     $return = [
                         'success' => false,
                         'message' => $message,
@@ -1071,7 +1071,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
                 } else {
                     $message = 'Property ' . get_class($this) . '->' . $field . ' length (' . $length . ') must be between ' . $size['min'] . ' and ' . $size['max'];
-                     PhenyxLogger::addLog($message, 3, null, 'ObjectModel');
+                     PhenyxLogger::addLog($message, 3, null, get_class($this));
                     $return = [
                         'success' => false,
                         'message' => $message,
@@ -1114,7 +1114,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                     } else {
                         $message = 'Property ' . get_class($this) . '->' . $field . ' is not valid';
                     }
-                     PhenyxLogger::addLog($message, 3, null, 'ObjectModel');
+                     PhenyxLogger::addLog($message, 3, null, get_class($this));
                     $return = [
                         'success' => false,
                         'message' => $message,
