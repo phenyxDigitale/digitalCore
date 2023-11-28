@@ -235,6 +235,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
             if (!Validate::isTableOrIdentifier($this->def['primary']) || !Validate::isTableOrIdentifier($this->def['table'])) {
                 throw new PhenyxException('Identifier or table format not valid for class ' . $this->className);
+                PhenyxLogger::addLog(sprintf($this->l('Identifier or table format not valid for class %s'), $this->className), 3, null, get_class($this));
             }
 
             PhenyxObjectModel::$loaded_classes[$this->className] = get_object_vars($this);
@@ -644,6 +645,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
                         if (!Validate::isTableOrIdentifier($key)) {
                             throw new PhenyxException('key ' . $key . ' is not table or identifier');
+                            PhenyxLogger::addLog(sprintf($this->l('key %s is not table or identifier'), $key), 3, null, get_class($this));
                         }
 
                     }
@@ -776,6 +778,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
                         if (!Validate::isTableOrIdentifier($key)) {
                             throw new PhenyxException('key ' . $key . ' is not a valid table or identifier');
+                            PhenyxLogger::addLog(sprintf($this->l('key %s is not table or identifier'), $key), 3, null, get_class($this));
                         }
 
                     }
@@ -845,6 +848,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         if (!property_exists($this, 'active')) {
             throw new PhenyxException('property "active" is missing in object ' . get_class($this));
+             PhenyxLogger::addLog(sprintf($this->l('property "active" is missing in object %s'), get_class($this)), 3, null, get_class($this));
         }
 
         $this->setFieldsToUpdate(['active' => true]);
@@ -887,6 +891,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
             if (!Validate::isTableOrIdentifier($fieldName)) {
                 throw new PhenyxException('identifier is not table or identifier : ' . $fieldName);
+                PhenyxLogger::addLog(sprintf($this->l('identifier is not table or identifier : %s') , $fieldName), 3, null, get_class($this));
             }
 
             if ((!$this->id_lang && isset($this->{$fieldName}
@@ -1088,6 +1093,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
             if (!method_exists('Validate', $data['validate'])) {
                 throw new PhenyxException('Validation function not found. ' . $data['validate']);
+                PhenyxLogger::addLog(sprintf($this->l('Validation function not found. %s'), $data['validate']), 3, null, get_class($this));
             }
 
             if (!empty($value)) {
@@ -1241,6 +1247,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
             if (!method_exists('Validate', $data['validate'])) {
                 throw new PhenyxException('Validation function not found. ' . $data['validate']);
+                PhenyxLogger::addLog(sprintf($this->l('Validation function not found. %s'), $data['validate']), 3, null, get_class($this));
             }
 
             $value = Tools::getValue($field);
@@ -1454,6 +1461,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         if (!class_exists($class)) {
             throw new PhenyxException("Class '$class' not found");
+             PhenyxLogger::addLog(sprintf($this->l('Class %s not found'), $class), 3, null, $class);
         }
 
         $collection = [];
@@ -1464,6 +1472,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
             if (!array_key_exists($definition['primary'], $datas[0])) {
                 throw new PhenyxException("Identifier '{$definition['primary']}' not found for class '$class'");
+                PhenyxLogger::addLog(sprintf($this->l('Identifier %s not found for class %s'), $definition['primary'], $class), 3, null, $class);
             }
 
             foreach ($datas as $row) {
@@ -1567,6 +1576,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             return $this->{$fieldName};
         } else {
             throw new PhenyxException('Could not load field from definition.');
+            PhenyxLogger::addLog($this->l('Could not load field from definition.'), 3, null, get_class($this));
         }
 
     }

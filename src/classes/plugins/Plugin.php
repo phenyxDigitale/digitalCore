@@ -1088,6 +1088,7 @@ abstract class Plugin {
         Hook::exec('actionPluginInstallBefore', ['object' => $this]);
 
         if (!Validate::isPluginName($this->name)) {
+            PhenyxLogger::addLog(sprintf($this->l('Unable to install the plugin (Plugin name %s is not valid).'), $this->name), 3, null, 'Plugin');
             $return = [
                 'success' => false,
                 'message' => Tools::displayError('Unable to install the plugin (Plugin name is not valid).'),
@@ -1098,6 +1099,7 @@ abstract class Plugin {
         if (!defined('EPH_INSTALLATION_IN_PROGRESS') || !EPH_INSTALLATION_IN_PROGRESS) {
 
             if (!$this->checkCompliancy()) {
+                PhenyxLogger::addLog($this->l('The version of your plugin is not compliant with your Ephenyx version.'), 2, null, 'Plugin');
                 $return = [
                     'success' => false,
                     'message' => Tools::displayError('The version of your plugin is not compliant with your Ephenyx version.'),
@@ -1198,7 +1200,8 @@ abstract class Plugin {
         $result = Db::getInstance()->insert($this->table, ['name' => $this->name, 'active' => 1, 'version' => $this->version]);
 
         if (!$result) {
-            $this->_errors[] = Tools::displayError('Technical error: thirty bees could not install this plugin.');
+            PhenyxLogger::addLog($this->l('Technical error: Ephenyx Digital could not install this plugin.'), 2, null, 'Plugin');
+            $this->_errors[] = Tools::displayError('Technical error: Ephenyx Digital could not install this plugin.');
 
             return false;
         }
