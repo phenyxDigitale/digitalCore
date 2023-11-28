@@ -1461,7 +1461,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         if (!class_exists($class)) {
             throw new PhenyxException("Class '$class' not found");
-             PhenyxLogger::addLog(sprintf($this->l('Class %s not found'), $class), 3, null, $class);
+             PhenyxLogger::addLog(sprintf('Class %s not found', $class), 3, null, $class);
         }
 
         $collection = [];
@@ -1472,7 +1472,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
             if (!array_key_exists($definition['primary'], $datas[0])) {
                 throw new PhenyxException("Identifier '{$definition['primary']}' not found for class '$class'");
-                PhenyxLogger::addLog(sprintf($this->l('Identifier %s not found for class %s'), $definition['primary'], $class), 3, null, $class);
+                PhenyxLogger::addLog(sprintf('Identifier %s not found for class %s', $definition['primary'], $class), 3, null, $class);
             }
 
             foreach ($datas as $row) {
