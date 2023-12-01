@@ -3948,7 +3948,7 @@ FileETag none
             'title'        => $postfields['subject'],
             'css_dir'      => 'https://' . $context->company->domain_ssl._THEME_CSS_DIR_,
             'shop_link'    => $context->link->getBaseFrontLink(),
-            'shop_name'    => $context->compant->company_name,
+            'shop_name'    => $context->company->company_name,
             'bckImg'       => $bckImg,
             'logoMailLink' => $context->link->getBaseFrontLink() . 'content/img/' . Configuration::get('EPH_LOGO_MAIL'),
         ]);
