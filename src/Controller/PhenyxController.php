@@ -26,6 +26,8 @@ abstract class PhenyxController {
     public $ajax = false;
 
     public $ajaxLayout = false;
+    
+    public $layout = 'layout.tpl';
     /** @var string Controller type. Possible values: 'front', 'pluginfront', 'admin', 'pluginadmin' */
     public $controller_type;
 
@@ -35,11 +37,16 @@ abstract class PhenyxController {
     
     public $className;
     
+     public $tabAccess;
+    
     public $identifier = false;
 
     public $link_rewrite;
 
     protected $context;
+    
+     /** @var string */
+    protected $display;
 
     protected $display_header;
 
@@ -291,6 +298,22 @@ abstract class PhenyxController {
     public $showBottom = true;
     
     public $paramWrap = true;
+    
+    public $manageHeaderFields = false;
+    
+    public $default_language;
+    
+    public $ajaxOptions;
+    
+    protected $publicName;
+    
+    protected $action;
+    
+    public $targetController;
+    
+    public $errors = [];
+    
+    public $warnings = [];
     
     public function getExtraPhenyxVars() {
         $extraVars = Hook::exec('actionPhenyxControllerGetExtraVars', ['controller_type' => $this->controller_type], null, true);
@@ -757,6 +780,11 @@ abstract class PhenyxController {
 
 
         die(true);
+    }
+    
+    public function getUserIpAddr() {
+
+        return $_SERVER['SERVER_ADDR'];
     }
 
     abstract public function checkAccess();
@@ -1266,6 +1294,96 @@ abstract class PhenyxController {
     public function isXmlHttpRequest() {
 
         return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+    }
+    
+    public function manageFieldsVisibility($fields) {
+
+        $return = [];
+
+        if (is_array($fields)) {
+
+            foreach ($fields as $field) {
+                $name = '';
+                $hidden = false;
+                $hiddenable = 'yes';
+
+                foreach ($field as $key => $value) {
+
+                    if ($key == 'title') {
+                        $name = $value;
+                    }
+
+                    if ($key == 'hidden') {
+                        $hidden = $value;
+                    }
+
+                    if ($key == 'hiddenable') {
+                        $hiddenable = $value;
+                        if($value == 'no') {
+                            $name = $field['dataIndx'];
+                        }
+                    }
+
+                }
+
+                $return[$name] = $field;
+                $return[$name]['hidden'] = $hidden;
+                $return[$name]['hiddenable'] = $hiddenable;
+            }
+
+        }
+
+        return $return;
+    }
+    
+    public function ajaxProcessOpenTargetController() {
+
+        
+
+        $this->paragridScript = $this->generateParaGridScript();
+        $this->setAjaxMedia();
+
+        $data = $this->createTemplate($this->table . '.tpl');
+
+        if(is_array($this->extra_vars)) {
+            foreach ($this->extra_vars as $key => $value) {
+                $data->assign($key, $value);
+            }
+        }
+       
+        if(method_exists($this, 'get' . $this->className.'Fields')) {
+            $data->assign('paragridFields', is_array($this->configurationField) ? $this->configurationField : $this->{'get' . $this->className.'Fields'}());
+        }
+        $data->assign([
+            'jsDef'              => $this->jsDef,
+            'paragridScript'     => $this->paragridScript,
+            'manageHeaderFields' => $this->manageHeaderFields,
+            'customHeaderFields' => $this->manageFieldsVisibility($this->configurationField),
+            'controller'         => $this->controller_name,
+            'tableName'          => $this->table,
+            'className'          => $this->className,
+            'link'               => $this->context->link,
+            'id_lang_default'    => $this->default_language,
+            'languages'          => Language::getLanguages(false),
+            'extraJs'            => $this->push_js_files,
+            'extracss'           => $this->extracss,
+            'tabs'               => $this->ajaxOptions,
+            'bo_imgdir'          =>  __EPH_BASE_URI__ . 'content/backoffice/' . $this->bo_theme . '/img/',
+        ]);
+
+        $li = '<li id="uper' . $this->controller_name . '" data-self="'.$this->link_rewrite.'" data-name="'.$this->page_title.'" data-controller="AdminDashboard"><a href="#content' . $this->controller_name . '">' . $this->publicName . '</a><button type="button" class="close tabdetail" onClick="closeTabObject(\''. $this->controller_name . '\');" data-id="uper' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
+        $html = '<div id="content' . $this->controller_name . '" class="panel col-lg-12" style="display: flow-root;">' . $data->fetch() . '</div>';
+        $result = [
+            'li'   => $li,
+            'html' => $html,
+			'page_title' => $this->page_title
+        ];
+        if (_EPH_ADMIN_DEBUG_PROFILING_) {
+            $result['profiling_mode'] = true;
+            $result['profiling'] = $this->displayProfiling();
+        }
+
+        die(Tools::jsonEncode($result));
     }
 
     protected function isCached($template, $cacheId = null, $compileId = null) {
