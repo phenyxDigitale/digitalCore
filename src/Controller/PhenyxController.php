@@ -320,6 +320,10 @@ abstract class PhenyxController {
     
      public $lang = false;
     
+    public $configurationField = 0;
+    
+     public $updateableFields;
+    
     public function getExtraPhenyxVars() {
         $extraVars = Hook::exec('actionPhenyxControllerGetExtraVars', ['controller_type' => $this->controller_type], null, true);
         if(is_array($extraVars)) {
