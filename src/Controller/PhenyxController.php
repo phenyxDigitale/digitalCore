@@ -1404,6 +1404,169 @@ abstract class PhenyxController {
         return $res;
     }
     
+    public function getWizardFieldsValues($obj) {
+		
+		
+		
+        foreach ($this->fields_form as $fieldset) {
+
+            if (isset($fieldset['input'])) {
+
+                foreach ($fieldset['input'] as $input) {
+                    if (!isset($this->fields_value[$input['name']])) {
+						
+                        
+
+                        if (isset($input['lang']) && $input['lang']) {
+                            foreach ($this->_languages as $language) {
+                                $fieldValue = $this->getWizardFieldsValue($obj, $input['name'], $language['id_lang']);
+								
+
+                                if (empty($fieldValue)) {
+									
+                                    if (isset($input['default_value']) && is_array($input['default_value']) && isset($input['default_value'][$language['id_lang']])) {
+                                        $fieldValue = $input['default_value'][$language['id_lang']];
+                                    } else
+
+                                    if (isset($input['default_value'])) {
+                                        $fieldValue = $input['default_value'];
+                                    }
+
+                                }
+
+                                $this->fields_value[$input['name']][$language['id_lang']] = $fieldValue;
+                            }
+
+                        } else {
+							
+                            $fieldValue = $this->getWizardFieldsValue($obj, $input['name']);
+                             if ($fieldValue === false && isset($input['default_value'])) {
+                                $this->fields_value[$input['name']] = $input['default_value'];
+                            } else if ($fieldValue === false) {
+                               $this->fields_value[$input['name']]  = [];
+                            } else {
+								$this->fields_value[$input['name']] = $fieldValue;
+							}
+
+                            
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+        
+        foreach ($this->fields_form['steps'] as $fieldset) {
+
+            if (isset($fieldset['input'])) {
+
+                foreach ($fieldset['input'] as $input) {
+                    if (!isset($this->fields_value[$input['name']])) {
+						
+                        
+
+                        if (isset($input['lang']) && $input['lang']) {
+                            foreach ($this->_languages as $language) {
+                                $fieldValue = $this->getWizardFieldsValue($obj, $input['name'], $language['id_lang']);
+								
+                                if (empty($fieldValue)) {
+									
+                                    if (isset($input['default_value']) && is_array($input['default_value']) && isset($input['default_value'][$language['id_lang']])) {
+                                        $fieldValue = $input['default_value'][$language['id_lang']];
+                                    } else
+
+                                    if (isset($input['default_value'])) {
+                                        $fieldValue = $input['default_value'];
+                                    }
+
+                                }
+
+                                $this->fields_value[$input['name']][$language['id_lang']] = $fieldValue;
+                            }
+
+                        } else {
+							
+                            $fieldValue = $this->getWizardFieldsValue($obj, $input['name']);
+                             if ($fieldValue === false && isset($input['default_value'])) {
+                                $this->fields_value[$input['name']] = $input['default_value'];
+                            } else if ($fieldValue === false) {
+                               $this->fields_value[$input['name']]  = [];
+                            } else {
+								$this->fields_value[$input['name']] = $fieldValue;
+							}
+
+                            
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+		
+        	return $this->fields_value;
+    }
+
+    public function getFieldsValue($obj) {
+		
+        foreach ($this->fields_form as $fieldset) {
+
+            if (isset($fieldset['form']['input'])) {
+
+                foreach ($fieldset['form']['input'] as $input) {
+                    if (!isset($this->fields_value[$input['name']])) {
+						
+                        
+
+                        if (isset($input['lang']) && $input['lang']) {
+                            foreach ($this->_languages as $language) {
+                                $fieldValue = $this->getFieldValue($obj, $input['name'], $language['id_lang']);
+								
+                                if (empty($fieldValue)) {
+									
+                                    if (isset($input['default_value']) && is_array($input['default_value']) && isset($input['default_value'][$language['id_lang']])) {
+                                        $fieldValue = $input['default_value'][$language['id_lang']];
+                                    } else
+
+                                    if (isset($input['default_value'])) {
+                                        $fieldValue = $input['default_value'];
+                                    }
+
+                                }
+
+                                $this->fields_value[$input['name']][$language['id_lang']] = $fieldValue;
+                            }
+
+                        } else {
+							
+                            $fieldValue = $this->getFieldValue($obj, $input['name']);
+                             if ($fieldValue === false && isset($input['default_value'])) {
+                                $this->fields_value[$input['name']] = $input['default_value'];
+                            } else if ($fieldValue === false) {
+                               $this->fields_value[$input['name']]  = [];
+                            } else {
+								$this->fields_value[$input['name']] = $fieldValue;
+							}
+
+                            
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+		
+        	return $this->fields_value;
+    }
+    
     public function getWizardFieldsValue($obj, $key, $idLang = null) {
 		
         if ($idLang) {
