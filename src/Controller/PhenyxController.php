@@ -1403,6 +1403,32 @@ abstract class PhenyxController {
 
         return $res;
     }
+    
+    public function getWizardFieldsValue($obj, $key, $idLang = null) {
+		
+        if ($idLang) {
+            $defaultValue = (isset($obj->id) && $obj->id && isset($obj->{$key}[$idLang])) ? $obj->{$key}[$idLang] : false;
+			
+        } else {
+            $defaultValue = isset($obj->{$key}) ? $obj->{$key}: false;
+			
+        }
+
+        return Tools::getValue($key . ($idLang ? '_' . $idLang : ''), $defaultValue);
+    }
+    
+    public function getFieldValue($obj, $key, $idLang = null) {
+		
+        if ($idLang) {
+            $defaultValue = (isset($obj->id) && $obj->id && isset($obj->{$key}[$idLang])) ? $obj->{$key}[$idLang] : false;
+			
+        } else {
+            $defaultValue = isset($obj->{$key}) ? $obj->{$key}: false;
+			
+        }
+
+        return Tools::getValue($key . ($idLang ? '_' . $idLang : ''), $defaultValue);
+    }
 
     protected function ajaxDie($value = null, $controller = null, $method = null) {
 
