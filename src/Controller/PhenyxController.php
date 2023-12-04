@@ -328,6 +328,18 @@ abstract class PhenyxController {
     
     public $fields_value = [];
     
+    protected $toolbar_btn = null;
+    /** @var bool Scrolling toolbar */
+    protected $toolbar_scroll = true;
+    
+    public $token;
+    
+    protected $helper;
+
+    protected $submit_action;
+    
+     public $base_tpl_form = null;
+    
     public function getExtraPhenyxVars() {
         $extraVars = Hook::exec('actionPhenyxControllerGetExtraVars', ['controller_type' => $this->controller_type], null, true);
         if(is_array($extraVars)) {
