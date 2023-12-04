@@ -2531,6 +2531,9 @@ abstract class Plugin {
         } else
         if (file_exists(_EPH_PLUGIN_DIR_ . $this->name . '/views/templates/admin/' . $template)) {
             return _EPH_PLUGIN_DIR_ . $this->name . '/views/templates/admin/' . $template;
+        }  else
+        if (file_exists(_EPH_PLUGIN_DIR_ . $this->name . '/views/templates/helpers/' . $template)) {
+            return _EPH_PLUGIN_DIR_ . $this->name . '/views/templates/helpers/' . $template;
         }else
         if (file_exists(_EPH_PLUGIN_DIR_ . $this->name . '/views/templates/front/' . $template)) {
             return _EPH_PLUGIN_DIR_ . $this->name . '/views/templates/front/' . $template;
