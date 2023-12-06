@@ -1748,6 +1748,18 @@ abstract class PhenyxController {
 
     }
     
+    public function getRequest($identifier = null) {
+        
+        
+        $request = Hook::exec('action' . $this->controller_name . 'getRequestModifier', ['paramRequest' => $this->paramRequest], null, true);
+        
+        if(!is_array($request)) {
+            $this->paramRequest = array_shift($request);
+        }
+        return null;
+    }
+    
+    
 
 
     protected function ajaxDie($value = null, $controller = null, $method = null) {
