@@ -1410,6 +1410,223 @@ abstract class PhenyxController {
 
         die(Tools::jsonEncode($result));
     }
+    
+    public function generateTabs() {
+         
+         $hookBars = Hook::exec('actionAdminTabs', [], null, true);
+         if(is_array( $hookBars)) {            
+            foreach( $hookBars as $plugin =>  $hookBar) {
+                $topbars = $hookBar;
+            }
+            
+        }  else {   
+         
+         
+
+        $topbars = EmployeeMenu::getEmployeeMenus($this->context->language->id, 1);
+
+        foreach ($topbars as $index => $tab) {
+
+            if (!EmployeeMenu::checkTabRights($tab['id_employee_menu'])) {
+                unset($topbars[$index]);
+                continue;
+            }
+
+            if ($tab['master'] && !$this->context->employee->master_admin) {
+                unset($topbars[$index]);
+                continue;
+            }
+
+            
+
+            if (!is_null($tab['function'])) {
+                $topbars[$index]['function'] = str_replace("‘", "'", $tab['function']);
+            }
+
+            $topbars[$index]['name'] = $tab['name'];
+            $subTabs = EmployeeMenu::getEmployeeMenus($this->context->language->id, $tab['id_employee_menu']);
+
+            foreach ($subTabs as $index2 => &$subTab) {
+
+                if (!EmployeeMenu::checkTabRights($subTab['id_employee_menu'])) {
+                    unset($subTabs[$index2]);
+                    continue;
+                }
+
+                if ($subTab['master'] && !$this->context->employee->master_admin) {
+                    unset($subTabs[$index2]);
+                    continue;
+                }
+
+                if (!empty($subTab['plugin'])) {
+
+                    if (!Plugin::isActive($subTab['plugin'])) {
+                        unset($subTabs[$index2]);
+                        continue;
+                    }
+
+                }
+
+               
+                if ((bool) $subTab['active']) {
+
+                    if (!is_null($subTab['function'])) {
+                        $subTabs[$index2]['function'] = str_replace("‘", "'", $subTab['function']);
+                    }
+
+                    $subTabs[$index2]['name'] = $subTab['name'];
+                }
+
+                $terTabs = EmployeeMenu::getEmployeeMenus($this->context->language->id, $subTab['id_employee_menu']);
+
+                foreach ($terTabs as $index3 => $terTab) {
+
+                    if (!EmployeeMenu::checkTabRights($terTab['id_employee_menu'])) {
+                        unset($terTabs[$index3]);
+                        continue;
+                    }
+
+                    if ($terTab['master'] && !$this->context->employee->master_admin) {
+                        unset($terTabs[$index3]);
+                        continue;
+                    }
+
+                    if (!empty($terTab['plugin'])) {
+
+                        if (!Plugin::isActive($terTab['plugin'])) {
+                            unset($terTabs[$index3]);
+                            continue;
+                        }
+
+                    }
+
+                    
+
+                    if ((bool) $terTab['active']) {
+
+                        if (!is_null($terTab['function'])) {
+                            $terTabs[$index3]['function'] = str_replace("‘", "'", $terTab['function']);
+                        }
+
+                        $terTabs[$index3]['name'] = $terTab['name'];
+                    }
+
+                }
+
+                $subTabs[$index2]['sub_tabs'] = array_values($terTabs);
+
+            }
+
+            $topbars[$index]['sub_tabs'] = array_values($subTabs);
+        }
+         }
+         
+         
+
+        return $topbars;
+    }
+    
+    protected function initTabPluginList() {
+
+        $this->tab_plugins_list = EmployeeMenu::getTabPluginsList($this->id);
+
+        if (is_array($this->tab_plugins_list['default_list']) && count($this->tab_plugins_list['default_list'])) {
+            $this->filter_plugins_list = $this->tab_plugins_list['default_list'];
+        } else
+
+        if (is_array($this->tab_plugins_list['slider_list']) && count($this->tab_plugins_list['slider_list'])) {
+            $this->addToolBarPluginsListButton();
+            $this->addPageHeaderToolBarPluginsListButton();
+            $this->context->smarty->assign(
+                [
+                    'tab_plugins_list'      => implode(',', $this->tab_plugins_list['slider_list']),
+                    'admin_plugin_ajax_url' => $this->context->link->getAdminLink('AdminPlugins'),
+                    'back_tab_plugins_list' => $this->context->link->getAdminLink(Tools::getValue('controller')),
+                    'tab_plugins_open'      => (int) Tools::getValue('tab_plugins_open'),
+                ]
+            );
+        }
+
+    }
+    
+    protected function addToolBarPluginsListButton() {
+
+        $this->filterTabPluginList();
+
+        if (is_array($this->tab_plugins_list['slider_list']) && count($this->tab_plugins_list['slider_list'])) {
+            $this->toolbar_btn['plugins-list'] = [
+                'href' => '#',
+                'desc' => $this->la('Recommended Plugins and Services'),
+            ];
+        }
+
+    }
+    
+    protected function addPageHeaderToolBarPluginsListButton() {
+
+        $this->filterTabPluginList();
+
+        if (is_array($this->tab_plugins_list['slider_list']) && count($this->tab_plugins_list['slider_list'])) {
+            $this->page_header_toolbar_btn['plugins-list'] = [
+                'href' => '#',
+                'desc' => $this->la('Recommended Plugins and Services'),
+            ];
+        }
+
+    }
+
+    public function renderModal() {
+
+        $modal_render = '';
+
+        if (is_array($this->modals) && count($this->modals)) {
+
+            foreach ($this->modals as $modal) {
+                $this->context->smarty->assign($modal);
+                $modal_render .= $this->context->smarty->fetch('modal.tpl');
+            }
+
+        }
+
+        return $modal_render;
+    }
+    
+    
+    public function ajaxProcessEditObject() {
+
+        $this->checkAccess();
+
+        if ($this->tabAccess['edit'] == 1) {
+
+            $idObject = Tools::getValue('idObject');
+
+            $_GET[$this->identifier] = $idObject;
+            $_GET['controller'] = $this->controller_name;
+            $_GET['update' . $this->table] = "";
+            
+            
+            $html = $this->renderForm();
+            $li = '<li id="uperEdit' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentEdit' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeEditFormObject(\''. $this->controller_name . '\');" class="close tabdetail" data-id="uperEdit' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
+            $html = '<div id="contentEdit' . $this->controller_name . '" class="panel col-lg-12" style="display; flow-root;">' .  $html  . '</div>';
+
+            $result = [
+                'success' => true,
+                'li'      => $li,
+                'html'    => $html,
+            ];
+            if (_EPH_ADMIN_DEBUG_PROFILING_) {
+                $result['profiling_mode'] = true;
+                $result['profiling'] = $this->displayProfiling();
+            }
+        } else {
+            $result = [
+                'success' => false,
+                'message' => 'Votre profile administratif ne vous permet pas d‘éditer cette objet',
+            ];
+        }
+
+        die(Tools::jsonEncode($result));
+    }
 
     protected function isCached($template, $cacheId = null, $compileId = null) {
 
@@ -1594,6 +1811,214 @@ abstract class PhenyxController {
         }
 
         return Tools::getValue($key . ($idLang ? '_' . $idLang : ''), $defaultValue);
+    }
+    
+    public function renderForm() {
+
+        
+		if (!$this->default_form_language) {
+            $this->getLanguages();
+        }
+
+        if (Tools::getValue('submitFormAjax')) {
+            $this->content .= $this->context->smarty->fetch('form_submit_ajax.tpl');
+        }
+        $extraFields = Hook::exec('action' . $this->controller_name . 'FormModifier', [], null, true);
+        if(is_array($extraFields) && count($extraFields)) {
+            foreach($extraFields as $plugin => $fields) {
+                foreach($fields as $field) {
+                     $this->fields_form['input'][] = $field;
+                }
+            }
+            
+        }    
+
+        if ($this->fields_form && is_array($this->fields_form)) {
+
+            if (!$this->multiple_fieldsets) {
+                $this->fields_form = [['form' => $this->fields_form]];
+            }
+
+            // For add a fields via an override of $fields_form, use $fields_form_override
+
+            if (is_array($this->fields_form_override) && !empty($this->fields_form_override)) {
+                $this->fields_form[0]['form']['input'] = array_merge($this->fields_form[0]['form']['input'], $this->fields_form_override);
+            }
+			
+            $fieldsValue = $this->getFieldsValue($this->object);
+			
+			if($this->form_ajax) {
+				$fieldsValue['ajax'] = $this->form_ajax;
+			}
+			$fieldsValue['action'] = $this->form_action;
+			
+
+            
+
+            if ($this->tabList == true) {
+                $this->tpl_form_vars['controller'] = Tools::getValue('controller');
+                $this->tpl_form_vars['tabScript'] = $this->generateTabScript(Tools::getValue('controller'));
+            }
+            $has_editor = false;
+            if($this->composer_editor) {
+                $has_editor = true;
+               
+               
+            }
+
+            $helper = new HelperForm($this);
+            $this->setHelperDisplay($helper);
+            $helper->controllerName = $this->controller_name;
+            $helper->table = $this->table;
+            $helper->header_title = $this->editObject;
+			$helper->form_extraCss = $this->extracss;
+			$helper->form_extraJs = $this->extraJs;
+            $helper->js_def = $this->jsDef;
+            $helper->fields_value = $fieldsValue;
+            $helper->submit_action = $this->submit_action;
+            $helper->tpl_vars = $this->getTemplateFormVars();
+			$helper->tagHeader = $this->editObject;
+            $helper->has_editor = $has_editor;
+            $helper->show_cancel_button = (isset($this->show_form_cancel_button)) ? $this->show_form_cancel_button : ($this->display == 'add' || $this->display == 'edit');
+
+           
+            !is_null($this->base_tpl_form) ? $helper->base_tpl = $this->base_tpl_form : '';
+            
+            !is_null($this->base_tpl_form) ? $helper->base_tpl = $this->base_tpl_form : '';
+
+            
+
+            $form = $helper->generateForm($this->fields_form);
+
+            return $form;
+        }
+
+    }
+    
+
+    public function renderFormWizard() {
+
+        
+		if (!$this->default_form_language) {
+            $this->getLanguages();
+        }
+
+        if (Tools::getValue('submitFormAjax')) {
+            $this->content .= $this->context->smarty->fetch('form_submit_ajax.tpl');
+        }
+
+        if ($this->fields_form && is_array($this->fields_form)) {
+
+            
+			
+            $fieldsValue = $this->getWizardFieldsValues($this->object);
+			
+			if($this->form_ajax) {
+				$fieldsValue['ajax'] = $this->form_ajax;
+			}
+			$fieldsValue['action'] = $this->form_action;
+			
+            $has_editor = false;
+            if($this->composer_editor) {
+                $has_editor = true;
+            }
+
+            $helper = new HelperFormWizard($this);
+            $this->setHelperDisplay($helper);
+            $helper->controllerName = $this->controller_name;
+            $helper->header_title = $this->editObject;
+            $helper->className = $this->className;
+			$helper->form_extraCss = $this->extracss;
+			$helper->form_extraJs = $this->extraJs;
+            $helper->js_def = $this->jsDef;
+            $helper->fields_value = $fieldsValue;
+            $helper->submit_action = $this->submit_action;
+            $helper->tpl_vars = $this->getTemplateFormVars();
+			$helper->tagHeader = $this->editObject;
+            $helper->has_editor = $has_editor;
+            $helper->js_def = $this->js_def;
+            $helper->show_cancel_button = (isset($this->show_form_cancel_button)) ? $this->show_form_cancel_button : ($this->display == 'add' || $this->display == 'edit');
+
+           
+            !is_null($this->base_tpl_form) ? $helper->base_tpl = $this->base_tpl_form : '';
+
+            
+
+            $form = $helper->generateForm($this->fields_form);
+
+            return $form;
+        }
+
+    }
+    
+    public function setHelperDisplay(Helper $helper) {
+
+        // tocheck
+
+        if ($this->object && $this->object->id) {
+            $helper->id = $this->object->id;
+        }
+
+        // @todo : move that in Helper
+        $helper->title = '';
+        $helper->toolbar_btn = $this->toolbar_btn;
+        $helper->show_toolbar = $this->show_toolbar;
+        $helper->toolbar_scroll = $this->toolbar_scroll;
+        $helper->override_folder = $this->tpl_folder;
+        $helper->currentIndex = static::$currentIndex;
+        $helper->className = $this->className;
+        $helper->table = $this->table;
+        $helper->name_controller = Tools::getValue('controller');
+        $helper->identifier = $this->identifier;
+        $helper->token = $this->token;
+        $helper->languages = $this->_languages;
+        $helper->default_form_language = $this->default_form_language;
+        $helper->allow_employee_form_lang = $this->allow_employee_form_lang;
+        $helper->controller_name = $this->controller_name;
+        $helper->bootstrap = $this->bootstrap;
+
+
+        $this->helper = $helper;
+    }
+
+    
+    public function getTemplateFormVars() {
+
+        return $this->tpl_form_vars;
+    }
+    
+    public function ajaxProcessGetAccountTypeRequest() {
+
+        
+        $type = Tools::getValue('type');
+        fwrite($file,$type);
+        switch ($type) {
+        case 'Banks':
+            die(Tools::jsonEncode(StdAccount::getBankStdAccount()));
+            break;
+        case 'Profits':
+            die(Tools::jsonEncode(StdAccount::getProfitsStdAccount()));
+            break;
+        case 'Expenses':
+            die(Tools::jsonEncode(StdAccount::getExpensesStdAccount()));
+            break;
+        case 'VAT':
+            die(Tools::jsonEncode(StdAccount::getVATStdAccount()));
+            break;
+        case 'Supplier':
+            die(Tools::jsonEncode(StdAccount::getAccountByidType(4)));
+            break;
+        case 'Customer':
+            die(Tools::jsonEncode(StdAccount::getAccountByidType(5)));
+            break;
+        case 'Others':
+            die(Tools::jsonEncode(StdAccount::getAccountByidType(6)));
+            break;
+        case 'Capital':
+            die(Tools::jsonEncode(StdAccount::getAccountByidType(1)));
+            break;
+        }
+
     }
     
     public function getFieldValue($obj, $key, $idLang = null) {
