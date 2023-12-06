@@ -1748,46 +1748,6 @@ abstract class PhenyxController {
 
     }
     
-     public function manageFieldsVisibility($fields) {
-
-        $return = [];
-
-        if (is_array($fields)) {
-
-            foreach ($fields as $field) {
-                $name = '';
-                $hidden = false;
-                $hiddenable = 'yes';
-
-                foreach ($field as $key => $value) {
-
-                    if ($key == 'title') {
-                        $name = $value;
-                    }
-
-                    if ($key == 'hidden') {
-                        $hidden = $value;
-                    }
-
-                    if ($key == 'hiddenable') {
-                        $hiddenable = $value;
-                        if($value == 'no') {
-                            $name = $field['dataIndx'];
-                        }
-                    }
-
-                }
-
-                $return[$name] = $field;
-                $return[$name]['hidden'] = $hidden;
-                $return[$name]['hiddenable'] = $hiddenable;
-            }
-
-        }
-
-        return $return;
-    }
-
 
 
     protected function ajaxDie($value = null, $controller = null, $method = null) {
