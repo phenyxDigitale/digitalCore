@@ -2361,7 +2361,11 @@ abstract class PhenyxController {
         $request = Hook::exec('action' . $this->controller_name . 'getRequestModifier', ['paramRequest' => $this->paramRequest], null, true);
         
         if(is_array($request)) {
-            $this->paramRequest = array_shift($request);
+            foreach($request as $plugin => $result) {
+                if(is_array($result)) {
+                    $this->paramRequest = $result;
+                }
+            }            
         }
         return null;
     }
