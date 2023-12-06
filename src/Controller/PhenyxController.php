@@ -1608,6 +1608,187 @@ abstract class PhenyxController {
 
         return Tools::getValue($key . ($idLang ? '_' . $idLang : ''), $defaultValue);
     }
+    
+    public function getExportFields() {
+
+        if (method_exists($this, 'getFields')) {
+
+            $fields = [];
+            $gridFields = $this->{'getFields'}
+
+            ();
+
+            if (is_array($gridFields) && count($gridFields)) {
+
+                foreach ($gridFields as $grifField) {
+
+                    if (isset($grifField['hidden']) && $grifField['hidden'] && isset($grifField['hiddenable']) && $grifField['hiddenable'] == 'no') {
+                        continue;
+                    }
+
+                    if (isset($grifField['dataIndx'])) {
+                        $fields[$grifField['dataIndx']] = $grifField['title'];
+                    }
+
+                }
+
+            }
+
+            return $fields;
+
+        }
+
+        return false;
+
+    }
+
+    public function getUpdatableFields() {        
+         
+        $class = new $this->className();
+        return $class->getUpdatableFields();       
+
+    }
+
+    public function getUpdatableFieldType($dataIndx) {
+
+        $gridFields = $this->getFields();
+
+        if (is_array($gridFields) && count($gridFields)) {
+
+           foreach ($gridFields as $grifField) {
+
+               if ($grifField['dataIndx'] == $dataIndx) {
+                   return $grifField;
+               }
+           }
+       }
+
+    }
+
+    public function removeRequestFields($requests) {
+        
+        $objects = [];
+        $gridFields = $this->getFields();
+        
+        if(is_array($gridFields)) {
+            $fields = [];
+            foreach ($gridFields as $grifField) {
+                $fields[] = $grifField['dataIndx'];
+            }
+
+            foreach ($requests as $key => $object) {
+
+                foreach ($object as $field => $value) {
+                    if (in_array($field, $fields)) {
+                        $objects[$key][$field] = $value;
+                    }
+                }
+            }
+
+        }
+        return $objects;
+        
+    }
+
+    public function getExportFormatFields() {
+
+        if (method_exists($this, 'getFields')) {
+
+            $fields = [];
+            $gridFields = $this->{'getFields'}
+
+            ();
+
+            if (is_array($gridFields) && count($gridFields)) {
+
+                foreach ($gridFields as $grifField) {
+
+                    if (isset($grifField['hidden']) && $grifField['hidden'] && isset($grifField['hiddenable']) && $grifField['hiddenable'] == 'no') {
+                        continue;
+                    }
+
+                    if (isset($grifField['dataIndx'])) {
+
+                        if (isset($grifField['exWidth'])) {
+                            $fields[$grifField['dataIndx']]['width'] = $grifField['exWidth'];
+                        }
+
+                        if (isset($grifField['halign'])) {
+                            $fields[$grifField['dataIndx']]['halign'] = $grifField['halign'];
+                        } else {
+                            $fields[$grifField['dataIndx']]['halign'] = 'Alignment::HORIZONTAL_LEFT';
+                        }
+
+                        if (isset($grifField['numberFormat'])) {
+                            $fields[$grifField['dataIndx']]['numberFormat'] = $grifField['numberFormat'];
+                        }
+
+                        if (isset($grifField['dataType']) && $grifField['dataType'] == 'date') {
+                            $fields[$grifField['dataIndx']]['date'] = true;
+
+                        }
+
+                        if (isset($grifField['exportType']) && $grifField['exportType'] == 'Image') {
+                            $fields[$grifField['dataIndx']]['image'] = true;
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+            return $fields;
+
+        }
+
+        return false;
+
+    }
+    
+     public function manageFieldsVisibility($fields) {
+
+        $return = [];
+
+        if (is_array($fields)) {
+
+            foreach ($fields as $field) {
+                $name = '';
+                $hidden = false;
+                $hiddenable = 'yes';
+
+                foreach ($field as $key => $value) {
+
+                    if ($key == 'title') {
+                        $name = $value;
+                    }
+
+                    if ($key == 'hidden') {
+                        $hidden = $value;
+                    }
+
+                    if ($key == 'hiddenable') {
+                        $hiddenable = $value;
+                        if($value == 'no') {
+                            $name = $field['dataIndx'];
+                        }
+                    }
+
+                }
+
+                $return[$name] = $field;
+                $return[$name]['hidden'] = $hidden;
+                $return[$name]['hiddenable'] = $hiddenable;
+            }
+
+        }
+
+        return $return;
+    }
+
+
 
     protected function ajaxDie($value = null, $controller = null, $method = null) {
 
