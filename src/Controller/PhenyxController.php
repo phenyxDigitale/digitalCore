@@ -1562,6 +1562,26 @@ abstract class PhenyxController {
 
     }
     
+    protected function filterTabPluginList() {
+
+        static $listIsFiltered = null;
+
+        if ($listIsFiltered !== null) {
+            return;
+        }
+
+        libxml_use_internal_errors(true);
+
+        $allPluginList = [];
+
+        libxml_clear_errors();
+
+        $this->tab_plugins_list['slider_list'] = array_intersect($this->tab_plugins_list['slider_list'], $allPluginList);
+
+        $listIsFiltered = true;
+    }
+
+    
     protected function addPageHeaderToolBarPluginsListButton() {
 
         $this->filterTabPluginList();
@@ -1626,6 +1646,138 @@ abstract class PhenyxController {
         }
 
         die(Tools::jsonEncode($result));
+    }
+    
+    public function ajaxProcessDuplicateObject() {
+        
+        $this->checkAccess();
+        if ($this->tabAccess['edit'] == 1) {
+
+            $idObject = Tools::getValue('idObject');
+            $objet = new $this->className($idObject);
+            $this->object = $objet->duplicateObject();
+
+            $_GET[$this->identifier] = $this->object->id;
+            $_GET['controller'] = $this->controller_name;
+            $_GET['update' . $this->table] = "";
+            
+            
+            $html = $this->renderForm();
+
+            $li = '<li id="uperEdit' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentEdit' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeEditFormObject(\''. $this->controller_name . '\');" class="close tabdetail" data-id="uperEdit' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
+            $html = '<div id="contentEdit' . $this->controller_name . '" class="panel col-lg-12" style="display; flow-root;">' .  $html  . '</div>';
+
+            $result = [
+                'success' => true,
+                'li'      => $li,
+                'html'    => $html,
+            ];
+        } else {
+            $result = [
+                'success' => false,
+                'message' => 'Votre profile administratif ne vous permet pas d‘éditer cette objet',
+            ];
+        }
+
+        die(Tools::jsonEncode($result));
+    }
+
+    public function ajaxProcessAddObject() {
+
+        $this->checkAccess();
+        $_GET['controller'] = $this->controller_name;
+        $_GET['add' . $this->table] = "";
+        $_GET['id_parent'] = Tools::getValue('idParent', '');
+
+        $scripHeader = Hook::exec('displayBackOfficeHeader', []);
+        $scriptFooter = Hook::exec('displayBackOfficeFooter', []);
+        $html = $this->renderForm();
+
+        $li = '<li id="uperAdd' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentAdd' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeAddFormObject(\'' . $this->controller_name . '\')" class="close tabdetail" data-id="uperAdd' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
+        $html = '<div id="contentAdd' . $this->controller_name . '" class="panel col-lg-12" style="display; flow-root;">' . $scripHeader . $html . $scriptFooter . '</div>';
+
+        $result = [
+            'li'   => $li,
+
+            'html' => $html,
+        ];
+
+        die(Tools::jsonEncode($result));
+    }
+
+    public function ajaxProcessDeleteObject() {
+
+        $this->checkAccess();
+        $idObject = Tools::getValue('idObject');
+        
+        $this->className = Tools::getValue('targetClass');
+
+        $this->object = new $this->className($idObject);
+
+        $this->object->delete();
+
+        $result = [
+            'success' => true,
+            'message' => 'La suppression s‘est déroulée avec succès.',
+        ];
+
+        die(Tools::jsonEncode($result));
+    }
+
+    public function ajaxProcessUpdateObject() {
+
+        $this->checkAccess();
+        $idObject = Tools::getValue($this->identifier);
+        $this->object = new $this->className($idObject);
+
+        $this->copyFromPost($this->object, $this->table);
+
+        $this->beforeUpdate($this->object);
+
+        $result = $this->object->update();
+
+        $this->afterUpdate($this->object);
+
+        if ($result) {
+
+            $return = [
+                'success' => true,
+                'message' => sprintf($this->la('L‘objet de type % a été mise à jour avec succès'), $this->className),
+            ];
+        } else {
+            $return = [
+                'success' => false,
+                'message' => $this->la('Une erreur s\'est produite en essayant de mettre à jour cet objet'),
+            ];
+        }
+
+        die(Tools::jsonEncode($return));
+    }
+
+    public function ajaxProcessAddNewAjaxObject() {
+
+        $this->checkAccess();
+        $this->object = new $this->className();
+
+        $this->copyFromPost($this->object, $this->table);
+
+        $this->beforeAdd($this->object);
+
+        $result = $this->object->update();
+
+        $this->afterAdd($this->object);
+
+        if ($result) {
+            $this->afterAdd($this->object);
+
+        } else {
+            $return = [
+                'success' => false,
+                'message' => $this->la('Une erreur s\'est produite en essayant d‘ajouter cet objet'),
+            ];
+            die(Tools::jsonEncode($return));
+        }
+
     }
 
     protected function isCached($template, $cacheId = null, $compileId = null) {
@@ -1950,6 +2102,36 @@ abstract class PhenyxController {
         }
 
     }
+    
+    public function getLanguages() {
+
+        $cookie = $this->context->cookie;
+        $this->allow_employee_form_lang = (int) Configuration::get('EPH_BO_ALLOW_EMPLOYEE_FORM_LANG');
+
+        if ($this->allow_employee_form_lang && !$cookie->employee_form_lang) {
+            $cookie->employee_form_lang = (int) $this->default_language;
+        }
+
+        $langExists = false;
+        $this->_languages = Language::getLanguages(false);
+
+        foreach ($this->_languages as $lang) {
+
+            if (isset($cookie->employee_form_lang) && $cookie->employee_form_lang == $lang['id_lang']) {
+                $langExists = true;
+            }
+
+        }
+
+        $this->default_form_language = $langExists ? (int) $cookie->employee_form_lang : (int) $this->default_language;
+
+        foreach ($this->_languages as $k => $language) {
+            $this->_languages[$k]['is_default'] = (int) ($language['id_lang'] == $this->default_form_language);
+        }
+
+        return $this->_languages;
+    }
+
     
     public function setHelperDisplay(Helper $helper) {
 
