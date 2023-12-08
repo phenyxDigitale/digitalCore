@@ -442,11 +442,11 @@ abstract class PluginGraph extends Plugin {
                 $context = Context::getContext();
             }
 
-            if (!Validate::isLoadedObject($context->user)) {
+            if (!Validate::isLoadedObject($context->employee)) {
                 return false;
             }
 
-            $employee = $context->user;
+            $employee = $context->employee;
         }
 
         if (empty($employee->stats_date_from) || empty($employee->stats_date_to)
