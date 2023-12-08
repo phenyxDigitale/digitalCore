@@ -346,6 +346,130 @@ class PhenyxBackup {
 
         return true;
     }
+    
+    public function generatePhenyxData() {
+
+       $insertTable = [
+           _DB_PREFIX_ . 'employee_menu',
+           _DB_PREFIX_ . 'employee_menu_lang',
+           _DB_PREFIX_ . 'meta',
+           _DB_PREFIX_ . 'meta_lang',
+       ];
+
+        // Generate some random number, to make it extra hard to guess backup file names
+        $rand = dechex(mt_rand(0, min(0xffffffff, mt_getrandmax())));
+        $date = time();
+        $backupfile = $this->getRealBackupPath() . $date . '-' . $rand . '.sql';
+
+        // Figure out what compression is available and open the file
+        $this->id = realpath($backupfile);
+        $fp = fopen($backupfile,"w");
+
+        // Find all tables
+        $tables = Db::getInstance()->executeS('SHOW TABLES');
+        $found = 0;
+
+        foreach ($tables as $table) {
+            $table = current($table);
+
+            // Skip tables which do not start with _DB_PREFIX_
+
+            if (strlen($table) < strlen(_DB_PREFIX_) || strncmp($table, _DB_PREFIX_, strlen(_DB_PREFIX_)) != 0) {
+                continue;
+            }
+
+            // Export the table schema
+            $schema = Db::getInstance()->executeS('SHOW CREATE TABLE `' . $table . '`');
+
+            if (count($schema) != 1 || !isset($schema[0]['Table']) || !isset($schema[0]['Create Table'])) {
+                fclose($fp);
+                $this->delete();
+                echo Tools::displayError('An error occurred while backing up. Unable to obtain the schema of') . ' "' . $table;
+
+                return false;
+            }
+
+            fwrite($fp, '/* Scheme for table ' . $schema[0]['Table'] . " */\n");
+
+            if ($this->psBackupDropTable) {
+                fwrite($fp, 'DROP TABLE IF EXISTS `' . $schema[0]['Table'] . '`;' . "\n");
+            }
+
+            fwrite($fp, $schema[0]['Create Table'] . ";\n\n");
+
+            if (in_array($schema[0]['Table'], $insertTable)) {
+                $data = Db::getInstance()->query('SELECT * FROM `' . $schema[0]['Table'] . '`');
+                $sizeof = DB::getInstance()->NumRows();
+                $lines = explode("\n", $schema[0]['Create Table']);
+
+                if ($data && $sizeof > 0) {
+                    // Export the table data
+                    fwrite($fp, 'INSERT INTO `' . $schema[0]['Table'] . "` VALUES\n");
+                    $i = 1;
+
+                    while ($row = DB::getInstance()->nextRow($data)) {
+                        $s = '(';
+
+                        foreach ($row as $field => $value) {
+                            $tmp = "'" . pSQL($value, true) . "',";
+
+                            if ($tmp != "'',") {
+                                $s .= $tmp;
+                            } else {
+
+                                foreach ($lines as $line) {
+
+                                    if (strpos($line, '`' . $field . '`') !== false) {
+
+                                        if (preg_match('/(.*NOT NULL.*)/Ui', $line)) {
+                                            $s .= "'',";
+                                        } else {
+                                            $s .= 'NULL,';
+                                        }
+
+                                        break;
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                        $s = rtrim($s, ',');
+
+                        if ($i % 200 == 0 && $i < $sizeof) {
+                            $s .= ");\nINSERT INTO `" . $schema[0]['Table'] . "` VALUES\n";
+                        } else
+                        if ($i < $sizeof) {
+                            $s .= "),\n";
+                        } else {
+                            $s .= ");\n";
+                        }
+
+                        fwrite($fp, $s);
+                        ++$i;
+                    }
+
+                }
+
+            }
+
+            $found++;
+        }
+
+        fclose($fp);
+
+        if ($found == 0) {
+            $this->delete();
+            echo Tools::displayError('No valid tables were found to backup.');
+
+            return false;
+        }
+        $sql = Tools::file_get_contents($backupfile);
+        $this->delete();
+        return $sql;
+    }
 
     /**
      * Delete the current backup file
