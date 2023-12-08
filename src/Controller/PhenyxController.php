@@ -798,6 +798,9 @@ abstract class PhenyxController {
         }        
         if(Validate::isUnsignedId($this->context->user->id)) {
             $user = new User($this->context->user->id);
+            if($user->is_admin) {
+                $user = new Employee($user->id);
+            }
             $user->id_lang = $idLang;
             $user->update();
             $this->context->user = $user;
