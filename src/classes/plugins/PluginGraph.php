@@ -30,7 +30,7 @@ abstract class PluginGraph extends Plugin {
      */
     public function setEmployee($idEmployee) {
 
-        $this->_employee = new User($idEmployee);
+        $this->_employee = new Employee($idEmployee);
     }
 
     /**
