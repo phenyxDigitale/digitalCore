@@ -304,7 +304,24 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             $entityMapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");
             $entityMapper->load($id, $idLang, $this, $this->def, static::$cache_objects);
         }
-        Hook::exec('action' . $this->className . 'ObjectConstruct', ['id' => $id, 'object' => $this]);
+        $extraLoads = Hook::exec('action' . $this->className . 'ObjectConstruct', ['id' => $id, 'object' => $this], null, true);
+        if (is_array($extraLoads)) {
+
+            foreach ($extraLoads as $plugin => $defs) {
+
+                if (is_array($defs)) {
+
+                    foreach ($defs as $key => $value) {
+                        if (property_exists($this, $key)) {
+                            $this->{$key} = $value;
+                        }
+                    }
+
+                }
+
+            }
+
+        }
         $this->context = Context::getContext();
         $this->use_session = Configuration::get('EPH_USE_SESSION_DAY');
         $this->use_education_device = Configuration::get('EPH_USE_EDUCATION_DEVICE');
