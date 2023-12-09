@@ -22,6 +22,10 @@ abstract class PhenyxController {
     public $push_js_files = [];
 
     public $push_css_files = [];
+    
+    public $extracss;
+
+    public $extra_vars;
 
     public $ajax = false;
 
