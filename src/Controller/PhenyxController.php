@@ -389,6 +389,7 @@ abstract class PhenyxController {
         }
 
         $this->context = Context::getContext();
+        $this->context->getExtraContextVars();
         $this->context->controller = $this;
         $this->getExtraPhenyxVars();
 

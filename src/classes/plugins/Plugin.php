@@ -2366,12 +2366,13 @@ abstract class Plugin {
 
     public function getExceptions($idHook, $dispatch = false) {
 
-        return Plugin::getExceptionsStatic($this->id, $idHook, $dispatch);
+        return Plugin::getExceptionsStatic($this->id, $idHook, $this->context, $dispatch);
     }
 
-    public static function getExceptionsStatic($id_plugin, $id_hook, $dispatch = false) {
+    public static function getExceptionsStatic($id_plugin, $id_hook, $context, $dispatch = false) {
 
         $cache_id = 'exceptionsCache';
+        
 
         if (!Cache::isStored($cache_id)) {
             $exceptions_cache = [];
@@ -2407,21 +2408,20 @@ abstract class Plugin {
 
         if ($dispatch) {
 
-            foreach ([Context::getContext()->company->id] as $company_id) {
+          
 
-                if (isset($exceptions_cache[$key], $exceptions_cache[$key][$company_id])) {
-                    $array_return[$company_id] = $exceptions_cache[$key][$company_id];
+                if (isset($exceptions_cache[$key], $exceptions_cache[$key][$context->company->id])) {
+                    $array_return[$context->company->id] = $exceptions_cache[$key][$context->company->id];
                 }
 
-            }
 
         } else {
 
-            foreach ([Context::getContext()->company->id] as $company_id) {
+            
 
-                if (isset($exceptions_cache[$key], $exceptions_cache[$key][$company_id])) {
+                if (isset($exceptions_cache[$key], $exceptions_cache[$key][$context->company->id])) {
 
-                    foreach ($exceptions_cache[$key][$company_id] as $file) {
+                    foreach ($exceptions_cache[$key][$context->company->id] as $file) {
 
                         if (!in_array($file, $array_return)) {
                             $array_return[] = $file;
@@ -2431,7 +2431,7 @@ abstract class Plugin {
 
                 }
 
-            }
+           
 
         }
 
