@@ -1979,24 +1979,28 @@ abstract class Plugin {
                 return false;
             }
         }
+        $idTab = (int) EmployeeMenu::getIdFromClassName($class_name); 
+        if(!$idTab) {
+            $tab = new EmployeeMenu();
+            if($function) {
+                $tab->function = 'openAjaxController('.$class_name.')';
+            }
         
-        $tab = new EmployeeMenu();
-        if($function) {
-            $tab->function = 'openAjaxController('.$class_name.')';
-        }
-        
-        $tab->plugin = $this->name;
-        $tab->id_parent = $idParent;
-        $tab->class_name = $class_name;
-        $tab->active = 1;
-        $tab->name = [];
+            $tab->plugin = $this->name;
+            $tab->id_parent = $idParent;
+            $tab->class_name = $class_name;
+            $tab->active = 1;
+            $tab->name = [];
 
-        foreach (Language::getLanguages(true) as $lang) {
-            $tab->name[$lang['id_lang']] = $translator->getGoogleTranslation($name, $language['iso_code']);
-        }
+            foreach (Language::getLanguages(true) as $lang) {
+                $tab->name[$lang['id_lang']] = $translator->getGoogleTranslation($name, $language['iso_code']);
+            }
 
-        unset($lang);
-        return  $tab->add(true, false, true, $position);
+            unset($lang);
+            return  $tab->add(true, false, true, $position);
+        } else {
+            return true;
+        }
         
          
     }
