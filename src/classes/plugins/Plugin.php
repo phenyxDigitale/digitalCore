@@ -1967,7 +1967,7 @@ abstract class Plugin {
         }        
     }
     
-    public function instalPluginTab($class_name, $name, $function = true, $idParent = null, $parentName = null) {
+    public function instalPluginTab($class_name, $name, $function = true, $idParent = null, $parentName = null, $position = null) {
         
         $translator = Language::getInstance();
         if(is_null($parentName) && is_null($idParent)) {
@@ -1996,7 +1996,7 @@ abstract class Plugin {
         }
 
         unset($lang);
-        return  $tab->add();
+        return  $tab->add(true, false, true, $position);
         
          
     }
