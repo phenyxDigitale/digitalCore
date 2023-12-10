@@ -2028,10 +2028,10 @@ abstract class Plugin {
         $hookPlugin = new HookPlugin($id_hook);
         $hookPlugin->delete();        
 
-        $hook = new Hook($id_hook);
+        $hook = new Hook($id_hook, $this->context->language->id);
         $hook->plugins = $hook->getPlugins(true);
         $hook->available_plugins = $hook->getPossiblePluginList(true);
-        $hook->update();
+        $hook->update(true);
 
     }
 
