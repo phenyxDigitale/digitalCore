@@ -1967,6 +1967,40 @@ abstract class Plugin {
         }        
     }
     
+    public function instalPluginTab($class_name, $name, $function = true, $idParent = null, $parentName = null) {
+        
+        $translator = Language::getInstance();
+        if(is_null($parentName) && is_null($idParent)) {
+             return false;
+        }
+        if(!is_null($parentName)) {
+            $idParent = (int) EmployeeMenu::getIdFromClassName($parentName); 
+            if(!$idParent) {
+                return false;
+            }
+        }
+        
+        $tab = new EmployeeMenu();
+        if($function) {
+            $tab->function = 'openAjaxController('.$class_name.')';
+        }
+        
+        $tab->plugin = $this->name;
+        $tab->id_parent = $idParent;
+        $tab->class_name = $class_name;
+        $tab->active = 1;
+        $tab->name = [];
+
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = $translator->getGoogleTranslation($name, $language['iso_code']);
+        }
+
+        unset($lang);
+        return  $tab->add();
+        
+         
+    }
+    
     public function inActivateTab() {
         
         $tabs = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
