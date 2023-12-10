@@ -3875,7 +3875,7 @@ FileETag none
              * Check if the Imagick::queryFormats method exists
              */
 
-            if (!method_exists(\Imagick::, 'queryFormats')) {
+            if (!method_exists(\Imagick::class, 'queryFormats')) {
                 return false;
             }
 
