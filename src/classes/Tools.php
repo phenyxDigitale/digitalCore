@@ -5305,7 +5305,7 @@ FileETag none
         return $langs;
     }
 
-    public static function generateTabs() {
+    public static function generateTabs(Context $context) {
 
         $hookBars = Hook::exec('actionAdminTabs', [], null, true);
 
@@ -5317,7 +5317,7 @@ FileETag none
 
         } else {
 
-            $context = Context::getContext();
+            
 
             $topbars = EmployeeMenu::getEmployeeMenus($context->language->id, 1);
 

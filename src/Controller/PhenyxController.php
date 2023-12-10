@@ -1441,9 +1441,9 @@ abstract class PhenyxController {
         die(Tools::jsonEncode($result));
     }
 
-    public function generateTabs() {        
+    public function generateTabs(Context $context) {        
 
-        return Tools::generateTabs();
+        return Tools::generateTabs($context);
     }
 
     protected function initTabPluginList() {
