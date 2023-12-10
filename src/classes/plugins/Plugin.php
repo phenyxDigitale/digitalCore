@@ -1983,7 +1983,7 @@ abstract class Plugin {
         if(!$idTab) {
             $tab = new EmployeeMenu();
             if($function) {
-                $tab->function = 'openAjaxController('.$class_name.')';
+                $tab->function = 'openAjaxController(\''.$class_name.'\')';
             }
         
             $tab->plugin = $this->name;
