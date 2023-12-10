@@ -5347,7 +5347,7 @@ FileETag none
                         continue;
                     }
 
-                    if ($subTab['master'] && !$employee->master_admin) {
+                    if ($subTab['master'] && !$context->employee->master_admin) {
                         unset($subTabs[$index2]);
                         continue;
                     }
