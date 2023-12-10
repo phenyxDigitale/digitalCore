@@ -22,7 +22,7 @@ abstract class PhenyxController {
     public $push_js_files = [];
 
     public $push_css_files = [];
-    
+
     public $extracss;
 
     public $extra_vars;
@@ -30,26 +30,26 @@ abstract class PhenyxController {
     public $ajax = false;
 
     public $ajaxLayout = false;
-    
+
     public $layout = 'layout.tpl';
     /** @var string Controller type. Possible values: 'front', 'pluginfront', 'admin', 'pluginadmin' */
     public $controller_type;
 
     public $php_self;
-    
+
     public $table = 'configuration';
-    
+
     public $className;
-    
-     public $tabAccess;
-    
+
+    public $tabAccess;
+
     public $identifier = false;
 
     public $link_rewrite;
 
     protected $context;
-    
-     /** @var string */
+
+    /** @var string */
     protected $display;
 
     protected $display_header;
@@ -67,23 +67,23 @@ abstract class PhenyxController {
     protected $status = '';
 
     protected $redirect_after = null;
-    
+
     protected $total_filesize = 0;
-    
+
     protected $total_query_time = 0;
-    
+
     protected $total_global_var_size = 0;
-    
+
     protected $total_plugins_time = 0;
-    
+
     protected $total_plugins_memory = 0;
-    
+
     protected $global_var_size = [];
 
     protected $total_cache_size;
 
     protected $plugins_perfs = [];
-    
+
     protected $hooks_perfs = [];
 
     protected $array_queries = [];
@@ -91,69 +91,69 @@ abstract class PhenyxController {
     protected $profiler = [];
 
     public $content_ajax = '';
-    
+
     public $controller_name;
-    
+
     protected $paragridScript;
-    
+
     public $contextMenuItems = [];
-    
+
     public $paramToolBarItems = [];
-    
+
     public $paramClassName;
-	
-	public $paramController_name;
-	
-	public $paramTable;
-	
-	public $paramIdentifier;
-    
-    public $uppervar;    
-    
-	public $paramDataModel;
-	
-	public $paramColModel;
-    
+
+    public $paramController_name;
+
+    public $paramTable;
+
+    public $paramIdentifier;
+
+    public $uppervar;
+
+    public $paramDataModel;
+
+    public $paramColModel;
+
     public $paramCellSave;
-    
+
     public $requestModel;
-    
+
     public $requestField = null;
-    
+
     public $requestCustomModel = null;
-    
+
     public $requestComplementaryModel;
-    
+
     public $paramHeight;
-    
+
     public $paramWidth;
-    
+
     public $heightModel = 217;
-    
+
     public $paramPageModel = [
         'type'       => '\'local\'',
         'rPP'        => 100,
         'rPPOptions' => [10, 20, 40, 50, 100, 200, 500],
     ];
-    
+
     public $showTop = 1;
-    
+
     public $paramCreate = '';
-    
+
     public $refresh;
-    
+
     public $paramComplete;
-    
+
     public $paramLoad;
-    
+
     public $paramSelectModelType = 'row';
-    
+
     public $paramToolbar = [];
-    
+
     public $columnBorders = 0;
-    
+
     public $rowBorders = 0;
-    
+
     public $filterModel = [
         'on'          => true,
         'mode'        => '\'AND\'',
@@ -170,203 +170,211 @@ abstract class PhenyxController {
             ],
         ],
     ];
-    
+
     public $editorBegin;
-    
+
     public $editorBlur;
-    
+
     public $editorEnd;
-    
+
     public $editorFocus;
-    
+
     public $rowInit = '';
-    
+
     public $rowSelect;
-    
+
     public $selectEnd;
-    
+
     public $rowClick = '';
 
     public $rowDblClick = '';
-    
+
     public $paramChange = '';
-    
+
     public $showTitle = true;
-    
+
     public $paramTitle;
-    
+
     public $summaryData = '';
-    
+
     public $editModel;
-    
+
     public $sortModel;
 
     public $beforeSort;
-    
+
     public $paramSort;
 
     public $beforeFilter;
 
     public $beforeTableView;
-    
+
     public $dropOn = false;
 
     public $dragOn = false;
-    
-     public $dragdiHelper;
+
+    public $dragdiHelper;
 
     public $dragclsHandle;
-    
-     public $dragModel;
+
+    public $dragModel;
 
     public $dropModel;
-    
-    public $moveNode;   
+
+    public $moveNode;
 
     public $treeModel;
-    
+
     public $treeExpand;
-    
+
     public $paramCheck;
-    
+
     public $showNumberCell = 0;
-    
+
     public $groupModel;
 
     public $summaryTitle;
-    
+
     public $postRenderInterval;
-    
+
     public $cellDblClick;
-    
+
     public $paramContextMenu;
-    
+
     public $functionContextMenu = false;
-    
+
     public $paramExtraFontcion = '';
-    
+
     public $gridAfterLoadFunction;
-	    
+
     public $gridFunction;
-    
+
     public $is_subModel = false;
-    
+
     public $onlyObject = false;
-    
+
     public $needRequestModel = true;
-    
+
     public $needColModel = true;
-    
+
     public $detailModel;
-    
+
     public $subDetailModel;
-    
-    public $detailContextMenu;    
-    
+
+    public $detailContextMenu;
+
     public $showHeader = 1;
-    
+
     public $maxHeight;
-    
+
     public $paramMinWidth;
-    
+
     public $showToolbar = true;
-    
+
     public $formulas = false;
-    
+
     public $paramEditable = 1;
-    
+
     public $editorKeyUp;
-    
+
     public $cellClick;
-    
+
     public $beforeCellClick;
-    
-    public $stripeRows =1;
-    
+
+    public $stripeRows = 1;
+
     public $autoAddRow = 0;
-    
+
     public $autoAddCol = 0;
-    
+
     public $animModel = [];
-    
+
     public $columnTemplate;
-    
+
     public $tabModel;
-    
+
     public $paramEditor = 1;
-    
+
     public $paramhistory;
-    
+
     public $paramAutoRow;
-    
+
     public $showBottom = true;
-    
+
     public $paramWrap = true;
-    
+
     public $manageHeaderFields = false;
-    
+
     public $default_language;
-    
+
     public $ajaxOptions;
-    
+
     protected $publicName;
-    
+
     protected $action;
-    
+
     public $targetController;
-    
+
     public $errors = [];
-    
+
     public $warnings = [];
-    
+
     /** @var bool */
     public $bootstrap = false;
-    
-     public $lang = false;
-    
+
+    public $lang = false;
+
     public $configurationField = 0;
-    
-     public $updateableFields;
-    
+
+    public $updateableFields;
+
     protected $fields_form;
-    
+
     public $fields_value = [];
-    
+
     protected $toolbar_btn = null;
     /** @var bool Scrolling toolbar */
     protected $toolbar_scroll = true;
-    
+
     public $token;
-    
+
     protected $helper;
 
     protected $submit_action;
-    
-     public $base_tpl_form = null;
-    
+
+    public $base_tpl_form = null;
+
     public function getExtraPhenyxVars() {
+
         $extraVars = Hook::exec('actionPhenyxControllerGetExtraVars', ['controller_type' => $this->controller_type], null, true);
-        if(is_array($extraVars)) {
+
+        if (is_array($extraVars)) {
             $extraVars = array_shift($extraVars);
-            if(is_array($extraVars)) {
-                foreach($extraVars as $key => $value) {
-                    if(isset($value)) {
-                        $this->{$key} = $value;
+
+            if (is_array($extraVars)) {
+
+                foreach ($extraVars as $key => $value) {
+
+                    if (isset($value)) {
+                        $this->{$key}
+                        = $value;
                     } else {
                         $this->{$key};
                     }
+
                 }
+
             }
-            
-        }     
+
+        }
+
     }
 
     public function __construct() {
-        
-         if (_EPH_DEBUG_PROFILING_ || _EPH_ADMIN_DEBUG_PROFILING_) {
-            $this->profiler[] = $this->stamp('config');
-         }
 
+        if (_EPH_DEBUG_PROFILING_ || _EPH_ADMIN_DEBUG_PROFILING_) {
+            $this->profiler[] = $this->stamp('config');
+        }
 
         if (is_null($this->display_header)) {
             $this->display_header = true;
@@ -393,11 +401,11 @@ abstract class PhenyxController {
         ) {
             header('X-UA-Compatible: IE=edge,chrome=1');
         }
-        
+
         if (_EPH_DEBUG_PROFILING_ || _EPH_ADMIN_DEBUG_PROFILING_) {
             $this->profiler[] = $this->stamp('__construct');
         }
-        
+
         $this->paramCreate = 'function (evt, ui) {
             buildHeadingAction(\'' . 'grid_' . $this->controller_name . '\', \'' . $this->controller_name . '\');
         }';
@@ -408,72 +416,78 @@ abstract class PhenyxController {
 
         return new $className($auth, $ssl);
     }
-    
+
     public function generateParaGridToolBar() {
-        
+
         $toolBar = new ParamToolBar();
-        
+
         $paramToolBarItems = Hook::exec('action' . $this->controller_name . 'generateParaGridToolBar', [], null, true);
-        
-        if(is_array($paramToolBarItems)) {
+
+        if (is_array($paramToolBarItems)) {
             $paramToolBarItems = array_shift($paramToolBarItems);
-            if(is_array($paramToolBarItems)) {
-                foreach($paramToolBarItems as $toolBars) {
+
+            if (is_array($paramToolBarItems)) {
+
+                foreach ($paramToolBarItems as $toolBars) {
                     $this->paramToolBarItems[] = $toolBars;
                 }
+
             }
+
         }
-        
-        $toolBar->items = $this->paramToolBarItems;        
-        
+
+        $toolBar->items = $this->paramToolBarItems;
+
         return $toolBar->buildToolBar();
     }
 
-    
     public function generateParaGridContextMenu() {
-        
+
         $contextMenu = new ParamContextMenu($this->className, $this->controller_name);
-       
+
         $contextMenuItems = Hook::exec('action' . $this->controller_name . 'generateParaGridContextMenu', ['class' => $this->className], null, true);
-        
-        if(!empty($contextMenuItems)) {
-            foreach($contextMenuItems as $plugin => $contextMenuItem) {
-                if(is_array($contextMenuItem))
-                foreach($contextMenuItem as $key => $item) {
-                    $this->contextMenuItems[$key] = $item;
+
+        if (!empty($contextMenuItems)) {
+
+            foreach ($contextMenuItems as $plugin => $contextMenuItem) {
+
+                if (is_array($contextMenuItem)) {
+                    foreach ($contextMenuItem as $key => $item) {
+                        $this->contextMenuItems[$key] = $item;
+                    }
                 }
+
             }
-           
+
         }
-        
-        $contextMenu->items = $this->contextMenuItems;       
-        
+
+        $contextMenu->items = $this->contextMenuItems;
+
         return $contextMenu->buildContextMenu();
     }
 
     public function generateParaGridScript($idObjet = null) {
 
-        
-		$paragrid = new ParamGrid(
-			(!empty($this->paramClassName) ?$this->paramClassName : $this->className), 
-			(!empty($this->paramController_name) ?$this->paramController_name : $this->controller_name), 
-			(!empty($this->paramTable) ?$this->paramTable : $this->table), 
-			(!empty($this->paramIdentifier) ?$this->paramIdentifier : $this->identifier)
-		);
-        $paragrid->paramTable = (!empty($this->paramTable) ?$this->paramTable : $this->table);
-        $paragrid->paramController = (!empty($this->paramController_name) ?$this->paramController_name : $this->controller_name);
+        $paragrid = new ParamGrid(
+            (!empty($this->paramClassName) ? $this->paramClassName : $this->className),
+            (!empty($this->paramController_name) ? $this->paramController_name : $this->controller_name),
+            (!empty($this->paramTable) ? $this->paramTable : $this->table),
+            (!empty($this->paramIdentifier) ? $this->paramIdentifier : $this->identifier)
+        );
+        $paragrid->paramTable = (!empty($this->paramTable) ? $this->paramTable : $this->table);
+        $paragrid->paramController = (!empty($this->paramController_name) ? $this->paramController_name : $this->controller_name);
 
         $paragrid->uppervar = $this->uppervar;
-		
-		$paragrid->dataModel = $this->paramDataModel;
-		$paragrid->colModel = $this->paramColModel;
+
+        $paragrid->dataModel = $this->paramDataModel;
+        $paragrid->colModel = $this->paramColModel;
 
         $paragrid->requestModel = $this->requestModel;
         $paragrid->requestField = $this->requestField;
         $paragrid->requestCustomModel = $this->requestCustomModel;
         $paragrid->requestComplementaryModel = $this->requestComplementaryModel;
         $paragrid->width = $this->paramWidth;
-		$paragrid->height = $this->paramHeight;
+        $paragrid->height = $this->paramHeight;
         $paragrid->heightModel = $this->heightModel;
         $paragrid->showNumberCell = $this->showNumberCell;
         $paragrid->pageModel = $this->paramPageModel;
@@ -492,14 +506,14 @@ abstract class PhenyxController {
         $paragrid->rowBorders = $this->rowBorders;
 
         $paragrid->filterModel = $this->filterModel;
-		
-		$paragrid->editorBegin = $this->editorBegin;
+
+        $paragrid->editorBegin = $this->editorBegin;
 
         $paragrid->editorBlur = $this->editorBlur;
-		
-		$paragrid->editorEnd = $this->editorEnd;
-		
-		$paragrid->editorFocus = $this->editorFocus;
+
+        $paragrid->editorEnd = $this->editorEnd;
+
+        $paragrid->editorFocus = $this->editorFocus;
 
         $paragrid->rowInit = $this->rowInit;
         $paragrid->rowSelect = $this->rowSelect;
@@ -515,11 +529,11 @@ abstract class PhenyxController {
         $paragrid->fillHandle = '\'all\'';
         $paragrid->summaryData = $this->summaryData;
         $paragrid->editModel = $this->editModel;
-        
+
         $paragrid->showBottom = $this->showBottom;
-        
+
         $paragrid->load = $this->paramLoad;
-        
+
         $paragrid->sort = $this->paramSort;
 
         $paragrid->sortModel = $this->sortModel;
@@ -542,7 +556,7 @@ abstract class PhenyxController {
         $paragrid->moveNode = $this->moveNode;
 
         $paragrid->treeModel = $this->treeModel;
-        
+
         $paragrid->treeExpand = $this->treeExpand;
 
         $paragrid->check = $this->paramCheck;
@@ -551,8 +565,8 @@ abstract class PhenyxController {
 
         $paragrid->summaryTitle = $this->summaryTitle;
         $paragrid->wrap = $this->paramWrap;
-		
-		$paragrid->postRenderInterval = $this->postRenderInterval;
+
+        $paragrid->postRenderInterval = $this->postRenderInterval;
 
         $paragrid->contextMenu = $this->paramContextMenu;
         $paragrid->functionContextMenu = $this->functionContextMenu;
@@ -560,38 +574,38 @@ abstract class PhenyxController {
         $paragrid->gridExtraFunction = $this->paramExtraFontcion;
 
         $paragrid->gridAfterLoadFunction = $this->gridAfterLoadFunction;
-        
+
         $paragrid->gridFunction = $this->gridFunction;
-        
+
         $paragrid->is_subModel = $this->is_subModel;
-        
+
         $paragrid->onlyObject = $this->onlyObject;
-        
+
         $paragrid->needRequestModel = $this->needRequestModel;
         $paragrid->needColModel = $this->needColModel;
-        
+
         $paragrid->detailModel = $this->detailModel;
-        
+
         $paragrid->subDetailModel = $this->subDetailModel;
-        
+
         $paragrid->detailContextMenu = $this->detailContextMenu;
-        
+
         $paragrid->showHeader = $this->showHeader;
-        
+
         $paragrid->maxHeight = $this->maxHeight;
-        
+
         $paragrid->minWidth = $this->paramMinWidth;
-        
+
         $paragrid->showToolbar = $this->showToolbar;
-        
+
         $paragrid->animModel = $this->animModel;
-        
+
         $paragrid->formulas = $this->formulas;
-        
+
         $paragrid->editable = $this->paramEditable;
-        
+
         $paragrid->editorKeyUp = $this->editorKeyUp;
-        
+
         $paragrid->autoAddRow = $this->autoAddRow;
         $paragrid->autoAddCol = $this->autoAddCol;
         $paragrid->columnTemplate = $this->columnTemplate;
@@ -600,17 +614,17 @@ abstract class PhenyxController {
         $paragrid->history = $this->paramhistory;
         $paragrid->autoRow = $this->paramAutoRow;
         $paragrid->beforeCellClick = $this->beforeCellClick;
-        
-        
 
         $option = $paragrid->generateParaGridOption();
-        
+
         $script = $paragrid->generateParagridScript();
 
         $this->paragridScript = $script;
-        if($this->is_subModel) {
+
+        if ($this->is_subModel) {
             return $this->paragridScript;
         }
+
         return '<script type="text/javascript">' . PHP_EOL . $this->paragridScript . PHP_EOL . '</script>';
     }
 
@@ -688,6 +702,7 @@ abstract class PhenyxController {
     public function run() {
 
         $this->init();
+
         if (_EPH_DEBUG_PROFILING_ || _EPH_ADMIN_DEBUG_PROFILING_) {
             $this->profiler[] = $this->stamp('init');
         }
@@ -761,35 +776,34 @@ abstract class PhenyxController {
         }
 
     }
-    
+
     public function setMedia($isNewTheme = false) {
 
         $this->addCSS(
             [
-               'https://cdn.ephenyx.io/paramgrid/pqSelect/pqselect.min.css',
-               'https://cdn.ephenyx.io/paramgrid/pqgrid.min.css',
-               'https://cdn.ephenyx.io/paramgrid/pqgrid.ui.min.css',
+                'https://cdn.ephenyx.io/paramgrid/pqSelect/pqselect.min.css',
+                'https://cdn.ephenyx.io/paramgrid/pqgrid.min.css',
+                'https://cdn.ephenyx.io/paramgrid/pqgrid.ui.min.css',
             ]
-        );    
-      
+        );
+
         $this->addJS([
             'https://code.jquery.com/jquery-3.7.1.min.js',
             'https://code.jquery.com/ui/1.13.2/jquery-ui.min.js',
-           	'https://cdn.ephenyx.io/paramgrid/pqSelect/pqselect.min.js',
-           	'https://cdn.ephenyx.io/paramgrid/pqgrid.min.js',
-           	'https://cdn.ephenyx.io/paramgrid/localize/pq-localize-fr.js',
-           	'https://cdn.ephenyx.io/paramgrid/pqTouch/pqtouch.min.js',
-           	'https://cdn.ephenyx.io/paramgrid/jsZip-2.5.0/jszip.min.js',
-           	'https://cdn.ephenyx.io/paramgrid/FileSaver.js',
-           	'https://cdn.ephenyx.io/paramgrid/javascript-detect-element-resize/detect-element-resize.js',
-           	'https://cdn.ephenyx.io/paramgrid/javascript-detect-element-resize/jquery.resize.js',			
+            'https://cdn.ephenyx.io/paramgrid/pqSelect/pqselect.min.js',
+            'https://cdn.ephenyx.io/paramgrid/pqgrid.min.js',
+            'https://cdn.ephenyx.io/paramgrid/localize/pq-localize-fr.js',
+            'https://cdn.ephenyx.io/paramgrid/pqTouch/pqtouch.min.js',
+            'https://cdn.ephenyx.io/paramgrid/jsZip-2.5.0/jszip.min.js',
+            'https://cdn.ephenyx.io/paramgrid/FileSaver.js',
+            'https://cdn.ephenyx.io/paramgrid/javascript-detect-element-resize/detect-element-resize.js',
+            'https://cdn.ephenyx.io/paramgrid/javascript-detect-element-resize/jquery.resize.js',
 
-        ]);       
+        ]);
     }
-    
+
     public function ajaxProcessSetLanguage() {
 
-        
         $idLang = Tools::getValue('id_lang');
         $cookieIdLang = $this->context->cookie->id_lang;
         $configurationIdLang = Configuration::get(Configuration::LANG_DEFAULT);
@@ -799,28 +813,30 @@ abstract class PhenyxController {
 
         if (Validate::isLoadedObject($language) && $language->active) {
             $this->context->language = $language;
-        }        
-        if(Validate::isUnsignedId($this->context->user->id)) {
+        }
+
+        if (Validate::isUnsignedId($this->context->user->id)) {
             $user = new User($this->context->user->id);
-            if($user->is_admin) {
+
+            if ($user->is_admin) {
                 $user = new Employee($user->id);
             }
+
             $user->id_lang = $idLang;
             $user->update();
             $this->context->user = $user;
         }
 
-
         die(true);
     }
-    
+
     public function getUserIpAddr() {
 
         return $_SERVER['SERVER_ADDR'];
     }
 
     abstract public function checkAccess();
-    
+
     abstract public function postProcess();
 
     abstract protected function redirect();
@@ -879,6 +895,7 @@ abstract class PhenyxController {
             if ($defer && (!isset($this->ajax) || !$this->ajax)) {
                 echo $html . $javascript;
             } else
+
             if ($defer && $this->ajax) {
 
                 die(Tools::jsonEncode(['html', $html . $javascript]));
@@ -1249,7 +1266,7 @@ abstract class PhenyxController {
     }
 
     public function pushJS($jsUri, $checkPath = true) {
-        
+
         if (is_array($jsUri)) {
 
             foreach ($jsUri as $jsFile) {
@@ -1327,7 +1344,7 @@ abstract class PhenyxController {
 
         return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
     }
-    
+
     public function manageFieldsVisibility($fields) {
 
         $return = [];
@@ -1351,9 +1368,11 @@ abstract class PhenyxController {
 
                     if ($key == 'hiddenable') {
                         $hiddenable = $value;
-                        if($value == 'no') {
+
+                        if ($value == 'no') {
                             $name = $field['dataIndx'];
                         }
+
                     }
 
                 }
@@ -1367,25 +1386,27 @@ abstract class PhenyxController {
 
         return $return;
     }
-    
-    public function ajaxProcessOpenTargetController() {
 
-        
+    public function ajaxProcessOpenTargetController() {
 
         $this->paragridScript = $this->generateParaGridScript();
         $this->setAjaxMedia();
 
         $data = $this->createTemplate($this->table . '.tpl');
 
-        if(is_array($this->extra_vars)) {
+        if (is_array($this->extra_vars)) {
+
             foreach ($this->extra_vars as $key => $value) {
                 $data->assign($key, $value);
             }
+
         }
-       
-        if(method_exists($this, 'get' . $this->className.'Fields')) {
-            $data->assign('paragridFields', is_array($this->configurationField) ? $this->configurationField : $this->{'get' . $this->className.'Fields'}());
+
+        if (method_exists($this, 'get' . $this->className . 'Fields')) {
+            $data->assign('paragridFields', is_array($this->configurationField) ? $this->configurationField : $this->{'get' . $this->className . 'Fields'}
+                ());
         }
+
         $data->assign([
             'jsDef'              => $this->jsDef,
             'paragridScript'     => $this->paragridScript,
@@ -1400,16 +1421,17 @@ abstract class PhenyxController {
             'extraJs'            => $this->push_js_files,
             'extracss'           => $this->extracss,
             'tabs'               => $this->ajaxOptions,
-            'bo_imgdir'          =>  __EPH_BASE_URI__ . 'content/backoffice/' . $this->bo_theme . '/img/',
+            'bo_imgdir'          => __EPH_BASE_URI__ . 'content/backoffice/' . $this->bo_theme . '/img/',
         ]);
 
-        $li = '<li id="uper' . $this->controller_name . '" data-self="'.$this->link_rewrite.'" data-name="'.$this->page_title.'" data-controller="AdminDashboard"><a href="#content' . $this->controller_name . '">' . $this->publicName . '</a><button type="button" class="close tabdetail" onClick="closeTabObject(\''. $this->controller_name . '\');" data-id="uper' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
+        $li = '<li id="uper' . $this->controller_name . '" data-self="' . $this->link_rewrite . '" data-name="' . $this->page_title . '" data-controller="AdminDashboard"><a href="#content' . $this->controller_name . '">' . $this->publicName . '</a><button type="button" class="close tabdetail" onClick="closeTabObject(\'' . $this->controller_name . '\');" data-id="uper' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
         $html = '<div id="content' . $this->controller_name . '" class="panel col-lg-12" style="display: flow-root;">' . $data->fetch() . '</div>';
         $result = [
-            'li'   => $li,
-            'html' => $html,
-			'page_title' => $this->page_title
+            'li'         => $li,
+            'html'       => $html,
+            'page_title' => $this->page_title,
         ];
+
         if (_EPH_ADMIN_DEBUG_PROFILING_) {
             $result['profiling_mode'] = true;
             $result['profiling'] = $this->displayProfiling();
@@ -1417,122 +1439,12 @@ abstract class PhenyxController {
 
         die(Tools::jsonEncode($result));
     }
-    
-    public function generateTabs() {
-         
-         $hookBars = Hook::exec('actionAdminTabs', [], null, true);
-         if(is_array( $hookBars)) {            
-            foreach( $hookBars as $plugin =>  $hookBar) {
-                $topbars = $hookBar;
-            }
-            
-        }  else {   
-         
-         
 
-        $topbars = EmployeeMenu::getEmployeeMenus($this->context->language->id, 1);
+    public function generateTabs() {        
 
-        foreach ($topbars as $index => $tab) {
-
-            if (!EmployeeMenu::checkTabRights($tab['id_employee_menu'])) {
-                unset($topbars[$index]);
-                continue;
-            }
-
-            if ($tab['master'] && !$this->context->employee->master_admin) {
-                unset($topbars[$index]);
-                continue;
-            }
-
-            
-
-            if (!is_null($tab['function'])) {
-                $topbars[$index]['function'] = str_replace("‘", "'", $tab['function']);
-            }
-
-            $topbars[$index]['name'] = $tab['name'];
-            $subTabs = EmployeeMenu::getEmployeeMenus($this->context->language->id, $tab['id_employee_menu']);
-
-            foreach ($subTabs as $index2 => &$subTab) {
-
-                if (!EmployeeMenu::checkTabRights($subTab['id_employee_menu'])) {
-                    unset($subTabs[$index2]);
-                    continue;
-                }
-
-                if ($subTab['master'] && !$this->context->employee->master_admin) {
-                    unset($subTabs[$index2]);
-                    continue;
-                }
-
-                if (!empty($subTab['plugin'])) {
-
-                    if (!Plugin::isActive($subTab['plugin'])) {
-                        unset($subTabs[$index2]);
-                        continue;
-                    }
-
-                }
-
-               
-                if ((bool) $subTab['active']) {
-
-                    if (!is_null($subTab['function'])) {
-                        $subTabs[$index2]['function'] = str_replace("‘", "'", $subTab['function']);
-                    }
-
-                    $subTabs[$index2]['name'] = $subTab['name'];
-                }
-
-                $terTabs = EmployeeMenu::getEmployeeMenus($this->context->language->id, $subTab['id_employee_menu']);
-
-                foreach ($terTabs as $index3 => $terTab) {
-
-                    if (!EmployeeMenu::checkTabRights($terTab['id_employee_menu'])) {
-                        unset($terTabs[$index3]);
-                        continue;
-                    }
-
-                    if ($terTab['master'] && !$this->context->employee->master_admin) {
-                        unset($terTabs[$index3]);
-                        continue;
-                    }
-
-                    if (!empty($terTab['plugin'])) {
-
-                        if (!Plugin::isActive($terTab['plugin'])) {
-                            unset($terTabs[$index3]);
-                            continue;
-                        }
-
-                    }
-
-                    
-
-                    if ((bool) $terTab['active']) {
-
-                        if (!is_null($terTab['function'])) {
-                            $terTabs[$index3]['function'] = str_replace("‘", "'", $terTab['function']);
-                        }
-
-                        $terTabs[$index3]['name'] = $terTab['name'];
-                    }
-
-                }
-
-                $subTabs[$index2]['sub_tabs'] = array_values($terTabs);
-
-            }
-
-            $topbars[$index]['sub_tabs'] = array_values($subTabs);
-        }
-         }
-         
-         
-
-        return $topbars;
+        return Tools::generateTabs();
     }
-    
+
     protected function initTabPluginList() {
 
         $this->tab_plugins_list = EmployeeMenu::getTabPluginsList($this->id);
@@ -1555,7 +1467,7 @@ abstract class PhenyxController {
         }
 
     }
-    
+
     protected function addToolBarPluginsListButton() {
 
         $this->filterTabPluginList();
@@ -1568,7 +1480,7 @@ abstract class PhenyxController {
         }
 
     }
-    
+
     protected function filterTabPluginList() {
 
         static $listIsFiltered = null;
@@ -1588,7 +1500,6 @@ abstract class PhenyxController {
         $listIsFiltered = true;
     }
 
-    
     protected function addPageHeaderToolBarPluginsListButton() {
 
         $this->filterTabPluginList();
@@ -1617,8 +1528,7 @@ abstract class PhenyxController {
 
         return $modal_render;
     }
-    
-    
+
     public function ajaxProcessEditObject() {
 
         $this->checkAccess();
@@ -1630,21 +1540,22 @@ abstract class PhenyxController {
             $_GET[$this->identifier] = $idObject;
             $_GET['controller'] = $this->controller_name;
             $_GET['update' . $this->table] = "";
-            
-            
+
             $html = $this->renderForm();
-            $li = '<li id="uperEdit' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentEdit' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeEditFormObject(\''. $this->controller_name . '\');" class="close tabdetail" data-id="uperEdit' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
-            $html = '<div id="contentEdit' . $this->controller_name . '" class="panel col-lg-12" style="display; flow-root;">' .  $html  . '</div>';
+            $li = '<li id="uperEdit' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentEdit' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeEditFormObject(\'' . $this->controller_name . '\');" class="close tabdetail" data-id="uperEdit' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
+            $html = '<div id="contentEdit' . $this->controller_name . '" class="panel col-lg-12" style="display; flow-root;">' . $html . '</div>';
 
             $result = [
                 'success' => true,
                 'li'      => $li,
                 'html'    => $html,
             ];
+
             if (_EPH_ADMIN_DEBUG_PROFILING_) {
                 $result['profiling_mode'] = true;
                 $result['profiling'] = $this->displayProfiling();
             }
+
         } else {
             $result = [
                 'success' => false,
@@ -1654,10 +1565,11 @@ abstract class PhenyxController {
 
         die(Tools::jsonEncode($result));
     }
-    
+
     public function ajaxProcessDuplicateObject() {
-        
+
         $this->checkAccess();
+
         if ($this->tabAccess['edit'] == 1) {
 
             $idObject = Tools::getValue('idObject');
@@ -1667,12 +1579,11 @@ abstract class PhenyxController {
             $_GET[$this->identifier] = $this->object->id;
             $_GET['controller'] = $this->controller_name;
             $_GET['update' . $this->table] = "";
-            
-            
+
             $html = $this->renderForm();
 
-            $li = '<li id="uperEdit' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentEdit' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeEditFormObject(\''. $this->controller_name . '\');" class="close tabdetail" data-id="uperEdit' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
-            $html = '<div id="contentEdit' . $this->controller_name . '" class="panel col-lg-12" style="display; flow-root;">' .  $html  . '</div>';
+            $li = '<li id="uperEdit' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentEdit' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeEditFormObject(\'' . $this->controller_name . '\');" class="close tabdetail" data-id="uperEdit' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
+            $html = '<div id="contentEdit' . $this->controller_name . '" class="panel col-lg-12" style="display; flow-root;">' . $html . '</div>';
 
             $result = [
                 'success' => true,
@@ -1716,7 +1627,7 @@ abstract class PhenyxController {
 
         $this->checkAccess();
         $idObject = Tools::getValue('idObject');
-        
+
         $this->className = Tools::getValue('targetClass');
 
         $this->object = new $this->className($idObject);
@@ -1795,27 +1706,24 @@ abstract class PhenyxController {
 
         return $res;
     }
-    
+
     public function getWizardFieldsValues($obj) {
-		
-		
-		
+
         foreach ($this->fields_form as $fieldset) {
 
             if (isset($fieldset['input'])) {
 
                 foreach ($fieldset['input'] as $input) {
+
                     if (!isset($this->fields_value[$input['name']])) {
-						
-                        
 
                         if (isset($input['lang']) && $input['lang']) {
+
                             foreach ($this->_languages as $language) {
                                 $fieldValue = $this->getWizardFieldsValue($obj, $input['name'], $language['id_lang']);
-								
 
                                 if (empty($fieldValue)) {
-									
+
                                     if (isset($input['default_value']) && is_array($input['default_value']) && isset($input['default_value'][$language['id_lang']])) {
                                         $fieldValue = $input['default_value'][$language['id_lang']];
                                     } else
@@ -1830,17 +1738,18 @@ abstract class PhenyxController {
                             }
 
                         } else {
-							
-                            $fieldValue = $this->getWizardFieldsValue($obj, $input['name']);
-                             if ($fieldValue === false && isset($input['default_value'])) {
-                                $this->fields_value[$input['name']] = $input['default_value'];
-                            } else if ($fieldValue === false) {
-                               $this->fields_value[$input['name']]  = [];
-                            } else {
-								$this->fields_value[$input['name']] = $fieldValue;
-							}
 
-                            
+                            $fieldValue = $this->getWizardFieldsValue($obj, $input['name']);
+
+                            if ($fieldValue === false && isset($input['default_value'])) {
+                                $this->fields_value[$input['name']] = $input['default_value'];
+                            } else
+                            if ($fieldValue === false) {
+                                $this->fields_value[$input['name']] = [];
+                            } else {
+                                $this->fields_value[$input['name']] = $fieldValue;
+                            }
+
                         }
 
                     }
@@ -1850,22 +1759,22 @@ abstract class PhenyxController {
             }
 
         }
-        
+
         foreach ($this->fields_form['steps'] as $fieldset) {
 
             if (isset($fieldset['input'])) {
 
                 foreach ($fieldset['input'] as $input) {
+
                     if (!isset($this->fields_value[$input['name']])) {
-						
-                        
 
                         if (isset($input['lang']) && $input['lang']) {
+
                             foreach ($this->_languages as $language) {
                                 $fieldValue = $this->getWizardFieldsValue($obj, $input['name'], $language['id_lang']);
-								
+
                                 if (empty($fieldValue)) {
-									
+
                                     if (isset($input['default_value']) && is_array($input['default_value']) && isset($input['default_value'][$language['id_lang']])) {
                                         $fieldValue = $input['default_value'][$language['id_lang']];
                                     } else
@@ -1880,17 +1789,18 @@ abstract class PhenyxController {
                             }
 
                         } else {
-							
-                            $fieldValue = $this->getWizardFieldsValue($obj, $input['name']);
-                             if ($fieldValue === false && isset($input['default_value'])) {
-                                $this->fields_value[$input['name']] = $input['default_value'];
-                            } else if ($fieldValue === false) {
-                               $this->fields_value[$input['name']]  = [];
-                            } else {
-								$this->fields_value[$input['name']] = $fieldValue;
-							}
 
-                            
+                            $fieldValue = $this->getWizardFieldsValue($obj, $input['name']);
+
+                            if ($fieldValue === false && isset($input['default_value'])) {
+                                $this->fields_value[$input['name']] = $input['default_value'];
+                            } else
+                            if ($fieldValue === false) {
+                                $this->fields_value[$input['name']] = [];
+                            } else {
+                                $this->fields_value[$input['name']] = $fieldValue;
+                            }
+
                         }
 
                     }
@@ -1900,27 +1810,27 @@ abstract class PhenyxController {
             }
 
         }
-		
-        	return $this->fields_value;
+
+        return $this->fields_value;
     }
 
     public function getFieldsValue($obj) {
-		
+
         foreach ($this->fields_form as $fieldset) {
 
             if (isset($fieldset['form']['input'])) {
 
                 foreach ($fieldset['form']['input'] as $input) {
+
                     if (!isset($this->fields_value[$input['name']])) {
-						
-                        
 
                         if (isset($input['lang']) && $input['lang']) {
+
                             foreach ($this->_languages as $language) {
                                 $fieldValue = $this->getFieldValue($obj, $input['name'], $language['id_lang']);
-								
+
                                 if (empty($fieldValue)) {
-									
+
                                     if (isset($input['default_value']) && is_array($input['default_value']) && isset($input['default_value'][$language['id_lang']])) {
                                         $fieldValue = $input['default_value'][$language['id_lang']];
                                     } else
@@ -1935,17 +1845,18 @@ abstract class PhenyxController {
                             }
 
                         } else {
-							
-                            $fieldValue = $this->getFieldValue($obj, $input['name']);
-                             if ($fieldValue === false && isset($input['default_value'])) {
-                                $this->fields_value[$input['name']] = $input['default_value'];
-                            } else if ($fieldValue === false) {
-                               $this->fields_value[$input['name']]  = [];
-                            } else {
-								$this->fields_value[$input['name']] = $fieldValue;
-							}
 
-                            
+                            $fieldValue = $this->getFieldValue($obj, $input['name']);
+
+                            if ($fieldValue === false && isset($input['default_value'])) {
+                                $this->fields_value[$input['name']] = $input['default_value'];
+                            } else
+                            if ($fieldValue === false) {
+                                $this->fields_value[$input['name']] = [];
+                            } else {
+                                $this->fields_value[$input['name']] = $fieldValue;
+                            }
+
                         }
 
                     }
@@ -1955,42 +1866,49 @@ abstract class PhenyxController {
             }
 
         }
-		
-        	return $this->fields_value;
+
+        return $this->fields_value;
     }
-    
+
     public function getWizardFieldsValue($obj, $key, $idLang = null) {
-		
+
         if ($idLang) {
-            $defaultValue = (isset($obj->id) && $obj->id && isset($obj->{$key}[$idLang])) ? $obj->{$key}[$idLang] : false;
-			
+            $defaultValue = (isset($obj->id) && $obj->id && isset($obj->{$key}
+                [$idLang])) ? $obj->{$key}
+            [$idLang] : false;
+
         } else {
-            $defaultValue = isset($obj->{$key}) ? $obj->{$key}: false;
-			
+            $defaultValue = isset($obj->{$key}) ? $obj->{$key}
+            : false;
+
         }
 
         return Tools::getValue($key . ($idLang ? '_' . $idLang : ''), $defaultValue);
     }
-    
+
     public function renderForm() {
 
-        
-		if (!$this->default_form_language) {
+        if (!$this->default_form_language) {
             $this->getLanguages();
         }
 
         if (Tools::getValue('submitFormAjax')) {
             $this->content .= $this->context->smarty->fetch('form_submit_ajax.tpl');
         }
+
         $extraFields = Hook::exec('action' . $this->controller_name . 'FormModifier', [], null, true);
-        if(is_array($extraFields) && count($extraFields)) {
-            foreach($extraFields as $plugin => $fields) {
-                foreach($fields as $field) {
-                     $this->fields_form['input'][] = $field;
+
+        if (is_array($extraFields) && count($extraFields)) {
+
+            foreach ($extraFields as $plugin => $fields) {
+
+                foreach ($fields as $field) {
+                    $this->fields_form['input'][] = $field;
                 }
+
             }
-            
-        }    
+
+        }
 
         if ($this->fields_form && is_array($this->fields_form)) {
 
@@ -2003,26 +1921,25 @@ abstract class PhenyxController {
             if (is_array($this->fields_form_override) && !empty($this->fields_form_override)) {
                 $this->fields_form[0]['form']['input'] = array_merge($this->fields_form[0]['form']['input'], $this->fields_form_override);
             }
-			
-            $fieldsValue = $this->getFieldsValue($this->object);
-			
-			if($this->form_ajax) {
-				$fieldsValue['ajax'] = $this->form_ajax;
-			}
-			$fieldsValue['action'] = $this->form_action;
-			
 
-            
+            $fieldsValue = $this->getFieldsValue($this->object);
+
+            if ($this->form_ajax) {
+                $fieldsValue['ajax'] = $this->form_ajax;
+            }
+
+            $fieldsValue['action'] = $this->form_action;
 
             if ($this->tabList == true) {
                 $this->tpl_form_vars['controller'] = Tools::getValue('controller');
                 $this->tpl_form_vars['tabScript'] = $this->generateTabScript(Tools::getValue('controller'));
             }
+
             $has_editor = false;
-            if($this->composer_editor) {
+
+            if ($this->composer_editor) {
                 $has_editor = true;
-               
-               
+
             }
 
             $helper = new HelperForm($this);
@@ -2030,22 +1947,19 @@ abstract class PhenyxController {
             $helper->controllerName = $this->controller_name;
             $helper->table = $this->table;
             $helper->header_title = $this->editObject;
-			$helper->form_extraCss = $this->extracss;
-			$helper->form_extraJs = $this->extraJs;
+            $helper->form_extraCss = $this->extracss;
+            $helper->form_extraJs = $this->extraJs;
             $helper->js_def = $this->jsDef;
             $helper->fields_value = $fieldsValue;
             $helper->submit_action = $this->submit_action;
             $helper->tpl_vars = $this->getTemplateFormVars();
-			$helper->tagHeader = $this->editObject;
+            $helper->tagHeader = $this->editObject;
             $helper->has_editor = $has_editor;
             $helper->show_cancel_button = (isset($this->show_form_cancel_button)) ? $this->show_form_cancel_button : ($this->display == 'add' || $this->display == 'edit');
 
-           
-            !is_null($this->base_tpl_form) ? $helper->base_tpl = $this->base_tpl_form : '';
-            
             !is_null($this->base_tpl_form) ? $helper->base_tpl = $this->base_tpl_form : '';
 
-            
+            !is_null($this->base_tpl_form) ? $helper->base_tpl = $this->base_tpl_form : '';
 
             $form = $helper->generateForm($this->fields_form);
 
@@ -2053,12 +1967,10 @@ abstract class PhenyxController {
         }
 
     }
-    
 
     public function renderFormWizard() {
 
-        
-		if (!$this->default_form_language) {
+        if (!$this->default_form_language) {
             $this->getLanguages();
         }
 
@@ -2068,17 +1980,17 @@ abstract class PhenyxController {
 
         if ($this->fields_form && is_array($this->fields_form)) {
 
-            
-			
             $fieldsValue = $this->getWizardFieldsValues($this->object);
-			
-			if($this->form_ajax) {
-				$fieldsValue['ajax'] = $this->form_ajax;
-			}
-			$fieldsValue['action'] = $this->form_action;
-			
+
+            if ($this->form_ajax) {
+                $fieldsValue['ajax'] = $this->form_ajax;
+            }
+
+            $fieldsValue['action'] = $this->form_action;
+
             $has_editor = false;
-            if($this->composer_editor) {
+
+            if ($this->composer_editor) {
                 $has_editor = true;
             }
 
@@ -2087,21 +1999,18 @@ abstract class PhenyxController {
             $helper->controllerName = $this->controller_name;
             $helper->header_title = $this->editObject;
             $helper->className = $this->className;
-			$helper->form_extraCss = $this->extracss;
-			$helper->form_extraJs = $this->extraJs;
+            $helper->form_extraCss = $this->extracss;
+            $helper->form_extraJs = $this->extraJs;
             $helper->js_def = $this->jsDef;
             $helper->fields_value = $fieldsValue;
             $helper->submit_action = $this->submit_action;
             $helper->tpl_vars = $this->getTemplateFormVars();
-			$helper->tagHeader = $this->editObject;
+            $helper->tagHeader = $this->editObject;
             $helper->has_editor = $has_editor;
             $helper->js_def = $this->js_def;
             $helper->show_cancel_button = (isset($this->show_form_cancel_button)) ? $this->show_form_cancel_button : ($this->display == 'add' || $this->display == 'edit');
 
-           
             !is_null($this->base_tpl_form) ? $helper->base_tpl = $this->base_tpl_form : '';
-
-            
 
             $form = $helper->generateForm($this->fields_form);
 
@@ -2109,7 +2018,7 @@ abstract class PhenyxController {
         }
 
     }
-    
+
     public function getLanguages() {
 
         $cookie = $this->context->cookie;
@@ -2139,7 +2048,6 @@ abstract class PhenyxController {
         return $this->_languages;
     }
 
-    
     public function setHelperDisplay(Helper $helper) {
 
         // tocheck
@@ -2166,21 +2074,19 @@ abstract class PhenyxController {
         $helper->controller_name = $this->controller_name;
         $helper->bootstrap = $this->bootstrap;
 
-
         $this->helper = $helper;
     }
 
-    
     public function getTemplateFormVars() {
 
         return $this->tpl_form_vars;
     }
-    
+
     public function ajaxProcessGetAccountTypeRequest() {
 
-        
         $type = Tools::getValue('type');
-        fwrite($file,$type);
+        fwrite($file, $type);
+
         switch ($type) {
         case 'Banks':
             die(Tools::jsonEncode(StdAccount::getBankStdAccount()));
@@ -2209,20 +2115,23 @@ abstract class PhenyxController {
         }
 
     }
-    
+
     public function getFieldValue($obj, $key, $idLang = null) {
-		
+
         if ($idLang) {
-            $defaultValue = (isset($obj->id) && $obj->id && isset($obj->{$key}[$idLang])) ? $obj->{$key}[$idLang] : false;
-			
+            $defaultValue = (isset($obj->id) && $obj->id && isset($obj->{$key}
+                [$idLang])) ? $obj->{$key}
+            [$idLang] : false;
+
         } else {
-            $defaultValue = isset($obj->{$key}) ? $obj->{$key}: false;
-			
+            $defaultValue = isset($obj->{$key}) ? $obj->{$key}
+            : false;
+
         }
 
         return Tools::getValue($key . ($idLang ? '_' . $idLang : ''), $defaultValue);
     }
-    
+
     public function getExportFields() {
 
         if (method_exists($this, 'getFields')) {
@@ -2256,10 +2165,10 @@ abstract class PhenyxController {
 
     }
 
-    public function getUpdatableFields() {        
-         
+    public function getUpdatableFields() {
+
         $class = new $this->className();
-        return $class->getUpdatableFields();       
+        return $class->getUpdatableFields();
 
     }
 
@@ -2269,23 +2178,26 @@ abstract class PhenyxController {
 
         if (is_array($gridFields) && count($gridFields)) {
 
-           foreach ($gridFields as $grifField) {
+            foreach ($gridFields as $grifField) {
 
-               if ($grifField['dataIndx'] == $dataIndx) {
-                   return $grifField;
-               }
-           }
-       }
+                if ($grifField['dataIndx'] == $dataIndx) {
+                    return $grifField;
+                }
+
+            }
+
+        }
 
     }
 
     public function removeRequestFields($requests) {
-        
+
         $objects = [];
         $gridFields = $this->getFields();
-        
-        if(is_array($gridFields)) {
+
+        if (is_array($gridFields)) {
             $fields = [];
+
             foreach ($gridFields as $grifField) {
                 $fields[] = $grifField['dataIndx'];
             }
@@ -2293,15 +2205,19 @@ abstract class PhenyxController {
             foreach ($requests as $key => $object) {
 
                 foreach ($object as $field => $value) {
+
                     if (in_array($field, $fields)) {
                         $objects[$key][$field] = $value;
                     }
+
                 }
+
             }
 
         }
+
         return $objects;
-        
+
     }
 
     public function getExportFormatFields() {
@@ -2353,7 +2269,6 @@ abstract class PhenyxController {
 
             }
 
-
             return $fields;
 
         }
@@ -2361,24 +2276,25 @@ abstract class PhenyxController {
         return false;
 
     }
-    
+
     public function getRequest($identifier = null) {
-        
-        
+
         $request = Hook::exec('action' . $this->controller_name . 'getRequestModifier', ['paramRequest' => $this->paramRequest], null, true);
-        
-        if(is_array($request)) {
-            foreach($request as $plugin => $result) {
-                if(is_array($result)) {
+
+        if (is_array($request)) {
+
+            foreach ($request as $plugin => $result) {
+
+                if (is_array($result)) {
                     $this->paramRequest = $result;
                 }
-            }            
+
+            }
+
         }
+
         return null;
     }
-    
-    
-
 
     protected function ajaxDie($value = null, $controller = null, $method = null) {
 
@@ -2396,7 +2312,7 @@ abstract class PhenyxController {
 
         die($value);
     }
-    
+
     private function getMemoryColor($n) {
 
         $n /= 1048576;
@@ -2404,9 +2320,11 @@ abstract class PhenyxController {
         if ($n > 3) {
             return '<span style="color:red">' . sprintf('%0.2f', $n) . '</span>';
         } else
+
         if ($n > 1) {
             return '<span style="color:#EF8B00">' . sprintf('%0.2f', $n) . '</span>';
         } else
+
         if (round($n, 2) > 0) {
             return '<span style="color:green">' . sprintf('%0.2f', $n) . '</span>';
         }
@@ -2460,6 +2378,7 @@ abstract class PhenyxController {
         if (version_compare($version, '5.3') < 0) {
             return '<span style="color:red">' . $version . ' (Upgrade strongly recommended)</span>';
         } else
+
         if (version_compare($version, '5.4') < 0) {
             return '<span style="color:#EF8B00">' . $version . ' (Consider upgrading)</span>';
         }
@@ -2472,6 +2391,7 @@ abstract class PhenyxController {
         if (version_compare($version, '5.5') < 0) {
             return '<span style="color:red">' . $version . ' (Upgrade strongly recommended)</span>';
         } else
+
         if (version_compare($version, '5.6') < 0) {
             return '<span style="color:#EF8B00">' . $version . ' (Consider upgrading)</span>';
         }
@@ -2484,9 +2404,11 @@ abstract class PhenyxController {
         if ($n > 1.6) {
             return '<span style="color:red">' . round($n * 1000) . '</span>' . ($kikoo ? ' ms - You\'d better run your shop on a toaster' : '');
         } else
+
         if ($n > 0.8) {
             return '<span style="color:#EF8B00">' . round($n * 1000) . '</span>' . ($kikoo ? ' ms - OK... for a shared hosting' : '');
         } else
+
         if ($n > 0) {
             return '<span style="color:green">' . round($n * 1000) . '</span>' . ($kikoo ? ' ms - Unicorn powered webserver!' : '');
         }
@@ -2499,6 +2421,7 @@ abstract class PhenyxController {
         if ($n >= 100) {
             return '<span style="color:red">' . $n . '</span>';
         } else
+
         if ($n >= 50) {
             return '<span style="color:#EF8B00">' . $n . '</span>';
         }
@@ -2511,6 +2434,7 @@ abstract class PhenyxController {
         if ($n >= 100) {
             return '<span style="color:red">' . $n . '</span>';
         } else
+
         if ($n >= 50) {
             return '<span style="color:#EF8B00">' . $n . '</span>';
         }
@@ -2574,7 +2498,7 @@ abstract class PhenyxController {
 
         return ['block' => $block, 'memory_usage' => memory_get_usage(), 'peak_memory_usage' => memory_get_peak_usage(), 'time' => microtime(true)];
     }
-    
+
     private function getVarSize($var) {
 
         $start_memory = memory_get_usage();
@@ -3040,7 +2964,7 @@ abstract class PhenyxController {
         $this->content_ajax .= '</table>
         </div>';
     }
-    
+
     public function displayProfiling() {
 
         $this->profiler[] = $this->stamp('display');
@@ -3050,9 +2974,9 @@ abstract class PhenyxController {
         // Add some specific style for profiling information
         //$this->displayProfilingStyle();
 
-       $this->content_ajax .= '<div id="phenyxshop_profiling" class="bootstrap">';
+        $this->content_ajax .= '<div id="phenyxshop_profiling" class="bootstrap">';
 
-        $this->content_ajax .= 'Summary'.'<div class="row">';
+        $this->content_ajax .= 'Summary' . '<div class="row">';
         $this->displayProfilingSummary();
         $this->displayProfilingConfiguration();
         $this->displayProfilingRun();
@@ -3070,13 +2994,11 @@ abstract class PhenyxController {
         }
 
         $this->displayProfilingFiles();
-        
+
         $this->content_ajax .= '</div>';
 
-        
-       return $this->content_ajax;
+        return $this->content_ajax;
 
     }
-
 
 }

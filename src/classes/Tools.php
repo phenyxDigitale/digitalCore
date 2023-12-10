@@ -1,8 +1,7 @@
 <?php
 
-use PHPSQLParser\PHPSQLParser;
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
+use PHPSQLParser\PHPSQLParser;
 
 /**
  * Class ToolsCore
@@ -34,24 +33,21 @@ class Tools {
     protected static $_user_browser;
     protected static $_cache_nb_media_servers = null;
     protected static $is_addons_up = true;
-    
+
     public static function checkLicense($purchaseKey, $website) {
 
-		
         $context = Context::getContext();
-        
+
         $key = Configuration::get(Configuration::EPHENYX_LICENSE_KEY);
-        
 
-		if ($key == $purchaseKey && $context->company->domain_ssl == $website) {
-		      return true;
-		}
+        if ($key == $purchaseKey && $context->company->domain_ssl == $website) {
+            return true;
+        }
 
-		return false;
+        return false;
 
-	}
+    }
 
-    
     public static function passwdGen($length = 8, $flag = 'ALPHANUMERIC') {
 
         $length = (int) $length;
@@ -90,7 +86,6 @@ class Tools {
         return $result;
     }
 
-    
     public static function getBytes($length) {
 
         $length = (int) $length;
@@ -171,7 +166,7 @@ class Tools {
     }
 
     public static function redirect($url, $baseUri = __EPH_BASE_URI__, Link $link = null, $headers = null) {
-        
+
         if (_EPH_DEBUG_PROFILING_ || _EPH_ADMIN_DEBUG_PROFILING_) {
             return Profiling::redirect($url, $baseUri, $link, $headers);
         }
@@ -227,184 +222,204 @@ class Tools {
 
     public static function strReplaceFirst($search, $replace, $subject, $cur = 0) {
 
-         if(!is_null($subject)) {
-			return (strpos($subject, $search, $cur)) ? substr_replace($subject, $replace, (int) strpos($subject, $search, $cur), strlen($search)) : $subject;
-		}
-		
-		return $subject;
+        if (!is_null($subject)) {
+            return (strpos($subject, $search, $cur)) ? substr_replace($subject, $replace, (int) strpos($subject, $search, $cur), strlen($search)) : $subject;
+        }
+
+        return $subject;
     }
-    
+
     public static function str_replace_first($search, $replace, $subject) {
-    	$search = '/'.preg_quote($search, '/').'/';
-    	return preg_replace($search, $replace, $subject, 1);
-	}
-    
+
+        $search = '/' . preg_quote($search, '/') . '/';
+        return preg_replace($search, $replace, $subject, 1);
+    }
+
     public static function display_gallery_page($files_array, $pageno = 1, $path = '', $resultspp = 4096, $display = true) {
-		if($path == 'undefined') {
+
+        if ($path == 'undefined') {
             $path = '';
         }
-		$composer = false; 
+
+        $composer = false;
+
         if (str_contains($path, 'composer')) {
-            $composer = true; 
+            $composer = true;
         }
-    	$pagination = array();
-    	$pagination['resultspp'] = $resultspp;
-    	$pagination['startres'] = 1 + (($pageno - 1) * $pagination['resultspp']);
-    	$pagination['endres'] = $pagination['startres'] + $pagination['resultspp'] - 1;
-    	$pagination['counter'] = 1;
-    	$pagination['totalres'] = count($files_array);
-    	$pagination['totalpages'] = ceil($pagination['totalres'] / $pagination['resultspp']);
 
-    	$imagepath = '/content/img/';
-    	$array_count = 0;
-    	$output = '';
+        $pagination = [];
+        $pagination['resultspp'] = $resultspp;
+        $pagination['startres'] = 1 + (($pageno - 1) * $pagination['resultspp']);
+        $pagination['endres'] = $pagination['startres'] + $pagination['resultspp'] - 1;
+        $pagination['counter'] = 1;
+        $pagination['totalres'] = count($files_array);
+        $pagination['totalpages'] = ceil($pagination['totalres'] / $pagination['resultspp']);
 
-    	foreach ($files_array as $file_name) {
-        	$file_path = $imagepath.$path.$file_name;
-            if($composer) {
+        $imagepath = '/content/img/';
+        $array_count = 0;
+        $output = '';
+
+        foreach ($files_array as $file_name) {
+            $file_path = $imagepath . $path . $file_name;
+
+            if ($composer) {
                 $dataComposer = ComposerMedia::getIdMediaByName($file_name);
             }
 
-        	if (($pagination['counter'] >= $pagination['startres']) && ($pagination['counter'] <= $pagination['endres'])) {
-            	$addcbr = '';
+            if (($pagination['counter'] >= $pagination['startres']) && ($pagination['counter'] <= $pagination['endres'])) {
+                $addcbr = '';
 
-            	if (($pagination['counter'] > ($pagination['endres'] - 5)) && ($pagination['counter'] > ($pagination['totalres'] - 5))) {
-                	$addcbr = ' br';
-            	}
+                if (($pagination['counter'] > ($pagination['endres'] - 5)) && ($pagination['counter'] > ($pagination['totalres'] - 5))) {
+                    $addcbr = ' br';
+                }
 
-            	$file = array();    // ???
-            	$file['name'] = $file_name;
+                $file = []; // ???
+                $file['name'] = $file_name;
 
-            	$files_array[$array_count] = array($file);
-            	$array_count++;
+                $files_array[$array_count] = [$file];
+                $array_count++;
 
-            	if (preg_match('/\.(jpg|jpe|jpeg|png|gif|bmp)$/', $file_name)) {
-                    if($composer) {
-                        $output .= '<a href="'.$file_path.'" title="'.$file_name.'" data-gallery="gallery" data-image="'.$file_name.'" data-id="'.$dataComposer['id_vc_media'].'" data-field_id="'.$dataComposer['id_vc_media'].'" data-image-folder="'.$dataComposer['subdir'].'">';
+                if (preg_match('/\.(jpg|jpe|jpeg|png|gif|bmp)$/', $file_name)) {
+
+                    if ($composer) {
+                        $output .= '<a href="' . $file_path . '" title="' . $file_name . '" data-gallery="gallery" data-image="' . $file_name . '" data-id="' . $dataComposer['id_vc_media'] . '" data-field_id="' . $dataComposer['id_vc_media'] . '" data-image-folder="' . $dataComposer['subdir'] . '">';
                     } else {
-                        $output .= '<a href="'.$file_path.'" title="'.$file_name.'" data-gallery="gallery" data-id="">';
+                        $output .= '<a href="' . $file_path . '" title="' . $file_name . '" data-gallery="gallery" data-id="">';
                     }
-                	
-                	$output .= "<div class=\"thumb$addcbr\" style=\"background-image:url('$file_path')\"></div>";
-                	$output .= '<label class="file-name">'.$file_name.'</label>';
-                	$output .= '</a>';
-            	} else {
-                	$output .= '<a href="'.$file_path.'" title="'.$file_name.'" data-folder="folder">';
-                	$output .= "<div class=\"thumb folder$addcbr\"></div>";
-                	$output .= '<label class="file-name">'.$file_name.'</label>';
-                	$output .= '</a>';
-            	}
-        	}
-        	$pagination['counter']++;
-    	}
 
-    	if ($display == true) {
-        	echo $output;
-    	} else {
-        	return $output;
-    	}
-	}
-	
-	public static function display_gallery_pagination($url = '', $totalresults = 0, $pageno = 1, $resultspp = 4096, $display = true) {
-		
-    	$configp = array();
-    	$configp['results_per_page'] = $resultspp;
-    	$configp['total_no_results'] = $totalresults;
-    	$configp['page_url'] = $url;
-    	$configp['current_page_segment'] = 4;
-    	$configp['url'] = $url;
-    	$configp['pageno'] = $pageno;
+                    $output .= "<div class=\"thumb$addcbr\" style=\"background-image:url('$file_path')\"></div>";
+                    $output .= '<label class="file-name">' . $file_name . '</label>';
+                    $output .= '</a>';
+                } else {
+                    $output .= '<a href="' . $file_path . '" title="' . $file_name . '" data-folder="folder">';
+                    $output .= "<div class=\"thumb folder$addcbr\"></div>";
+                    $output .= '<label class="file-name">' . $file_name . '</label>';
+                    $output .= '</a>';
+                }
 
-    	$output = Tools::get_html($configp);
+            }
 
-    	if ($display == true) {
-        	echo $output;
-    	} else {
-        	return $output;
-    	}
-	}
-	
-	public static function get_html($pconfig) {
-    
-		$links_html = '';
+            $pagination['counter']++;
+        }
 
-    // $pageAddress = $pconfig['url'];
-    	$resultspp = $pconfig['results_per_page'];
-    	$current_page = $pconfig['pageno'];
-    	$start_res = $current_page * $resultspp;
-    // $endRes = $start_res + $resultspp;
+        if ($display == true) {
+            echo $output;
+        } else {
+            return $output;
+        }
 
-    	$tot_pages = $pconfig['total_no_results'] / $resultspp;
+    }
 
-    	$round_pages = ceil($tot_pages);
+    public static function display_gallery_pagination($url = '', $totalresults = 0, $pageno = 1, $resultspp = 4096, $display = true) {
 
-    	$links_html .= '<ul>';
+        $configp = [];
+        $configp['results_per_page'] = $resultspp;
+        $configp['total_no_results'] = $totalresults;
+        $configp['page_url'] = $url;
+        $configp['current_page_segment'] = 4;
+        $configp['url'] = $url;
+        $configp['pageno'] = $pageno;
 
-    	if ($current_page > 1) {
-        	if ($tot_pages > 1) {
-            	$links_html .= '<li id="gliFirst"><a data-target-page="1" href="#">&lt; First</a></li>';
-        	}
-        	$links_html .= '<li id="gliPrev"><a data-target-page="prev" href="#">Prev</a></li>';
-    	} else {
-        	if ($tot_pages > 1) {
-            	$links_html .= '<li class="disabled" id="gliFirst"><a data-target-page="1" href="#">&lt; First</a></li>';
-        	}
-        	$links_html .= '<li class="disabled" id="gliPrev"><a data-target-page="prev" href="#">Prev</a></li>';
-    	}
+        $output = Tools::get_html($configp);
 
-    // $pageLimit = 9;
+        if ($display == true) {
+            echo $output;
+        } else {
+            return $output;
+        }
 
-    	if (($current_page - 3) > 0) {
-        	$start_page = $current_page - 3;
-    	} else {
-        	$start_page = 1;
-        	$end_add = 1 - ($current_page - 3);
-    	}
+    }
 
-    	$end_page = $round_pages;
-    	$start_add = 0;
+    public static function get_html($pconfig) {
 
-    	if (($start_page + $start_add) > 0) {
-        	$start_page = $start_page - $start_add;
-    	} else {
-        	$start_page = 1;
-    	}
+        $links_html = '';
 
-    	if ($start_page <= 0) {
-        	$start_page = 1;
-    	}
+        // $pageAddress = $pconfig['url'];
+        $resultspp = $pconfig['results_per_page'];
+        $current_page = $pconfig['pageno'];
+        $start_res = $current_page * $resultspp;
+        // $endRes = $start_res + $resultspp;
 
-    	for ($i = $start_page; $i <= $end_page; $i++) {
-        	if ($i == $current_page) {
-            	$links_html .= '<li class="disabled" id="gli$i"><a href="#" data-target-page="$i">$i</a></span></li>';
-        	} else {
-            	$links_html .= '<li id="gli$i"><a href="#" data-target-page="$i">$i</a></li>';
-			}
-    	}
+        $tot_pages = $pconfig['total_no_results'] / $resultspp;
 
-    	if ($current_page < $round_pages) {
-        // $nextPage = $current_page + 1;
-        	$links_html .= '<li id="gliNext"><a href="#" data-target-page="next">Next</a></li>';
+        $round_pages = ceil($tot_pages);
 
-        	if ($tot_pages > 1) {
-            	$links_html .= '<li id="gliLast"><a href="#" data-target-page="$round_pages">Last &gt;</a></li>';
-        	}
-    	} else {
-        	$links_html .= '<li id="gliNext" class="disabled"><a href="#" data-target-page="next">Next</a></li>';
+        $links_html .= '<ul>';
 
-        	if ($tot_pages > 1) {
-            	$links_html .= '<li id="gliLast" class="disabled"><a href="#" data-target-page="$round_pages">Last &gt;</a><li>';
-        	}
-    	}
-		//if ($round_pages > 9) {}
-    	$links_html .= '</ul>';
-    	return $links_html;
-	}
+        if ($current_page > 1) {
 
-    
+            if ($tot_pages > 1) {
+                $links_html .= '<li id="gliFirst"><a data-target-page="1" href="#">&lt; First</a></li>';
+            }
+
+            $links_html .= '<li id="gliPrev"><a data-target-page="prev" href="#">Prev</a></li>';
+        } else {
+
+            if ($tot_pages > 1) {
+                $links_html .= '<li class="disabled" id="gliFirst"><a data-target-page="1" href="#">&lt; First</a></li>';
+            }
+
+            $links_html .= '<li class="disabled" id="gliPrev"><a data-target-page="prev" href="#">Prev</a></li>';
+        }
+
+        // $pageLimit = 9;
+
+        if (($current_page - 3) > 0) {
+            $start_page = $current_page - 3;
+        } else {
+            $start_page = 1;
+            $end_add = 1 - ($current_page - 3);
+        }
+
+        $end_page = $round_pages;
+        $start_add = 0;
+
+        if (($start_page + $start_add) > 0) {
+            $start_page = $start_page - $start_add;
+        } else {
+            $start_page = 1;
+        }
+
+        if ($start_page <= 0) {
+            $start_page = 1;
+        }
+
+        for ($i = $start_page; $i <= $end_page; $i++) {
+
+            if ($i == $current_page) {
+                $links_html .= '<li class="disabled" id="gli$i"><a href="#" data-target-page="$i">$i</a></span></li>';
+            } else {
+                $links_html .= '<li id="gli$i"><a href="#" data-target-page="$i">$i</a></li>';
+            }
+
+        }
+
+        if ($current_page < $round_pages) {
+            // $nextPage = $current_page + 1;
+            $links_html .= '<li id="gliNext"><a href="#" data-target-page="next">Next</a></li>';
+
+            if ($tot_pages > 1) {
+                $links_html .= '<li id="gliLast"><a href="#" data-target-page="$round_pages">Last &gt;</a></li>';
+            }
+
+        } else {
+            $links_html .= '<li id="gliNext" class="disabled"><a href="#" data-target-page="next">Next</a></li>';
+
+            if ($tot_pages > 1) {
+                $links_html .= '<li id="gliLast" class="disabled"><a href="#" data-target-page="$round_pages">Last &gt;</a><li>';
+            }
+
+        }
+
+        //if ($round_pages > 9) {}
+        $links_html .= '</ul>';
+        return $links_html;
+    }
+
     public static function redirectLink($url) {
-       
+
         $url = str_replace(PHP_EOL, '', $url);
+
         if (_EPH_DEBUG_PROFILING_ || _EPH_ADMIN_DEBUG_PROFILING_) {
             return Profiling::redirectLink($url);
         }
@@ -426,7 +441,8 @@ class Tools {
                 $url .= '?' . $explode[1];
             }
 
-        }        
+        }
+
         header('Location: ' . $url);
         exit;
     }
@@ -436,6 +452,7 @@ class Tools {
         if (_EPH_DEBUG_PROFILING_ || _EPH_ADMIN_DEBUG_PROFILING_) {
             return Profiling::redirectAdmin($url);
         }
+
         header('Location: ' . $url);
         exit;
     }
@@ -456,7 +473,6 @@ class Tools {
 
         return mb_strtolower($str, 'utf-8');
     }
-
 
     public static function getRemoteAddr() {
 
@@ -536,7 +552,7 @@ class Tools {
 
         return __EPH_BASE_URI__;
     }
-    
+
     public static function getServerName() {
 
         if (isset($_SERVER['HTTP_X_FORWARDED_SERVER']) && $_SERVER['HTTP_X_FORWARDED_SERVER']) {
@@ -571,7 +587,7 @@ class Tools {
         if ($cookie->id_lang) {
             $lang = new Language((int) $cookie->id_lang);
 
-            if (!Validate::isLoadedObject($lang) || !$lang->active ) {
+            if (!Validate::isLoadedObject($lang) || !$lang->active) {
                 $cookie->id_lang = null;
             }
 
@@ -592,7 +608,7 @@ class Tools {
             if (Validate::isLanguageCode($string)) {
                 $lang = Language::getLanguageByIETFCode($string);
 
-                if (Validate::isLoadedObject($lang) && $lang->active ) {
+                if (Validate::isLoadedObject($lang) && $lang->active) {
                     Context::getContext()->language = $lang;
                     $cookie->id_lang = (int) $lang->id;
                 }
@@ -638,7 +654,6 @@ class Tools {
             $context = Context::getContext();
         }
 
-        
         if (!isset($context->cookie)) {
             return;
         }
@@ -647,7 +662,6 @@ class Tools {
             $_GET['id_lang'] = $idLang;
         }
 
-       
         $cookieIdLang = $context->cookie->id_lang;
         $configurationIdLang = $context->language->id;
 
@@ -678,10 +692,12 @@ class Tools {
         if ($idCountry && Validate::isInt($idCountry)) {
             return (int) $idCountry;
         } else
+
         if (!$idCountry && isset($address) && isset($address->id_country) && $address->id_country) {
 
             $idCountry = (int) $address->id_country;
         } else
+
         if (Configuration::get('EPH_DETECT_COUNTRY') && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             preg_match('#(?<=-)\w\w|\w\w(?!-)#', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $array);
 
@@ -741,7 +757,6 @@ class Tools {
         return Tools::displayDate($params['date'], null, (isset($params['full']) ? $params['full'] : false));
     }
 
-   
     public static function displayDate($date, $idLang = null, $full = false, $separator = null) {
 
         if ($idLang !== null) {
@@ -770,7 +785,6 @@ class Tools {
         return date($dateFormat, $time);
     }
 
-    
     public static function displayParameterAsDeprecated($parameter) {
 
         $backtrace = debug_backtrace();
@@ -802,7 +816,6 @@ class Tools {
         return html_entity_decode((string) $string, ENT_QUOTES, 'utf-8');
     }
 
-    
     public static function safePostVars() {
 
         if (!isset($_POST) || !is_array($_POST)) {
@@ -813,7 +826,6 @@ class Tools {
 
     }
 
-    
     public static function deleteDirectory($dirname, $deleteSelf = true) {
 
         $dirname = rtrim($dirname, '/') . '/';
@@ -829,6 +841,7 @@ class Tools {
                         if (is_dir($dirname . $file)) {
                             Tools::deleteDirectory($dirname . $file, true);
                         } else
+
                         if (file_exists($dirname . $file)) {
                             @chmod($dirname . $file, 0777); // NT ?
                             unlink($dirname . $file);
@@ -856,7 +869,6 @@ class Tools {
         return false;
     }
 
-   
     public static function deleteFile($file, $excludeFiles = []) {
 
         if (isset($excludeFiles) && !is_array($excludeFiles)) {
@@ -903,7 +915,6 @@ class Tools {
         return $object;
     }
 
-    
     public static function debug_backtrace($start = 0, $limit = null) {
 
         $backtrace = debug_backtrace();
@@ -937,19 +948,15 @@ class Tools {
         </div>';
     }
 
-   
     public static function p($object) {
 
         return (Tools::dieObject($object, false));
     }
 
-   
     public static function error_log($object) {
 
-       
         return error_log(print_r($object, true));
     }
-
 
     public static function displayAsDeprecated($message = null) {
 
@@ -1004,7 +1011,6 @@ class Tools {
         return Tools::getAdminToken($tab . (int) EmployeeMenu::getIdFromClassName($tab) . (int) $context->employee->id);
     }
 
-    
     public static function getAdminToken($string) {
 
         return !empty($string) ? Tools::encrypt($string) : false;
@@ -1022,7 +1028,6 @@ class Tools {
         return Tools::getAdminUrl(basename(_EPH_IMG_DIR_) . '/' . $image, $entities);
     }
 
-    
     public static function getAdminUrl($url = null, $entities = false) {
 
         $link = Tools::getHttpHost(true) . __EPH_BASE_URI__;
@@ -1034,7 +1039,6 @@ class Tools {
         return $link;
     }
 
-    
     public static function getHttpHost($http = false, $entities = false, $ignore_port = false) {
 
         $host = (isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : $_SERVER['HTTP_HOST']);
@@ -1054,7 +1058,6 @@ class Tools {
         return $host;
     }
 
-    
     public static function htmlentitiesUTF8($string, $type = ENT_QUOTES) {
 
         if (is_array($string)) {
@@ -1097,7 +1100,6 @@ class Tools {
         return $htmlentities ? Tools::htmlentitiesUTF8(stripslashes($str)) : $str;
     }
 
-    
     public static function link_rewrite($str, $utf8Decode = null) {
 
         if ($utf8Decode !== null) {
@@ -1166,13 +1168,12 @@ class Tools {
         return $returnStr;
     }
 
-    
     public static function replaceAccentedChars($str) {
 
         /* One source among others:
-                                    http://www.tachyonsoft.com/uc0000.htm
-                                    http://www.tachyonsoft.com/uc0001.htm
-                                    http://www.tachyonsoft.com/uc0004.htm
+                                                http://www.tachyonsoft.com/uc0000.htm
+                                                http://www.tachyonsoft.com/uc0001.htm
+                                                http://www.tachyonsoft.com/uc0004.htm
         */
         $patterns = [
 
@@ -1346,11 +1347,10 @@ class Tools {
             return $str;
         }
 
-       
         $str = mb_convert_encoding($str, 'ISO-8859-1', 'UTF-8');
         return mb_convert_encoding((substr($str, 0, $maxLength - mb_strlen($suffix)) . $suffix), 'UTF-8', 'ISO-8859-1');
     }
-    
+
     public static function strlen($str, $encoding = 'UTF-8') {
 
         if (is_array($str)) {
@@ -1392,6 +1392,7 @@ class Tools {
                     if (preg_match('/<[\w]+[^>]*>/s', $tag[0])) {
                         array_unshift($openTags, $tag[2]);
                     } else
+
                     if (preg_match('/<\/([\w]+)[^>]*>/s', $tag[0], $closeTag)) {
                         $pos = array_search($closeTag[1], $openTags);
 
@@ -1512,7 +1513,7 @@ class Tools {
 
         return mb_substr($str, (int) $start, ($length === false ? mb_strlen($str) : (int) $length), $encoding);
     }
-    
+
     public static function strrpos($str, $find, $offset = 0, $encoding = 'utf-8') {
 
         return mb_strrpos($str, $find, $offset, $encoding);
@@ -1606,7 +1607,6 @@ class Tools {
         return ucwords(mb_strtolower($str));
     }
 
-    
     public static function iconv($from, $to, $string) {
 
         if (function_exists('iconv')) {
@@ -1658,6 +1658,7 @@ class Tools {
         if (!preg_match('/^https?:\/\//', $url)) {
             return @file_get_contents($url, $useIncludePath, $streamContext);
         } else
+
         if (function_exists('curl_init')) {
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -1688,6 +1689,7 @@ class Tools {
 
             return $content;
         } else
+
         if (ini_get('allow_url_fopen')) {
             return @file_get_contents($url, $useIncludePath, $streamContext);
         } else {
@@ -1696,7 +1698,6 @@ class Tools {
 
     }
 
-    
     public static function simplexml_load_file($url, $class_name = null) {
 
         $cache_id = 'Tools::simplexml_load_file' . $url;
@@ -1781,11 +1782,10 @@ class Tools {
     }
 
     public static function toUnderscoreCase($string) {
-        
+
         return mb_strtolower(trim(preg_replace('/([A-Z][a-z])/', '_$1', $string), '_'));
     }
 
-    
     public static function getBrightness($hex) {
 
         if (mb_strtolower($hex) == 'transparent') {
@@ -1816,7 +1816,7 @@ class Tools {
         return false;
     }
 
-    public static function getMediaServer($filename) {        
+    public static function getMediaServer($filename) {
 
         return Tools::usingSecureMode() ? Tools::getDomainSSL() : Tools::getDomain();
     }
@@ -1851,12 +1851,12 @@ class Tools {
         return $domain;
     }
 
-     public static function generateHtaccess($path = null, $rewrite_settings = null, $cache_control = null, $specific = '', $disable_multiviews = null, $medias = false, $disable_modsec = null) {
+    public static function generateHtaccess($path = null, $rewrite_settings = null, $cache_control = null, $specific = '', $disable_multiviews = null, $medias = false, $disable_modsec = null) {
 
         if (defined('EPH_INSTALLATION_IN_PROGRESS') && $rewrite_settings === null) {
             return true;
         }
-        
+
         // Default values for parameters
 
         if (is_null($path)) {
@@ -1922,9 +1922,9 @@ class Tools {
             }
 
             $domains[$company_url->domain][] = [
-                'physical' => $company_url->physical_uri,
-                'virtual'  => $company_url->virtual_uri,
-                'id_company'  => $company_url->id_company,
+                'physical'   => $company_url->physical_uri,
+                'virtual'    => $company_url->virtual_uri,
+                'id_company' => $company_url->id_company,
             ];
 
             if ($company_url->domain == $company_url->domain_ssl) {
@@ -1936,12 +1936,12 @@ class Tools {
             }
 
             $domains[$company_url->domain_ssl][] = [
-                'physical' => $company_url->physical_uri,
-                'virtual'  => $company_url->virtual_uri,
-                'id_company'  => $company_url->id_company,
+                'physical'   => $company_url->physical_uri,
+                'virtual'    => $company_url->virtual_uri,
+                'id_company' => $company_url->id_company,
             ];
         }
-       
+
         // Write data in .htaccess file
         fwrite($write_fd, "# ~~start~~ Do not remove this comment, Ephenyx Shop will keep automatically the code outside this comment when .htaccess will be generated again\n");
         fwrite($write_fd, "# .htaccess automatically generated by Ephenyx Shop e-commerce open-source solution\n");
@@ -1976,7 +1976,6 @@ class Tools {
         fwrite($write_fd, 'Header append Vary Accept env=REQUEST_image' . "\n");
         fwrite($write_fd, '</IfModule>' . "\n");
 
-
         if ($disable_modsec) {
             fwrite($write_fd, "<IfModule mod_security.c>\nSecFilterEngine Off\nSecFilterScanPOST Off\n</IfModule>\n\n");
         }
@@ -2000,14 +1999,10 @@ class Tools {
         fwrite($write_fd, 'RewriteCond %{DOCUMENT_ROOT}/$1.webp -f' . "\n");
         fwrite($write_fd, 'RewriteRule (.+)\.(jpe?g|png)$ $1.webp [T=image/webp]' . "\n");
 
-        
-
         fwrite($write_fd, 'RewriteRule ^api$ api/ [L]' . "\n\n");
         fwrite($write_fd, 'RewriteRule ^api/(.*)$ %{ENV:REWRITEBASE}webephenyx/dispatcher.php?url=$1 [QSA,L]' . "\n\n");
-		
-        $media_domains = '';
 
-        
+        $media_domains = '';
 
         if (Configuration::get('EPH_WEBSERVICE_CGI_HOST')) {
             fwrite($write_fd, "RewriteCond %{HTTP:Authorization} ^(.*)\nRewriteRule . - [E=HTTP_AUTHORIZATION:%1]\n\n");
@@ -2019,14 +2014,12 @@ class Tools {
             foreach ($list_uri as $uri) {
                 fwrite($write_fd, PHP_EOL . PHP_EOL . '#Domain: ' . $domain . PHP_EOL);
 
-                
-
                 fwrite($write_fd, 'RewriteRule . - [E=REWRITEBASE:' . $uri['physical'] . ']' . "\n");
 
                 // Webservice
                 fwrite($write_fd, 'RewriteRule ^api$ api/ [L]' . "\n\n");
                 fwrite($write_fd, 'RewriteRule ^api/(.*)$ %{ENV:REWRITEBASE}webephenyx/dispatcher.php?url=$1 [QSA,L]' . "\n\n");
-				
+
                 if (!$rewrite_settings) {
                     $rewrite_settings = (int) Configuration::get(Configuration::REWRITING_SETTINGS);
                 }
@@ -2051,20 +2044,24 @@ class Tools {
                     fwrite($write_fd, 'RewriteRule ^' . ltrim($uri['virtual'], '/') . '(.*) ' . $uri['physical'] . "$1 [L]\n\n");
                 }
 
-
-                
             }
 
             // Redirections to dispatcher
-            
-            $addrewrite_settings = Hook::exec('addRewriteSeetings', ['media_domains'=> $media_domains, 'domain_rewrite_cond' => $domain_rewrite_cond, 'uri' => $uri, 'rewrite_settings' => $rewrite_settings], null, true, false);
-            if(is_array($addrewrite_settings)) {  
-                foreach($addrewrite_settings as $key => $settings) {
+
+            $addrewrite_settings = Hook::exec('addRewriteSeetings', ['media_domains' => $media_domains, 'domain_rewrite_cond' => $domain_rewrite_cond, 'uri' => $uri, 'rewrite_settings' => $rewrite_settings], null, true, false);
+
+            if (is_array($addrewrite_settings)) {
+
+                foreach ($addrewrite_settings as $key => $settings) {
+
                     foreach ($settings as $setting) {
-                        fwrite($write_fd, $setting."\n");
+                        fwrite($write_fd, $setting . "\n");
                     }
-                }                
+
+                }
+
             }
+
             if ($rewrite_settings) {
                 fwrite($write_fd, "# AlphaImageLoader for IE and fancybox\n");
                 fwrite($write_fd, 'RewriteRule ^images_ie/?([^/]+)\.(jpe?g|png|gif)$ js/jquery/plugins/fancybox/images/$1.$2 [L]' . "\n");
@@ -2157,8 +2154,6 @@ FileETag none
 
         return true;
     }
-	
-
 
     public static function generateIndex() {
 
@@ -2182,32 +2177,35 @@ FileETag none
         return $content;
     }
 
-    
     public static function jsonDecode($json, $assoc = false) {
-		
-        if(is_array($json)) {
+
+        if (is_array($json)) {
             return $json;
         }
-		if(is_null($assoc)) {
-			if(!is_null($json)) {
-				return json_decode($json);
-			}
-		}
-		if(!is_null($json)) {
-			return json_decode($json, $assoc);
-		}
-        
+
+        if (is_null($assoc)) {
+
+            if (!is_null($json)) {
+                return json_decode($json);
+            }
+
+        }
+
+        if (!is_null($json)) {
+            return json_decode($json, $assoc);
+        }
+
     }
 
     public static function jsonEncode($data, $encodeFlags = null) {
 
-        if(is_null($encodeFlags)) {
-			return json_encode($data);
-		}
-		return json_encode($data, $encodeFlags);
+        if (is_null($encodeFlags)) {
+            return json_encode($data);
+        }
+
+        return json_encode($data, $encodeFlags);
     }
 
-   
     public static function displayFileAsDeprecated() {
 
         $backtrace = debug_backtrace();
@@ -2219,7 +2217,6 @@ FileETag none
         Tools::throwDeprecated($error, $message, $class);
     }
 
-    
     public static function enableCache($level = 1, Context $context = null) {
 
         if (!$context) {
@@ -2243,7 +2240,6 @@ FileETag none
         $smarty->cache_lifetime = 31536000; // 1 Year
     }
 
-    
     public static function restoreCacheSettings(Context $context = null) {
 
         if (!$context) {
@@ -2267,7 +2263,6 @@ FileETag none
         return (!in_array($function, $disabled) && is_callable($function));
     }
 
-    
     public static function pRegexp($s, $delim) {
 
         $s = str_replace($delim, '\\' . $delim, $s);
@@ -2279,7 +2274,6 @@ FileETag none
         return $s;
     }
 
-    
     public static function str_replace_once($needle, $replace, $haystack) {
 
         $pos = false;
@@ -2295,7 +2289,6 @@ FileETag none
         return substr_replace($haystack, $replace, $pos, strlen($needle));
     }
 
-    
     public static function checkPhpVersion() {
 
         $version = null;
@@ -2322,7 +2315,6 @@ FileETag none
         return ($zip->open($fromFile, ZIPARCHIVE::CHECKCONS) === true);
     }
 
-    
     public static function getSafeModeStatus() {
 
         Tools::displayAsDeprecated();
@@ -2345,7 +2337,6 @@ FileETag none
         return false;
     }
 
-    
     public static function chmodr($path, $filemode) {
 
         if (!is_dir($path)) {
@@ -2362,9 +2353,11 @@ FileETag none
                 if (is_link($fullpath)) {
                     return false;
                 } else
+
                 if (!is_dir($fullpath) && !@chmod($fullpath, $filemode)) {
                     return false;
                 } else
+
                 if (!Tools::chmodr($fullpath, $filemode)) {
                     return false;
                 }
@@ -2409,11 +2402,12 @@ FileETag none
 
     public static function nl2br($str) {
 
-		if(!is_null($str)) {
-			return str_replace(["\r\n", "\r", "\n"], '<br />', $str);
-		}
-		return $str;
-        
+        if (!is_null($str)) {
+            return str_replace(["\r\n", "\r", "\n"], '<br />', $str);
+        }
+
+        return $str;
+
     }
 
     public static function clearSmartyCache() {
@@ -2423,7 +2417,6 @@ FileETag none
         Tools::clearCompile($smarty);
     }
 
-   
     public static function clearCache($smarty = null, $tpl = false, $cacheId = null, $compileId = null) {
 
         if ($smarty === null) {
@@ -2440,20 +2433,20 @@ FileETag none
 
         return $smarty->clearCache($tpl, $cacheId, $compileId);
     }
-    
-    public static function getCmsPath($idCms, $path)  {
-        
+
+    public static function getCmsPath($idCms, $path) {
+
         $context = Context::getContext();
-        
-        $ajax_mode = Configuration::get('EPH_FRONT_AJAX') ? 1 : 0;        
+
+        $ajax_mode = Configuration::get('EPH_FRONT_AJAX') ? 1 : 0;
         $cms_ajax_mode = Configuration::get('EPH_CMS_AJAX') ? 1 : 0;
-        
+
         $idCms = (int) $idCms;
-        
-        $path = '<span class="navigation_end">'.$path.'</span>';
-        
-        
+
+        $path = '<span class="navigation_end">' . $path . '</span>';
+
         $pipe = Configuration::get('EPH_NAVIGATION_PIPE');
+
         if (empty($pipe)) {
             $pipe = '>';
         }
@@ -2461,41 +2454,46 @@ FileETag none
         $fullPath = [];
         $finalPath = '';
         $cms = new CMS($idCms, $context->language->id);
-        if($cms->level_depth == 1) {
+
+        if ($cms->level_depth == 1) {
             return $path;
         }
+
         $level_depth = $cms->level_depth - 1;
-        for($i = $level_depth; $i > 0; $i--) {
+
+        for ($i = $level_depth; $i > 0; $i--) {
             $cms = new CMS($cms->id_parent, $context->language->id);
-             if($ajax_mode && $cms_ajax_mode) {          
-                $fullPath[$i] = '<a href="javascript:void(0)" onClick="openAjaxCms('.$cms->id.')" data-gg="">'.htmlentities($cms->meta_title, ENT_NOQUOTES, 'UTF-8').'</a><span class="navigation-pipe">'.$pipe.'</span>';
-             } else {
-                 $fullPath[$i] = '<a href="'.$context->link->getCMSLink($cms->id).'" data-gg="">'.htmlentities($cms->meta_title, ENT_NOQUOTES, 'UTF-8').'</a><span class="navigation-pipe">'.$pipe.'</span>';
-             }
+
+            if ($ajax_mode && $cms_ajax_mode) {
+                $fullPath[$i] = '<a href="javascript:void(0)" onClick="openAjaxCms(' . $cms->id . ')" data-gg="">' . htmlentities($cms->meta_title, ENT_NOQUOTES, 'UTF-8') . '</a><span class="navigation-pipe">' . $pipe . '</span>';
+            } else {
+                $fullPath[$i] = '<a href="' . $context->link->getCMSLink($cms->id) . '" data-gg="">' . htmlentities($cms->meta_title, ENT_NOQUOTES, 'UTF-8') . '</a><span class="navigation-pipe">' . $pipe . '</span>';
+            }
+
         }
+
         ksort($fullPath);
-        foreach($fullPath as $key => $value) {
-             $finalPath .= $value;
+
+        foreach ($fullPath as $key => $value) {
+            $finalPath .= $value;
         }
-        
-         return $finalPath.$path;
-        
-        
+
+        return $finalPath . $path;
+
     }
-    
-    public static function getFormPath($idForm, $path)  {
-        
+
+    public static function getFormPath($idForm, $path) {
+
         $context = Context::getContext();
-        
+
         $idForm = (int) $idForm;
-        
-        $path = '<span class="navigation_end">'.$path.'</span>';        
-        
+
+        $path = '<span class="navigation_end">' . $path . '</span>';
+
         return $path;
-        
-        
+
     }
-    
+
     public static function clearCompile($smarty = null) {
 
         if ($smarty === null) {
@@ -2508,132 +2506,146 @@ FileETag none
 
         return $smarty->clearCompiledTemplate();
     }
-    
+
     public static function cleanFrontCache() {
 
-        
         $context = Context::getContext();
-		$recursive_directory = [
-			'app/cache/smarty/cache',
-			'app/cache/smarty/compile',
-			'app/cache/purifier/CSS',
-			'app/cache/purifier/URI'
-		];
-		$iterator = new AppendIterator();
+        $recursive_directory = [
+            'app/cache/smarty/cache',
+            'app/cache/smarty/compile',
+            'app/cache/purifier/CSS',
+            'app/cache/purifier/URI',
+        ];
+        $iterator = new AppendIterator();
+
         foreach ($recursive_directory as $key => $directory) {
-			if(is_dir(_EPH_ROOT_DIR_ . '/' . $directory )) {
-				$iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory . '/')));
-			}
+
+            if (is_dir(_EPH_ROOT_DIR_ . '/' . $directory)) {
+                $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory . '/')));
+            }
+
         }
-		foreach ($iterator as $file) {
-            if (is_dir($file->getPathname())) {	
+
+        foreach ($iterator as $file) {
+
+            if (is_dir($file->getPathname())) {
                 Tools::deleteDirectory($file->getPathname());
             } else {
-                
+
                 unlink($file->getPathname());
             }
-            
+
         }
-		
-		mkdir(_EPH_ROOT_DIR_ .'/app/cache/smarty/cache', 0777, true);
-		Tools::generateIndexFiles(_EPH_ROOT_DIR_ .'/app/cache/smarty/cache/');
-		mkdir(_EPH_ROOT_DIR_ .'/app/cache/smarty/compile', 0777, true);
-		Tools::generateIndexFiles(_EPH_ROOT_DIR_ .'/app/cache/smarty/compile/');
-		mkdir(_EPH_ROOT_DIR_ .'/app/cache/purifier/CSS', 0777, true);
-		Tools::generateIndexFiles(_EPH_ROOT_DIR_ .'/app/cache/purifier/CSS/');
-		mkdir(_EPH_ROOT_DIR_ .'/app/cache/purifier/URI', 0777, true);
-		Tools::generateIndexFiles(_EPH_ROOT_DIR_ .'/app/cache/purifier/URI/');
-        mkdir(_EPH_ROOT_DIR_ .'/content/backoffice/backend/cache', 0777, true);
+
+        mkdir(_EPH_ROOT_DIR_ . '/app/cache/smarty/cache', 0777, true);
+        Tools::generateIndexFiles(_EPH_ROOT_DIR_ . '/app/cache/smarty/cache/');
+        mkdir(_EPH_ROOT_DIR_ . '/app/cache/smarty/compile', 0777, true);
+        Tools::generateIndexFiles(_EPH_ROOT_DIR_ . '/app/cache/smarty/compile/');
+        mkdir(_EPH_ROOT_DIR_ . '/app/cache/purifier/CSS', 0777, true);
+        Tools::generateIndexFiles(_EPH_ROOT_DIR_ . '/app/cache/purifier/CSS/');
+        mkdir(_EPH_ROOT_DIR_ . '/app/cache/purifier/URI', 0777, true);
+        Tools::generateIndexFiles(_EPH_ROOT_DIR_ . '/app/cache/purifier/URI/');
+        mkdir(_EPH_ROOT_DIR_ . '/content/backoffice/backend/cache', 0777, true);
         $iterator = new AppendIterator();
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/backoffice/backend/cache/'));
+
         foreach ($iterator as $file) {
-             
+
             if (in_array($file->getFilename(), ['.', '..', 'index.php'])) {
                 continue;
             }
+
             if (is_dir($file->getPathname())) {
-								
+
                 continue;
             }
+
             unlink($file->getPathname());
         }
-         $iterator = new AppendIterator();
-        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/themes/'.$context->theme->name.'/cache/'));
+
+        $iterator = new AppendIterator();
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/themes/' . $context->theme->name . '/cache/'));
+
         foreach ($iterator as $file) {
+
             if (in_array($file->getFilename(), ['.', '..', 'index.php'])) {
                 continue;
             }
+
             if (is_dir($file->getPathname())) {
-								
+
                 continue;
             }
+
             unlink($file->getPathname());
         }
-        
+
     }
-    
+
     public static function reGenerateilesIndex() {
-        
+
         $recursive_directory = [
             'includes',
-            'app', 
-	       'content'
+            'app',
+            'content',
         ];
 
         $iterator = new AppendIterator();
 
         foreach ($recursive_directory as $key => $directory) {
-	       if(is_dir(_EPH_ROOT_DIR_ . '/' . $directory )) {
-               $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory . '/')));
-           }
+
+            if (is_dir(_EPH_ROOT_DIR_ . '/' . $directory)) {
+                $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory . '/')));
+            }
+
         }
-        
-        
+
         foreach ($iterator as $file) {
-    
+
             if ($file->getFilename() == '..') {
                 $filePathTest = $file->getPathname();
                 $test = str_replace('..', '', $filePathTest);
-                if(!file_exists($test.'index.php')) {
+
+                if (!file_exists($test . 'index.php')) {
                     $diretory = str_replace(_EPH_ROOT_DIR_, '', $test);
-                    $level = substr_count($diretory, '/') -1;
+                    $level = substr_count($diretory, '/') - 1;
                     Tools::generateIndexFiles($test, $level);
                 }
-            }    
- 
-            if($file->getFilename() == 'index.php') {
+
+            }
+
+            if ($file->getFilename() == 'index.php') {
                 $path = '';
                 $filePath = $file->getPathname();
                 $diretory = str_replace(_EPH_ROOT_DIR_, '', $filePath);
-                $level = substr_count($diretory, '/') -1;
+                $level = substr_count($diretory, '/') - 1;
                 Tools::generateIndexFiles(str_replace('index.php', '', $filePath), $level);
-            }	
-   
+            }
+
         }
 
     }
-    
 
     public static function generateIndexFiles($directory, $level = 1) {
-		
-		$path = '';
-        for($i = 0; $i <= $level; $i++) {
+
+        $path = '';
+
+        for ($i = 0; $i <= $level; $i++) {
             $path .= "../";
         }
-        
-        $file = fopen($directory."index.php","w");
-		fwrite($file,"<?php". "\n\n");
-		fwrite($file,"header(\"Expires: Mon, 26 Jul 1997 05:00:00 GMT\");". "\n");
-		fwrite($file,"header(\"Last-Modified: \".gmdate(\"D, d M Y H:i:s\").\" GMT\");". "\n\n");
-		fwrite($file,"header(\"Cache-Control: no-store, no-cache, must-revalidate\");". "\n");
-		fwrite($file,"header(\"Cache-Control: post-check=0, pre-check=0\", false);". "\n");
-		fwrite($file,"header(\"Pragma: no-cache\");". "\n\n");
-		fwrite($file,"header(\"Location: ".$path."\");". "\n");
-		fwrite($file,"exit;");
-		fclose($file);
-	}
 
-   
+        $file = fopen($directory . "index.php", "w");
+        fwrite($file, "<?php" . "\n\n");
+        fwrite($file, "header(\"Expires: Mon, 26 Jul 1997 05:00:00 GMT\");" . "\n");
+        fwrite($file, "header(\"Last-Modified: \".gmdate(\"D, d M Y H:i:s\").\" GMT\");" . "\n\n");
+        fwrite($file, "header(\"Cache-Control: no-store, no-cache, must-revalidate\");" . "\n");
+        fwrite($file, "header(\"Cache-Control: post-check=0, pre-check=0\", false);" . "\n");
+        fwrite($file, "header(\"Pragma: no-cache\");" . "\n\n");
+        fwrite($file, "header(\"Location: " . $path . "\");" . "\n");
+        fwrite($file, "exit;");
+        fclose($file);
+    }
+
     public static function clearColorListCache($id_product = false) {
 
         // Change template dir if called from the BackOffice
@@ -2643,7 +2655,6 @@ FileETag none
         Context::getContext()->smarty->setTemplateDir($current_template_dir);
     }
 
-   
     public static function getMemoryLimit() {
 
         $memory_limit = @ini_get('memory_limit');
@@ -2842,6 +2853,7 @@ FileETag none
             $len = $len1 - $len2;
             $str = &$v2;
         } else
+
         if ($len2 > $len1) {
             $len = $len2 - $len1;
             $str = &$v1;
@@ -2901,7 +2913,6 @@ FileETag none
 
     }
 
-    
     public static function cleanNonUnicodeSupport($pattern) {
 
         if (!defined('PREG_BAD_UTF8_OFFSET')) {
@@ -2942,7 +2953,6 @@ FileETag none
         @touch($file_name);
     }
 
-   
     public static function waitUntilFileIsModified($file_name, $timeout = 180) {
 
         @ini_set('max_execution_time', $timeout);
@@ -2967,7 +2977,6 @@ FileETag none
 
     }
 
-   
     public static function rtrimString($str, $str_search) {
 
         $length_str = strlen($str_search);
@@ -2979,7 +2988,6 @@ FileETag none
         return $str;
     }
 
-    
     public static function formatBytes($size, $precision = 2) {
 
         if (!$size) {
@@ -2992,7 +3000,6 @@ FileETag none
         return round(pow(1024, $base - floor($base)), $precision) . $suffixes[floor($base)];
     }
 
-   
     public static function boolVal($value) {
 
         if (empty($value)) {
@@ -3002,7 +3009,6 @@ FileETag none
         return (bool) $value;
     }
 
-    
     public static function getUserPlatform() {
 
         if (isset(static::$_user_plateform)) {
@@ -3012,13 +3018,14 @@ FileETag none
         $user_agent = $_SERVER['HTTP_USER_AGENT'];
         static::$_user_plateform = 'unknown';
 
-
         if (preg_match('/linux/i', $user_agent)) {
             static::$_user_plateform = 'Linux';
         } else
+
         if (preg_match('/macintosh|mac os x/i', $user_agent)) {
             static::$_user_plateform = 'Mac';
         } else
+
         if (preg_match('/windows|win32/i', $user_agent)) {
             static::$_user_plateform = 'Windows';
         }
@@ -3038,18 +3045,23 @@ FileETag none
         if (preg_match('/MSIE/i', $user_agent) && !preg_match('/Opera/i', $user_agent)) {
             static::$_user_browser = 'Internet Explorer';
         } else
+
         if (preg_match('/Firefox/i', $user_agent)) {
             static::$_user_browser = 'Mozilla Firefox';
         } else
+
         if (preg_match('/Chrome/i', $user_agent)) {
             static::$_user_browser = 'Google Chrome';
         } else
+
         if (preg_match('/Safari/i', $user_agent)) {
             static::$_user_browser = 'Apple Safari';
         } else
+
         if (preg_match('/Opera/i', $user_agent)) {
             static::$_user_browser = 'Opera';
         } else
+
         if (preg_match('/Netscape/i', $user_agent)) {
             static::$_user_browser = 'Netscape';
         }
@@ -3057,17 +3069,15 @@ FileETag none
         return static::$_user_browser;
     }
 
-    
     public static function getDescriptionClean($description) {
-        
-        if(is_null($description)) {
+
+        if (is_null($description)) {
             return $description;
         }
 
         return strip_tags(stripslashes($description));
     }
 
-    
     public static function purifyHTML($html, $uriUnescape = null, $allowStyle = false) {
 
         static $use_html_purifier = null;
@@ -3180,7 +3190,6 @@ FileETag none
         return $html;
     }
 
-    
     public static function safeDefine($constant, $value) {
 
         if (!defined($constant)) {
@@ -3189,7 +3198,6 @@ FileETag none
 
     }
 
-    
     public static function arrayReplaceRecursive($base, $replacements) {
 
         if (function_exists('array_replace_recursive')) {
@@ -3577,6 +3585,7 @@ FileETag none
         if ($k <= $bias+static::PUNYCODE_TMIN) {
             return static::PUNYCODE_TMIN;
         } else
+
         if ($k >= $bias+static::PUNYCODE_TMAX) {
             return static::PUNYCODE_TMAX;
         }
@@ -3669,9 +3678,11 @@ FileETag none
         if ($code < 128) {
             return $code;
         } else
+
         if ($code < 224) {
             return (($code - 192) * 64) + (ord($char[1]) - 128);
         } else
+
         if ($code < 240) {
             return (($code - 224) * 4096) + ((ord($char[1]) - 128) * 64) + (ord($char[2]) - 128);
         } else {
@@ -3696,9 +3707,11 @@ FileETag none
         if ($code <= 0x7F) {
             return chr($code);
         } else
+
         if ($code <= 0x7FF) {
             return chr(($code >> 6) + 192) . chr(($code & 63) + 128);
         } else
+
         if ($code <= 0xFFFF) {
             return chr(($code >> 12) + 224) . chr((($code >> 6) & 63) + 128) . chr(($code & 63) + 128);
         } else {
@@ -3852,7 +3865,7 @@ FileETag none
 
     public static function isImagickCompatible() {
 
-         try {
+        try {
 
             if (!class_exists('Imagick')) {
                 return false;
@@ -3862,7 +3875,7 @@ FileETag none
              * Check if the Imagick::queryFormats method exists
              */
 
-            if (!method_exists(\Imagick::class, 'queryFormats')) {
+            if (!method_exists(\Imagick::, 'queryFormats')) {
                 return false;
             }
 
@@ -3872,8 +3885,6 @@ FileETag none
         }
 
     }
-
-    
 
     public static function is_assoc(array $array) {
 
@@ -3934,11 +3945,8 @@ FileETag none
         return $dash_str;
     }
 
-   
-
     public static function sendEmail($postfields, $meta_description = null) {
 
-        
         $context = Context::getContext();
 
         $htmlContent = $postfields['htmlContent'];
@@ -3946,17 +3954,19 @@ FileETag none
         $bckImg = !empty(Configuration::get('EPH_BCK_LOGO_MAIL')) ? 'https://' . $context->company->domain_ssl . '/content/img/' . Configuration::get('EPH_BCK_LOGO_MAIL') : false;
         $tpl->assign([
             'title'        => $postfields['subject'],
-            'css_dir'      => 'https://' . $context->company->domain_ssl._THEME_CSS_DIR_,
+            'css_dir'      => 'https://' . $context->company->domain_ssl . _THEME_CSS_DIR_,
             'shop_link'    => $context->link->getBaseFrontLink(),
             'shop_name'    => $context->company->company_name,
             'bckImg'       => $bckImg,
             'logoMailLink' => $context->link->getBaseFrontLink() . 'content/img/' . Configuration::get('EPH_LOGO_MAIL'),
         ]);
-        if(!is_null($meta_description)) {
+
+        if (!is_null($meta_description)) {
             $tpl->assign([
-                'meta_description'        => $meta_description
+                'meta_description' => $meta_description,
             ]);
         }
+
         $header = $tpl->fetch();
         $tpl = $context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'footer.tpl');
         $tpl->assign([
@@ -3965,46 +3975,52 @@ FileETag none
         $footer = $tpl->fetch();
         $postfields['htmlContent'] = $header . $htmlContent . $footer;
         $mail_method = Configuration::get('EPH_MAIL_METHOD');
+
         if ($mail_method == 1) {
             $encrypt = Configuration::get('EPH_MAIL_SMTP_ENCRYPTION');
             $mail = new PHPMailer();
             $mail->IsSMTP();
             $mail->SMTPAuth = true;
             $mail->Host = Configuration::get('EPH_MAIL_SERVER');
-            $mail->Port = Configuration::get('EPH_MAIL_SMTP_PORT');            
+            $mail->Port = Configuration::get('EPH_MAIL_SMTP_PORT');
             //$mail->SMTPDebug = SMTP::DEBUG_CONNECTION;
-            $mail->Username =  Configuration::get('EPH_MAIL_USER');
+            $mail->Username = Configuration::get('EPH_MAIL_USER');
             $mail->Password = Configuration::get('EPH_MAIL_PASSWD');
             $mail->setFrom($postfields['sender']['email'], $postfields['sender']['name']);
-            foreach($postfields['to'] as $key => $value) {         
+
+            foreach ($postfields['to'] as $key => $value) {
                 $mail->addAddress($value['email'], $value['name']);
             }
-            
+
             $mail->Subject = $postfields['subject'];
-            if($encrypt != 'off') {
-                if($encrypt == 'ENCRYPTION_STARTTLS') {
+
+            if ($encrypt != 'off') {
+
+                if ($encrypt == 'ENCRYPTION_STARTTLS') {
                     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 } else {
                     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
                 }
+
             } else {
-               
+
             }
-            
+
             $mail->Body = $postfields['htmlContent'];
             $mail->isHTML(true);
-            if(isset($postfields['attachment']) && !is_null($postfields['attachment'])) {
+
+            if (isset($postfields['attachment']) && !is_null($postfields['attachment'])) {
                 $mail->addAttachment($postfields['attachment']);
             }
-            
+
             if (!$mail->send()) {
                 return false;
             } else {
                 return true;
             }
 
-            
-        } else  if ($mail_method == 2) {
+        } else
+        if ($mail_method == 2) {
             $api_key = Configuration::get('EPH_SENDINBLUE_API');
 
             $curl = curl_init();
@@ -4021,7 +4037,7 @@ FileETag none
                 CURLOPT_HTTPHEADER     => [
                     "accept: application/json",
                     "api-key: " . $api_key,
-                    "content-type: application/json",  
+                    "content-type: application/json",
                 ],
             ]);
 
@@ -4034,10 +4050,11 @@ FileETag none
             } else {
                 return true;
             }
+
         }
 
     }
-   
+
     public static function hex2rgb($colour) {
 
         if ($colour[0] == '#') {
@@ -4047,6 +4064,7 @@ FileETag none
         if (strlen($colour) == 6) {
             list($r, $g, $b) = [$colour[0] . $colour[1], $colour[2] . $colour[3], $colour[4] . $colour[5]];
         } else
+
         if (strlen($colour) == 3) {
             list($r, $g, $b) = [$colour[0] . $colour[0], $colour[1] . $colour[1], $colour[2] . $colour[2]];
         } else {
@@ -4294,56 +4312,56 @@ FileETag none
         return $output;
 
     }
-    
-    public static function deleteBulkFiles($file) {
-		
-		if(file_exists(_EPH_ROOT_DIR_.$file)) {
-            unlink(_EPH_ROOT_DIR_.$file);
-        }
-		return true;
-		
-	}
 
-	public static function cleanEmptyDirectory() {
-		
-		
-		$recursive_directory = ['includes/classes', 'includes/controllers', 'includes/plugins', 'content/js', 'content/backoffice/backend'];		
-       
+    public static function deleteBulkFiles($file) {
+
+        if (file_exists(_EPH_ROOT_DIR_ . $file)) {
+            unlink(_EPH_ROOT_DIR_ . $file);
+        }
+
+        return true;
+
+    }
+
+    public static function cleanEmptyDirectory() {
+
+        $recursive_directory = ['includes/classes', 'includes/controllers', 'includes/plugins', 'content/js', 'content/backoffice/backend'];
 
         $iterator = new AppendIterator();
 
         foreach ($recursive_directory as $key => $directory) {
             $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory));
         }
-		foreach ($iterator as $file) {
-			$fileName = $file->getFilename();
-			$filePath = $file->getPathname();
+
+        foreach ($iterator as $file) {
+            $fileName = $file->getFilename();
+            $filePath = $file->getPathname();
             $path = str_replace($fileName, '', $filePath);
-            if(is_dir($path)) {
+
+            if (is_dir($path)) {
                 Tools::removeEmptyDirs($path);
-            }			
-		}
-        
+            }
+
+        }
+
         $iterator = new AppendIterator();
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/'));
-        
+
         foreach ($iterator as $file) {
-            
+
             $filePath = $file->getPathname();
             $ext = pathinfo($file->getFilename(), PATHINFO_EXTENSION);
 
             if ($ext == 'txt') {
                 unlink($filePath);
             }
-			
+
         }
 
-		
-	}
-    
+    }
+
     public static function removeEmptyDirs($path) {
 
-       
         $dirs = glob($path . "*", GLOB_ONLYDIR);
 
         foreach ($dirs as $dir) {
@@ -4352,61 +4370,60 @@ FileETag none
 
             if (is_array($files) && count($files) == 1 && basename($files[0]) == 'index.php') {
 
-                 unlink($files[0]);
-                 rmdir($dir);
-
-            } elseif (empty($files)) {
+                unlink($files[0]);
                 rmdir($dir);
-            } else if (is_array($innerDirs) && count($innerDirs) > 0) {
-                Tools::removeEmptyDirs($dir.'/');
+
+            } else if (empty($files)) {
+                rmdir($dir);
+            } else
+            if (is_array($innerDirs) && count($innerDirs) > 0) {
+                Tools::removeEmptyDirs($dir . '/');
             }
 
         }
 
     }
-    
-    
-	
+
     public static function generateCurrentJson() {
 
-        
-		$recursive_directory = [
+        $recursive_directory = [
             'app/xml',
-            'content/backoffice',                       
-            'content/css', 
-            'content/fonts', 
+            'content/backoffice',
+            'content/css',
+            'content/fonts',
             'content/js',
             'content/mails',
             'content/pdf',
-			'includes/classes',		
-            'includes/controllers',		
-            'includes/plugins',	
+            'includes/classes',
+            'includes/controllers',
+            'includes/plugins',
             'webephenyx',
-		];
-       
-		
+        ];
+
         $iterator = new AppendIterator();
 
         foreach ($recursive_directory as $key => $directory) {
-			if(is_dir(_EPH_ROOT_DIR_ . '/' . $directory )) {
-				$iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory . '/')));
-			}
+
+            if (is_dir(_EPH_ROOT_DIR_ . '/' . $directory)) {
+                $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory . '/')));
+            }
+
         }
-		$iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/app/'));
+
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/app/'));
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/'));
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/themes/'));
-
 
         foreach ($iterator as $file) {
             $filePath = $file->getPathname();
             $filePath = str_replace(_EPH_ROOT_DIR_, '', $filePath);
-			
-            if (in_array($file->getFilename(), ['.', '..', '.htaccess', '.user.ini', 'defines.inc.php','settings.inc.php', '.php-ini', '.php-version'])) {
+
+            if (in_array($file->getFilename(), ['.', '..', '.htaccess', '.user.ini', 'defines.inc.php', 'settings.inc.php', '.php-ini', '.php-version'])) {
                 continue;
             }
-			
+
             if (is_dir($file->getPathname())) {
-								
+
                 continue;
             }
 
@@ -4415,16 +4432,18 @@ FileETag none
             if ($ext == 'txt') {
                 continue;
             }
-			if ($ext == 'zip') {
-				continue;
-			}
-			
+
+            if ($ext == 'zip') {
+                continue;
+            }
+
             if (str_contains($filePath, '/uploads/')) {
-				continue;
-			}
-             if (str_contains($filePath, '/cache/')) {
-				continue;
-			}              
+                continue;
+            }
+
+            if (str_contains($filePath, '/cache/')) {
+                continue;
+            }
 
             $md5List[$filePath] = md5_file($file->getPathname());
         }
@@ -4433,15 +4452,12 @@ FileETag none
 
     }
 
-    
-
-    
     public static function buildMaps() {
 
-		$context = Context::getContext();
-		
+        $context = Context::getContext();
+
         $map_seeting = [];
-		
+
         $seetings = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('cml.name, c.*, ccl.`name` as `category`, cml.`description`')
@@ -4450,59 +4466,73 @@ FileETag none
                 ->leftJoin('composer_category_lang', 'ccl', 'ccl.`id_composer_category` = c.`id_composer_category` AND ccl.`id_lang` = ' . $context->language->id)
                 ->where('c.`is_corporate` = 1')
         );
-		$excludeField = ['show_settings_on_create', 'content_element', 'is_container'];
-		
-		foreach ($seetings as &$seeting) {
-			foreach ($seeting as $key => $value) {
-				if($key == 'show_settings_on_create') {
-					if($value == 2) {
-						$seeting['show_settings_on_create'] = false;
-					} else if($value == 1) {
-						$seeting['show_settings_on_create'] = true;
-					} else if(empty($value)) {
-						unset($seeting['show_settings_on_create']);
-					} 
-				}
-				if($key == 'content_element') {
-					if($value == 0) {
-						$seeting['content_element'] = false;
-					} else if($value == 1) {
-						unset($seeting['content_element']);
-					} 
-				}
-				if($key == 'is_container') {
-					if($value == 1) {
-						$seeting['is_container'] = true;
-					} else  {
-						unset($seeting['is_container']);
-					} 
-				}
-			}
-			
-		}
+        $excludeField = ['show_settings_on_create', 'content_element', 'is_container'];
 
         foreach ($seetings as &$seeting) {
-			
-			
-            foreach ($seeting as $key => $value) {
-				if(in_array($key, $excludeField)) {
-					continue;
-				}
-				if (empty($value)) {
-					unset($seeting[$key]);
-                    
-                }
-            }
-			unset($seeting['id_composer_category']);
-			unset($seeting['active']);
-			
 
+            foreach ($seeting as $key => $value) {
+
+                if ($key == 'show_settings_on_create') {
+
+                    if ($value == 2) {
+                        $seeting['show_settings_on_create'] = false;
+                    } else
+                    if ($value == 1) {
+                        $seeting['show_settings_on_create'] = true;
+                    } else
+                    if (empty($value)) {
+                        unset($seeting['show_settings_on_create']);
+                    }
+
+                }
+
+                if ($key == 'content_element') {
+
+                    if ($value == 0) {
+                        $seeting['content_element'] = false;
+                    } else
+                    if ($value == 1) {
+                        unset($seeting['content_element']);
+                    }
+
+                }
+
+                if ($key == 'is_container') {
+
+                    if ($value == 1) {
+                        $seeting['is_container'] = true;
+                    } else {
+                        unset($seeting['is_container']);
+                    }
+
+                }
+
+            }
 
         }
 
         foreach ($seetings as &$seeting) {
-			
-			
+
+            foreach ($seeting as $key => $value) {
+
+                if (in_array($key, $excludeField)) {
+                    continue;
+                }
+
+                if (empty($value)) {
+                    unset($seeting[$key]);
+
+                }
+
+            }
+
+            unset($seeting['id_composer_category']);
+            unset($seeting['active']);
+
+        }
+
+        foreach ($seetings as &$seeting) {
+
             $params = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
                     ->select('cpt.`value`as `type`, cmpl.heading, cmp.*, cmpl.description, cmpl.param_group as `group`')
@@ -4515,30 +4545,32 @@ FileETag none
             foreach ($params as &$param) {
 
                 unset($param['id_type']);
-				foreach ($param as $key => $value) {
+
+                foreach ($param as $key => $value) {
 
                     if (empty($value)) {
                         unset($param[$key]);
                     }
-					
 
                 }
-				if(!empty($param['value'])  && $param['param_name'] != 'content') {
-					$param['value'] = Tools::jsonDecode($param['value'], true);
-				}
-				if($param['param_name'] == 'img_size') {
-					$param['values'] = Tools::getComposerImageTypes();
-				} else {
-					$values = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
-						(new DbQuery())
-						->select('cv.`value_key`, cvl.`name`')
-						->from('composer_value', 'cv')
-                		->leftJoin('composer_value_lang', 'cvl', 'cvl.`id_composer_value` = cv.`id_composer_value` AND cvl.`id_lang` = ' . $context->language->id)
-                		->where('cv.`id_composer_map_params` = ' . $param['id_composer_map_params'])
-					);
-					$param['values'] = $values;
-				
-				}
+
+                if (!empty($param['value']) && $param['param_name'] != 'content') {
+                    $param['value'] = Tools::jsonDecode($param['value'], true);
+                }
+
+                if ($param['param_name'] == 'img_size') {
+                    $param['values'] = Tools::getComposerImageTypes();
+                } else {
+                    $values = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
+                        (new DbQuery())
+                            ->select('cv.`value_key`, cvl.`name`')
+                            ->from('composer_value', 'cv')
+                            ->leftJoin('composer_value_lang', 'cvl', 'cvl.`id_composer_value` = cv.`id_composer_value` AND cvl.`id_lang` = ' . $context->language->id)
+                            ->where('cv.`id_composer_map_params` = ' . $param['id_composer_map_params'])
+                    );
+                    $param['values'] = $values;
+
+                }
 
             }
 
@@ -4567,39 +4599,38 @@ FileETag none
             $seeting['params'] = $params;
             $map_seeting[$seeting['base']] = $seeting;
         }
-		Configuration::updateValue('_EPH_SEETINGS_MAP_FILE_', Tools::jsonEncode($map_seeting));
+
+        Configuration::updateValue('_EPH_SEETINGS_MAP_FILE_', Tools::jsonEncode($map_seeting));
         return $map_seeting;
 
     }
-	
-	
-	
-	public static function getComposerImageTypes() {
-		
-		 $images_types = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
+
+    public static function getComposerImageTypes() {
+
+        $images_types = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('*')
                 ->from('vc_image_type')
                 ->orderBy('`name` ASC')
         );
-		$values = [];
-		$values[] = [
-			'value_key' => '',
-			'name' => ''
-		];
-		
-		foreach($images_types as $type) {
-			$values[] = [
-				'value_key' => $type['name'],
-				'name' =>  $type['name']
-			];
-			
-		}
+        $values = [];
+        $values[] = [
+            'value_key' => '',
+            'name'      => '',
+        ];
 
-		return $values;
-	}
-	
-	public static function fieldAttachedImages($att_ids = [], $imageSize = null) {
+        foreach ($images_types as $type) {
+            $values[] = [
+                'value_key' => $type['name'],
+                'name'      => $type['name'],
+            ];
+
+        }
+
+        return $values;
+    }
+
+    public static function fieldAttachedImages($att_ids = [], $imageSize = null) {
 
         $links = [];
 
@@ -4611,11 +4642,13 @@ FileETag none
                     ->from('vc_media')
                     ->where('`id_vc_media` = ' . (int) $th_id)
             );
-			if(isset($result['base_64']) && !empty($result['base_64'])) {
-				$links[$th_id] = $result['base_64'];
-				
-			} else if (isset($result['file_name']) && !empty($result['file_name'])) {
-                $thumb_src = __EPH_BASE_URI__.'content/img/composer/';
+
+            if (isset($result['base_64']) && !empty($result['base_64'])) {
+                $links[$th_id] = $result['base_64'];
+
+            } else
+            if (isset($result['file_name']) && !empty($result['file_name'])) {
+                $thumb_src = __EPH_BASE_URI__ . 'content/img/composer/';
 
                 if (!empty($result['subdir'])) {
                     $thumb_src .= $result['subdir'];
@@ -4628,26 +4661,28 @@ FileETag none
                     $thumb_src = $path_parts['dirname'] . DIRECTORY_SEPARATOR . $path_parts['filename'] . '-' . $imageSize . '.' . $path_parts['extension'];
 
                 }
-				if(empty($result['base_64'])) {
-					$extension = pathinfo($thumb_src, PATHINFO_EXTENSION);
-					$img = new Imagick(_EPH_ROOT_DIR_.$thumb_src);
-					$imgBuff = $img->getimageblob();
-					$img->clear(); 
-					$img = base64_encode($imgBuff);
-					$base64 = 'data:image/'.$extension.';base64,'.$img;
-					$imageType = new ComposerMedia($result['id_vc_media']);
-					$imageType->file_name = $result['file_name'];
-					$imageType->base_64 = $base64;
-					$imageType->subdir = $result['subdir'];
-					foreach (Language::getIDs(false) as $idLang) {
-						$imageType->legend[$idLang] = pathinfo($thumb_src, PATHINFO_FILENAME);
-					}
-					if($imageType->update()) {
-						$thumb_src = $base64;
-					}
 
-					
-				}
+                if (empty($result['base_64'])) {
+                    $extension = pathinfo($thumb_src, PATHINFO_EXTENSION);
+                    $img = new Imagick(_EPH_ROOT_DIR_ . $thumb_src);
+                    $imgBuff = $img->getimageblob();
+                    $img->clear();
+                    $img = base64_encode($imgBuff);
+                    $base64 = 'data:image/' . $extension . ';base64,' . $img;
+                    $imageType = new ComposerMedia($result['id_vc_media']);
+                    $imageType->file_name = $result['file_name'];
+                    $imageType->base_64 = $base64;
+                    $imageType->subdir = $result['subdir'];
+
+                    foreach (Language::getIDs(false) as $idLang) {
+                        $imageType->legend[$idLang] = pathinfo($thumb_src, PATHINFO_FILENAME);
+                    }
+
+                    if ($imageType->update()) {
+                        $thumb_src = $base64;
+                    }
+
+                }
 
                 $links[$th_id] = $thumb_src;
             }
@@ -4656,8 +4691,8 @@ FileETag none
 
         return $links;
     }
-	
-	public static function getSliderWidth($size) {
+
+    public static function getSliderWidth($size) {
 
         $width = '100%';
         $types = Tools::getImageTypeByName($size);
@@ -4669,37 +4704,34 @@ FileETag none
         return $width;
     }
 
-	
-	public static function getImageTypeByName($name) {
-		
-		$result = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getRow(
-                (new DbQuery())
-                    ->select('*')
-                    ->from('vc_image_type')
-                    ->where('`name` LIKE  \'' . $name.'\'')
-            );
+    public static function getImageTypeByName($name) {
 
+        $result = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('*')
+                ->from('vc_image_type')
+                ->where('`name` LIKE  \'' . $name . '\'')
+        );
 
-		if (!empty($result)) {
-			$image['width'] = $result['width'];
-			$image['height'] = $result['height'];
+        if (!empty($result)) {
+            $image['width'] = $result['width'];
+            $image['height'] = $result['height'];
 
-			return $image;
-		}
+            return $image;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	
-	public static function get_media_thumbnail_url($id = '') {
+    public static function get_media_thumbnail_url($id = '') {
 
         if (isset($id) && !empty($id)) {
             $db = Db::getInstance();
-            $tablename = _DB_PREFIX_ .'vc_media';
+            $tablename = _DB_PREFIX_ . 'vc_media';
             $sql = new DbQuery();
-		    $sql->select('`file_name`, `subdir`');
-		    $sql->from(('vc_media'));
-		    $sql->where('id_vc_media = ' .(int)$id);
+            $sql->select('`file_name`, `subdir`');
+            $sql->from(('vc_media'));
+            $sql->where('id_vc_media = ' . (int) $id);
             $db_results = $db->executeS($sql);
 
             $url = isset($db_results[0]['subdir']) && !empty($db_results[0]['subdir']) ? $db_results[0]['subdir'] . '/' : '';
@@ -4709,241 +4741,293 @@ FileETag none
         }
 
     }
-    
-    
+
     public static function ModifyImageUrl($img_src = '') {
-        
+
         $img_pathinfo = pathinfo($img_src);
         $mainstr = $img_pathinfo['basename'];
         $static_url = $img_pathinfo['dirname'] . '/' . $mainstr;
         return '//' . Tools::getMediaServer($static_url) . $static_url;
-    }	
-	
-	public static function getDistantTables($currentTables) {
-
-		$tableToKeep = [];
-		$tableToCheck = [];
-
-		foreach ($currentTables as $table) {
-			$tableToKeep[] = $table['Tables_in_' . _DB_NAME_];
-		}
-
-		$distantTables = Db::getInstance()->executeS('SHOW TABLES');
-
-		foreach ($distantTables as $table) {
-			$tableToCheck[] = $table['Tables_in_' . $dbName];
-		}
-
-		$tableToDelete = [];
-
-		foreach ($tableToCheck as $table) {
-
-			if (in_array($table, $tableToKeep)) {
-				continue;
-			}
-
-			$schema = Db::getInstance()->executeS('SHOW CREATE TABLE `' . $table . '`');
-
-			if (count($schema) != 1 || !isset($schema[0]['Table']) || !isset($schema[0]['Create Table'])) {
-				continue;
-			}
-
-			$tableToDelete[$table] = 'DROP TABLE IF EXISTS `' . $schema[0]['Table'] . '`;' . PHP_EOL;
-		}
-
-		return $tableToDelete;
-
-	}
-    
-	public static function cleanThemeDirectory() {
-		
-		$folder = [];
-		$plugintochecks = [];
-		
-		$iterator = new AppendIterator();
-
-		$iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/includes/plugins'));
-		foreach ($iterator as $file) {
-			if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
-                continue;
-    		}
-			$filePath = $file->getPathname();
-			$plugin = str_replace(_EPH_ROOT_DIR_ . '/includes/plugins/', '', $filePath);
-			if(file_exists($filePath.'/'.$plugin.'.php')) {
-				$folder[] = $plugin;
-			} else {
-				Tools::deleteDirectory($file->getPathname());
-			}
-		}
-		$plugins = Plugin::getPluginsOnDisk();
-		foreach($plugins as $plugin) {
-			if($plugin->id > 0) {
-				if(in_array($plugin->name, $folder)) {
-					$plugintochecks[] = $plugin->name;
-				} else {
-					$result = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
-       					(new DbQuery())
-           				->select('`id_hook`')
-           				->from('hook_plugin')
-						->where('`id_plugin` = ' . (int) $plugin->id)
-   					);
-
-   					foreach ($result as $row) {
-						$plugin->unregisterHook((int) $row['id_hook']);
-       					$plugin->unregisterExceptions((int) $row['id_hook']);
-   					}
-				
-					Db::getInstance()->delete('plugin_access', '`id_plugin` = ' . (int) $plugin->id);
-   					Group::truncateRestrictionsByPlugin($plugin->id);
-					Db::getInstance()->delete('plugin', '`id_plugin` = ' . (int) $plugin->id);      
-				}
-			} 
-		}
-		$iterator = new AppendIterator();
-
-		$iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'css/plugins'));
-		foreach ($iterator as $file) {
-			if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
-                continue;
-    		}
-			$filePath = $file->getPathname();
-			$filePath = str_replace(_EPH_THEME_DIR_ . 'css/plugins/', '', $filePath);
-			if(in_array($filePath, $plugintochecks)) {
-				
-			} else {
-				Tools::deleteDirectory($file->getPathname());
-			}	
-		}
-		$iterator = new AppendIterator();
-		$iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'js/plugins'));
-		foreach ($iterator as $file) {
-			if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
-                continue;
-    		}
-			$filePath = $file->getPathname();
-			$filePath = str_replace(_EPH_THEME_DIR_ . 'js/plugins/', '', $filePath);
-			if(in_array($filePath, $plugintochecks)) {
-				
-			} else {
-				Tools::deleteDirectory($file->getPathname());
-			}		
-		}
-		$iterator = new AppendIterator();
-		$iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'plugins'));
-		foreach ($iterator as $file) {
-			if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
-                continue;
-			}
-			$filePath = $file->getPathname();
-			$filePath = str_replace(_EPH_THEME_DIR_ . 'plugins/', '', $filePath);
-			if(in_array($filePath, $plugintochecks)) {
-				
-			} else {
-				Tools::deleteDirectory($file->getPathname());
-			}	 	
-		}
-
-	}
-	
-	public static function singleFontsUrl() {
-		 
-    	$url = '//fonts.googleapis.com/css?family=';
-    	$main_str = '';
-    	$subsets_str = '';
-    	$subsets = array();
-    	$all_fonts = array();
-    	$font_types = array('bodyfont','headingfont','additionalfont');
-    	if(isset($font_types) && !empty($font_types)){
-    		foreach ($font_types as $font_type) {
-    			$famil = Configuration::get($font_type.'_family');
-    			$all_fonts[$famil]['fonts'] = $famil;
-    			$all_fonts[$famil]['variants'] = Configuration::get($font_type.'_variants');
-    			$subset = Configuration::get($font_type.'_subsets');
-    			if(isset($subset) && !empty($subset)){
-    				$subsetarr = @explode(",",$subset);
-    				if(isset($subsetarr) && !empty($subsetarr) && is_array($subsetarr)){
-    					foreach ($subsetarr as $arr) {
-    						$subsets[$arr] = $arr;
-    					}
-    				}
-    			}
-    		}
-    	}
-    	$main = array();
-    	if(isset($all_fonts) && !empty($all_fonts)){
-    		foreach ($all_fonts as $all_font) {
-    			$main[] = $all_font['fonts'].':'.$all_font['variants'];
-    		}
-    	}
-    	if(isset($subsets) && !empty($subsets) && is_array($subsets)){
-    		$subsets_str = implode(",",$subsets);
-    	}
-    	if(isset($main) && !empty($main) && is_array($main)){
-    		$main_str = implode("|",$main);
-    	}
-    	if(isset($main_str) && !empty($main_str)){
-    		$url .= $main_str;
-    	}
-    	if(isset($subsets_str) && !empty($subsets_str)){
-    		$url .= '&subset='.$subsets_str;
-    	}
-    	if(isset($main_str) && !empty($main_str)){
-    		return $url;
-    	}else{
-    		return false;
-    	}
     }
-	
-	public static function getPhenyxFontName($key) {
-		
-		$name = str_replace(' ', '', Configuration::get($key . '_family'));
-		return $name.'_'.Configuration::get($key . '_variants');
-	}
-	
-	public static function GetPhenyxFontsURL($key = "", $var = [], $sub =[], $family = '') {
+
+    public static function getDistantTables($currentTables) {
+
+        $tableToKeep = [];
+        $tableToCheck = [];
+
+        foreach ($currentTables as $table) {
+            $tableToKeep[] = $table['Tables_in_' . _DB_NAME_];
+        }
+
+        $distantTables = Db::getInstance()->executeS('SHOW TABLES');
+
+        foreach ($distantTables as $table) {
+            $tableToCheck[] = $table['Tables_in_' . $dbName];
+        }
+
+        $tableToDelete = [];
+
+        foreach ($tableToCheck as $table) {
+
+            if (in_array($table, $tableToKeep)) {
+                continue;
+            }
+
+            $schema = Db::getInstance()->executeS('SHOW CREATE TABLE `' . $table . '`');
+
+            if (count($schema) != 1 || !isset($schema[0]['Table']) || !isset($schema[0]['Create Table'])) {
+                continue;
+            }
+
+            $tableToDelete[$table] = 'DROP TABLE IF EXISTS `' . $schema[0]['Table'] . '`;' . PHP_EOL;
+        }
+
+        return $tableToDelete;
+
+    }
+
+    public static function cleanThemeDirectory() {
+
+        $folder = [];
+        $plugintochecks = [];
+
+        $iterator = new AppendIterator();
+
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/includes/plugins'));
+
+        foreach ($iterator as $file) {
+
+            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
+                continue;
+            }
+
+            $filePath = $file->getPathname();
+            $plugin = str_replace(_EPH_ROOT_DIR_ . '/includes/plugins/', '', $filePath);
+
+            if (file_exists($filePath . '/' . $plugin . '.php')) {
+                $folder[] = $plugin;
+            } else {
+                Tools::deleteDirectory($file->getPathname());
+            }
+
+        }
+
+        $plugins = Plugin::getPluginsOnDisk();
+
+        foreach ($plugins as $plugin) {
+
+            if ($plugin->id > 0) {
+
+                if (in_array($plugin->name, $folder)) {
+                    $plugintochecks[] = $plugin->name;
+                } else {
+                    $result = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
+                        (new DbQuery())
+                            ->select('`id_hook`')
+                            ->from('hook_plugin')
+                            ->where('`id_plugin` = ' . (int) $plugin->id)
+                    );
+
+                    foreach ($result as $row) {
+                        $plugin->unregisterHook((int) $row['id_hook']);
+                        $plugin->unregisterExceptions((int) $row['id_hook']);
+                    }
+
+                    Db::getInstance()->delete('plugin_access', '`id_plugin` = ' . (int) $plugin->id);
+                    Group::truncateRestrictionsByPlugin($plugin->id);
+                    Db::getInstance()->delete('plugin', '`id_plugin` = ' . (int) $plugin->id);
+                }
+
+            }
+
+        }
+
+        $iterator = new AppendIterator();
+
+        $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'css/plugins'));
+
+        foreach ($iterator as $file) {
+
+            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
+                continue;
+            }
+
+            $filePath = $file->getPathname();
+            $filePath = str_replace(_EPH_THEME_DIR_ . 'css/plugins/', '', $filePath);
+
+            if (in_array($filePath, $plugintochecks)) {
+
+            } else {
+                Tools::deleteDirectory($file->getPathname());
+            }
+
+        }
+
+        $iterator = new AppendIterator();
+        $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'js/plugins'));
+
+        foreach ($iterator as $file) {
+
+            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
+                continue;
+            }
+
+            $filePath = $file->getPathname();
+            $filePath = str_replace(_EPH_THEME_DIR_ . 'js/plugins/', '', $filePath);
+
+            if (in_array($filePath, $plugintochecks)) {
+
+            } else {
+                Tools::deleteDirectory($file->getPathname());
+            }
+
+        }
+
+        $iterator = new AppendIterator();
+        $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'plugins'));
+
+        foreach ($iterator as $file) {
+
+            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
+                continue;
+            }
+
+            $filePath = $file->getPathname();
+            $filePath = str_replace(_EPH_THEME_DIR_ . 'plugins/', '', $filePath);
+
+            if (in_array($filePath, $plugintochecks)) {
+
+            } else {
+                Tools::deleteDirectory($file->getPathname());
+            }
+
+        }
+
+    }
+
+    public static function singleFontsUrl() {
+
+        $url = '//fonts.googleapis.com/css?family=';
+        $main_str = '';
+        $subsets_str = '';
+        $subsets = [];
+        $all_fonts = [];
+        $font_types = ['bodyfont', 'headingfont', 'additionalfont'];
+
+        if (isset($font_types) && !empty($font_types)) {
+
+            foreach ($font_types as $font_type) {
+                $famil = Configuration::get($font_type . '_family');
+                $all_fonts[$famil]['fonts'] = $famil;
+                $all_fonts[$famil]['variants'] = Configuration::get($font_type . '_variants');
+                $subset = Configuration::get($font_type . '_subsets');
+
+                if (isset($subset) && !empty($subset)) {
+                    $subsetarr = @explode(",", $subset);
+
+                    if (isset($subsetarr) && !empty($subsetarr) && is_array($subsetarr)) {
+
+                        foreach ($subsetarr as $arr) {
+                            $subsets[$arr] = $arr;
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        $main = [];
+
+        if (isset($all_fonts) && !empty($all_fonts)) {
+
+            foreach ($all_fonts as $all_font) {
+                $main[] = $all_font['fonts'] . ':' . $all_font['variants'];
+            }
+
+        }
+
+        if (isset($subsets) && !empty($subsets) && is_array($subsets)) {
+            $subsets_str = implode(",", $subsets);
+        }
+
+        if (isset($main) && !empty($main) && is_array($main)) {
+            $main_str = implode("|", $main);
+        }
+
+        if (isset($main_str) && !empty($main_str)) {
+            $url .= $main_str;
+        }
+
+        if (isset($subsets_str) && !empty($subsets_str)) {
+            $url .= '&subset=' . $subsets_str;
+        }
+
+        if (isset($main_str) && !empty($main_str)) {
+            return $url;
+        } else {
+            return false;
+        }
+
+    }
+
+    public static function getPhenyxFontName($key) {
+
+        $name = str_replace(' ', '', Configuration::get($key . '_family'));
+        return $name . '_' . Configuration::get($key . '_variants');
+    }
+
+    public static function GetPhenyxFontsURL($key = "", $var = [], $sub = [], $family = '') {
 
         if ($key == "") {
             return false;
         }
-		
 
         if (Tools::usingSecureMode()) {
             $link = 'https://ephenyx.io/css?family=';
         } else {
             $link = 'https://ephenyx.io/css?family=';
         }
-		
-		if(empty($family)) {
-			$family = Configuration::get($key . '_family');
-        	$variants = Configuration::get($key . '_variants');
-        	$subsets = Configuration::get($key . '_subsets');
-			if (isset($family) && !empty($family)) {
-            	$family = str_replace(" ", "+", $family);
-            	$link .= $family;
 
-            	if (isset($variants) && !empty($variants)) {
-                	$link .= ':' . $variants;
+        if (empty($family)) {
+            $family = Configuration::get($key . '_family');
+            $variants = Configuration::get($key . '_variants');
+            $subsets = Configuration::get($key . '_subsets');
 
-                	if (isset($subsets) && !empty($subsets)) {
-                    	$link .= '&subset=' . $subsets;
-                	}
+            if (isset($family) && !empty($family)) {
+                $family = str_replace(" ", "+", $family);
+                $link .= $family;
 
-            	}
+                if (isset($variants) && !empty($variants)) {
+                    $link .= ':' . $variants;
 
-            	return $link;
-			}
-        
-		}  else {
+                    if (isset($subsets) && !empty($subsets)) {
+                        $link .= '&subset=' . $subsets;
+                    }
+
+                }
+
+                return $link;
+            }
+
+        } else {
             $family = str_replace(" ", "+", $family);
             $link .= $family;
 
             if (is_array($var) && count($var)) {
-				foreach($var as $key => $value)
-                $link .= ':' . $value;
+
+                foreach ($var as $key => $value) {
+                    $link .= ':' . $value;
+                }
 
                 if (is_array($sub) && count($sub)) {
-					foreach($sub as $key => $value)
-                    $link .= '&subset=' . $value;
+
+                    foreach ($sub as $key => $value) {
+                        $link .= '&subset=' . $value;
+                    }
+
                 }
 
             }
@@ -4952,13 +5036,12 @@ FileETag none
         }
 
     }
-	
-	public static function GetAdminPhenyxFontsURL($key = "", $var = '', $sub ='') {
+
+    public static function GetAdminPhenyxFontsURL($key = "", $var = '', $sub = '') {
 
         if ($key == "") {
             return false;
         }
-		
 
         if (Tools::usingSecureMode()) {
             $link = 'https://ephenyxapi.com/css?family=';
@@ -4969,8 +5052,6 @@ FileETag none
         $family = Configuration::get($key . '_family');
         $variants = Configuration::get($key . '_variants');
         $subsets = Configuration::get($key . '_subsets');
-		
-		
 
         if (isset($family) && !empty($family)) {
             $family = str_replace(" ", "+", $family);
@@ -4987,7 +5068,7 @@ FileETag none
 
             return $link;
         } else {
-             $family = str_replace(" ", "+", $key);
+            $family = str_replace(" ", "+", $key);
             $link .= $family;
 
             if (isset($var) && !empty($var)) {
@@ -5003,147 +5084,164 @@ FileETag none
         }
 
     }
-    
+
     public static function cleanPluginDataBase() {
-        
+
         $plugins = Db::getInstance()->executeS(
             (new DbQuery())
-	         ->select('`id_plugin`, name')
-            ->from('plugin')
+                ->select('`id_plugin`, name')
+                ->from('plugin')
         );
-        foreach($plugins as $plugin) {
-                
-            if(!file_exists(_EPH_PLUGIN_DIR_.$plugin['name'].'/'.$plugin['name'].'.php')) {                    
-            
-                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'hook_plugin WHERE id_plugin = '.$plugin['id_plugin'];
+
+        foreach ($plugins as $plugin) {
+
+            if (!file_exists(_EPH_PLUGIN_DIR_ . $plugin['name'] . '/' . $plugin['name'] . '.php')) {
+
+                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'hook_plugin WHERE id_plugin = ' . $plugin['id_plugin'];
                 Db::getInstance()->execute($sql);
-                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'hook_plugin_exceptions WHERE id_plugin = '.$plugin['id_plugin'];
+                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'hook_plugin_exceptions WHERE id_plugin = ' . $plugin['id_plugin'];
                 Db::getInstance()->execute($sql);
-                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin WHERE id_plugin = '.$plugin['id_plugin'];
+                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin WHERE id_plugin = ' . $plugin['id_plugin'];
                 Db::getInstance()->execute($sql);
-                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_perfs WHERE plugin LIKE \''.$plugin['name'].'\'';
+                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_perfs WHERE plugin LIKE \'' . $plugin['name'] . '\'';
                 Db::getInstance()->execute($sql);
-                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_access WHERE id_plugin = '.$plugin['id_plugin'];
+                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_access WHERE id_plugin = ' . $plugin['id_plugin'];
                 Db::getInstance()->execute($sql);
-                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_country WHERE id_plugin = '.$plugin['id_plugin'];
+                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_country WHERE id_plugin = ' . $plugin['id_plugin'];
                 Db::getInstance()->execute($sql);
-                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_currency WHERE id_plugin = '.$plugin['id_plugin'];
+                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_currency WHERE id_plugin = ' . $plugin['id_plugin'];
                 Db::getInstance()->execute($sql);
-                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_group WHERE id_plugin = '.$plugin['id_plugin'];
+                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_group WHERE id_plugin = ' . $plugin['id_plugin'];
                 Db::getInstance()->execute($sql);
-                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_preference WHERE plugin LIKE \''.$plugin['name'].'\'';
-               
+                $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_preference WHERE plugin LIKE \'' . $plugin['name'] . '\'';
+
             }
-        
+
         }
-        
+
         $hooks = Hook::getPluginHook();
-        
-        foreach($hooks as $hook) {
+
+        foreach ($hooks as $hook) {
             $plugins = Db::getInstance()->executeS(
                 (new DbQuery())
-	            ->select('m.`id_plugin`, m.name')
-                ->from('plugin', 'm')
-                ->leftJoin('hook_plugin', 'hm', 'hm.`id_plugin` = m.`id_plugin`')
-                ->where('hm.`id_hook` = '.$hook['id_hook'])
-                ->orderBy('m.`id_plugin` ASC')
+                    ->select('m.`id_plugin`, m.name')
+                    ->from('plugin', 'm')
+                    ->leftJoin('hook_plugin', 'hm', 'hm.`id_plugin` = m.`id_plugin`')
+                    ->where('hm.`id_hook` = ' . $hook['id_hook'])
+                    ->orderBy('m.`id_plugin` ASC')
             );
-            foreach($plugins as $plugin) {
-                
-                if(!file_exists(_EPH_PLUGIN_DIR_.$plugin['name'].'/'.$plugin['name'].'.php')) {                    
-            
-                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'hook_plugin WHERE id_plugin = '.$plugin['id_plugin'];
+
+            foreach ($plugins as $plugin) {
+
+                if (!file_exists(_EPH_PLUGIN_DIR_ . $plugin['name'] . '/' . $plugin['name'] . '.php')) {
+
+                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'hook_plugin WHERE id_plugin = ' . $plugin['id_plugin'];
                     Db::getInstance()->execute($sql);
-                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'hook_plugin_exceptions WHERE id_plugin = '.$plugin['id_plugin'];
+                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'hook_plugin_exceptions WHERE id_plugin = ' . $plugin['id_plugin'];
                     Db::getInstance()->execute($sql);
-                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin WHERE id_plugin = '.$plugin['id_plugin'];
+                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin WHERE id_plugin = ' . $plugin['id_plugin'];
                     Db::getInstance()->execute($sql);
-                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugins_perfs WHERE plugin LIKE \''.$plugin['name'].'\'';
+                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugins_perfs WHERE plugin LIKE \'' . $plugin['name'] . '\'';
                     Db::getInstance()->execute($sql);
-                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_access WHERE id_plugin = '.$plugin['id_plugin'];
+                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_access WHERE id_plugin = ' . $plugin['id_plugin'];
                     Db::getInstance()->execute($sql);
-                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_carrier WHERE id_plugin = '.$plugin['id_plugin'];
+                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_carrier WHERE id_plugin = ' . $plugin['id_plugin'];
                     Db::getInstance()->execute($sql);
-                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_country WHERE id_plugin = '.$plugin['id_plugin'];
+                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_country WHERE id_plugin = ' . $plugin['id_plugin'];
                     Db::getInstance()->execute($sql);
-                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_currency WHERE id_plugin = '.$plugin['id_plugin'];
+                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_currency WHERE id_plugin = ' . $plugin['id_plugin'];
                     Db::getInstance()->execute($sql);
-                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_group WHERE id_plugin = '.$plugin['id_plugin'];
+                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_group WHERE id_plugin = ' . $plugin['id_plugin'];
                     Db::getInstance()->execute($sql);
-                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_preference WHERE plugin LIKE \''.$plugin['name'].'\'';
-                    
+                    $sql = 'DELETE FROM ' . _DB_PREFIX_ . 'plugin_preference WHERE plugin LIKE \'' . $plugin['name'] . '\'';
+
                 }
-        
+
             }
+
         }
+
     }
-    
+
     public static function buildIncrementSelect($objet, $idLang, $fieldName, $rootName, $idParent = null) {
-        
-        
-        $classObject = get_class($objet);        
+
+        $classObject = get_class($objet);
         $classVars = get_class_vars($classObject);
         $primary = $classVars['definition']['primary'];
         $table = $classVars['definition']['table'];
-       
-        $root = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
- 			(new DbQuery())
-     		->select('`'.$primary.'`')
-     		->from($table)
-	 		->where('id_parent = 0' )
- 		);
-        
-        $object_array = [];
-        
-        $select = '';	
 
-       	
-		$select .= '<option value="'.$root.'">'.$rootName.'</option>';
+        $root = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`' . $primary . '`')
+                ->from($table)
+                ->where('id_parent = 0')
+        );
+
+        $object_array = [];
+
+        $select = '';
+
+        $select .= '<option value="' . $root . '">' . $rootName . '</option>';
         $result = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
- 			(new DbQuery())
-     		->select('a.`'.$primary.'`,a.id_parent, b.`'.$fieldName.'`')
-     		->from($table, 'a')
-     		->leftJoin($table.'_lang', 'b', 'a.`'.$primary.'` = b.`'.$primary.'` AND b.`id_lang`  = ' . (int) $idLang)
-	 		->where('id_parent = '.$root )
-     		->orderBy('a.`position` ASC')
- 		);
+            (new DbQuery())
+                ->select('a.`' . $primary . '`,a.id_parent, b.`' . $fieldName . '`')
+                ->from($table, 'a')
+                ->leftJoin($table . '_lang', 'b', 'a.`' . $primary . '` = b.`' . $primary . '` AND b.`id_lang`  = ' . (int) $idLang)
+                ->where('id_parent = ' . $root)
+                ->orderBy('a.`position` ASC')
+        );
 
         if (is_array($result)) {
-			foreach($result as &$row) {
-                $row['children'] = $classObject::getChlidren($row[$primary]);
-				$object_array[$row[$primary]] = $row;
-			}			
-			foreach($object_array as $key => $value) {
-				$select .= '<option value="'.$value[$primary].'" ';
 
-				if($value[$primary] == $idParent) {
-					$select .= 'selected="selected"';
-				}
-				$select .= '>'.$value[$fieldName].'</option>';
-				foreach($value['children'] as $child) {
-					$select .= '<option value="'.$child[$primary].'" ';
-					if($child[$primary] == $idParent) {
-						$select .= 'selected="selected"';
-					}
-					$select .= '>'.$value[$fieldName].' > '.$child[$fieldName].'</option>';
-					if(is_array($child['children']) && count($child['children']))
-                        foreach($child['children'] as $key => $value) {
-			                foreach($value['children'] as $child) {
-				                $select .= '<option value="'.$child[$primary].'" ';
-				                if($child[$primary] == $idParent) {
-					               $select .= 'selected="selected"';
-				                }
-				                $select .= '>'.$value[$fieldName].' > '.$child[$fieldName].'</option>';       
-			                 }	
-		              }
-				}
-			 }
-		}
-		
-		return $select;
-        
+            foreach ($result as &$row) {
+                $row['children'] = $classObject::getChlidren($row[$primary]);
+                $object_array[$row[$primary]] = $row;
+            }
+
+            foreach ($object_array as $key => $value) {
+                $select .= '<option value="' . $value[$primary] . '" ';
+
+                if ($value[$primary] == $idParent) {
+                    $select .= 'selected="selected"';
+                }
+
+                $select .= '>' . $value[$fieldName] . '</option>';
+
+                foreach ($value['children'] as $child) {
+                    $select .= '<option value="' . $child[$primary] . '" ';
+
+                    if ($child[$primary] == $idParent) {
+                        $select .= 'selected="selected"';
+                    }
+
+                    $select .= '>' . $value[$fieldName] . ' > ' . $child[$fieldName] . '</option>';
+
+                    if (is_array($child['children']) && count($child['children'])) {
+                        foreach ($child['children'] as $key => $value) {
+
+                            foreach ($value['children'] as $child) {
+                                $select .= '<option value="' . $child[$primary] . '" ';
+
+                                if ($child[$primary] == $idParent) {
+                                    $select .= 'selected="selected"';
+                                }
+
+                                $select .= '>' . $value[$fieldName] . ' > ' . $child[$fieldName] . '</option>';
+                            }
+
+                        }
+                    }
+
+                }
+
+            }
+
+        }
+
+        return $select;
+
     }
-    
+
     public static function get_media_alt($id = '') {
 
         if (isset($id) && !empty($id)) {
@@ -5151,10 +5249,10 @@ FileETag none
             $context = Context::getContext();
             $id_lang = (int) Context::getContext()->language->id;
             $sql = new DbQuery();
-		    $sql->select('`legend`');
-		    $sql->from('vc_media', 'vm');
-            $sql->innerJoin('vc_media_lang', 'vml', '`vml`.`id_vc_media` = `vml`.`id_vc_media` AND `vml`.`id_lang` = '.$id_lang);
-		    $sql->where('vm.id_vc_media = '.(int)$id);
+            $sql->select('`legend`');
+            $sql->from('vc_media', 'vm');
+            $sql->innerJoin('vc_media_lang', 'vml', '`vml`.`id_vc_media` = `vml`.`id_vc_media` AND `vml`.`id_lang` = ' . $id_lang);
+            $sql->where('vm.id_vc_media = ' . (int) $id);
             $db_results = $db->getRow($sql);
             return isset($db_results['legend']) ? $db_results['legend'] : '';
         } else {
@@ -5162,56 +5260,161 @@ FileETag none
         }
 
     }
-    
+
     public static function getAutoCompleteCity() {
 
         return Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
- 			(new DbQuery())
-     		->select('`post_code`, `city`')
-     		->from('post_code')
-     		->orderBy('city')
- 		);
-       
-
+            (new DbQuery())
+                ->select('`post_code`, `city`')
+                ->from('post_code')
+                ->orderBy('city')
+        );
 
     }
-    
+
     public static function renderComposerFooter() {
-        
+
         $composer = Composer::getInstance();
-        
+
         return $composer->renderEditorFooter();
     }
-    
+
     public static function getIoPlugins() {
-        
+
         $plugins = [];
         $installed_plugins = Plugin::getPluginsDirOnDisk();
+
         foreach ($installed_plugins as $plugin) {
             $plugins[$plugin] = Plugin::isInstalled($plugin);
         }
-        
+
         return $plugins;
     }
-    
+
     public static function getIoLangs() {
-        
+
         $langs = [];
         $languages = Language::getLanguages(false);
+
         foreach ($languages as $language) {
             $langs[$language['iso_code']] = [
-               $language['iso_code'] => $language['name']
+                $language['iso_code'] => $language['name'],
             ];
         }
-                
+
         return $langs;
     }
-    
-    
-    
 
+    public static function generateTabs() {
 
+        $hookBars = Hook::exec('actionAdminTabs', [], null, true);
 
+        if (is_array($hookBars)) {
+
+            foreach ($hookBars as $plugin => $hookBar) {
+                $topbars = $hookBar;
+            }
+
+        } else {
+
+            $context = Context::getContext();
+
+            $topbars = EmployeeMenu::getEmployeeMenus($context->language->id, 1);
+
+            foreach ($topbars as $index => $tab) {
+
+                if (!EmployeeMenu::checkTabRights($tab['id_employee_menu'])) {
+                    unset($topbars[$index]);
+                    continue;
+                }
+
+                if ($tab['master'] && !$context->employee->master_admin) {
+                    unset($topbars[$index]);
+                    continue;
+                }
+
+                if (!is_null($tab['function'])) {
+                    $topbars[$index]['function'] = str_replace("‘", "'", $tab['function']);
+                }
+
+                $topbars[$index]['name'] = $tab['name'];
+                $subTabs = EmployeeMenu::getEmployeeMenus($context->language->id, $tab['id_employee_menu']);
+
+                foreach ($subTabs as $index2 => &$subTab) {
+
+                    if (!EmployeeMenu::checkTabRights($subTab['id_employee_menu'])) {
+                        unset($subTabs[$index2]);
+                        continue;
+                    }
+
+                    if ($subTab['master'] && !$employee->master_admin) {
+                        unset($subTabs[$index2]);
+                        continue;
+                    }
+
+                    if (!empty($subTab['plugin'])) {
+
+                        if (!Plugin::isActive($subTab['plugin'])) {
+                            unset($subTabs[$index2]);
+                            continue;
+                        }
+
+                    }
+
+                    if ((bool) $subTab['active']) {
+
+                        if (!is_null($subTab['function'])) {
+                            $subTabs[$index2]['function'] = str_replace("‘", "'", $subTab['function']);
+                        }
+
+                        $subTabs[$index2]['name'] = $subTab['name'];
+                    }
+
+                    $terTabs = EmployeeMenu::getEmployeeMenus($context->language->id, $subTab['id_employee_menu']);
+
+                    foreach ($terTabs as $index3 => $terTab) {
+
+                        if (!EmployeeMenu::checkTabRights($terTab['id_employee_menu'])) {
+                            unset($terTabs[$index3]);
+                            continue;
+                        }
+
+                        if ($terTab['master'] && !$context->employee->master_admin) {
+                            unset($terTabs[$index3]);
+                            continue;
+                        }
+
+                        if (!empty($terTab['plugin'])) {
+
+                            if (!Plugin::isActive($terTab['plugin'])) {
+                                unset($terTabs[$index3]);
+                                continue;
+                            }
+
+                        }
+
+                        if ((bool) $terTab['active']) {
+
+                            if (!is_null($terTab['function'])) {
+                                $terTabs[$index3]['function'] = str_replace("‘", "'", $terTab['function']);
+                            }
+
+                            $terTabs[$index3]['name'] = $terTab['name'];
+                        }
+
+                    }
+
+                    $subTabs[$index2]['sub_tabs'] = array_values($terTabs);
+
+                }
+
+                $topbars[$index]['sub_tabs'] = array_values($subTabs);
+            }
+
+        }
+
+        return $topbars;
+    }
 
 }
 
@@ -5234,6 +5437,7 @@ function cmpPriceAsc($a, $b) {
     if ((float) $a['price_tmp'] < (float) $b['price_tmp']) {
         return (-1);
     } else
+
     if ((float) $a['price_tmp'] > (float) $b['price_tmp']) {
         return (1);
     }
@@ -5257,6 +5461,7 @@ function cmpPriceDesc($a, $b) {
     if ((float) $a['price_tmp'] < (float) $b['price_tmp']) {
         return 1;
     } else
+
     if ((float) $a['price_tmp'] > (float) $b['price_tmp']) {
         return -1;
     }
