@@ -830,10 +830,10 @@ abstract class Plugin {
         foreach ($pluginList as $key => &$plugin) {
             if(file_exists(_EPH_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php')) {
                 require_once _EPH_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php';
-                $image = 'includes/plugins/'.$this->plugin.'/logo.png';
+                $image = 'includes/plugins/'.$plugin->name.'/logo.png';
             } else if(file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php')) {
                 require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php';
-                $image = 'includes/specific_plugins/'.$this->plugin.'/logo.png';
+                $image = 'includes/specific_plugins/'.$plugin->name.'/logo.png';
             }
             if(array_key_exists($plugin->name, $extras)) {
                 unset($extras[$plugin->name]);
