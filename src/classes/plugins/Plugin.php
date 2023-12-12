@@ -173,6 +173,8 @@ abstract class Plugin {
 
     public $ephenyx_education_active;
     
+    public $image_link;
+    
     public function getPluginExtraVars() {
         $extraVars = Hook::exec('actionPluginGetExtraVars', [], null, true);
         if(is_array($extraVars)) {
@@ -826,8 +828,10 @@ abstract class Plugin {
         foreach ($pluginList as $key => &$plugin) {
             if(file_exists(_EPH_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php')) {
                 require_once _EPH_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php';
+                $image = 'includes/plugins/'.$this->plugin.'/logo.png';
             } else if(file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php')) {
                 require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php';
+                $image = 'includes/specific_plugins/'.$this->plugin.'/logo.png';
             }
             if(array_key_exists($plugin->name, $extras)) {
                 unset($extras[$plugin->name]);
@@ -849,12 +853,14 @@ abstract class Plugin {
                     $plugin->interest = $pluginsInstalled[$plugin->name]['interest'];
                     $plugin->enable_device = $pluginsInstalled[$plugin->name]['enable_device'];
                     $plugin->active = $pluginsInstalled[$plugin->name]['active'];
+                    $plugin->image_link = $this->context->link->getBaseFrontLink().$image;
                     $plugin->is_ondisk = true;
                 } else {
                     $plugin->removable = true;
                     $plugin->installed = false;
                     $plugin->database_version = 0;
                     $plugin->interest = 0;
+                    $plugin->image_link = $this->context->link->getBaseFrontLink().$image;
                     $plugin->is_ondisk = true;
                 }
             
