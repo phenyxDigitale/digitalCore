@@ -867,7 +867,6 @@ abstract class Plugin {
                 $plugin->is_ondisk = true;
             }
             
-            }
 
         }
         
