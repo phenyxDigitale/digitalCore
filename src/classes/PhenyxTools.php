@@ -19,7 +19,7 @@ class PhenyxTools {
     
     public $license;
     
-    protected function __construct() {
+    public function __construct() {
         
         $this->context = Context::getContext();
         
