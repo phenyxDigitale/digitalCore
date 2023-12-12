@@ -124,6 +124,8 @@ abstract class Plugin {
     public $push_time_limit = 180;
     
     public $is_eu_compatible;
+    
+    public $is_ondisk;
     /**
      * @var bool $bootstrap
      *
@@ -662,7 +664,7 @@ abstract class Plugin {
         return Tools::htmlentitiesDecodeUTF8($string);
     }
 
-    public static function getPluginsOnDisk($useConfig = false, $loggedOnAddons = false, $idEmployee = false) {
+    public static function getPluginsOnDisk($useConfig = false, $loggedOnAddons = false, $idEmployee = false, $full = false) {
 
         global $_PLUGINS;
 
@@ -807,6 +809,19 @@ abstract class Plugin {
         }
 
         $languageCode = str_replace('_', '-', mb_strtolower(Context::getContext()->language->language_code));
+        $extras = [];
+         if($full && file_exists(_EPH_CONFIG_DIR_ . 'json/plugin_sources.json')) {
+            $extras = file_get_contents(_EPH_CONFIG_DIR_ . 'json/plugin_sources.json');
+            if(is_string($extras)) {
+                $extras = Tools::jsonDecode($extras, true);
+                foreach ($pluginList as $key => &$plugin) {
+                    if(array_key_exists($plugin->name, $extras)) {
+                        continue;
+                    }
+                    
+                }
+            }
+        }
 
         foreach ($pluginList as $key => &$plugin) {
             if(file_exists(_EPH_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php')) {
@@ -814,31 +829,51 @@ abstract class Plugin {
             } else if(file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php')) {
                 require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php';
             }
-            $tmpPlugin = Adapter_ServiceLocator::get($plugin->name);
+            if(array_key_exists($plugin->name, $extras)) {
+                unset($extras[$plugin->name]);
+                $tmpPlugin = Adapter_ServiceLocator::get($plugin->name);
 
-            if (isset($pluginsInstalled[$plugin->name])) {
+                if (isset($pluginsInstalled[$plugin->name])) {
 
-                if (method_exists($tmpPlugin, 'reset')) {
-                    $plugin->has_reset = true;
+                    if (method_exists($tmpPlugin, 'reset')) {
+                        $plugin->has_reset = true;
+                    } else {
+                        $plugin->has_reset = false;
+                    }
+
+                    $plugin->removable = $tmpPlugin->removable;
+                    $plugin->config_controller = $tmpPlugin->config_controller;
+                    $plugin->id = $pluginsInstalled[$plugin->name]['id_plugin'];
+                    $plugin->installed = true;
+                    $plugin->database_version = $pluginsInstalled[$plugin->name]['version'];
+                    $plugin->interest = $pluginsInstalled[$plugin->name]['interest'];
+                    $plugin->enable_device = $pluginsInstalled[$plugin->name]['enable_device'];
+                    $plugin->active = $pluginsInstalled[$plugin->name]['active'];
+                    $plgin->is_ondisk = true;
                 } else {
-                    $plugin->has_reset = false;
+                    $plugin->removable = true;
+                    $plugin->installed = false;
+                    $plugin->database_version = 0;
+                    $plugin->interest = 0;
+                    $plugin->is_ondisk = true;
                 }
-
-                $plugin->removable = $tmpPlugin->removable;
-                $plugin->config_controller = $tmpPlugin->config_controller;
-                $plugin->id = $pluginsInstalled[$plugin->name]['id_plugin'];
-                $plugin->installed = true;
-                $plugin->database_version = $pluginsInstalled[$plugin->name]['version'];
-                $plugin->interest = $pluginsInstalled[$plugin->name]['interest'];
-                $plugin->enable_device = $pluginsInstalled[$plugin->name]['enable_device'];
-                $plugin->active = $pluginsInstalled[$plugin->name]['active'];
-            } else {
-                $plugin->removable = true;
-                $plugin->installed = false;
-                $plugin->database_version = 0;
-                $plugin->interest = 0;
+            
             }
 
+        }
+        
+        foreach($extras as $key => $values) {
+            $plugin = [];
+            $plugin['is_ondisk'] = false;
+            foreach($values as $k => $value) {
+                if($k == 'id') {
+                    continue;
+                }
+                $plugin[$k] = $value;
+            }
+            $plugin = Tools::jsonDecode(Tools::jsonEncode($plugin));
+            $pluginList[] = $plugin;
+            
         }
 
         if ($errors) {
@@ -860,6 +895,8 @@ abstract class Plugin {
             }
 
         }
+        
+       
 
         return $pluginList;
     }

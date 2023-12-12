@@ -71,12 +71,12 @@ class PhenyxTools {
 		$curl->setHeader('Content-Type', 'application/json');
 		$curl->setTimeout(6000);
 		$curl->post($this->_url, json_encode($data_array));
-		$md5List = $curl->response;
+		$plugins = $curl->response;
 
-		if (is_array($md5List)) {
+		if (is_array($plugins)) {
 			file_put_contents(
 				_EPH_CONFIG_DIR_ . 'json/plugin_sources.json',
-				json_encode($md5List, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+				json_encode($plugins, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
 			);
 			return true;
 		}
