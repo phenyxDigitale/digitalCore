@@ -837,34 +837,35 @@ abstract class Plugin {
             }
             if(array_key_exists($plugin->name, $extras)) {
                 unset($extras[$plugin->name]);
-                $tmpPlugin = Adapter_ServiceLocator::get($plugin->name);
+            }
+            $tmpPlugin = Adapter_ServiceLocator::get($plugin->name);
 
-                if (isset($pluginsInstalled[$plugin->name])) {
+            if (isset($pluginsInstalled[$plugin->name])) {
 
-                    if (method_exists($tmpPlugin, 'reset')) {
-                        $plugin->has_reset = true;
-                    } else {
-                        $plugin->has_reset = false;
-                    }
-
-                    $plugin->removable = $tmpPlugin->removable;
-                    $plugin->config_controller = $tmpPlugin->config_controller;
-                    $plugin->id = $pluginsInstalled[$plugin->name]['id_plugin'];
-                    $plugin->installed = true;
-                    $plugin->database_version = $pluginsInstalled[$plugin->name]['version'];
-                    $plugin->interest = $pluginsInstalled[$plugin->name]['interest'];
-                    $plugin->enable_device = $pluginsInstalled[$plugin->name]['enable_device'];
-                    $plugin->active = $pluginsInstalled[$plugin->name]['active'];
-                    $plugin->image_link = $context->link->getBaseFrontLink().$image;
-                    $plugin->is_ondisk = true;
+                if (method_exists($tmpPlugin, 'reset')) {
+                    $plugin->has_reset = true;
                 } else {
-                    $plugin->removable = true;
-                    $plugin->installed = false;
-                    $plugin->database_version = 0;
-                    $plugin->interest = 0;
-                    $plugin->image_link = $context->link->getBaseFrontLink().$image;
-                    $plugin->is_ondisk = true;
+                    $plugin->has_reset = false;
                 }
+
+                $plugin->removable = $tmpPlugin->removable;
+                $plugin->config_controller = $tmpPlugin->config_controller;
+                $plugin->id = $pluginsInstalled[$plugin->name]['id_plugin'];
+                $plugin->installed = true;
+                $plugin->database_version = $pluginsInstalled[$plugin->name]['version'];
+                $plugin->interest = $pluginsInstalled[$plugin->name]['interest'];
+                $plugin->enable_device = $pluginsInstalled[$plugin->name]['enable_device'];
+                $plugin->active = $pluginsInstalled[$plugin->name]['active'];
+                $plugin->image_link = $context->link->getBaseFrontLink().$image;
+                $plugin->is_ondisk = true;
+            } else {
+                $plugin->removable = true;
+                $plugin->installed = false;
+                $plugin->database_version = 0;
+                $plugin->interest = 0;
+                $plugin->image_link = $context->link->getBaseFrontLink().$image;
+                $plugin->is_ondisk = true;
+            }
             
             }
 
