@@ -58,7 +58,7 @@ class PhenyxTools {
 
 	}
     
-    public function getFrontJsonFile() {
+    public function getPhenyxPlugins() {
 
 		$data_array = [
 			'action' => 'getPhenyxPlugins',
