@@ -75,7 +75,7 @@ class PhenyxTools {
 
 		if (is_array($md5List)) {
 			file_put_contents(
-				_EPH_CONFIG_DIR_ . 'xml/plugin_sources.json',
+				_EPH_CONFIG_DIR_ . 'json/plugin_sources.json',
 				json_encode($md5List, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
 			);
 			return true;
