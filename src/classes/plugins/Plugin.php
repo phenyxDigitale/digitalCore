@@ -849,7 +849,7 @@ abstract class Plugin {
                     $plugin->interest = $pluginsInstalled[$plugin->name]['interest'];
                     $plugin->enable_device = $pluginsInstalled[$plugin->name]['enable_device'];
                     $plugin->active = $pluginsInstalled[$plugin->name]['active'];
-                    $plgin->is_ondisk = true;
+                    $plugin->is_ondisk = true;
                 } else {
                     $plugin->removable = true;
                     $plugin->installed = false;
