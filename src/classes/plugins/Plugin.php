@@ -669,6 +669,8 @@ abstract class Plugin {
     public static function getPluginsOnDisk($useConfig = false, $loggedOnAddons = false, $idEmployee = false, $full = false) {
 
         global $_PLUGINS;
+        
+        $context = Context::getContext();
 
         $pluginList = [];
         $pluginNameList = [];
@@ -853,14 +855,14 @@ abstract class Plugin {
                     $plugin->interest = $pluginsInstalled[$plugin->name]['interest'];
                     $plugin->enable_device = $pluginsInstalled[$plugin->name]['enable_device'];
                     $plugin->active = $pluginsInstalled[$plugin->name]['active'];
-                    $plugin->image_link = $this->context->link->getBaseFrontLink().$image;
+                    $plugin->image_link = $context->link->getBaseFrontLink().$image;
                     $plugin->is_ondisk = true;
                 } else {
                     $plugin->removable = true;
                     $plugin->installed = false;
                     $plugin->database_version = 0;
                     $plugin->interest = 0;
-                    $plugin->image_link = $this->context->link->getBaseFrontLink().$image;
+                    $plugin->image_link = $context->link->getBaseFrontLink().$image;
                     $plugin->is_ondisk = true;
                 }
             
