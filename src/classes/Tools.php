@@ -5332,6 +5332,14 @@ FileETag none
                     unset($topbars[$index]);
                     continue;
                 }
+                if (!empty($tab['plugin'])) {
+
+                    if (!Plugin::isActive($tab['plugin'])) {
+                         unset($topbars[$index]);
+                        continue;
+                    }
+
+                }
 
                 if (!is_null($tab['function'])) {
                     $topbars[$index]['function'] = str_replace("‘", "'", $tab['function']);
@@ -5409,6 +5417,14 @@ FileETag none
                 }
 
                 $topbars[$index]['sub_tabs'] = array_values($subTabs);
+            }
+
+        }
+        $hookBars = Hook::exec('actionAfterAdminTabs', ['topbars' => $topbars], null, true);
+        if (is_array($hookBars)) {
+
+            foreach ($hookBars as $plugin => $hookBar) {
+                $topbars = $hookBar;
             }
 
         }
