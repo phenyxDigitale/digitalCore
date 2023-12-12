@@ -46,6 +46,7 @@ class PhenyxTools {
 
 		$data_array = [
 			'action' => 'checkLicence',
+            'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_'),
             'crypto_key' => $this->_crypto_key,
 		];
 		$curl = new Curl();
@@ -62,6 +63,7 @@ class PhenyxTools {
 
 		$data_array = [
 			'action' => 'getPhenyxPlugins',
+            'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_'),
             'crypto_key' => $this->_crypto_key,
 		];
 		$curl = new Curl();
