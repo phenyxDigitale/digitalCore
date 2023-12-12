@@ -856,6 +856,7 @@ abstract class Plugin {
                 $plugin->interest = $pluginsInstalled[$plugin->name]['interest'];
                 $plugin->enable_device = $pluginsInstalled[$plugin->name]['enable_device'];
                 $plugin->active = $pluginsInstalled[$plugin->name]['active'];
+                $plugin->dependencies = $tmpPlugin->dependencies;
                 $plugin->image_link = $context->link->getBaseFrontLink().$image;
                 $plugin->is_ondisk = true;
             } else {
@@ -863,6 +864,7 @@ abstract class Plugin {
                 $plugin->installed = false;
                 $plugin->database_version = 0;
                 $plugin->interest = 0;
+                $plugin->dependencies = $tmpPlugin->dependencies;
                 $plugin->image_link = $context->link->getBaseFrontLink().$image;
                 $plugin->is_ondisk = true;
             }
