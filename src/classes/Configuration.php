@@ -457,7 +457,7 @@ class Configuration extends PhenyxObjectModel {
 
         $result = Db::getInstance()->execute(
             '
-        DELETE FROM `configuration_lang`
+        DELETE FROM `' . _DB_PREFIX_ . 'configuration_lang`
         WHERE `id_configuration` IN (
             SELECT `id_configuration`
             FROM `' . _DB_PREFIX_ . 'configuration`
