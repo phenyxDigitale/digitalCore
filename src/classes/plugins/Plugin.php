@@ -1906,7 +1906,8 @@ abstract class Plugin {
         $hooks->where('id_plugin', '=', (int) $this->id);
 
         foreach ($hooks as $hook) {
-            $this->unregisterHook((int) $hook->id);
+            $hook->delete();
+            $this->unregisterHook((int) $hook->id_hook);
             $this->unregisterExceptions((int) $hook->id_hook);
         }
 
@@ -2031,10 +2032,7 @@ abstract class Plugin {
     }
 
     public function unregisterHook($id_hook) {
-
-        $hookPlugin = new HookPlugin($id_hook);
-        $hookPlugin->delete();
-
+      
         $hook = new Hook($id_hook, $this->context->language->id);
         $hook->plugins = $hook->getPlugins(true);
         $hook->available_plugins = $hook->getPossiblePluginList(true);
