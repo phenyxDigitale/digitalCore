@@ -2201,7 +2201,7 @@ abstract class Plugin {
             $hookPlugin = new HookPlugin();
             $hookPlugin->id_plugin = $this->id;
             $hookPlugin->id_hook = (int) $idHook;
-            $return &= $hookPlugin->add();
+            $return = $hookPlugin->add();
 
             $hook = new Hook($idHook);
             $hook->getPlugins(true);
