@@ -906,9 +906,13 @@ abstract class Plugin {
 
         }
         
-       
+        $return = [];
+        foreach ($pluginList as $plugin) {
+            $return[$plugin->name] = $plugin;
+        }
+        ksort($return);       
 
-        return $pluginList;
+        return $return;
     }
 
     public static function getPluginsDirOnDisk() {
