@@ -11,7 +11,7 @@ use \Curl\Curl;
  * @property $confirmUninstall
  */
 abstract class Plugin {
-    
+
     const TYPE_INT = 1;
     const TYPE_BOOL = 2;
     const TYPE_STRING = 3;
@@ -20,7 +20,7 @@ abstract class Plugin {
     const TYPE_HTML = 6;
     const TYPE_NOTHING = 7;
     const TYPE_SQL = 8;
-	const TYPE_JSON = 9;
+    const TYPE_JSON = 9;
     const TYPE_SCRIPT = 9;
 
     const CACHE_FILE_TAB_PLUGINS_LIST = '/app/xml/tab_plugins_list.xml';
@@ -55,9 +55,9 @@ abstract class Plugin {
     public $id = null;
     /** @var string $version Version */
     public $version;
-    
+
     public $is_configurable;
-    
+
     public $confirmUninstall;
 
     public $removable = true;
@@ -100,9 +100,9 @@ abstract class Plugin {
     public $avg_rate;
     /** @var array $badges */
     public $badges;
-    
+
     public $need_config = false;
-    
+
     public $config_controller = null;
     /** @var string Admin tab corresponding to the plugin */
     public $tab = null;
@@ -122,9 +122,9 @@ abstract class Plugin {
     public $allow_push;
     /** @var int $push_time_limit */
     public $push_time_limit = 180;
-    
+
     public $is_eu_compatible;
-    
+
     public $is_ondisk;
     /**
      * @var bool $bootstrap
@@ -156,41 +156,51 @@ abstract class Plugin {
     public $installed;
 
     public $favorite = false;
-    
+
     public $context;
-    
+
     public $use_session;
-    
+
     public $use_education_device;
-    
+
     public $use_sale_agent;
-    
+
     public $use_education_platform;
-    
+
     public $use_education_step;
-    
+
     public $ephenyx_shop_active;
 
     public $ephenyx_education_active;
-    
+
     public $image_link;
-    
+
     public function getPluginExtraVars() {
+
         $extraVars = Hook::exec('actionPluginGetExtraVars', [], null, true);
-        if(is_array($extraVars)) {
+
+        if (is_array($extraVars)) {
             $extraVars = array_shift($extraVars);
-            if(is_array($extraVars)) {
-                foreach($extraVars as $key => $value) {
-                    if(isset($value)) {
-                        $this->{$key} = $value;
+
+            if (is_array($extraVars)) {
+
+                foreach ($extraVars as $key => $value) {
+
+                    if (isset($value)) {
+                        $this->{$key}
+                        = $value;
                     } else {
                         $this->{$key};
                     }
+
                 }
+
             }
-            
-        }     
+
+        }
+
     }
+
     // @codingStandardsIgnoreEnd
 
     /**
@@ -221,14 +231,16 @@ abstract class Plugin {
         }
 
         $this->context = $context ? $context : Context::getContext();
-        
+
         $this->getPluginExtraVars();
-        
+
         $this->use_session = Configuration::get('EPH_USE_SESSION_DAY');
         $this->use_education_device = Configuration::get('EPH_USE_EDUCATION_DEVICE');
-        if(Plugin:: IsInstalled('ph_saleagent')) {
+
+        if (Plugin::IsInstalled('ph_saleagent')) {
             $this->use_sale_agent = Configuration::get('EPH_USE_SALE_AGENT');
         }
+
         $this->use_education_platform = Configuration::get('EPH_USE_EDUCATION_PLATFORM');
         $this->use_education_step = Configuration::get('EPH_USE_EDUCATION_STEP');
         $this->ephenyx_shop_active = Configuration::get('_EPHENYX_SHOP_ACTIVE_');
@@ -277,7 +289,7 @@ abstract class Plugin {
 
                 }
 
-                $this->_path =  '/includes/plugins/' . $this->name . '/';
+                $this->_path = '/includes/plugins/' . $this->name . '/';
             }
 
             if (method_exists($this, 'reset')) {
@@ -289,11 +301,14 @@ abstract class Plugin {
             if ($this->context->controller instanceof Controller) {
                 static::$plugins_cache = null;
             }
-            if(is_dir(_EPH_PLUGIN_DIR_ .$this->name . '/')) {
+
+            if (is_dir(_EPH_PLUGIN_DIR_ . $this->name . '/')) {
                 $this->local_path = _EPH_PLUGIN_DIR_ . $this->name . '/';
-            } else if(is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ .$this->name . '/')) {
+            } else
+            if (is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/')) {
                 $this->local_path = _EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/';
             }
+
         }
 
     }
@@ -303,6 +318,7 @@ abstract class Plugin {
         if (!file_exists($this->local_path . 'sql/' . $file)) {
             return false;
         } else
+
         if (!$sql = Tools::file_get_contents($this->local_path . 'sql/' . $file)) {
             return false;
         }
@@ -317,21 +333,26 @@ abstract class Plugin {
         foreach ($sql as $query) {
             Db::getInstance()->execute(trim($query));
         }
+
         $isoCodes = Language::loadIsoCodesLanguages();
-        foreach($isoCodes as $isoCode => $idLang) {
-            if (file_exists($this->local_path . 'sql/'.$isoCode.'/' . $isoCode.'.sql')) {
-                $sql = Tools::file_get_contents($this->local_path . 'sql/'.$isoCode.'/' . $isoCode.'.sql');
+
+        foreach ($isoCodes as $isoCode => $idLang) {
+
+            if (file_exists($this->local_path . 'sql/' . $isoCode . '/' . $isoCode . '.sql')) {
+                $sql = Tools::file_get_contents($this->local_path . 'sql/' . $isoCode . '/' . $isoCode . '.sql');
                 $replace = [
-                    'PREFIX_'        => _DB_PREFIX_,
-                    'idLang' => $idLang,
+                    'PREFIX_' => _DB_PREFIX_,
+                    'idLang'  => $idLang,
                 ];
                 $sql = strtr($sql, $replace);
                 $sql = preg_split("/;\s*[\r\n]+/", $sql);
+
                 foreach ($sql as $query) {
                     Db::getInstance()->execute(trim($query));
                 }
-            } 
-            
+
+            }
+
         }
 
         return true;
@@ -342,6 +363,7 @@ abstract class Plugin {
         if (!file_exists($this->local_path . 'sql/' . $file)) {
             return false;
         } else
+
         if (!$sql = Tools::file_get_contents($this->local_path . 'sql/' . $file)) {
             return false;
         }
@@ -352,12 +374,10 @@ abstract class Plugin {
         foreach ($sql as $query) {
             Db::getInstance()->execute(trim($query));
         }
-        
+
         return true;
 
     }
-    
-   
 
     public static function getBatchMode() {
 
@@ -429,9 +449,11 @@ abstract class Plugin {
         if (!isset(static::$_INSTANCE[$pluginName])) {
 
             if (!Tools::file_exists_no_cache(_EPH_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php')) {
+
                 if (!Tools::file_exists_no_cache(_EPH_SPECIFIC_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php')) {
                     return false;
                 }
+
             }
 
             return Plugin::coreLoadPlugin($pluginName, $full);
@@ -456,9 +478,11 @@ abstract class Plugin {
             $timeStart = microtime(true);
             $memoryStart = memory_get_usage(true);
         }
-        if(file_exists(_EPH_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php')) {
+
+        if (file_exists(_EPH_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php')) {
             include_once _EPH_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php';
-        } else if(file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php')) {
+        } else
+        if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php')) {
             include_once _EPH_SPECIFIC_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php';
         }
 
@@ -565,7 +589,8 @@ abstract class Plugin {
                     $_PLUGINS = !empty($_PLUGINS) ? array_merge($_PLUGINS, $_PLUGIN) : $_PLUGIN;
                 }
 
-            } else if (substr(realpath($filePath), 0, strlen($specificpathPluginDir)) == $specificpathPluginDir) {
+            } else
+            if (substr(realpath($filePath), 0, strlen($specificpathPluginDir)) == $specificpathPluginDir) {
 
                 if (basename(dirname(dirname($filePath))) == 'controllers') {
                     static::$classInPlugin[$currentClass] = basename(dirname(dirname(dirname($filePath))));
@@ -580,7 +605,7 @@ abstract class Plugin {
                     $_PLUGINS = !empty($_PLUGINS) ? array_merge($_PLUGINS, $_PLUGIN) : $_PLUGIN;
                 }
 
-            }else {
+            } else {
                 static::$classInPlugin[$currentClass] = false;
             }
 
@@ -669,7 +694,7 @@ abstract class Plugin {
     public static function getPluginsOnDisk($useConfig = false, $loggedOnAddons = false, $idEmployee = false, $full = false) {
 
         global $_PLUGINS;
-        
+
         $context = Context::getContext();
 
         $pluginList = [];
@@ -698,96 +723,94 @@ abstract class Plugin {
                 break;
             }
 
+            if (!class_exists($plugin, false)) {
 
-            
-                if (!class_exists($plugin, false)) {
-
-                    if(file_exists(_EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php')) {
-                        $filePath = _EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
-                        $file = trim(file_get_contents(_EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php'));
-                    } else if(file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php')) {
-                        $filePath = _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
-                        $file = trim(file_get_contents(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php'));
-                    }
-
-                    if (substr($file, 0, 5) == '<?php') {
-                        $file = substr($file, 5);
-                    }
-
-                    if (substr($file, -2) == '?>') {
-                        $file = substr($file, 0, -2);
-                    }
-
-                    $file = preg_replace('/\n[\s\t]*?use\s.*?;/', '', $file);
-
-                    if (eval('if (false){   ' . $file . "\n" . ' }') !== false) {
-                        if(file_exists(_EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php')) {
-                            require_once _EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
-                        } else if(file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php')) {
-                            require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
-                        }
-                    } else {
-                        $errors[] = sprintf(Tools::displayError('%1$s (parse error in %2$s)'), $plugin, substr($filePath, strlen(_EPH_ROOT_DIR_)));
-                    }
-
+                if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php')) {
+                    $filePath = _EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
+                    $file = trim(file_get_contents(_EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php'));
+                } else
+                if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php')) {
+                    $filePath = _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
+                    $file = trim(file_get_contents(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php'));
                 }
 
-                if (class_exists($plugin, false)) {
+                if (substr($file, 0, 5) == '<?php') {
+                    $file = substr($file, 5);
+                }
 
-                    $tmpPlugin = Adapter_ServiceLocator::get($plugin);
+                if (substr($file, -2) == '?>') {
+                    $file = substr($file, 0, -2);
+                }
 
-                    $item = [
-                        'id'                     => is_null($tmpPlugin->id) ? 0 : $tmpPlugin->id,
-                        'warning'                => $tmpPlugin->warning,
-                        'name'                   => $tmpPlugin->name,
-                        'version'                => $tmpPlugin->version,
-                        'tab'                    => $tmpPlugin->tab,
-                        'displayName'            => $tmpPlugin->displayName,
-                        'description'            => !is_null($tmpPlugin->description) ? stripslashes($tmpPlugin->description) : '',
-                        'author'                 => $tmpPlugin->author,
-                        'author_uri'             => (isset($tmpPlugin->author_uri) && $tmpPlugin->author_uri) ? $tmpPlugin->author_uri : false,
-                        'limited_countries'      => $tmpPlugin->limited_countries,
-                        'parent_class'           => get_parent_class($plugin),
-                        'is_configurable'        => $tmpPlugin->is_configurable = method_exists($tmpPlugin, 'getContent') ? 1 : 0,
-                        'config_controller'      => $tmpPlugin->config_controller,
-                        'active'                 => $tmpPlugin->active,
-                        'trusted'                => true,
-                        'currencies'             => isset($tmpPlugin->currencies) ? $tmpPlugin->currencies : null,
-                        'currencies_mode'        => isset($tmpPlugin->currencies_mode) ? $tmpPlugin->currencies_mode : null,
-                        'confirmUninstall'       => isset($tmpPlugin->confirmUninstall) ? html_entity_decode($tmpPlugin->confirmUninstall) : null,
-                        'description_full'       => isset($tmpPlugin->description_full) ? stripslashes($tmpPlugin->description_full) : null,
-                        'additional_description' => isset($tmpPlugin->additional_description) ? stripslashes($tmpPlugin->additional_description) : null,
-                        'compatibility'          => isset($tmpPlugin->compatibility) ? (array) $tmpPlugin->compatibility : null,
-                        'nb_rates'               => isset($tmpPlugin->nb_rates) ? (array) $tmpPlugin->nb_rates : null,
-                        'avg_rate'               => isset($tmpPlugin->avg_rate) ? (array) $tmpPlugin->avg_rate : null,
-                        'badges'                 => isset($tmpPlugin->badges) ? (array) $tmpPlugin->badges : null,
-                        'url'                    => isset($tmpPlugin->url) ? $tmpPlugin->url : null,
-                        'onclick_option'         => method_exists($plugin, 'onclickOption') ? true : false,
-                    ];
+                $file = preg_replace('/\n[\s\t]*?use\s.*?;/', '', $file);
 
-                    if ($item['onclick_option']) {
-                        $href = Context::getContext()->link->getAdminLink('Plugin', true) . '&plugin_name=' . $tmpPlugin->name . '&tab_plugin=' . $tmpPlugin->tab;
-                        $item['onclick_option_content'] = [];
-                        $optionTab = ['desactive', 'reset', 'configure', 'delete'];
+                if (eval('if (false){   ' . $file . "\n" . ' }') !== false) {
 
-                        foreach ($optionTab as $opt) {
-                            $item['onclick_option_content'][$opt] = $tmpPlugin->onclickOption($opt, $href);
-                        }
-
+                    if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php')) {
+                        require_once _EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
+                    } else
+                    if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php')) {
+                        require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
                     }
 
-                    $item = (object) $item;
-                    $pluginList[] = $item;
-                    $pluginsNameToCursor[mb_strtolower($item->name)] = $item;
-
-                   
-
-                    unset($tmpPlugin);
                 } else {
-                    $errors[] = sprintf(Tools::displayError('%1$s (class missing in %2$s)'), $plugin, substr($filePath, strlen(_EPH_ROOT_DIR_)));
+                    $errors[] = sprintf(Tools::displayError('%1$s (parse error in %2$s)'), $plugin, substr($filePath, strlen(_EPH_ROOT_DIR_)));
                 }
 
-           
+            }
+
+            if (class_exists($plugin, false)) {
+
+                $tmpPlugin = Adapter_ServiceLocator::get($plugin);
+
+                $item = [
+                    'id'                     => is_null($tmpPlugin->id) ? 0 : $tmpPlugin->id,
+                    'warning'                => $tmpPlugin->warning,
+                    'name'                   => $tmpPlugin->name,
+                    'version'                => $tmpPlugin->version,
+                    'tab'                    => $tmpPlugin->tab,
+                    'displayName'            => $tmpPlugin->displayName,
+                    'description'            => !is_null($tmpPlugin->description) ? stripslashes($tmpPlugin->description) : '',
+                    'author'                 => $tmpPlugin->author,
+                    'author_uri'             => (isset($tmpPlugin->author_uri) && $tmpPlugin->author_uri) ? $tmpPlugin->author_uri : false,
+                    'limited_countries'      => $tmpPlugin->limited_countries,
+                    'parent_class'           => get_parent_class($plugin),
+                    'is_configurable'        => $tmpPlugin->is_configurable = method_exists($tmpPlugin, 'getContent') ? 1 : 0,
+                    'config_controller'      => $tmpPlugin->config_controller,
+                    'active'                 => $tmpPlugin->active,
+                    'trusted'                => true,
+                    'currencies'             => isset($tmpPlugin->currencies) ? $tmpPlugin->currencies : null,
+                    'currencies_mode'        => isset($tmpPlugin->currencies_mode) ? $tmpPlugin->currencies_mode : null,
+                    'confirmUninstall'       => isset($tmpPlugin->confirmUninstall) ? html_entity_decode($tmpPlugin->confirmUninstall) : null,
+                    'description_full'       => isset($tmpPlugin->description_full) ? stripslashes($tmpPlugin->description_full) : null,
+                    'additional_description' => isset($tmpPlugin->additional_description) ? stripslashes($tmpPlugin->additional_description) : null,
+                    'compatibility'          => isset($tmpPlugin->compatibility) ? (array) $tmpPlugin->compatibility : null,
+                    'nb_rates'               => isset($tmpPlugin->nb_rates) ? (array) $tmpPlugin->nb_rates : null,
+                    'avg_rate'               => isset($tmpPlugin->avg_rate) ? (array) $tmpPlugin->avg_rate : null,
+                    'badges'                 => isset($tmpPlugin->badges) ? (array) $tmpPlugin->badges : null,
+                    'url'                    => isset($tmpPlugin->url) ? $tmpPlugin->url : null,
+                    'onclick_option'         => method_exists($plugin, 'onclickOption') ? true : false,
+                ];
+
+                if ($item['onclick_option']) {
+                    $href = Context::getContext()->link->getAdminLink('Plugin', true) . '&plugin_name=' . $tmpPlugin->name . '&tab_plugin=' . $tmpPlugin->tab;
+                    $item['onclick_option_content'] = [];
+                    $optionTab = ['desactive', 'reset', 'configure', 'delete'];
+
+                    foreach ($optionTab as $opt) {
+                        $item['onclick_option_content'][$opt] = $tmpPlugin->onclickOption($opt, $href);
+                    }
+
+                }
+
+                $item = (object) $item;
+                $pluginList[] = $item;
+                $pluginsNameToCursor[mb_strtolower($item->name)] = $item;
+
+                unset($tmpPlugin);
+            } else {
+                $errors[] = sprintf(Tools::displayError('%1$s (class missing in %2$s)'), $plugin, substr($filePath, strlen(_EPH_ROOT_DIR_)));
+            }
 
         }
 
@@ -814,30 +837,36 @@ abstract class Plugin {
 
         $languageCode = str_replace('_', '-', mb_strtolower(Context::getContext()->language->language_code));
         $extras = [];
-         if($full && file_exists(_EPH_CONFIG_DIR_ . 'json/plugin_sources.json')) {
+
+        if ($full && file_exists(_EPH_CONFIG_DIR_ . 'json/plugin_sources.json')) {
             $extras = file_get_contents(_EPH_CONFIG_DIR_ . 'json/plugin_sources.json');
-            if(is_string($extras)) {
+
+            if (is_string($extras)) {
                 $extras = Tools::jsonDecode($extras, true);
-                foreach ($pluginList as $key => &$plugin) {
-                    if(array_key_exists($plugin->name, $extras)) {
-                        continue;
+
+                foreach ($pluginList as $key => $plugin) {
+
+                    if (array_key_exists($plugin->name, $extras)) {
+                        unset($extras[$plugin->name]);
                     }
-                    
+
                 }
+
             }
+
         }
 
         foreach ($pluginList as $key => &$plugin) {
-            if(file_exists(_EPH_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php')) {
+
+            if (file_exists(_EPH_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php')) {
                 require_once _EPH_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php';
-                $image = 'includes/plugins/'.$plugin->name.'/logo.png';
-            } else if(file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php')) {
+                $image = 'includes/plugins/' . $plugin->name . '/logo.png';
+            } else
+            if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php')) {
                 require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php';
-                $image = 'includes/specific_plugins/'.$plugin->name.'/logo.png';
+                $image = 'includes/specific_plugins/' . $plugin->name . '/logo.png';
             }
-            if(array_key_exists($plugin->name, $extras)) {
-                unset($extras[$plugin->name]);
-            }
+
             $tmpPlugin = Adapter_ServiceLocator::get($plugin->name);
 
             if (isset($pluginsInstalled[$plugin->name])) {
@@ -857,7 +886,7 @@ abstract class Plugin {
                 $plugin->enable_device = $pluginsInstalled[$plugin->name]['enable_device'];
                 $plugin->active = $pluginsInstalled[$plugin->name]['active'];
                 $plugin->dependencies = $tmpPlugin->dependencies;
-                $plugin->image_link = $context->link->getBaseFrontLink().$image;
+                $plugin->image_link = $context->link->getBaseFrontLink() . $image;
                 $plugin->is_ondisk = true;
             } else {
                 $plugin->removable = true;
@@ -865,25 +894,28 @@ abstract class Plugin {
                 $plugin->database_version = 0;
                 $plugin->interest = 0;
                 $plugin->dependencies = $tmpPlugin->dependencies;
-                $plugin->image_link = $context->link->getBaseFrontLink().$image;
+                $plugin->image_link = $context->link->getBaseFrontLink() . $image;
                 $plugin->is_ondisk = true;
             }
-            
 
         }
-        
-        foreach($extras as $key => $values) {
+
+        foreach ($extras as $key => $values) {
             $plugin = [];
             $plugin['is_ondisk'] = false;
-            foreach($values as $k => $value) {
-                if($k == 'id') {
+
+            foreach ($values as $k => $value) {
+
+                if ($k == 'id') {
                     continue;
                 }
+
                 $plugin[$k] = $value;
             }
+
             $plugin = Tools::jsonDecode(Tools::jsonEncode($plugin));
             $pluginList[] = $plugin;
-            
+
         }
 
         if ($errors) {
@@ -905,12 +937,14 @@ abstract class Plugin {
             }
 
         }
-        
+
         $return = [];
+
         foreach ($pluginList as $plugin) {
             $return[$plugin->name] = $plugin;
         }
-        ksort($return);       
+
+        ksort($return);
 
         return $return;
     }
@@ -925,6 +959,7 @@ abstract class Plugin {
             if (is_file(_EPH_PLUGIN_DIR_ . $name)) {
                 continue;
             } else
+
             if (is_dir(_EPH_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR) && file_exists(_EPH_PLUGIN_DIR_ . $name . '/' . $name . '.php')) {
 
                 if (!Validate::isPluginName($name)) {
@@ -935,6 +970,7 @@ abstract class Plugin {
             }
 
         }
+
         $plugins = scandir(_EPH_SPECIFIC_PLUGIN_DIR_);
 
         foreach ($plugins as $name) {
@@ -942,6 +978,7 @@ abstract class Plugin {
             if (is_file(_EPH_SPECIFIC_PLUGIN_DIR_ . $name)) {
                 continue;
             } else
+
             if (is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR) && file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $name . '/' . $name . '.php')) {
 
                 if (!Validate::isPluginName($name)) {
@@ -1012,6 +1049,7 @@ abstract class Plugin {
             $sql->where('k.`position` = 1');
             $sql->groupBy('m.`id_plugin`');
         }
+
         $sql->where('m.active = 1');
 
         return Db::getInstance()->executeS($sql);
@@ -1050,6 +1088,7 @@ abstract class Plugin {
         if (isset($context->employee)) {
             $frontend = false;
         } else
+
         if (isset($context->user) && $useGroups) {
             $groups = $context->user->getGroups();
 
@@ -1211,6 +1250,7 @@ abstract class Plugin {
                 }
 
             }
+
             if (function_exists('opcache_invalidate') && file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name)) {
 
                 foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name)) as $file) {
@@ -1229,15 +1269,6 @@ abstract class Plugin {
             } catch (Exception $e) {
                 $this->_errors[] = sprintf(Tools::displayError('Unable to install override: %s'), $e->getMessage());
                 $this->uninstallOverrides();
-
-                return false;
-            }
-            
-            try {
-                $this->installOverrplaces();
-            } catch (Exception $e) {
-                $this->_errors[] = sprintf(Tools::displayError('Unable to install Overplacement: %s'), $e->getMessage());
-                $this->uninstallOverrplaces();
 
                 return false;
             }
@@ -1293,14 +1324,14 @@ abstract class Plugin {
             }
 
         }
-        
+
         $this->updateIoPlugins();
 
         return true;
     }
-    
+
     public function updateIoPlugins() {
-        
+
         $context = Context::getContext();
         $installed_plugins = Plugin::getPluginsDirOnDisk();
         $plugins = [];
@@ -1309,18 +1340,15 @@ abstract class Plugin {
             $plugins[$plugin] = Plugin::isInstalled($plugin);
         }
 
-       
-        
-        
         $url = 'https://ephenyx.io/veille';
         $string = Configuration::get('_EPHENYX_LICENSE_KEY_') . '/' . $context->company->company_url;
         $crypto_key = Tools::encrypt_decrypt('encrypt', $string, _PHP_ENCRYPTION_KEY_, _COOKIE_KEY_);
 
         $data_array = [
-            'action'     => 'updatePlugins',
+            'action'      => 'updatePlugins',
             'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_'),
-            'crypto_key' => $crypto_key,
-            'plugins' => $plugins,
+            'crypto_key'  => $crypto_key,
+            'plugins'     => $plugins,
         ];
 
         $curl = new Curl();
@@ -1329,8 +1357,7 @@ abstract class Plugin {
         $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
         $curl->post($url, json_encode($data_array));
         $response = $curl->response;
-        
-        
+
     }
 
     public function checkCompliancy() {
@@ -1357,11 +1384,11 @@ abstract class Plugin {
     }
 
     public static function getPluginIdByName($name) {
-       
+
         $cacheId = 'Plugin::getPluginIdByName_' . pSQL($name);
 
         if (!Cache::isStored($cacheId)) {
-            
+
             $result = (int) Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
                     ->select('`id_plugin`')
@@ -1371,7 +1398,7 @@ abstract class Plugin {
             Cache::store($cacheId, $result);
             return $result;
         }
-        
+
         return Cache::retrieve($cacheId);
     }
 
@@ -1415,92 +1442,10 @@ abstract class Plugin {
 
         return $result;
     }
-    
-    public function installOverrplaces() {
-
-        if (!is_dir($this->getLocalPath() . 'overplace')) {
-            return true;
-        }
-
-        $result = true;
-
-        foreach (Tools::scandir($this->getLocalPath() . 'overplace', 'php', '', true) as $file) {
-            $class = basename($file, '.php');
-
-            if (PhenyxAutoload::getInstance()->getClassPath($class . 'Core') || Plugin::getPluginIdByName($class)) {
-                $result &= $this->addOverPlace($class);
-            }
-
-        }
-
-        return $result;
-    }
-    
-    public function uninstallOverrplaces() {
-
-        if (!is_dir($this->getLocalPath() . 'overplace')) {
-            return true;
-        }
-        
-        $result = true;
-
-        foreach (Tools::scandir($this->getLocalPath() . 'overplace'. DIRECTORY_SEPARATOR . 'save', 'php', '', true) as $file) {
-            $class = basename($file, '.php');
-            if($class == 'index') {
-                continue;
-            }
-            
-            $origPath = $path = PhenyxAutoload::getInstance()->getClassPath($class . 'Core');
-           
-            $savePlace = $this->getLocalPath() . 'overplace' . DIRECTORY_SEPARATOR . 'save'. DIRECTORY_SEPARATOR .str_replace('includes/', '', $path);
-           
-            $result &= copy($savePlace, _EPH_ROOT_DIR_.DIRECTORY_SEPARATOR.$origPath);
-
-        }
-
-        return $result;
-    }
 
     public function getLocalPath() {
 
         return $this->local_path;
-    }
-    
-     public function addOverPlace($classname) {
-         
-          
-
-        $origPath = $path = PhenyxAutoload::getInstance()->getClassPath($classname . 'Core');
-       
-        if (!$path) {
-            return false;
-        } 
-        
-        $savePlace = $this->getLocalPath() . 'overplace' . DIRECTORY_SEPARATOR . 'save'. DIRECTORY_SEPARATOR .str_replace('includes/', '', $path);
-         
-        $pathOverride = $this->getLocalPath() . 'overplace' . DIRECTORY_SEPARATOR . str_replace('includes/', '', $path);
-         
-        
-
-        if (!file_exists($pathOverride)) {
-            return false;
-        } else {
-           
-            if(!copy(_EPH_ROOT_DIR_.DIRECTORY_SEPARATOR.$origPath, $savePlace)) {
-                return false;
-            }
-            
-             if(!copy($pathOverride, _EPH_ROOT_DIR_.DIRECTORY_SEPARATOR.$origPath)) {
-                return false;
-            };
-        }
-
-       
-
-        Tools::generateIndex();
-        
-
-        return true;
     }
 
     public function addOverride($classname) {
@@ -1711,6 +1656,7 @@ abstract class Plugin {
         if ($origPath && !$file = PhenyxAutoload::getInstance()->getClassPath($classname)) {
             return true;
         } else
+
         if (!$origPath && Plugin::getPluginIdByName($classname)) {
             $path = 'includes/plugins' . DIRECTORY_SEPARATOR . $classname . DIRECTORY_SEPARATOR . $classname . '.php';
         }
@@ -1822,6 +1768,7 @@ abstract class Plugin {
                 if (preg_match('/(^\s*\/\/.*)/i', $overrideFile[$i])) {
                     $overrideFile[$i] = '#--remove--#';
                 } else
+
                 if (preg_match('/(^\s*\/\*)/i', $overrideFile[$i])) {
 
                     if (!preg_match('/(^\s*\* plugin:)/i', $overrideFile[$i + 1])
@@ -1954,13 +1901,9 @@ abstract class Plugin {
         if (!$this->uninstallOverrides()) {
             return false;
         }
-        
-        if(!$this->uninstallOverrplaces()) {
-            return false;
-        }
-        
+
         $hooks = new PhenyxCollection('HookPlugin');
-        $hooks->where('id_plugin', '=', (int) $this->id);       
+        $hooks->where('id_plugin', '=', (int) $this->id);
 
         foreach ($hooks as $hook) {
             $this->unregisterHook((int) $hook->id);
@@ -1983,7 +1926,7 @@ abstract class Plugin {
             }
 
         }
-        
+
         $this->uninstallTab();
 
         $this->disable(true);
@@ -1997,46 +1940,57 @@ abstract class Plugin {
 
             return true;
         }
+
         $this->updateIoPlugins();
         return false;
     }
-    
+
     public function uninstallTab() {
-        
+
         $tabs = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('`id_employee_menu`')
-            ->from('employee_menu')
-            ->where('`plugin` = \'' . pSQL($this->name) . '\'')
+                ->select('`id_employee_menu`')
+                ->from('employee_menu')
+                ->where('`plugin` = \'' . pSQL($this->name) . '\'')
         );
-        
-        if(is_array($tabs) && count($tabs)) {
-            foreach($tabs as $tab) {
+
+        if (is_array($tabs) && count($tabs)) {
+
+            foreach ($tabs as $tab) {
                 $menu = New EmployeeMenu($tab['id_employee_menu']);
                 $menu->delete();
             }
-        }        
-    }
-    
-    public function instalPluginTab($class_name, $name, $function = true, $idParent = null, $parentName = null, $position = null) {
-        
-        $translator = Language::getInstance();
-        if(is_null($parentName) && is_null($idParent)) {
-             return false;
+
         }
-        if(!is_null($parentName)) {
-            $idParent = (int) EmployeeMenu::getIdFromClassName($parentName); 
-            if(!$idParent) {
+
+    }
+
+    public function instalPluginTab($class_name, $name, $function = true, $idParent = null, $parentName = null, $position = null) {
+
+        $translator = Language::getInstance();
+
+        if (is_null($parentName) && is_null($idParent)) {
+            return false;
+        }
+
+        if (!is_null($parentName)) {
+            $idParent = (int) EmployeeMenu::getIdFromClassName($parentName);
+
+            if (!$idParent) {
                 return false;
             }
+
         }
-        $idTab = (int) EmployeeMenu::getIdFromClassName($class_name); 
-        if(!$idTab) {
+
+        $idTab = (int) EmployeeMenu::getIdFromClassName($class_name);
+
+        if (!$idTab) {
             $tab = new EmployeeMenu();
-            if($function) {
-                $tab->function = 'openAjaxController(\''.$class_name.'\')';
+
+            if ($function) {
+                $tab->function = 'openAjaxController(\'' . $class_name . '\')';
             }
-        
+
             $tab->plugin = $this->name;
             $tab->id_parent = $idParent;
             $tab->class_name = $class_name;
@@ -2048,36 +2002,38 @@ abstract class Plugin {
             }
 
             unset($lang);
-            return  $tab->add(true, false, true, $position);
+            return $tab->add(true, false, true, $position);
         } else {
             return true;
         }
-        
-         
+
     }
-    
+
     public function inActivateTab() {
-        
+
         $tabs = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('`id_employee_menu`')
-            ->from('employee_menu')
-            ->where('`plugin` = \'' . pSQL($this->name) . '\'')
+                ->select('`id_employee_menu`')
+                ->from('employee_menu')
+                ->where('`plugin` = \'' . pSQL($this->name) . '\'')
         );
-        
-        if(is_array($tabs) && count($tabs)) {
-            foreach($tabs as $tab) {
+
+        if (is_array($tabs) && count($tabs)) {
+
+            foreach ($tabs as $tab) {
                 $menu = New EmployeeMenu($tab['id_employee_menu']);
                 $menu->active = false;
                 $menu->update();
             }
-        }        
+
+        }
+
     }
 
     public function unregisterHook($id_hook) {
-        
+
         $hookPlugin = new HookPlugin($id_hook);
-        $hookPlugin->delete();        
+        $hookPlugin->delete();
 
         $hook = new Hook($id_hook, $this->context->language->id);
         $hook->plugins = $hook->getPlugins(true);
@@ -2233,7 +2189,6 @@ abstract class Plugin {
 
             }
 
-            
             $sql = (new DbQuery())
                 ->select('hm.`id_plugin`')
                 ->from('hook_plugin', 'hm')
@@ -2249,7 +2204,6 @@ abstract class Plugin {
             $hookPlugin->id_plugin = $this->id;
             $hookPlugin->id_hook = (int) $idHook;
             $return &= $hookPlugin->add();
-
 
             $hook = new Hook($idHook);
             $hook->getPlugins(true);
@@ -2300,15 +2254,14 @@ abstract class Plugin {
 
     public function updatePosition($idHook, $way, $position = null) {
 
-       
-        $order = $way ? 'ASC' : 'DESC';  
+        $order = $way ? 'ASC' : 'DESC';
         $res = Db::getInstance()->executeS(
-			(new DbQuery())
-			->select('`id_plugin`, `position`, `id_hook`')
-			->from('hook_plugin')
-            ->where('`id_hook` = '.$idHook)
-			->orderBy('position ' . $order)
-		);
+            (new DbQuery())
+                ->select('`id_plugin`, `position`, `id_hook`')
+                ->from('hook_plugin')
+                ->where('`id_hook` = ' . $idHook)
+                ->orderBy('position ' . $order)
+        );
 
         foreach ($res as $key => $values) {
 
@@ -2423,7 +2376,6 @@ abstract class Plugin {
     public static function getExceptionsStatic($id_plugin, $id_hook, $context, $dispatch = false) {
 
         $cache_id = 'exceptionsCache';
-        
 
         if (!Cache::isStored($cache_id)) {
             $exceptions_cache = [];
@@ -2459,30 +2411,23 @@ abstract class Plugin {
 
         if ($dispatch) {
 
-          
-
-                if (isset($exceptions_cache[$key], $exceptions_cache[$key][$context->company->id])) {
-                    $array_return[$context->company->id] = $exceptions_cache[$key][$context->company->id];
-                }
-
+            if (isset($exceptions_cache[$key], $exceptions_cache[$key][$context->company->id])) {
+                $array_return[$context->company->id] = $exceptions_cache[$key][$context->company->id];
+            }
 
         } else {
 
-            
+            if (isset($exceptions_cache[$key], $exceptions_cache[$key][$context->company->id])) {
 
-                if (isset($exceptions_cache[$key], $exceptions_cache[$key][$context->company->id])) {
+                foreach ($exceptions_cache[$key][$context->company->id] as $file) {
 
-                    foreach ($exceptions_cache[$key][$context->company->id] as $file) {
-
-                        if (!in_array($file, $array_return)) {
-                            $array_return[] = $file;
-                        }
-
+                    if (!in_array($file, $array_return)) {
+                        $array_return[] = $file;
                     }
 
                 }
 
-           
+            }
 
         }
 
@@ -2562,28 +2507,36 @@ abstract class Plugin {
         if (file_exists(_EPH_THEME_DIR_ . 'plugins/' . $plugin_name . '/' . $template)) {
             return _EPH_THEME_DIR_ . 'plugins/' . $plugin_name . '/' . $template;
         } else
+
         if (file_exists(_EPH_THEME_DIR_ . 'plugins/' . $plugin_name . '/views/templates/hook/' . $template)) {
             return _EPH_THEME_DIR_ . 'plugins/' . $plugin_name . '/views/templates/hook/' . $template;
         } else
+
         if (file_exists(_EPH_THEME_DIR_ . 'plugins/' . $plugin_name . '/views/templates/front/' . $template)) {
             return _EPH_THEME_DIR_ . 'plugins/' . $plugin_name . '/views/templates/front/' . $template;
         } else
+
         if (file_exists(_EPH_PLUGIN_DIR_ . $plugin_name . '/views/templates/hook/' . $template)) {
             return false;
         } else
+
         if (file_exists(_EPH_PLUGIN_DIR_ . $plugin_name . '/views/templates/front/' . $template)) {
             return false;
         } else
+
         if (file_exists(_EPH_PLUGIN_DIR_ . $plugin_name . '/' . $template)) {
             return false;
         } else
-        if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ .  $plugin_name . '/views/templates/hook/' . $template)) {
+
+        if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin_name . '/views/templates/hook/' . $template)) {
             return false;
         } else
-        if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ .  $plugin_name . '/views/templates/front/' . $template)) {
+
+        if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin_name . '/views/templates/front/' . $template)) {
             return false;
         } else
-        if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ .  $plugin_name . '/' . $template)) {
+
+        if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin_name . '/' . $template)) {
             return false;
         }
 
@@ -2615,27 +2568,35 @@ abstract class Plugin {
         if ($overloaded) {
             return $overloaded;
         } else
+
         if (file_exists(_EPH_PLUGIN_DIR_ . $this->name . '/views/templates/hook/' . $template)) {
             return _EPH_PLUGIN_DIR_ . $this->name . '/views/templates/hook/' . $template;
         } else
+
         if (file_exists(_EPH_PLUGIN_DIR_ . $this->name . '/views/templates/admin/' . $template)) {
             return _EPH_PLUGIN_DIR_ . $this->name . '/views/templates/admin/' . $template;
-        }  else
+        } else
+
         if (file_exists(_EPH_PLUGIN_DIR_ . $this->name . '/views/templates/' . $template)) {
             return _EPH_PLUGIN_DIR_ . $this->name . '/views/templates/' . $template;
-        }else
+        } else
+
         if (file_exists(_EPH_PLUGIN_DIR_ . $this->name . '/views/templates/front/' . $template)) {
             return _EPH_PLUGIN_DIR_ . $this->name . '/views/templates/front/' . $template;
         } else
+
         if (file_exists(_EPH_PLUGIN_DIR_ . $this->name . '/' . $template)) {
             return _EPH_PLUGIN_DIR_ . $this->name . '/' . $template;
         } else
+
         if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/views/templates/hook/' . $template)) {
             return _EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/views/templates/hook/' . $template;
-        }  else
+        } else
+
         if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/views/templates/front/' . $template)) {
             return _EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/views/templates/front/' . $template;
-        }  else
+        } else
+
         if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/' . $template)) {
             return _EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/' . $template;
         } else {
@@ -2804,8 +2765,6 @@ abstract class Plugin {
             $cache_array[] = (int) $this->context->language->id;
         }
 
-        
-
         $cache_array[] = (int) $this->context->country->id;
 
         return implode('|', $cache_array);
@@ -2813,11 +2772,13 @@ abstract class Plugin {
 
     protected function _getApplicableTemplateDir($template) {
 
-        if(is_dir(_EPH_PLUGIN_DIR_ . $this->name . '/')) {
+        if (is_dir(_EPH_PLUGIN_DIR_ . $this->name . '/')) {
             return $this->_isTemplateOverloaded($template) ? _EPH_THEME_DIR_ : _EPH_PLUGIN_DIR_ . $this->name . '/';
-        } else if(is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/')) {
+        } else
+        if (is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/')) {
             return $this->_isTemplateOverloaded($template) ? _EPH_THEME_DIR_ : _EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/';
         }
+
     }
 
     protected function _clearCache($template, $cacheId = null, $compileId = null) {
@@ -2907,7 +2868,7 @@ abstract class Plugin {
             'confirmUninstall'  => $confirmUninstall,
             'is_configurable'   => $isConfigurable,
             'limited_countries' => $limitedCountries,
-            
+
         ] as $node => $value) {
 
             if (!is_null($value) && is_string($value) && strlen($value)) {
@@ -2918,9 +2879,10 @@ abstract class Plugin {
                 $element = null;
             }
 
-            
         }
-        if(is_dir(_EPH_PLUGIN_DIR_ . $this->name . '/')) {
+
+        if (is_dir(_EPH_PLUGIN_DIR_ . $this->name . '/')) {
+
             if (is_writable(_EPH_PLUGIN_DIR_ . $this->name . '/')) {
                 $iso = substr(Context::getContext()->language->iso_code, 0, 2);
                 $file = _EPH_PLUGIN_DIR_ . $this->name . '/' . ($iso == 'en' ? 'config.xml' : 'config_' . $iso . '.xml');
@@ -2928,7 +2890,10 @@ abstract class Plugin {
                 @file_put_contents($file, $xml->saveXml());
                 @chmod($file, 0664);
             }
-        } else if(is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/')) {
+
+        } else
+        if (is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/')) {
+
             if (is_writable(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/')) {
                 $iso = substr(Context::getContext()->language->iso_code, 0, 2);
                 $file = _EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/' . ($iso == 'en' ? 'config.xml' : 'config_' . $iso . '.xml');
@@ -2936,6 +2901,7 @@ abstract class Plugin {
                 @file_put_contents($file, $xml->saveXml());
                 @chmod($file, 0664);
             }
+
         }
 
     }
@@ -2953,8 +2919,6 @@ abstract class Plugin {
 
         $this->context->controller->informations[] = $msg;
     }
-    
-    
 
 }
 
