@@ -1337,7 +1337,7 @@ abstract class Plugin {
         $plugins = [];
 
         foreach ($installed_plugins as $plugin) {
-            $plugins[$plugin] = Plugin::isInstalled($plugin);
+            $plugins[$plugin] = Plugin::isInstalled($plugin, false);
         }
 
         $url = 'https://ephenyx.io/veille';
@@ -1373,9 +1373,9 @@ abstract class Plugin {
         return true;
     }
 
-    public static function isInstalled($pluginName) {
+    public static function isInstalled($pluginName, $use_cache = true) {
 
-        return (bool) Plugin::getPluginIdByName($pluginName);
+        return (bool) Plugin::getPluginIdByName($pluginName, $use_cache);
     }
 
     public static function isActive($pluginName) {
@@ -1383,11 +1383,11 @@ abstract class Plugin {
         return (bool) Plugin::getActivePluginIdByName($pluginName);
     }
 
-    public static function getPluginIdByName($name) {
+    public static function getPluginIdByName($name, $use_cache = true) {
 
         $cacheId = 'Plugin::getPluginIdByName_' . pSQL($name);
 
-        if (!Cache::isStored($cacheId)) {
+        if (!Cache::isStored($cacheId) && $use_cache) {
 
             $result = (int) Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())

@@ -5285,7 +5285,7 @@ FileETag none
         $installed_plugins = Plugin::getPluginsDirOnDisk();
 
         foreach ($installed_plugins as $plugin) {
-            $plugins[$plugin] = Plugin::isInstalled($plugin);
+            $plugins[$plugin] = Plugin::isInstalled($plugin, false);
         }
 
         return $plugins;
