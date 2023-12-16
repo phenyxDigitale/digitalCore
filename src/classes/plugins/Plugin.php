@@ -1966,7 +1966,7 @@ abstract class Plugin {
 
     }
 
-    public function instalPluginTab($class_name, $name, $function = true, $idParent = null, $parentName = null, $position = null) {
+    public function instalPluginTab($class_name, $name, $function = true, $idParent = null, $parentName = null, $position = null, $openFunction = null) {
 
         $translator = Language::getInstance();
 
@@ -1989,7 +1989,12 @@ abstract class Plugin {
             $tab = new EmployeeMenu();
 
             if ($function) {
-                $tab->function = 'openAjaxController(\'' . $class_name . '\')';
+                if(!is_null($openFunction)) {
+                    $tab->function = $openFunction;
+                } else {
+                    $tab->function = 'openAjaxController(\'' . $class_name . '\')';
+                }
+                
             }
 
             $tab->plugin = $this->name;
