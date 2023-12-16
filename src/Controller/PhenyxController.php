@@ -446,12 +446,11 @@ abstract class PhenyxController {
 
         $contextMenu = new ParamContextMenu($this->className, $this->controller_name);
 
-        $contextMenuItems = Hook::exec('action' . $this->controller_name . 'generateParaGridContextMenu', ['class' => $this->className], null, true);
+        $contextMenuItems = Hook::exec('action' . $this->controller_name . 'generateParaGridContextMenu', ['class' => $this->className, 'contextMenuItems' => $this->contextMenuItems], null, true);
 
         if (!empty($contextMenuItems)) {
 
             foreach ($contextMenuItems as $plugin => $contextMenuItem) {
-
                 if (is_array($contextMenuItem)) {
                     foreach ($contextMenuItem as $key => $item) {
                         $this->contextMenuItems[$key] = $item;
