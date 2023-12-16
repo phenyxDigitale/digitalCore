@@ -1387,7 +1387,7 @@ abstract class Plugin {
 
         $cacheId = 'Plugin::getPluginIdByName_' . pSQL($name);
 
-        if (!Cache::isStored($cacheId) && $use_cache) {
+        if (!Cache::isStored($cacheId) || $use_cache) {
 
             $result = (int) Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
