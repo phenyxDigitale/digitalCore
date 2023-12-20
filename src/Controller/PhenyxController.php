@@ -28,6 +28,8 @@ abstract class PhenyxController {
     public $extra_vars;
 
     public $ajax = false;
+    
+    public $ajax_submit = false;
 
     public $ajaxLayout = false;
 
@@ -1953,6 +1955,7 @@ abstract class PhenyxController {
             $helper->fields_value = $fieldsValue;
             $helper->submit_action = $this->submit_action;
             $helper->tpl_vars = $this->getTemplateFormVars();
+            $helper->ajax_submit = $this->ajax_submit;
             $helper->tagHeader = $this->editObject;
             $helper->has_editor = $has_editor;
             $helper->show_cancel_button = (isset($this->show_form_cancel_button)) ? $this->show_form_cancel_button : ($this->display == 'add' || $this->display == 'edit');

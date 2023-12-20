@@ -159,7 +159,6 @@ abstract class Plugin {
 
     public $context;
 
-
     public $image_link;
 
     public function getPluginExtraVars() {
@@ -175,6 +174,7 @@ abstract class Plugin {
 
                     if (isset($value)) {
                         $this->{$key}
+
                         = $value;
                     } else {
                         $this->{$key};
@@ -220,8 +220,6 @@ abstract class Plugin {
         $this->context = $context ? $context : Context::getContext();
 
         $this->getPluginExtraVars();
-
-        
 
         if (is_object($this->context->smarty)) {
             $this->smarty = $this->context->smarty->createData($this->context->smarty);
@@ -282,6 +280,7 @@ abstract class Plugin {
             if (is_dir(_EPH_PLUGIN_DIR_ . $this->name . '/')) {
                 $this->local_path = _EPH_PLUGIN_DIR_ . $this->name . '/';
             } else
+
             if (is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/')) {
                 $this->local_path = _EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/';
             }
@@ -459,6 +458,7 @@ abstract class Plugin {
         if (file_exists(_EPH_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php')) {
             include_once _EPH_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php';
         } else
+
         if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php')) {
             include_once _EPH_SPECIFIC_PLUGIN_DIR_ . $pluginName . '/' . $pluginName . '.php';
         }
@@ -567,6 +567,7 @@ abstract class Plugin {
                 }
 
             } else
+
             if (substr(realpath($filePath), 0, strlen($specificpathPluginDir)) == $specificpathPluginDir) {
 
                 if (basename(dirname(dirname($filePath))) == 'controllers') {
@@ -706,6 +707,7 @@ abstract class Plugin {
                     $filePath = _EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
                     $file = trim(file_get_contents(_EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php'));
                 } else
+
                 if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php')) {
                     $filePath = _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
                     $file = trim(file_get_contents(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php'));
@@ -726,6 +728,7 @@ abstract class Plugin {
                     if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php')) {
                         require_once _EPH_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
                     } else
+
                     if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php')) {
                         require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . '/' . $plugin . '.php';
                     }
@@ -839,6 +842,7 @@ abstract class Plugin {
                 require_once _EPH_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php';
                 $image = 'includes/plugins/' . $plugin->name . '/logo.png';
             } else
+
             if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php')) {
                 require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php';
                 $image = 'includes/specific_plugins/' . $plugin->name . '/logo.png';
@@ -1966,12 +1970,13 @@ abstract class Plugin {
             $tab = new EmployeeMenu();
 
             if ($function) {
-                if(!is_null($openFunction)) {
+
+                if (!is_null($openFunction)) {
                     $tab->function = $openFunction;
                 } else {
                     $tab->function = 'openAjaxController(\'' . $class_name . '\')';
                 }
-                
+
             }
 
             $tab->plugin = $this->name;
@@ -2014,7 +2019,7 @@ abstract class Plugin {
     }
 
     public function unregisterHook($id_hook) {
-      
+
         $hook = new Hook($id_hook, $this->context->language->id);
         $hook->plugins = $hook->getPlugins(true);
         $hook->available_plugins = $hook->getPossiblePluginList(true);
@@ -2755,6 +2760,7 @@ abstract class Plugin {
         if (is_dir(_EPH_PLUGIN_DIR_ . $this->name . '/')) {
             return $this->_isTemplateOverloaded($template) ? _EPH_THEME_DIR_ : _EPH_PLUGIN_DIR_ . $this->name . '/';
         } else
+
         if (is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/')) {
             return $this->_isTemplateOverloaded($template) ? _EPH_THEME_DIR_ : _EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/';
         }
@@ -2872,6 +2878,7 @@ abstract class Plugin {
             }
 
         } else
+
         if (is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/')) {
 
             if (is_writable(_EPH_SPECIFIC_PLUGIN_DIR_ . $this->name . '/')) {
