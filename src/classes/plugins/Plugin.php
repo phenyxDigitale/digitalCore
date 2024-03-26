@@ -507,6 +507,7 @@ abstract class Plugin {
 
         if (!is_array($name)) {
             $name = [$name];
+
         }
 
         $res = true;
@@ -1947,7 +1948,7 @@ abstract class Plugin {
 
     }
 
-    public function instalPluginTab($class_name, $name, $function = true, $idParent = null, $parentName = null, $position = null, $openFunction = null) {
+    public function instalPluginTab($class_name, $name, $function = true, $idParent = null, $parentName = null, $position = null, $openFunction = null, $divider = 0) {
 
         $translator = Language::getInstance();
 
@@ -1982,6 +1983,7 @@ abstract class Plugin {
             $tab->plugin = $this->name;
             $tab->id_parent = $idParent;
             $tab->class_name = $class_name;
+            $tab->has_divider = $divider;
             $tab->active = 1;
             $tab->name = [];
 
@@ -1992,7 +1994,31 @@ abstract class Plugin {
             unset($lang);
             return $tab->add(true, false, true, $position);
         } else {
-            return true;
+            $tab = new EmployeeMenu($idTab);
+
+            if ($function) {
+
+                if (!is_null($openFunction)) {
+                    $tab->function = $openFunction;
+                } else {
+                    $tab->function = 'openAjaxController(\'' . $class_name . '\')';
+                }
+
+            }
+
+            $tab->plugin = $this->name;
+            $tab->id_parent = $idParent;
+            $tab->class_name = $class_name;
+            $tab->has_divider = $divider;
+            $tab->active = 1;
+            $tab->name = [];
+
+            foreach (Language::getLanguages(true) as $lang) {
+                $tab->name[$lang['id_lang']] = $translator->getGoogleTranslation($name, $language['iso_code']);
+            }
+
+            unset($lang);
+            return $tab->update(true, false, $position);
         }
 
     }
