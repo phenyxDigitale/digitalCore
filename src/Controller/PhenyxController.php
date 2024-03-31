@@ -427,16 +427,14 @@ abstract class PhenyxController {
         $paramToolBarItems = Hook::exec('action' . $this->controller_name . 'generateParaGridToolBar', [], null, true);
 
         if (is_array($paramToolBarItems)) {
-            $paramToolBarItems = array_shift($paramToolBarItems);
 
-            if (is_array($paramToolBarItems)) {
-
-                foreach ($paramToolBarItems as $toolBars) {
-                    $this->paramToolBarItems[] = $toolBars;
+            foreach ($paramToolBarItems as $plugin => $toolBars) {
+                if(is_array($toolBars)) {
+                    foreach($toolBars as $toolBar) {
+                        $this->paramToolBarItems[] = $toolBars;
+                    }
                 }
-
             }
-
         }
 
         $toolBar->items = $this->paramToolBarItems;
@@ -1395,6 +1393,20 @@ abstract class PhenyxController {
         $this->setAjaxMedia();
 
         $data = $this->createTemplate($this->table . '.tpl');
+        $extraVars = Hook::exec('action' . $this->controller_name . 'TargetGetExtraVars', ['controller_type' => $this->controller_type], null, true);
+
+        if (is_array($extraVars)) {
+            
+            foreach($extraVars as $plugin => $vars)  {
+                if(is_array($vars)) {
+                    foreach ($vars as $key => $value) {
+                        $data->assign($key, $value);
+                    }                    
+                }
+            }
+            
+
+        }
 
         if (is_array($this->extra_vars)) {
 
