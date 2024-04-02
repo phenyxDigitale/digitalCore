@@ -24,6 +24,8 @@ abstract class PhenyxController {
     public $push_css_files = [];
 
     public $extracss;
+    
+    public $mainControllers;
 
     public $extra_vars;
 
