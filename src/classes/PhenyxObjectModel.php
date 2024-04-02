@@ -391,7 +391,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             foreach ($fields as $plugin => $values) {
 
                 if (is_array($values)) {
-                    foreach($valuse as $value) {
+                    foreach($values as $value) {
                         $this->paramFields[] = $value;
                     }
                     
