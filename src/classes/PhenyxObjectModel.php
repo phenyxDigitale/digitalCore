@@ -384,10 +384,10 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     public function getParamFields() {
 
         $this->className = get_class($this);
+        
         $fields = Hook::exec('action' . $this->className . 'getFieldsModifier', [], null, true);
 
         if (is_array($fields) && count($fields)) {
-
             foreach ($fields as $plugin => $values) {
 
                 if (is_array($values)) {
