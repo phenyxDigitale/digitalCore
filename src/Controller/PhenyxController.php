@@ -1440,7 +1440,7 @@ abstract class PhenyxController {
         ]);
 
         $li = '<li id="uper' . $this->controller_name . '" data-self="' . $this->link_rewrite . '" data-name="' . $this->page_title . '" data-controller="AdminDashboard"><a href="#content' . $this->controller_name . '">' . $this->publicName . '</a><button type="button" class="close tabdetail" onClick="closeTabObject(\'' . $this->controller_name . '\');" data-id="uper' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
-        $html = '<div id="content' . $this->controller_name . '" class="panel col-lg-12" style="display: flow-root;">' . $data->fetch() . '</div>';
+        $html = '<div id="content' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element wpb_animate_when_almost_visible wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: flow-root;">' . $data->fetch() . '</div>';
         $result = [
             'li'         => $li,
             'html'       => $html,
