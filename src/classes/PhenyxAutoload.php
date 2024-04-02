@@ -217,7 +217,11 @@ class PhenyxAutoload {
 		
 		$iterator = new AppendIterator();
 		foreach ($folder as $key => $directory) {
-			$iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootDir. 'includes/plugins/'.$directory . '/')));
+			if(file_exists($rootDir. 'includes/plugins/'.$directory)) {
+                $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootDir. 'includes/plugins/'.$directory . '/')));
+            } else if(file_exists($rootDir. 'specific_includes/plugins/'.$directory)) {
+                $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootDir. 'includes/specific_plugins/'.$directory . '/')));
+            }
         }
 	
 		foreach ($iterator as $file) {
