@@ -2161,7 +2161,7 @@ abstract class Plugin {
         return Translate::getPluginTranslation($this, $string, ($specific) ? $specific : $this->name);
     }
 
-    public function registerHook($hookName, $companyList = null) {
+    public function registerHook($hookName, $companyList = null, $position = null) {
 
         $return = true;
 
@@ -2221,7 +2221,7 @@ abstract class Plugin {
             $hookPlugin = new HookPlugin();
             $hookPlugin->id_plugin = $this->id;
             $hookPlugin->id_hook = (int) $idHook;
-            $return = $hookPlugin->add();
+            $return = $hookPlugin->add(true, false, $position);
 
             $hook = new Hook($idHook);
             $hook->getPlugins(true);
