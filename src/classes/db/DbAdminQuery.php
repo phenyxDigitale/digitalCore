@@ -13,12 +13,18 @@ class DbAdminQuery {
     
     public $extraSelects = [];
     
+    public $extraJoins = [];
+    
+    public $extraWheres = [];
+    
     public function __construct() {
 
 		$this->context = Context::getContext();
         if (isset($this->context->controller) && isset($this->context->controller->controller_name)) {
             $this->controller_name = $this->context->controller->controller_name;
-            $this->extraSelects = Hook::exec('action' . $this->controller_name . 'getGetSelectRequest', [], null, true);
+            Hook::exec('action' . $this->controller_name . 'GetExtraSelect', ['query' => $this]);
+            Hook::exec('action' . $this->controller_name . 'GetExtraJoin', ['query' => $this]);
+            Hook::exec('action' . $this->controller_name . 'GetExtraWhere', ['query' => $this]);
             
         }
 
@@ -80,20 +86,9 @@ class DbAdminQuery {
      * @since 1.9.1.0
      * @version 1.8.1.0 Initial version
      */
-    public function select($fields) {
-        
-        if (count($this->extraSelects)) {
-            foreach ($this->extraSelects as $plugin => $select) {
-                    if (is_array($select)) {
-                        foreach ($select as $key => $item) {
-                            $fields = $fields.', '.$item;
-                        }
-                    }
-                }
-        }
+    public function select($fields) {       
         
         if (!empty($fields)) {
-            //fwrite($file,print_r($fields, true).PHP_EOL);
             $this->query['select'][] = $fields;
         }
 
@@ -225,10 +220,34 @@ class DbAdminQuery {
      * @version 1.8.1.0 Initial version
      */
     public function leftJoin($table, $alias = null, $on = null) {
-
+        
+        
         if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
             $table = _DB_PREFIX_ . $table;
         }
+
+        return $this->join('LEFT JOIN `' . bqSQL($table) . '`' . ($alias ? ' `' . pSQL($alias) . '`' : '') . ($on ? ' ON ' . $on : ''));
+    }
+    
+    public function extraLeftJoin($table, $alias = null, $on = null) {
+                
+        if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
+            $table = _DB_PREFIX_ . $table;
+        }
+        if (count($this->extraJoins)) {
+
+            foreach ($this->extraJoins as $plugin => $join) {
+                if (is_array($join)) {
+                    foreach ($join as  $items) {
+                        $this->query['join'][] = $this->join('LEFT JOIN `' . bqSQL($items) . '`' . ($alias ? ' `' . pSQL($alias) . '`' : '') . ($on ? ' ON ' . $on : ''));
+                    }
+                }
+
+            }
+
+        }
+
+       
 
         return $this->join('LEFT JOIN `' . bqSQL($table) . '`' . ($alias ? ' `' . pSQL($alias) . '`' : '') . ($on ? ' ON ' . $on : ''));
     }
