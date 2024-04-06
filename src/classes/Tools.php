@@ -5431,6 +5431,11 @@ FileETag none
 
         return $topbars;
     }
+    
+    public static function str_contains($search, $string) {
+        
+        return str_contains($string, $search);
+    }
 
 }
 
