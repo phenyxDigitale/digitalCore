@@ -288,6 +288,31 @@ abstract class Plugin {
         }
 
     }
+    
+    public function alterSqlTable($table, $column, $type, $after) {
+        
+        $query = 'SELECT `COLUMN_NAME`
+            FROM `INFORMATION_SCHEMA`.`COLUMNS`
+            WHERE `TABLE_SCHEMA`="'._DB_NAME_.'"
+            AND `TABLE_NAME`= "'._DB_PREFIX_.$table.'"
+            AND `COLUMN_NAME`= "'.$column.'"';
+        
+        $result = Db::getInstance()->execute(trim($query));
+        if(!$result) {
+            $sql = 'ALTER TABLE `'._DB_PREFIX_.$table.'` ADD `'.$column.'` '.$type.' AFTER `'.$after.'`';
+            Db::getInstance()->execute(trim($sql));
+        }
+        
+    }
+    
+    public function dropSqlColumn($table, $column) {
+        
+        $query = 'ALTER TABLE `"'._DB_PREFIX_.$table.'"` DROP `'.$column.'';
+        
+        $result = Db::getInstance()->execute(trim($query));
+        
+        
+    }
 
     public function installsql($file) {
 
