@@ -351,24 +351,18 @@ abstract class PhenyxController {
     public function getExtraPhenyxVars() {
 
         $extraVars = Hook::exec('actionPhenyxControllerGetExtraVars', ['controller_type' => $this->controller_type], null, true);
-
         if (is_array($extraVars)) {
-            $extraVars = array_shift($extraVars);
-
-            if (is_array($extraVars)) {
-
-                foreach ($extraVars as $key => $value) {
-
-                    if (isset($value)) {
-                        $this->{$key}
-                        = $value;
-                    } else {
-                        $this->{$key};
-                    }
-
-                }
-
-            }
+           foreach ($extraVars as $plugin => $values) {
+               if (is_array($values)) {
+                   foreach ($values as $key => $value) {
+                       if (isset($value)) {
+                           $this->{$key} = $value;
+                       } else {
+                           $this->{$key};
+                       }    
+                   }
+               }
+           }
 
         }
 
@@ -615,6 +609,22 @@ abstract class PhenyxController {
         $paragrid->history = $this->paramhistory;
         $paragrid->autoRow = $this->paramAutoRow;
         $paragrid->beforeCellClick = $this->beforeCellClick;
+        
+        $extraVars = Hook::exec('action'.$this->controller_name.'ParaGridScript', ['controller_name' => $this->controller_name], null, true);
+        if (is_array($extraVars)) {
+           foreach ($extraVars as $plugin => $values) {
+               if (is_array($values)) {
+                   foreach ($values as $key => $value) {
+                       if (isset($value)) {
+                           $this->{$key} = $value;
+                       } else {
+                           $this->{$key};
+                       }    
+                   }
+               }
+           }
+
+        }
 
         $option = $paragrid->generateParaGridOption();
 
