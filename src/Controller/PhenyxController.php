@@ -1574,7 +1574,7 @@ abstract class PhenyxController {
         } else {
             $result = [
                 'success' => false,
-                'message' => 'Votre profile administratif ne vous permet pas d‘éditer cette objet',
+                'message' => $this->la('Your administrative profile does not allow you to edit this object'),
             ];
         }
 
@@ -1608,7 +1608,7 @@ abstract class PhenyxController {
         } else {
             $result = [
                 'success' => false,
-                'message' => 'Votre profile administratif ne vous permet pas d‘éditer cette objet',
+                'message' => $this->la('Your administrative profile does not allow you to edit this object'),
             ];
         }
 
@@ -1651,7 +1651,7 @@ abstract class PhenyxController {
 
         $result = [
             'success' => true,
-            'message' => 'La suppression s‘est déroulée avec succès.',
+            'message' => $this->la('The deletion was successful.'),
         ];
 
         die(Tools::jsonEncode($result));
@@ -1675,12 +1675,12 @@ abstract class PhenyxController {
 
             $return = [
                 'success' => true,
-                'message' => sprintf($this->la('L‘objet de type % a été mise à jour avec succès'), $this->className),
+                'message' => sprintf($this->la('Object of type % was successfully updated'), $this->className),
             ];
         } else {
             $return = [
                 'success' => false,
-                'message' => $this->la('Une erreur s\'est produite en essayant de mettre à jour cet objet'),
+                'message' => $this->la('An error occurred while trying to update this object'),
             ];
         }
 
@@ -1706,11 +1706,25 @@ abstract class PhenyxController {
         } else {
             $return = [
                 'success' => false,
-                'message' => $this->la('Une erreur s\'est produite en essayant d‘ajouter cet objet'),
+                'message' => $this->la('An error occurred while trying to add this object'),
             ];
             die(Tools::jsonEncode($return));
         }
 
+    }
+    
+    protected function la($string, $class = null, $addslashes = false, $htmlentities = true) {
+
+        if ($class === null) {
+            $class = substr(get_class($this), 0, -10);
+        } else
+
+        if (strtolower(substr($class, -10)) == 'controller') {
+            /* classname has changed, from AdminXXX to AdminXXXController, so we remove 10 characters and we keep same keys */
+            $class = substr($class, 0, -10);
+        }
+
+        return Translate::getAdminTranslation($string, $class, $addslashes, $htmlentities);
     }
 
     protected function isCached($template, $cacheId = null, $compileId = null) {
