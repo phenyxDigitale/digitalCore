@@ -1440,7 +1440,7 @@ abstract class PhenyxController {
         ]);
 
         $li = '<li id="uper' . $this->controller_name . '" data-self="' . $this->link_rewrite . '" data-name="' . $this->page_title . '" data-controller="AdminDashboard"><a href="#content' . $this->controller_name . '">' . $this->publicName . '</a><button type="button" class="close tabdetail" onClick="closeTabObject(\'' . $this->controller_name . '\');" data-id="uper' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
-        $html = '<div id="content' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element wpb_animate_when_almost_visible wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: flow-root;">' . $data->fetch() . '</div>';
+        $html = '<div id="content' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: flow-root;">' . $data->fetch() . '</div>';
         $result = [
             'li'         => $li,
             'html'       => $html,
@@ -1558,7 +1558,7 @@ abstract class PhenyxController {
 
             $html = $this->renderForm();
             $li = '<li id="uperEdit' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentEdit' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeEditFormObject(\'' . $this->controller_name . '\');" class="close tabdetail" data-id="uperEdit' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
-            $html = '<div id="contentEdit' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element wpb_animate_when_almost_visible wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display; flow-root;">' . $html . '</div>';
+            $html = '<div id="contentEdit' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display; flow-root;">' . $html . '</div>';
 
             $result = [
                 'success' => true,
@@ -1598,7 +1598,7 @@ abstract class PhenyxController {
             $html = $this->renderForm();
 
             $li = '<li id="uperEdit' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentEdit' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeEditFormObject(\'' . $this->controller_name . '\');" class="close tabdetail" data-id="uperEdit' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
-            $html = '<div id="contentEdit' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element wpb_animate_when_almost_visible wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display; flow-root;">' . $html . '</div>';
+            $html = '<div id="contentEdit' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display; flow-root;">' . $html . '</div>';
 
             $result = [
                 'success' => true,
@@ -1627,7 +1627,7 @@ abstract class PhenyxController {
         $html = $this->renderForm();
 
         $li = '<li id="uperAdd' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentAdd' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeAddFormObject(\'' . $this->controller_name . '\')" class="close tabdetail" data-id="uperAdd' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
-        $html = '<div id="contentAdd' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element wpb_animate_when_almost_visible wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display; flow-root;">' . $scripHeader . $html . $scriptFooter . '</div>';
+        $html = '<div id="contentAdd' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display; flow-root;">' . $scripHeader . $html . $scriptFooter . '</div>';
 
         $result = [
             'li'   => $li,
