@@ -698,25 +698,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         }
 
         Hook::exec('actionObjectAddAfter', ['object' => $this]);
-        $addAfters = Hook::exec('actionObject' . get_class($this) . 'AddAfter', ['object' => $this]);
-        if (is_array($addAfters)) {
-
-            foreach ($addAfters as $plugin => $defs) {
-
-                if (is_array($defs)) {
-
-                    foreach ($defs as $key => $value) {
-                        if (property_exists($this, $key)) {
-                            $this->{$key} = $value;
-                        }
-                    }
-
-                }
-
-            }
-
-        }
-
+        Hook::exec('actionObject' . get_class($this) . 'AddAfter', ['object' => $this]);
+        
         return $result;
     }
 
@@ -795,7 +778,19 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     public function update($nullValues = false) {
 
         Hook::exec('actionObjectUpdateBefore', ['object' => $this]);
-        Hook::exec('actionObject' . get_class($this) . 'UpdateBefore', ['object' => $this]);
+        $updateBefores = Hook::exec('actionObject' . get_class($this) . 'UpdateBefore', ['object' => $this], null, true);
+        if (is_array($updateBefores)) {
+            foreach ($updateBefores as $plugin => $defs) {
+                if (is_array($defs)) {
+                    foreach ($defs as $key => $value) {
+                        if (property_exists($this, $key)) {
+                            $this->{$key} = $value;
+                        }
+                    }
+                }
+            }
+        }
+
 
         $this->clearCache();
 
@@ -858,6 +853,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         Hook::exec('actionObjectUpdateAfter', ['object' => $this]);
         Hook::exec('actionObject' . get_class($this) . 'UpdateAfter', ['object' => $this]);
+        
 
         return $result;
     }
