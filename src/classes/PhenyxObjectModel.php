@@ -631,7 +631,24 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         }
 
         Hook::exec('actionObjectAddBefore', ['object' => $this]);
-        Hook::exec('actionObject' . get_class($this) . 'AddBefore', ['object' => $this]);
+        $addBefores = Hook::exec('actionObject' . get_class($this) . 'AddBefore', ['object' => $this], null, true);
+        if (is_array($addBefores)) {
+
+            foreach ($addBefores as $plugin => $defs) {
+
+                if (is_array($defs)) {
+
+                    foreach ($defs as $key => $value) {
+                        if (property_exists($this, $key)) {
+                            $this->{$key} = $value;
+                        }
+                    }
+
+                }
+
+            }
+
+        }
 
         if ($autoDate && property_exists($this, 'date_add')) {
             $this->date_add = date('Y-m-d H:i:s');
