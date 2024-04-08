@@ -698,7 +698,24 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         }
 
         Hook::exec('actionObjectAddAfter', ['object' => $this]);
-        Hook::exec('actionObject' . get_class($this) . 'AddAfter', ['object' => $this]);
+        $addAfters = Hook::exec('actionObject' . get_class($this) . 'AddAfter', ['object' => $this]);
+        if (is_array($addAfters)) {
+
+            foreach ($addAfters as $plugin => $defs) {
+
+                if (is_array($defs)) {
+
+                    foreach ($defs as $key => $value) {
+                        if (property_exists($this, $key)) {
+                            $this->{$key} = $value;
+                        }
+                    }
+
+                }
+
+            }
+
+        }
 
         return $result;
     }
