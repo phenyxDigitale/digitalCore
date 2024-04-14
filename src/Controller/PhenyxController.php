@@ -1007,14 +1007,13 @@ abstract class PhenyxController {
 
     public function removeCSS($cssUri, $cssMediaType = 'all', $checkPath = true) {
 
+        
         if (!is_array($cssUri)) {
             $cssUri = [$cssUri];
         }
-
+        
         foreach ($cssUri as $cssFile => $media) {
-
             if (is_string($cssFile) && strlen($cssFile) > 1) {
-
                 if ($checkPath) {
                     $cssPath = Media::getCSSPath($cssFile, $media);
                 } else {
@@ -1022,17 +1021,22 @@ abstract class PhenyxController {
                 }
 
             } else {
-
                 if ($checkPath) {
-                    $cssPath = Media::getCSSPath($media, $cssMediaType);
+                    if(file_exists($media)) {
+                        $cssPath = '/' . ltrim(str_replace(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, _EPH_ROOT_DIR_), __EPH_BASE_URI__, $media), '/\\');                                        
+                    } else {
+                        $cssPath = Media::getCSSPath($media, $cssMediaType);
+                    }
+                    
                 } else {
                     $cssPath = [$media => $cssMediaType];
                 }
 
             }
-
-            if ($cssPath && isset($this->css_files[key($cssPath)]) && ($this->css_files[key($cssPath)] == reset($cssPath))) {
-                unset($this->css_files[key($cssPath)]);
+            
+            
+            if ($cssPath && isset($this->css_files[$cssPath])) {
+                unset($this->css_files[$cssPath]);
             }
 
         }
