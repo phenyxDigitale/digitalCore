@@ -52,7 +52,7 @@ class Adapter_EducationPriceCalculator {
         $useCustomerPrice = true
     ) {
 
-        return Product::getEducationPriceStatic(
+        return Education::getEducationPriceStatic(
             $idProduct,
             $usetax,
             $idProductAttribute,
