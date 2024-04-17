@@ -5436,6 +5436,11 @@ FileETag none
         
         return str_contains($string, $search);
     }
+    
+    public static function build_date($args) {
+        
+        return date($args);
+    }
 
 }
 
