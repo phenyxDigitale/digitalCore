@@ -70,7 +70,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
     public $deft_purchase = null;
 
-    public $deft_purchase_account;
+    public $deft_purchase_account;   
 
     protected $context;
 
@@ -173,6 +173,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     public $className;
 
     public $extraVars;
+    
+    public $excludes = [];
 
     public function getExtraVars($className) {
 
@@ -226,6 +228,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     }
 
     public function __construct($id = null, $idLang = null) {
+        
+        $this->excludes = ['is_archivable', 'use_session', 'use_education_device', 'use_sale_agent', 'use_education_platform', 'use_education_step', 'ephenyx_shop_active', 'ephenyx_education_active', 'deft_vat_collected', 'deft_vat_collected_account', 'deft_vat_deduct', 'deft_vat_deduct_account', 'deft_profit', 'deft_profit_account', 'deft_purchase', 'deft_purchase_account','table', 'context', 'identifier', 'fieldsRequired', 'fieldsSize', 'fieldsValidate', 'fieldsRequiredLang', 'fieldsSizeLang', 'fieldsValidateLang', 'image_dir', 'image_format', 'update_fields', 'request_admin', 'excludes', 'extraVars', 'force_id','def', 'paramFields', '_languages', 'webserviceParameters'];
 
         $this->className = get_class($this);
         $this->getExtraVars($this->className);
@@ -343,6 +347,18 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $this->deft_purchase = Configuration::get('EPH_PURCHASE_DEFAULT_ACCOUNT') ? Configuration::get('EPH_PURCHASE_DEFAULT_ACCOUNT') : 582;
 
+    }
+    
+    public function constructLight() {
+       
+        $return = [];
+        foreach($this as $field => $value) {
+            if (!in_array($field, $this->excludes)) {
+                $return[$field] = $value;
+            }                
+        }
+        return Tools::jsonDecode(Tools::jsonEncode($return));
+        
     }
 
     public function &__get($property) {
@@ -1805,6 +1821,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         return $success;
     }
+
 
     public static function getDatabaseColumns($className = null) {
 
