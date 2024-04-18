@@ -227,9 +227,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         ];
     }
 
-    public function __construct($id = null, $idLang = null) {
-        
-        $this->excludes = ['is_archivable', 'use_session', 'use_education_device', 'use_sale_agent', 'use_education_platform', 'use_education_step', 'ephenyx_shop_active', 'ephenyx_education_active', 'deft_vat_collected', 'deft_vat_collected_account', 'deft_vat_deduct', 'deft_vat_deduct_account', 'deft_profit', 'deft_profit_account', 'deft_purchase', 'deft_purchase_account', 'table', 'tables', 'identifier', 'fieldsRequired', 'fieldsSize', 'fieldsValidate', 'fieldsRequiredLang', 'fieldsSizeLang', 'fieldsValidateLang', 'image_dir', 'image_format', 'update_fields', 'request_admin', 'extraVars', 'force_id','def', 'paramFields', '_languages', 'webserviceParameters'];
+    public function __construct($id = null, $idLang = null) {       
 
         $this->className = get_class($this);
         $this->getExtraVars($this->className);
@@ -346,18 +344,20 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         $this->deft_profit = Configuration::get('EPH_PROFIT_DEFAULT_ACCOUNT') ? Configuration::get('EPH_PROFIT_DEFAULT_ACCOUNT') : 817;
 
         $this->deft_purchase = Configuration::get('EPH_PURCHASE_DEFAULT_ACCOUNT') ? Configuration::get('EPH_PURCHASE_DEFAULT_ACCOUNT') : 582;
+        
+        $this->excludes = ['is_archivable', 'use_session', 'use_education_device', 'use_sale_agent', 'use_education_platform', 'use_education_step', 'ephenyx_shop_active', 'ephenyx_education_active', 'deft_vat_collected', 'deft_vat_collected_account', 'deft_vat_deduct', 'deft_vat_deduct_account', 'deft_profit', 'deft_profit_account', 'deft_purchase', 'deft_purchase_account', 'table', 'tables', 'identifier', 'fieldsRequired', 'fieldsSize', 'fieldsValidate', 'fieldsRequiredLang', 'fieldsSizeLang', 'fieldsValidateLang', 'image_dir', 'image_format', 'update_fields', 'request_admin', 'extraVars', 'force_id','def', 'paramFields', '_languages', 'webserviceParameters'];
 
     }
     
     public function constructLight() {
-       
-        $return = [];
+              
         foreach($this as $field => $value) {
-            if (!in_array($field, $this->excludes)) {
-                $return[$field] = $value;
+            if (in_array($field, $this->excludes)) {
+                unset($this->$field);
             }                
         }
-        return Tools::jsonDecode(Tools::jsonEncode($return));
+        unset($this->excludes);
+        return Tools::jsonDecode(Tools::jsonEncode($this));
         
     }
 
@@ -1280,6 +1280,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
                         if ($value = Tools::getValue($field)) {
                             $this->{$field}
+
 
                             = Tools::hash($value);
                         }
