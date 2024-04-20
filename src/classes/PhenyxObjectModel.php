@@ -227,7 +227,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         ];
     }
 
-    public function __construct($id = null, $idLang = null) {       
+    public function __construct($id = null, $idLang = null, $light = false) {       
 
         $this->className = get_class($this);
         $this->getExtraVars($this->className);
@@ -346,12 +346,17 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         $this->deft_purchase = Configuration::get('EPH_PURCHASE_DEFAULT_ACCOUNT') ? Configuration::get('EPH_PURCHASE_DEFAULT_ACCOUNT') : 582;
         
         $this->excludes = ['is_archivable', 'use_session', 'use_education_device', 'use_sale_agent', 'use_education_platform', 'use_education_step', 'ephenyx_shop_active', 'ephenyx_education_active', 'deft_vat_collected', 'deft_vat_collected_account', 'deft_vat_deduct', 'deft_vat_deduct_account', 'deft_profit', 'deft_profit_account', 'deft_purchase', 'deft_purchase_account', 'table', 'tables', 'identifier', 'fieldsRequired', 'fieldsSize', 'fieldsValidate', 'fieldsRequiredLang', 'fieldsSizeLang', 'fieldsValidateLang', 'image_dir', 'image_format', 'update_fields', 'request_admin', 'extraVars', 'force_id','def', 'paramFields', '_languages', 'webserviceParameters'];
+        
+        if($light) {
+            $this->constructLight();
+        }
 
     }
     
     public function constructLight() {
-              
-        foreach($this as $field => $value) {
+       
+        $return = [];
+        foreach(Tools::jsonDecode(Tools::jsonEncode($this)) as $field => $value) {
             if (in_array($field, $this->excludes)) {
                 unset($this->$field);
             }                
@@ -1280,7 +1285,6 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
                         if ($value = Tools::getValue($field)) {
                             $this->{$field}
-
 
                             = Tools::hash($value);
                         }
