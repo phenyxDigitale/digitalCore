@@ -345,7 +345,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $this->deft_purchase = Configuration::get('EPH_PURCHASE_DEFAULT_ACCOUNT') ? Configuration::get('EPH_PURCHASE_DEFAULT_ACCOUNT') : 582;
         
-        $this->excludes = ['is_archivable', 'use_session', 'use_education_device', 'use_sale_agent', 'use_education_platform', 'use_education_step', 'ephenyx_shop_active', 'ephenyx_education_active', 'deft_vat_collected', 'deft_vat_collected_account', 'deft_vat_deduct', 'deft_vat_deduct_account', 'deft_profit', 'deft_profit_account', 'deft_purchase', 'deft_purchase_account', 'table', 'tables', 'identifier', 'fieldsRequired', 'fieldsSize', 'fieldsValidate', 'fieldsRequiredLang', 'fieldsSizeLang', 'fieldsValidateLang', 'image_dir', 'image_format', 'update_fields', 'request_admin', 'extraVars', 'force_id','def', 'paramFields', '_languages', 'webserviceParameters'];
+        $this->excludes = ['is_archivable', 'use_session', 'use_education_device', 'use_sale_agent', 'use_education_platform', 'use_education_step', 'ephenyx_shop_active', 'ephenyx_education_active', 'deft_vat_collected', 'deft_vat_collected_account', 'deft_vat_deduct', 'deft_vat_deduct_account', 'deft_profit', 'deft_profit_account', 'deft_purchase', 'deft_purchase_account', 'tables', 'identifier', 'fieldsRequired', 'fieldsSize', 'fieldsValidate', 'fieldsRequiredLang', 'fieldsSizeLang', 'fieldsValidateLang', 'image_dir', 'image_format', 'update_fields', 'request_admin', 'extraVars', 'force_id','def', 'paramFields', '_languages', 'webserviceParameters'];
         
         if($light) {
             $this->constructLight();
