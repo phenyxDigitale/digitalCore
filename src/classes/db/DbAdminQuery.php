@@ -30,14 +30,6 @@ class DbAdminQuery {
 
 	}
 
-    /**
-     * List of data to build the query
-     *
-     * @var array
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
     protected $query = [
         'type'   => 'SELECT',
         'select' => [],
@@ -47,6 +39,7 @@ class DbAdminQuery {
         'values' => [],
         'from'   => [],
         'join'   => [],
+        'extraJoin'   => [],
         'where'  => [],
         'group'  => [],
         'having' => [],
@@ -55,16 +48,6 @@ class DbAdminQuery {
         'args'   => [],
     ];
 
-    /**
-     * Sets type of the query
-     *
-     * @param string $type SELECT|DELETE
-     *
-     * @return DbQuery
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
     public function type($type) {
 
         $types = ['SELECT', 'DELETE', 'UPDATE', 'INSERT'];
@@ -76,16 +59,6 @@ class DbAdminQuery {
         return $this;
     }
 
-    /**
-     * Adds fields to SELECT clause
-     *
-     * @param string $fields List of fields to concat to other fields
-     *
-     * @return DbQuery
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
     public function select($fields) {       
         
         if (!empty($fields)) {
@@ -140,17 +113,6 @@ class DbAdminQuery {
         return $this;
     }
 
-    /**
-     * Sets table for FROM clause
-     *
-     * @param string      $table Table name
-     * @param string|null $alias Table alias
-     *
-     * @return DbQuery
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
     public function from($table, $alias = null, $table2 = null, $alias2 = null) {
 
         if (!empty($table)) {
@@ -187,17 +149,6 @@ class DbAdminQuery {
         return $this;
     }
 
-    /**
-     * Adds JOIN clause
-     * E.g. $this->join('RIGHT JOIN '._DB_PREFIX_.'product p ON ...');
-     *
-     * @param string $join Complete string
-     *
-     * @return DbQuery
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
     public function join($join) {
 
         if (!empty($join)) {
@@ -206,19 +157,16 @@ class DbAdminQuery {
 
         return $this;
     }
+    
+    public function extraJoin($join) {
 
-    /**
-     * Adds a LEFT JOIN clause
-     *
-     * @param string      $table Table name (without prefix)
-     * @param string|null $alias Table alias
-     * @param string|null $on    ON clause
-     *
-     * @return DbQuery
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
+        if (!empty($join)) {
+            $this->query['extraJoin'][] = $join;
+        }
+
+        return $this;
+    }
+
     public function leftJoin($table, $alias = null, $on = null) {
         
         
@@ -234,37 +182,10 @@ class DbAdminQuery {
         if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
             $table = _DB_PREFIX_ . $table;
         }
-        if (count($this->extraJoins)) {
 
-            foreach ($this->extraJoins as $plugin => $join) {
-                if (is_array($join)) {
-                    foreach ($join as  $items) {
-                        $this->query['join'][] = $this->join('LEFT JOIN `' . bqSQL($items) . '`' . ($alias ? ' `' . pSQL($alias) . '`' : '') . ($on ? ' ON ' . $on : ''));
-                    }
-                }
-
-            }
-
-        }
-
-       
-
-        return $this->join('LEFT JOIN `' . bqSQL($table) . '`' . ($alias ? ' `' . pSQL($alias) . '`' : '') . ($on ? ' ON ' . $on : ''));
+        return $this->extraJoin('LEFT JOIN `' . bqSQL($table) . '`' . ($alias ? ' `' . pSQL($alias) . '`' : '') . ($on ? ' ON ' . $on : ''));
     }
 
-    /**
-     * Adds an INNER JOIN clause
-     * E.g. $this->innerJoin('product p ON ...')
-     *
-     * @param string      $table Table name (without prefix)
-     * @param string|null $alias Table alias
-     * @param string|null $on    ON clause
-     *
-     * @return DbQuery
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
     public function innerJoin($table, $alias = null, $on = null) {
 
         if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
@@ -274,18 +195,6 @@ class DbAdminQuery {
         return $this->join('INNER JOIN `' . bqSQL($table) . '`' . ($alias ? ' ' . pSQL($alias) : '') . ($on ? ' ON ' . $on : ''));
     }
 
-    /**
-     * Adds a LEFT OUTER JOIN clause
-     *
-     * @param string      $table Table name (without prefix)
-     * @param string|null $alias Table alias
-     * @param string|null $on    ON clause
-     *
-     * @return DbQuery
-     *
-     *@since 1.0.0
-     * @version 1.8.1.0 Initial version
-     */
     public function leftOuterJoin($table, $alias = null, $on = null) {
 
         if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
@@ -295,17 +204,6 @@ class DbAdminQuery {
         return $this->join('LEFT OUTER JOIN `' . bqSQL($table) . '`' . ($alias ? ' ' . pSQL($alias) : '') . ($on ? ' ON ' . $on : ''));
     }
 
-    /**
-     * Adds a NATURAL JOIN clause
-     *
-     * @param string      $table Table name (without prefix)
-     * @param string|null $alias Table alias
-     *
-     * @return DbQuery
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
     public function naturalJoin($table, $alias = null) {
 
         if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
@@ -315,18 +213,6 @@ class DbAdminQuery {
         return $this->join('NATURAL JOIN `' . bqSQL($table) . '`' . ($alias ? ' ' . pSQL($alias) : ''));
     }
 
-    /**
-     * Adds a RIGHT JOIN clause
-     *
-     * @param string      $table Table name (without prefix)
-     * @param string|null $alias Table alias
-     * @param string|null $on    ON clause
-     *
-     * @return DbQuery
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
     public function rightJoin($table, $alias = null, $on = null) {
 
         if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
@@ -354,16 +240,6 @@ class DbAdminQuery {
         return $this;
     }
 
-    /**
-     * Adds a restriction in WHERE clause (each restriction will be separated by AND statement)
-     *
-     * @param string $restriction
-     *
-     * @return DbQuery
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
     public function where($restriction) {
 
         if (!empty($restriction)) {
@@ -373,16 +249,6 @@ class DbAdminQuery {
         return $this;
     }
 
-    /**
-     * Adds a restriction in HAVING clause (each restriction will be separated by AND statement)
-     *
-     * @param string $restriction
-     *
-     * @return DbQuery
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
     public function having($restriction) {
 
         if (!empty($restriction)) {
@@ -392,16 +258,6 @@ class DbAdminQuery {
         return $this;
     }
 
-    /**
-     * Adds an ORDER BY restriction
-     *
-     * @param string $fields List of fields to sort. E.g. $this->order('myField, b.mySecondField DESC')
-     *
-     * @return DbQuery
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
     public function orderBy($fields) {
 
         if (!empty($fields)) {
@@ -411,16 +267,6 @@ class DbAdminQuery {
         return $this;
     }
 
-    /**
-     * Adds a GROUP BY restriction
-     *
-     * @param string $fields List of fields to group. E.g. $this->group('myField1, myField2')
-     *
-     * @return DbQuery
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
     public function groupBy($fields) {
 
         if (!empty($fields)) {
@@ -430,17 +276,6 @@ class DbAdminQuery {
         return $this;
     }
 
-    /**
-     * Sets query offset and limit
-     *
-     * @param int $limit
-     * @param int $offset
-     *
-     * @return DbQuery
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
     public function limit($limit, $offset = 0) {
 
         $offset = (int) $offset;
@@ -457,15 +292,6 @@ class DbAdminQuery {
         return $this;
     }
 
-    /**
-     * Generates query and return SQL string
-     *
-     * @return string
-     * @throws PhenyxException
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
     public function build() {
 
         if ($this->query['type'] == 'SELECT') {
@@ -496,6 +322,9 @@ class DbAdminQuery {
         if ($this->query['join']) {
             $sql .= implode("\n", $this->query['join']) . "\n";
         }
+        if ($this->query['extraJoin']) {
+            $sql .= implode("\n", $this->query['extraJoin']) . "\n";
+        }
 
         if ($this->query['where']) {
             $sql .= 'WHERE (' . implode(') AND (', $this->query['where']) . ")\n";
@@ -525,14 +354,6 @@ class DbAdminQuery {
         return $sql;
     }
 
-    /**
-     * Converts object to string
-     *
-     * @return string
-     *
-     * @since 1.9.1.0
-     * @version 1.8.1.0 Initial version
-     */
     public function __toString() {
 
         return $this->build();
