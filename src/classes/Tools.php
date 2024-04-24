@@ -5441,6 +5441,13 @@ FileETag none
         
         return date($args);
     }
+    
+    public static function smartyCount($array) {
+        if(is_array($array)) {
+            return count($array);
+        }
+        return null;
+    }
 
 }
 
