@@ -100,395 +100,318 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
 		$param_line = '';
 
 		$vc_manager = ephenyx_manager();
+        
+        switch($param['type']) {
+            case 'textfield':
+                $value = $param_value;
 
-		if ($param['type'] == 'textfield') {
-			$value = $param_value;
+			     $param_line .= '<input name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-textinput ' . $param['param_name'] . ' ' . $param['type'] . '" type="text" value="' . $value . '"/>';
+                break;
+            case 'dropdown':
+                $selectId = $this->generateRandomString();
+                $css_option = get_dropdown_option($param, $param_value);
+                $param_line .= '<select id="'.$selectId.'" name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-input wpb-select ' . $param['param_name'] . ' ' . $param['type'] . ' ' . $css_option . '" data-option="' . $css_option . '">';
 
-			$param_line .= '<input name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-textinput ' . $param['param_name'] . ' ' . $param['type'] . '" type="text" value="' . $value . '"/>';
-		}
-
-		// Dropdown - select
-		else
-
-		if ($param['type'] == 'dropdown') {
-            $selectId = $this->generateRandomString();
-			$css_option = get_dropdown_option($param, $param_value);
-			$param_line .= '<select id="'.$selectId.'" name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-input wpb-select ' . $param['param_name'] . ' ' . $param['type'] . ' ' . $css_option . '" data-option="' . $css_option . '">';
-
-			if (isset($param['value'])) {
-
-				foreach ($param['value'] as $text_val => $val) {
-
-					if (is_numeric($text_val) && (is_string($val) || is_numeric($val))) {
-						$text_val = $val;
-					}
-
-					$selected = '';
-
-					if ($param_value !== '' && (string) $val === (string) $param_value) {
-						$selected = ' selected="selected"';
-					}
-
-					$param_line .= '<option class="' . $val . '" value="' . $val . '"' . $selected . '>' . htmlspecialchars($text_val) . '</option>';
-				}
-
-			}
-
-			$param_line .= '</select>';
-            $param_line .= '<script type="text/javascript">
-		      $("#'.$selectId.'").selectmenu({
-				width: 645,
-                icons: { button: "fa-duotone fa-bars" },
-                classes: {
-                    "ui-selectmenu-menu": "selectComposer"
-                }
-          });
-        </script>';
-		} else
-		if ($param['type'] == 'animation') {
-            $selectId = $this->generateRandomString();
-            $param_line .= '<link rel="stylesheet" href="/content/backoffice/composer/animate.min.css" type="text/css" media="all" />';
-			$param_line .= '<div class="vc_row">';
-            
-           
-			$styles = $this->animationStyles();            
-            if(is_array($param_value)) {
-                
-                $param_value = 'none';
-            } 
-            
-			if (isset($this->settings['settings']['type'])) {
-				$styles = $this->groupStyleByType($styles, $this->settings['settings']['type']);
-			}
-
-			if (isset($this->settings['settings']['custom']) && is_array($this->settings['settings']['custom'])) {
-				$styles = array_merge($styles, $this->settings['settings']['custom']);
-			}
-            
-			if (is_array($styles) && !empty($styles)) {
-				$left_side = '<div class="vc_col-sm-6">';
-                $param_line .= '<input type="hidden" class="wpb_vc_param_value animation-style" data-id="'.$selectId.'" name="' . $param['param_name'] . '" value="'.$param_value.'">';
-				$build_style_select = '<select id="'.$selectId.'" name="' . $param['param_name'] . '" class="vc_param-animation-style">';
-
-				foreach ($styles as $style) {
-					$build_style_select .= '<optgroup ' . (isset($style['label']) ? 'label="' . htmlspecialchars($style['label']) . '"' : '') . '>';
-
-					if (is_array($style['values']) && !empty($style['values'])) {
-
-						foreach ($style['values'] as $key => $value) {
-                            $selected = '';                             
-                            if(isset($param_value))  {
-                               
-                                $val = (is_array($value) ? $value['value'] : $value);
-                                if (is_string($val) && is_string($param_value) && $val === $param_value) {
-						              $selected = ' selected="selected"';
-					           }
-                            }  
-							$build_style_select .= '<option value="' . (is_array($value) ? $value['value'] : $value) . '" ' . $selected . '>' . $key . '</option>';
-						}
-
-					}
-
-					$build_style_select .= '</optgroup>';
-				}
-
-				$build_style_select .= '</select>';
-				$left_side .= $build_style_select;
-				$left_side .= '</div>';
-				$param_line .= $left_side;
-
-				$right_side = '<div class="vc_col-sm-6">';
-				$right_side .= '<div class="vc_param-animation-style-preview"><button class="vc_btn vc_btn-grey vc_btn-sm vc_param-animation-style-trigger">' . $vc_manager->l('Animate it') . '</button></div>';
-				$right_side .= '</div>';
-				$param_line .= $right_side;
-			}
-
-			$param_line .= '</div>'; // Close Row
-			$param_line .= sprintf('<input name="%s" class="wpb_vc_param_value  %s %s_field" type="hidden" value="%s"  />', htmlspecialchars($param['param_name']), htmlspecialchars($param['param_name']), htmlspecialchars($param['type']), $param_value);
-            $param_line .= '<script type="text/javascript">
-		      $("#'.$selectId.'").selectmenu({
-				width: 300,
-                classes: {
-                    "ui-selectmenu-menu": "selectComposer"
-                },
-                change: function( event, ui ) {
-                    $(".wpb_vc_param_value.animation-style").val(ui.item.value);
-                    var animation = ui.item.value;
-                    if("none" !== animation) {
-                        animation_style_test($(".vc_param-animation-style-preview"), "vc_param-animation-style-preview " + animation)
+                if (isset($param['value'])) {
+                    foreach ($param['value'] as $text_val => $val) {
+                        if (is_numeric($text_val) && (is_string($val) || is_numeric($val))) {
+						  $text_val = $val;
+					   }
+					   $selected = '';
+					   if ($param_value !== '' && (string) $val === (string) $param_value) {
+                           $selected = ' selected="selected"';
+                       }
+                        $param_line .= '<option class="' . $val . '" value="' . $val . '"' . $selected . '>' . htmlspecialchars($text_val) . '</option>';
                     }
-                    
                 }
-          });
-          function animation_style_test(el, x) {
-                    $(el).removeClass().addClass(x + " animated").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend", function() {
-                        $(this).removeClass().addClass("vc_param-animation-style-preview")
-                    })
+
+                $param_line .= '</select>';
+                $param_line .= '<script type="text/javascript">
+                    $("#'.$selectId.'").selectmenu({
+                        width: 645,
+                        icons: { button: "fa-duotone fa-bars" },
+                        classes: {
+                            "ui-selectmenu-menu": "selectComposer"
+                        }
+                    });
+                </script>';
+                break;
+            case 'animation':
+                $selectId = $this->generateRandomString();
+                $param_line .= '<link rel="stylesheet" href="/content/backoffice/composer/animate.min.css" type="text/css" media="all" />';
+                $param_line .= '<div class="vc_row">';
+            	$styles = $this->animationStyles();            
+                if(is_array($param_value)) {
+                    $param_value = 'none';
+                } 
+            	if (isset($this->settings['settings']['type'])) {
+				    $styles = $this->groupStyleByType($styles, $this->settings['settings']['type']);
                 }
-        </script>';
+                if (isset($this->settings['settings']['custom']) && is_array($this->settings['settings']['custom'])) {
+				    $styles = array_merge($styles, $this->settings['settings']['custom']);
+                }
             
-		}
+                if (is_array($styles) && !empty($styles)) {
+				    $left_side = '<div class="vc_col-sm-6">';
+                    $param_line .= '<input type="hidden" class="wpb_vc_param_value animation-style" data-id="'.$selectId.'" name="' . $param['param_name'] . '" value="'.$param_value.'">';
+				    $build_style_select = '<select id="'.$selectId.'" name="' . $param['param_name'] . '" class="vc_param-animation-style">';
 
-		// WYSIWYG field
-		else
+				    foreach ($styles as $style) {
+					   $build_style_select .= '<optgroup ' . (isset($style['label']) ? 'label="' . htmlspecialchars($style['label']) . '"' : '') . '>';
 
-		if ($param['type'] == 'textarea_html') {
+					   if (is_array($style['values']) && !empty($style['values'])) {
 
-			if ($this->html_editor_already_is_used !== false) {
+                           foreach ($style['values'] as $key => $value) {
+                               $selected = '';                             
+                               if(isset($param_value))  {
+                                   $val = (is_array($value) ? $value['value'] : $value);
+                                    if (is_string($val) && is_string($param_value) && $val === $param_value) {
+                                        $selected = ' selected="selected"';
+                                    }
+                               }  
+                               $build_style_select .= '<option value="' . (is_array($value) ? $value['value'] : $value) . '" ' . $selected . '>' . $key . '</option>';
+                           }
+                       }
+                       $build_style_select .= '</optgroup>';
+                    }
+                    $build_style_select .= '</select>';
+				    $left_side .= $build_style_select;
+				    $left_side .= '</div>';
+				    $param_line .= $left_side;
 
-				$param_line .= '<div id="wp-wpb_tinymce_content-wrap" class="wp-core-ui wp-editor-wrap html-active">';
-				$param_line .= '<div id="wp-wpb_tinymce_content-editor-container" class="wp-editor-container">';
+				    $right_side = '<div class="vc_col-sm-6">';
+				    $right_side .= '<div class="vc_param-animation-style-preview"><button class="vc_btn vc_btn-grey vc_btn-sm vc_param-animation-style-trigger">' . $vc_manager->l('Animate it') . '</button></div>';
+				    $right_side .= '</div>';
+				    $param_line .= $right_side; 
+                }
 
-				$param_line .= '<textarea id="wpb_tinymce_content" name="wpb_tinymce_content" class="wpb-textarea visual_composer_tinymce content textarea_html wp-editor-area rte autoload_rte">' . $param_value . '</textarea>';
+                $param_line .= '</div>'; // Close Row
+                $param_line .= sprintf('<input name="%s" class="wpb_vc_param_value  %s %s_field" type="hidden" value="%s"  />', htmlspecialchars($param['param_name']), htmlspecialchars($param['param_name']), htmlspecialchars($param['type']), $param_value);
+                $param_line .= '<script type="text/javascript">
+                    $("#'.$selectId.'").selectmenu({
+                        width: 300,
+                        classes: {
+                            "ui-selectmenu-menu": "selectComposer"
+                        },
+                        change: function( event, ui ) {
+                            $(".wpb_vc_param_value.animation-style").val(ui.item.value);
+                            var animation = ui.item.value;
+                            if("none" !== animation) {
+                                animation_style_test($(".vc_param-animation-style-preview"), "vc_param-animation-style-preview " + animation)
+                            }
+                        }
+                    });
+                    function animation_style_test(el, x) {
+                        $(el).removeClass().addClass(x + " animated").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend", function() {
+                            $(this).removeClass().addClass("vc_param-animation-style-preview")
+                        })
+                    }
+                </script>';
+                break;
+            case 'textarea_html':
+                if ($this->html_editor_already_is_used !== false) {
+				    $param_line .= '<div id="wp-wpb_tinymce_content-wrap" class="wp-core-ui wp-editor-wrap html-active">';
+				    $param_line .= '<div id="wp-wpb_tinymce_content-editor-container" class="wp-editor-container">';
+				    $param_line .= '<textarea id="wpb_tinymce_content" name="wpb_tinymce_content" class="wpb-textarea visual_composer_tinymce content textarea_html wp-editor-area rte autoload_rte">' . $param_value . '</textarea>';
 
-				ob_start();
-				?>
-                     <script type="text/javascript">
+				    ob_start();
+				    ?>
+                    <script type="text/javascript">
                          $(function(){
                              var tempClass = 'visual_composer_tinymce' + Math.floor(Math.random() * 99999999).toString().padStart(8, '0');
                              $(' .visual_composer_tinymce').addClass(tempClass);
                              loadTiny(tempClass);
                           });
                     </script>
-               <?php
-$param_line .= ob_get_clean();
-
-				$param_line .= '</div>';
-				$param_line .= '</div>';
-			} else {
-				$this->html_editor_already_is_used = $param['param_name'];
-				$param_line .= do_shortcode_param_settings_field('textarea_html', $param, $param_value);
-			}
-
-		}
-
-		// Checkboxes with post types
-		else
-
-		if ($param['type'] == 'checkbox') {
-			$current_value = explode(",", $param_value);
-			$values = is_array($param['value']) ? $param['value'] : [];
-
-			foreach ($values as $label => $v) {
-				$checked = in_array($v, $current_value) ? ' checked="checked"' : '';
-				$param_line .= ' <input id="' . $param['param_name'] . '-' . $v . '" value="' . $v . '" class="wpb_vc_param_value ' . $param['param_name'] . ' ' . $param['type'] . '" type="checkbox" name="' . $param['param_name'] . '"' . $checked . '> ' . $label;
-			}
-
-		} else
-
-		if ($param['type'] == 'posttypes') {
-			$args = [
-				'public' => true,
-			];
-			$post_types = get_post_types($args);
-
-			foreach ($post_types as $post_type) {
-				$checked = "";
-
-				if ($post_type != 'attachment') {
-
-					if (in_array($post_type, explode(",", $param_value))) {
-						$checked = ' checked="checked"';
-					}
-
-					$param_line .= ' <input id="' . $param['param_name'] . '-' . $post_type . '" value="' . $post_type . '" class="wpb_vc_param_value ' . $param['param_name'] . ' ' . $param['type'] . '" type="checkbox" name="' . $param['param_name'] . '"' . $checked . '> ' . $post_type;
-				}
-
-			}
-
-		} else
-
-		if ($param['type'] == 'taxonomies' || $param['type'] == 'taxomonies') {
-			$post_types = get_post_types(['public' => false, 'name' => 'attachment'], 'names', 'NOT');
-
-			foreach ($post_types as $type) {
-				$taxonomies = get_object_taxonomies($type, '');
-
-				foreach ($taxonomies as $tax) {
-					$checked = "";
-
-					if (in_array($tax->name, explode(",", $param_value))) {
-						$checked = ' checked="checked"';
-					}
-
-					$param_line .= ' <label data-post-type="' . $type . '"><input id="' . $param['param_name'] . '-' . $tax->name . '" value="' . $tax->name . '" data-post-type="' . $type . '" class="wpb_vc_param_value ' . $param['param_name'] . ' ' . $param['type'] . '" type="checkbox" name="' . $param['param_name'] . '"' . $checked . '> ' . $tax->label . '</label>';
-				}
-
-			}
-
-		}
-
-		// Exploded textarea
-		else
-
-		if ($param['type'] == 'exploded_textarea') {
-			$param_value = str_replace(",", "\n", $param_value);
-			$param_line .= '<textarea name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-textarea ' . $param['param_name'] . ' ' . $param['type'] . '">' . $param_value . '</textarea>';
-		}
-
-		// Big Regular textarea
-		else
-
-		if ($param['type'] == 'textarea_raw_html') {
-			// $param_value = $param_value;
-			$param_line .= '<textarea name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-textarea_raw_html ' . $param['param_name'] . ' ' . $param['type'] . '" rows="16">' . htmlentities(rawurldecode(base64_decode($param_value)), ENT_COMPAT, 'UTF-8') . '</textarea>';
-		}
-        else
-
-		if ($param['type'] == 'textarea_raw_code') {
-           
-            $param_line .= '<input type="hidden" id="ace_textarea_raw_code" class="wpb_vc_param_value wpb-textarea_code_html ' . $param['param_name'] . ' ' . $param['type'] . '"  name="' . $param['param_name'] . '" value="' . $param_value . '">';
-			$param_line .= '<div class="ace-editor" id="ace_' . $param['param_name'] . '">' . $param_value . '</div>';
-            $param_line .= '<script type="text/javascript">
-		      $(document).ready(function(){
-                initComposerAce("ace_' . $param['param_name'] . '", false, true);
-				
-	           });
-            </script>';
-		}
-
-
-		// Big Regular textarea
-		else
-
-		if ($param['type'] == 'textarea_safe') {
-			// $param_value = $param_value;
-			$param_line .= '<textarea name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-textarea_raw_html ' . $param['param_name'] . ' ' . $param['type'] . '">' . value_from_safe($param_value, true) . '</textarea>';
-		}
-
-		// Regular textarea
-		else
-
-		if ($param['type'] == 'textarea') {
-			$param_value = $param_value;
-			$param_line .= '<textarea name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-textarea ' . $param['param_name'] . ' ' . $param['type'] . '">' . $param_value . '</textarea>';
-		}
-
-		// Attach images
-		else
-
-		if ($param['type'] == 'attach_images') {
-
-			$param_value = removeNotExistingImgIDs($param_value);
-			$param_line .= '<script type="text/javascript">';
-			$param_line .= 'var imgpath = "composer/";';
-			$param_line .= '</script>';
-			$param_line .= '<input type="hidden" class="wpb_vc_param_value gallery_widget_attached_images_ids ' . $param['param_name'] . ' ' . $param['type'] . '" name="' . $param['param_name'] . '" value="' . $param_value . '"/>';
-			$param_line .= '<div class="gallery_widget_attached_images">';
-			$param_line .= '<ul class="gallery_widget_attached_images_list">';
-			$param_line .= ($param_value != '') ? phenyxFieldAttachedImages(explode(",", $param_value)) : '';
-			$param_line .= '</ul>';
-			$param_line .= '</div>';
-			$param_line .= '<div class="gallery_widget_site_images">';
-			$param_line .= '</div>';
-			$param_line .= '<a class="gallery_widget_add_images" href="#" title="' . $vc_manager->l('Add images') . '">' . $vc_manager->l('Add images') . '</a>';
-		} else
-
-		if ($param['type'] == 'attach_image') {
-			$param_value = removeNotExistingImgIDs(preg_replace('/[^\d]/', '', $param_value));
-			$param_line .= '<script type="text/javascript">';
-			$param_line .= 'var imgpath = "composer/";';
-			$param_line .= '</script>';
-			$param_line .= '<input type="hidden" class="wpb_vc_param_value gallery_widget_attached_images_ids ' . $param['param_name'] . ' ' . $param['type'] . '" name="' . $param['param_name'] . '" value="' . $param_value . '"/>';
-			$param_line .= '<div class="gallery_widget_attached_images">';
-			$param_line .= '<ul class="gallery_widget_attached_images_list">';
-			$param_line .= ($param_value != '') ? phenyxFieldAttachedImages(explode(",", $param_value)) : '';
-			$param_line .= '</ul>';
-			$param_line .= '</div>';
-			$param_line .= '<div class="gallery_widget_site_images">';
-			$param_line .= '</div>';
-			$param_line .= '<a class="gallery_widget_add_images" href="#" use-single="true" title="' . $vc_manager->l('Add image') . '">' . $vc_manager->l('Add image') . '</a>';
-		}
-        else
-
-		if ($param['type'] == 'media_dropdown') {
-			$css_option = get_dropdown_option($param, $param_value);
-			$param_line .= '<select id="widget_select-media" name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-input widget_select-media ' . $param['param_name'] . ' ' . $param['type'] . ' ' . $css_option . '" data-option="' . $css_option . '">';
-
-			if (isset($param['value'])) {
-
-				foreach ($param['value'] as $text_val => $val) {
-
-					if (is_numeric($text_val) && (is_string($val) || is_numeric($val))) {
-						$text_val = $val;
-					}
-
-					$selected = '';
-
-					if ($param_value !== '' && (string) $val === (string) $param_value) {
-						$selected = ' selected="selected"';
-					}
-
-					$param_line .= '<option class="' . $val . '" value="' . $val . '"' . $selected . '>' . htmlspecialchars($text_val) . '</option>';
-				}
-
-			}
-
-			$param_line .= '</select>';
-            $param_line .= '<script type="text/javascript">
-		      $("#widget_select-media").selectmenu({
-				width: 645,
-                icons: { button: "fa-duotone fa-bars" },
-                classes: {
-                    "ui-selectmenu-menu": "selectComposer"
-                },
-                change: function(event, ui) {
-                    if (ui.item.value > 0) {
-                         $("#widget_attached_pdf").val(ui.item.label);
-                    }
-                
+                    <?php
+                    $param_line .= ob_get_clean();
+                    $param_line .= '</div>';
+				    $param_line .= '</div>';
+                } else {
+				    $this->html_editor_already_is_used = $param['param_name'];
+				    $param_line .= do_shortcode_param_settings_field('textarea_html', $param, $param_value);
                 }
-          });
-        </script>';
-		}
-		else
+                break;
+            case 'checkbox':
+                $current_value = explode(",", $param_value);
+                $values = is_array($param['value']) ? $param['value'] : [];
 
-		if ($param['type'] == 'attach_media') {
-			$param_line .= '<input type="hidden" id="widget_attached_pdf" class="wpb_vc_param_value widget_attached_pdf ' . $param['param_name'] . ' ' . $param['type'] . '" name="' . $param['param_name'] . '" value="' . $param_value . '"/>';
-            
-			$src = '<img src="/content/backoffice/blacktie/img/pdf-downbload.png" width="300" id="imageMedia">';
-			$param_line .= '<script type="text/javascript">';
-			$param_line .= 'var totalPdfs = [];';
-			$param_line .= '</script>';
-			$param_line .= '<script type="text/javascript" src="/content/js/pdfuploadify.min.js"></script>';
-			$param_line .= '<div id="imageMedia_dragBox"><div class="imageuploadify imageuploadify-container-image">' . $src . '</div></div><input id="MediaFile" type="file" data-target="imageMedia" accept="application/pdf" multiple>';
-			$param_line .= '<script type="text/javascript">';
-            $param_line .= '$(document).ready(function() {';
-            $param_line .= '$("#MediaFile").pdfuplodify({
-        		afterreadAsDataURL: function() {
-					proceedSaveAttachment();            
-        		}
-    		});';
-            $param_line .= '});';
-            $param_line .= '</script>';
-		}
+                foreach ($values as $label => $v) {
+				    $checked = in_array($v, $current_value) ? ' checked="checked"' : '';
+				    $param_line .= ' <input id="' . $param['param_name'] . '-' . $v . '" value="' . $v . '" class="wpb_vc_param_value ' . $param['param_name'] . ' ' . $param['type'] . '" type="checkbox" name="' . $param['param_name'] . '"' . $checked . '> ' . $label;
+                }
+                break;
+            case 'posttypes':
+                $args = [
+				    'public' => true,
+                ];
+                $post_types = get_post_types($args);
 
-		//
-		else
+                foreach ($post_types as $post_type) {
+				    $checked = "";
 
-		if ($param['type'] == 'widgetised_sidebars') {
-			$wpb_sidebar_ids = [];
-			$sidebars = $GLOBALS['wp_registered_sidebars'];
+				    if ($post_type != 'attachment') {
+                        if (in_array($post_type, explode(",", $param_value))) {
+                            $checked = ' checked="checked"';
+				        }
 
-			$param_line .= '<select name="' . $param['param_name'] . '" class="wpb_vc_param_value dropdown wpb-input wpb-select ' . $param['param_name'] . ' ' . $param['type'] . '">';
+					   $param_line .= ' <input id="' . $param['param_name'] . '-' . $post_type . '" value="' . $post_type . '" class="wpb_vc_param_value ' . $param['param_name'] . ' ' . $param['type'] . '" type="checkbox" name="' . $param['param_name'] . '"' . $checked . '> ' . $post_type;
+				    }
+                }
+                break;
+            case 'taxonomies':
+            case 'taxomonies':
+                $post_types = get_post_types(['public' => false, 'name' => 'attachment'], 'names', 'NOT');
 
-			foreach ($sidebars as $sidebar) {
-				$selected = '';
+                foreach ($post_types as $type) {
+				    $taxonomies = get_object_taxonomies($type, '');
 
-				if ($sidebar["id"] == $param_value) {
-					$selected = ' selected="selected"';
-				}
+                    foreach ($taxonomies as $tax) {
+                        $checked = "";
+                        if (in_array($tax->name, explode(",", $param_value))) {
+                            $checked = ' checked="checked"';
+                        }
 
-				$sidebar_name = $sidebar["name"];
-				$param_line .= '<option value="' . $sidebar["id"] . '"' . $selected . '>' . $sidebar_name . '</option>';
-			}
+                        $param_line .= ' <label data-post-type="' . $type . '"><input id="' . $param['param_name'] . '-' . $tax->name . '" value="' . $tax->name . '" data-post-type="' . $type . '" class="wpb_vc_param_value ' . $param['param_name'] . ' ' . $param['type'] . '" type="checkbox" name="' . $param['param_name'] . '"' . $checked . '> ' . $tax->label . '</label>';
+                    }
+                }
+                break;
+            case 'exploded_textarea':
+                $param_value = str_replace(",", "\n", $param_value);
+                $param_line .= '<textarea name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-textarea ' . $param['param_name'] . ' ' . $param['type'] . '">' . $param_value . '</textarea>';
+                break;
+            case 'textarea_raw_html':
+                $param_line .= '<textarea name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-textarea_raw_html ' . $param['param_name'] . ' ' . $param['type'] . '" rows="16">' . htmlentities(rawurldecode(base64_decode($param_value)), ENT_COMPAT, 'UTF-8') . '</textarea>';
+                break;
+            case 'textarea_raw_code':
+                $param_line .= '<input type="hidden" id="ace_textarea_raw_code" class="wpb_vc_param_value wpb-textarea_code_html ' . $param['param_name'] . ' ' . $param['type'] . '"  name="' . $param['param_name'] . '" value="' . $param_value . '">';
+                $param_line .= '<div class="ace-editor" id="ace_' . $param['param_name'] . '">' . $param_value . '</div>';
+                $param_line .= '<script type="text/javascript">
+                    $(document).ready(function(){
+                        initComposerAce("ace_' . $param['param_name'] . '", false, true);
+				    });
+                </script>';
+                break;
+            case 'textarea_safe':
+                $param_line .= '<textarea name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-textarea_raw_html ' . $param['param_name'] . ' ' . $param['type'] . '">' . value_from_safe($param_value, true) . '</textarea>';
+                break;
+            case 'textarea':
+                $param_value = $param_value;
+                $param_line .= '<textarea name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-textarea ' . $param['param_name'] . ' ' . $param['type'] . '">' . $param_value . '</textarea>';
+                break;
+            case 'attach_images':
+                $param_value = removeNotExistingImgIDs($param_value);
+                $param_line .= '<script type="text/javascript">';
+                $param_line .= 'var imgpath = "composer/";';
+                $param_line .= '</script>';
+                $param_line .= '<input type="hidden" class="wpb_vc_param_value gallery_widget_attached_images_ids ' . $param['param_name'] . ' ' . $param['type'] . '" name="' . $param['param_name'] . '" value="' . $param_value . '"/>';
+                $param_line .= '<div class="gallery_widget_attached_images">';
+                $param_line .= '<ul class="gallery_widget_attached_images_list">';
+                $param_line .= ($param_value != '') ? phenyxFieldAttachedImages(explode(",", $param_value)) : '';
+                $param_line .= '</ul>';
+                $param_line .= '</div>';
+                $param_line .= '<div class="gallery_widget_site_images">';
+                $param_line .= '</div>';
+                $param_line .= '<a class="gallery_widget_add_images" href="#" title="' . $vc_manager->l('Add images') . '">' . $vc_manager->l('Add images') . '</a>';
+                break;
+            case 'attach_image':
+                $param_value = removeNotExistingImgIDs(preg_replace('/[^\d]/', '', $param_value));
+                $param_line .= '<script type="text/javascript">';
+                $param_line .= 'var imgpath = "composer/";';
+                $param_line .= '</script>';
+                $param_line .= '<input type="hidden" class="wpb_vc_param_value gallery_widget_attached_images_ids ' . $param['param_name'] . ' ' . $param['type'] . '" name="' . $param['param_name'] . '" value="' . $param_value . '"/>';
+                $param_line .= '<div class="gallery_widget_attached_images">';
+                $param_line .= '<ul class="gallery_widget_attached_images_list">';
+                $param_line .= ($param_value != '') ? phenyxFieldAttachedImages(explode(",", $param_value)) : '';
+                $param_line .= '</ul>';
+                $param_line .= '</div>';
+                $param_line .= '<div class="gallery_widget_site_images">';
+                $param_line .= '</div>';
+                $param_line .= '<a class="gallery_widget_add_images" href="#" use-single="true" title="' . $vc_manager->l('Add image') . '">' . $vc_manager->l('Add image') . '</a>';
+                break;
+            case 'media_dropdown':
+                $css_option = get_dropdown_option($param, $param_value);
+                $param_line .= '<select id="widget_select-media" name="' . $param['param_name'] . '" class="wpb_vc_param_value wpb-input widget_select-media ' . $param['param_name'] . ' ' . $param['type'] . ' ' . $css_option . '" data-option="' . $css_option . '">';
 
-			$param_line .= '</select>';
-		} else {
+                if (isset($param['value'])) {
 
+                    foreach ($param['value'] as $text_val => $val) {
 
-			$param_line .= do_shortcode_param_settings_field($param['type'], $param, $param_value);
-		}
+                        if (is_numeric($text_val) && (is_string($val) || is_numeric($val))) {
+                            $text_val = $val;
+                        }
+
+                        $selected = '';
+                        if ($param_value !== '' && (string) $val === (string) $param_value) {
+                            $selected = ' selected="selected"';
+                        }
+
+                        $param_line .= '<option class="' . $val . '" value="' . $val . '"' . $selected . '>' . htmlspecialchars($text_val) . '</option>';
+                    }
+                }
+                $param_line .= '</select>';
+                $param_line .= '<script type="text/javascript">
+                    $("#widget_select-media").selectmenu({
+                        width: 645,
+                        icons: { button: "fa-duotone fa-bars" },
+                        classes: {
+                            "ui-selectmenu-menu": "selectComposer"
+                        },
+                        change: function(event, ui) {
+                            if (ui.item.value > 0) {
+                                $("#widget_attached_pdf").val(ui.item.label);
+                            }
+                        }
+                    });
+                </script>';
+                break;
+            case 'attach_media':
+                $param_line .= '<input type="hidden" id="widget_attached_pdf" class="wpb_vc_param_value widget_attached_pdf ' . $param['param_name'] . ' ' . $param['type'] . '" name="' . $param['param_name'] . '" value="' . $param_value . '"/>';
+                $src = '<img src="/content/backoffice/blacktie/img/pdf-downbload.png" width="300" id="imageMedia">';
+                $param_line .= '<script type="text/javascript">';
+                $param_line .= 'var totalPdfs = [];';
+                $param_line .= '</script>';
+                $param_line .= '<script type="text/javascript" src="/content/js/pdfuploadify.min.js"></script>';
+                $param_line .= '<div id="imageMedia_dragBox"><div class="imageuploadify imageuploadify-container-image">' . $src . '</div></div><input id="MediaFile" type="file" data-target="imageMedia" accept="application/pdf" multiple>';
+                $param_line .= '<script type="text/javascript">';
+                $param_line .= '$(document).ready(function() {';
+                $param_line .= '$("#MediaFile").pdfuplodify({
+                    afterreadAsDataURL: function() {
+                        proceedSaveAttachment();            
+                    }
+                });';
+                $param_line .= '});';
+                $param_line .= '</script>';
+                break;
+            case 'widgetised_sidebars':
+                $wpb_sidebar_ids = [];
+                $sidebars = $GLOBALS['wp_registered_sidebars'];
+                $param_line .= '<select name="' . $param['param_name'] . '" class="wpb_vc_param_value dropdown wpb-input wpb-select ' . $param['param_name'] . ' ' . $param['type'] . '">';
+                foreach ($sidebars as $sidebar) {
+                    $selected = '';
+                    if ($sidebar["id"] == $param_value) {
+					   $selected = ' selected="selected"';
+				    }
+
+				    $sidebar_name = $sidebar["name"];
+				    $param_line .= '<option value="' . $sidebar["id"] . '"' . $selected . '>' . $sidebar_name . '</option>';
+                }
+                $param_line .= '</select>';
+                break;
+            default:
+                $extraType = Hook::exec('actionSingleParamEditForm', ['param' => $param, 'param_value' => $param_value], null, true);
+                if (is_array($extraType) && count($extraType)) {
+                    foreach ($extraType as $plugin => $vars) {
+                        if (is_array($vars) && count($vars)) {
+                            foreach ($vars as $key => $value) {
+                                $param_line .= $value;
+                            }
+                        }
+                    }
+                } else {
+                    $param_line .= do_shortcode_param_settings_field($param['type'], $param, $param_value);
+                }
+        }
 
 		return $param_line;
 	}
