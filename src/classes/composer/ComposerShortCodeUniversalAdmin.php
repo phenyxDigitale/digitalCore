@@ -401,12 +401,8 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
             default:
                 $extraType = Hook::exec('actionSingleParamEditForm', ['param' => $param, 'param_value' => $param_value], null, true);
                 if (is_array($extraType) && count($extraType)) {
-                    foreach ($extraType as $plugin => $vars) {
-                        if (is_array($vars) && count($vars)) {
-                            foreach ($vars as $key => $value) {
-                                $param_line .= $value;
-                            }
-                        }
+                    foreach ($extraType as $plugin => $value) {
+                        $param_line .= $value;
                     }
                 } else {
                     $param_line .= do_shortcode_param_settings_field($param['type'], $param, $param_value);
