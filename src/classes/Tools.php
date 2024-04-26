@@ -2,7 +2,7 @@
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPSQLParser\PHPSQLParser;
-
+use Google\Cloud\Translate\V2\TranslateClient;
 /**
  * Class ToolsCore
  *
@@ -3947,110 +3947,112 @@ FileETag none
 
     public static function sendEmail($postfields, $meta_description = null) {
 
-        $context = Context::getContext();
+        $mail_allowed = Configuration::get('EPH_ALLOW_SEND_EMAIL') ? 1 : 0;
+        if($mail_allowed) {
+            $context = Context::getContext();
 
-        $htmlContent = $postfields['htmlContent'];
-        $tpl = $context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'header.tpl');
-        $bckImg = !empty(Configuration::get('EPH_BCK_LOGO_MAIL')) ? 'https://' . $context->company->domain_ssl . '/content/img/' . Configuration::get('EPH_BCK_LOGO_MAIL') : false;
-        $tpl->assign([
-            'title'        => $postfields['subject'],
-            'css_dir'      => 'https://' . $context->company->domain_ssl . _THEME_CSS_DIR_,
-            'shop_link'    => $context->link->getBaseFrontLink(),
-            'shop_name'    => $context->company->company_name,
-            'bckImg'       => $bckImg,
-            'logoMailLink' => $context->link->getBaseFrontLink() . 'content/img/' . Configuration::get('EPH_LOGO_MAIL'),
-        ]);
-
-        if (!is_null($meta_description)) {
+            $htmlContent = $postfields['htmlContent'];
+            $tpl = $context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'header.tpl');
+            $bckImg = !empty(Configuration::get('EPH_BCK_LOGO_MAIL')) ? 'https://' . $context->company->domain_ssl . '/content/img/' . Configuration::get('EPH_BCK_LOGO_MAIL') : false;
             $tpl->assign([
-                'meta_description' => $meta_description,
+                'title'        => $postfields['subject'],
+                'css_dir'      => 'https://' . $context->company->domain_ssl . _THEME_CSS_DIR_,
+                'shop_link'    => $context->link->getBaseFrontLink(),
+                'shop_name'    => $context->company->company_name,
+                'bckImg'       => $bckImg,
+                'logoMailLink' => $context->link->getBaseFrontLink() . 'content/img/' . Configuration::get('EPH_LOGO_MAIL'),
             ]);
-        }
 
-        $header = $tpl->fetch();
-        $tpl = $context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'footer.tpl');
-        $tpl->assign([
-            'tag' => Configuration::get('EPH_FOOTER_EMAIL'),
-        ]);
-        $footer = $tpl->fetch();
-        $postfields['htmlContent'] = $header . $htmlContent . $footer;
-        $mail_method = Configuration::get('EPH_MAIL_METHOD');
-
-        if ($mail_method == 1) {
-            $encrypt = Configuration::get('EPH_MAIL_SMTP_ENCRYPTION');
-            $mail = new PHPMailer();
-            $mail->IsSMTP();
-            $mail->SMTPAuth = true;
-            $mail->Host = Configuration::get('EPH_MAIL_SERVER');
-            $mail->Port = Configuration::get('EPH_MAIL_SMTP_PORT');
-            //$mail->SMTPDebug = SMTP::DEBUG_CONNECTION;
-            $mail->Username = Configuration::get('EPH_MAIL_USER');
-            $mail->Password = Configuration::get('EPH_MAIL_PASSWD');
-            $mail->setFrom($postfields['sender']['email'], $postfields['sender']['name']);
-
-            foreach ($postfields['to'] as $key => $value) {
-                $mail->addAddress($value['email'], $value['name']);
+            if (!is_null($meta_description)) {
+                $tpl->assign([
+                    'meta_description' => $meta_description,
+                ]);
             }
 
-            $mail->Subject = $postfields['subject'];
+            $header = $tpl->fetch();
+            $tpl = $context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'footer.tpl');
+            $tpl->assign([
+                'tag' => Configuration::get('EPH_FOOTER_EMAIL'),
+            ]);
+            $footer = $tpl->fetch();
+            $postfields['htmlContent'] = $header . $htmlContent . $footer;
+            $mail_method = Configuration::get('EPH_MAIL_METHOD');
 
-            if ($encrypt != 'off') {
+            if ($mail_method == 1) {
+                $encrypt = Configuration::get('EPH_MAIL_SMTP_ENCRYPTION');
+                $mail = new PHPMailer();
+                $mail->IsSMTP();
+                $mail->SMTPAuth = true;
+                $mail->Host = Configuration::get('EPH_MAIL_SERVER');
+                $mail->Port = Configuration::get('EPH_MAIL_SMTP_PORT');
+            //$mail->SMTPDebug = SMTP::DEBUG_CONNECTION;
+                $mail->Username = Configuration::get('EPH_MAIL_USER');
+                $mail->Password = Configuration::get('EPH_MAIL_PASSWD');
+                $mail->setFrom($postfields['sender']['email'], $postfields['sender']['name']);
 
-                if ($encrypt == 'ENCRYPTION_STARTTLS') {
-                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                } else {
-                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+                foreach ($postfields['to'] as $key => $value) {
+                    $mail->addAddress($value['email'], $value['name']);
                 }
 
-            } else {
+                $mail->Subject = $postfields['subject'];
+
+                if ($encrypt != 'off') {
+
+                    if ($encrypt == 'ENCRYPTION_STARTTLS') {
+                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    } else {
+                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+                    }
+
+                } 
+
+                $mail->Body = $postfields['htmlContent'];
+                $mail->isHTML(true);
+
+                if (isset($postfields['attachment']) && !is_null($postfields['attachment'])) {
+                    $mail->addAttachment($postfields['attachment']);
+                }
+
+                if (!$mail->send()) {
+                    return false;
+                } else {
+                    return true;
+                }
+
+            } else if ($mail_method == 2) {
+                $api_key = Configuration::get('EPH_SENDINBLUE_API');
+
+                $curl = curl_init();
+
+                curl_setopt_array($curl, [
+                    CURLOPT_URL            => "https://api.brevo.com/v3/smtp/email",
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING       => "",
+                    CURLOPT_MAXREDIRS      => 10,
+                    CURLOPT_TIMEOUT        => 30,
+                    CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST  => "POST",
+                    CURLOPT_POSTFIELDS     => json_encode($postfields),
+                    CURLOPT_HTTPHEADER     => [
+                        "accept: application/json",
+                        "api-key: " . $api_key,
+                        "content-type: application/json",
+                    ],
+                ]);
+
+                $response = curl_exec($curl);
+                $err = curl_error($curl);
+                curl_close($curl);
+
+                if ($err) {
+                    return false;
+                } else {
+                    return true;
+                }
 
             }
-
-            $mail->Body = $postfields['htmlContent'];
-            $mail->isHTML(true);
-
-            if (isset($postfields['attachment']) && !is_null($postfields['attachment'])) {
-                $mail->addAttachment($postfields['attachment']);
-            }
-
-            if (!$mail->send()) {
-                return false;
-            } else {
-                return true;
-            }
-
-        } else
-        if ($mail_method == 2) {
-            $api_key = Configuration::get('EPH_SENDINBLUE_API');
-
-            $curl = curl_init();
-
-            curl_setopt_array($curl, [
-                CURLOPT_URL            => "https://api.brevo.com/v3/smtp/email",
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING       => "",
-                CURLOPT_MAXREDIRS      => 10,
-                CURLOPT_TIMEOUT        => 30,
-                CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST  => "POST",
-                CURLOPT_POSTFIELDS     => json_encode($postfields),
-                CURLOPT_HTTPHEADER     => [
-                    "accept: application/json",
-                    "api-key: " . $api_key,
-                    "content-type: application/json",
-                ],
-            ]);
-
-            $response = curl_exec($curl);
-            $err = curl_error($curl);
-            curl_close($curl);
-
-            if ($err) {
-                return false;
-            } else {
-                return true;
-            }
-
+        } else {
+            return true;
         }
 
     }
@@ -5431,6 +5433,29 @@ FileETag none
 
         return $topbars;
     }
+    
+    public static function getGoogleTranslation($google_api_key, $text, $target) {
+        
+        
+        if($target == 'gb') {
+            $target = 'en';
+        }
+        
+        $translate = new TranslateClient([
+            'key' => $google_api_key
+        ]);
+
+        $result = $translate->translate($text, [
+            'target' => $target
+        ]);
+        
+        $return = [
+			'translation'   => $result['text'],
+		];
+
+		return $return;
+    }
+
     
     public static function str_contains($search, $string) {
         
