@@ -210,10 +210,10 @@ class TopMenu extends PhenyxObjectModel {
         
         $hookname = Hook::exec('displayTopMenuOutPutName', ['type' => $this->type, 'menu' => $this], null, true);
         if(is_array($hookname)) {
-            foreach($hookname as $plugin => $value) {
-                $return = $value;
+            $hookname = array_shift($hookname);
+            if(!empty($hookname)) {
+                $return = $hookname;    
             }
-            
         }  
 
         return $name;
