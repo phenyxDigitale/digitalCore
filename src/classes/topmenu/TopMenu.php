@@ -209,12 +209,14 @@ class TopMenu extends PhenyxObjectModel {
         }
         
         $hookname = Hook::exec('displayTopMenuOutPutName', ['type' => $this->type, 'menu' => $this], null, true);
-        if(is_array($hookname)) {
-            $hookname = array_shift($hookname);
-            if(!empty($hookname)) {
-                $return = $hookname;    
+        if (is_array($hookname) && count($hookname)) {
+            foreach ($hookname as $plugin => $vars) {
+                if(!empty($vars)) {
+                    $name = $vars;    
+                }
             }
-        }  
+        }
+        
 
         return $name;
     }
@@ -376,12 +378,13 @@ class TopMenu extends PhenyxObjectModel {
         }
         
         $hookname = Hook::exec('displayTopMenuBackOutputNameValue', ['type' => $this->type, 'menu' => $this], null, true);
-        if(is_array($hookname)) {
-            $hookname = array_shift($hookname);
-            if(!empty($hookname)) {
-                $return = $hookname;    
+        if (is_array($hookname) && count($hookname)) {
+            foreach ($hookname as $plugin => $vars) {
+                if(!empty($vars)) {
+                    $return = $vars;    
+                }
             }
-        }  
+        }
 
         return $return;
     }
@@ -721,12 +724,13 @@ class TopMenu extends PhenyxObjectModel {
         
         $hookname = Hook::exec('displayTopMenuFrontOutputValue', ['type' => $this->type, 'menu' => $this], null, true);
        
-        if(is_array($hookname)) {
-            $hookname = array_shift($hookname);
-            if(!empty($hookname)) {
-                $return = $hookname;    
+        if (is_array($hookname) && count($hookname)) {
+            foreach ($hookname as $plugin => $vars) {
+                if(!empty($vars)) {
+                    $return = $vars;    
+                }
             }
-        }  
+        }
 
         return $return;
     }
@@ -1033,6 +1037,7 @@ class TopMenu extends PhenyxObjectModel {
         }
 
         if (!Tools::getValue('editMenu') && !Tools::getValue('editColumnWrap') && !Tools::getValue('editColumn')) {
+
 
             if (Tools::getValue('editElement') && Tools::getValue('id_topmenu_element')) {
                 $ObjEphenyxTopMenuElementsClass = new TopMenuElements(Tools::getValue('id_topmenu_element'));
