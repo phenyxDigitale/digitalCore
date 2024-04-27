@@ -72,10 +72,14 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
 		if (!empty($param['param_holder_class'])) {
 			$param['vc_single_param_edit_holder_class'][] = $param['param_holder_class'];
 		}
+        $style = '';
+        if (!empty($param['param_holder_style'])) {
+			$style = 'style="'.$param['param_holder_style'].'"';
+		}
 
 		$param = ComposerShortcodeEditForm::changeEditFormFieldParams($param);
 
-		$output = '<div class="' . implode(' ', $param['vc_single_param_edit_holder_class']) . '" data-param_name="' . $vc_main->esc_attr($param['param_name']) . '" data-param_type="' . $vc_main->esc_attr($param['type']) . '" data-param_settings="' . $vc_main->esc_attr(Tools::jsonEncode($param)) . '">';
+		$output = '<div class="' . implode(' ', $param['vc_single_param_edit_holder_class']) . '" data-param_name="' . $vc_main->esc_attr($param['param_name']) . '" data-param_type="' . $vc_main->esc_attr($param['type']) . '" data-param_settings="' . $vc_main->esc_attr(Tools::jsonEncode($param)) . '" '.$style.'>';
 		$output .= (isset($param['heading'])) ? '<div class="wpb_element_label">' . $param['heading'] . '</div>' : '';
 		$output .= '<div class="edit_form_line">';
 		$output .= $this->singleParamEditForm($param, $param_value);
