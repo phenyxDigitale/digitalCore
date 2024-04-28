@@ -403,16 +403,16 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
                 $param_line .= '</select>';
                 break;
             case 'extra_css':
-                if (isset($param['value']) && is_array($param['value'])) {
-                    foreach($param['value'] as $css_uri => $media) {
+                if (isset($param['param_value']) && is_array($param['param_value'])) {
+                    foreach($param['param_value'] as $css_uri => $media) {
                         $param_line .= '<link rel="stylesheet" href="'.$css_uri.'" type="text/css" media="'.$media.'" />';
                     }                   
                 }
                
                 break;
             case 'extra_js':
-                if (isset($param['value']) && is_array($param['value'])) {
-                    foreach($param['value'] as $js_uri) {
+                if (isset($param['param_value']) && is_array($param['param_value'])) {
+                    foreach($param['param_value'] as $js_uri) {
                         $param_line .= '<script type="text/javascript" src="'.$js_uri.'"></script>';
                     }                   
                 }
