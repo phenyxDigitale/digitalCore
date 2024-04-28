@@ -402,6 +402,22 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
                 }
                 $param_line .= '</select>';
                 break;
+            case 'extra_css':
+                if (isset($param['value']) && is_array($param['value'])) {
+                    foreach($param['value'] as $css_uri => $media) {
+                        $param_line .= '<link rel="stylesheet" href="'.$css_uri.'" type="text/css" media="'.$media.'" />';
+                    }                   
+                }
+               
+                break;
+            case 'extra_js':
+                if (isset($param['value']) && is_array($param['value'])) {
+                    foreach($param['value'] as $js_uri) {
+                        $param_line .= '<script type="text/javascript" src="'.$js_uri.'"></script>';
+                    }                   
+                }
+               
+                break;
             default:
                 $extraType = Hook::exec('actionSingleParamEditForm', ['param' => $param, 'param_value' => $param_value], null, true);
                 if (is_array($extraType) && count($extraType)) {
