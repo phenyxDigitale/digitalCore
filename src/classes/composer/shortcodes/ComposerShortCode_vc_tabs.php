@@ -18,7 +18,10 @@ class ComposerShortCode_vc_tabs extends ComposerShortCode {
 	}
 
 	public function contentAdmin($atts, $content = null) {
-
+        
+        
+        $file = fopen("testcontentAdminTabs.txt","w");
+       
 		$width = $custom_markup = '';
 		$shortcode_attributes = ['width' => '1/1'];
 
@@ -34,14 +37,15 @@ class ComposerShortCode_vc_tabs extends ComposerShortCode {
 
 			} else
 			if ($param['param_name'] == 'content' && $content == NULL) {
-				//$content = $param['value'];
+				
 				$content = $param['value'];
 			}
 
 		}
-
+       
 		
 		$atts = Composer::shortcode_atts($shortcode_attributes, $atts);
+       
 		extract($atts);
 		
 
@@ -71,7 +75,13 @@ class ComposerShortCode_vc_tabs extends ComposerShortCode {
 
 			$tmp .= '</ul>' . "\n";
 		} else {
-			$output .= Composer::do_shortcode($content);
+            if ($content != '') {
+                $output .= Composer::do_shortcode($content);
+            } else {
+                $tab_id_1 = time() . '-1-' . rand(0, 100);
+		        $tab_id_2 = time() . '-2-' . rand(0, 100);
+                $output .= '[vc_tabs][vc_tab title="' . $this->l('Tab 1') . '" tab_id="'.$tab_id_1.'"][/vc_tab][vc_tab title="' . $this->l('Tab 2') . '" tab_id="'.$tab_id_2.'"][/vc_tab][/vc_tabs]';
+            }
 		}
 
 		
@@ -84,7 +94,6 @@ class ComposerShortCode_vc_tabs extends ComposerShortCode {
 			$param_value = isset($atts[$param['param_name']]) ? $atts[$param['param_name']] : '';
 
 			if (is_array($param_value)) {
-				// Get first element from the array
 				reset($param_value);
 				$first_key = key($param_value);
 				$param_value = $param_value[$first_key];
@@ -92,9 +101,6 @@ class ComposerShortCode_vc_tabs extends ComposerShortCode {
 
 			$iner .= $this->singleParamHtmlHolder($param, $param_value);
 		}
-
-		
-
 		if (isset($this->settings["custom_markup"]) && $this->settings["custom_markup"] != '') {
 
 			if ($content != '') {
@@ -105,11 +111,11 @@ class ComposerShortCode_vc_tabs extends ComposerShortCode {
 			} else {
 				$custom_markup = str_ireplace("%content%", '', $this->settings["custom_markup"]);
 			}
-
+            
 			
 			$iner .= Composer::do_shortcode($custom_markup);
 		}
-
+        
 		$elem = str_ireplace('%wpb_element_content%', $iner, $elem);
 		$output = $elem;
 

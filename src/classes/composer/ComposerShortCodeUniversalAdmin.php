@@ -76,7 +76,7 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
         if (!empty($param['param_holder_style'])) {
 			$style = 'style="'.$param['param_holder_style'].'"';
 		}
-
+        
 		$param = ComposerShortcodeEditForm::changeEditFormFieldParams($param);
 
 		$output = '<div class="' . implode(' ', $param['vc_single_param_edit_holder_class']) . '" data-param_name="' . $vc_main->esc_attr($param['param_name']) . '" data-param_type="' . $vc_main->esc_attr($param['type']) . '" data-param_settings="' . $vc_main->esc_attr(Tools::jsonEncode($param)) . '" '.$style.'>';
@@ -104,7 +104,6 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
 		$param_line = '';
 
 		$vc_manager = ephenyx_manager();
-        
         switch($param['type']) {
             case 'textfield':
                 $value = $param_value;

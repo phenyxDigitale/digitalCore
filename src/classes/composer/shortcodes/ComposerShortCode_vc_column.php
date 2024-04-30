@@ -22,9 +22,9 @@ class ComposerShortCode_vc_column extends ComposerShortCode {
 			$control_title = $vc_manager->l('Prepend to this column');
 		}
 
-		$controls_add = ' <a class="vc_control column_add" href="#" title="' . $control_title . '"><i class="vc_icon"></i></a>';
-		$controls_edit = ' <a class="vc_control column_edit" href="#" title="' . $vc_manager->l('Edit this column') . '"><i class="vc_icon"></i></a>';
-		$controls_delete = ' <a class="vc_control column_delete" href="#" title="' . $vc_manager->l('Delete this column') . '"><i class="vc_icon"></i></a>';
+		$controls_add = ' <a class="vc_control column_add" href="#" title="' . $control_title . '"><i class="fa-duotone fa-plus"></i></a>';
+		$controls_edit = ' <a class="vc_control column_edit" href="#" title="' . $vc_manager->l('Edit this column') . '"><i class="fa-duotone fa-pen-to-square"></i></i></a>';
+		$controls_delete = ' <a class="vc_control column_delete" href="#" title="' . $vc_manager->l('Delete this column') . '"><i class="fa-duotone fa-trash"></i></a>';
 
 		return $controls_start . $controls_add . $controls_edit . $controls_delete . $controls_end;
 	}
