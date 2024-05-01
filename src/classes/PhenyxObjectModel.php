@@ -348,9 +348,29 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         $this->excludes = ['is_archivable', 'use_session', 'use_education_device', 'use_sale_agent', 'use_education_platform', 'use_education_step', 'ephenyx_shop_active', 'ephenyx_education_active', 'deft_vat_collected', 'deft_vat_collected_account', 'deft_vat_deduct', 'deft_vat_deduct_account', 'deft_profit', 'deft_profit_account', 'deft_purchase', 'deft_purchase_account', 'tables', 'identifier', 'fieldsRequired', 'fieldsSize', 'fieldsValidate', 'fieldsRequiredLang', 'fieldsSizeLang', 'fieldsValidateLang', 'image_dir', 'image_format', 'update_fields', 'request_admin', 'extraVars', 'force_id','paramFields', '_languages', 'webserviceParameters'];
         
         if($light) {
-            $this->constructLight();
+            foreach(Tools::jsonDecode(Tools::jsonEncode($this)) as $field => $value) {
+                if (in_array($field, $this->excludes)) {
+                    unset($this->$field);
+                }                
+            }
+            unset($this->excludes);
         }
 
+    }
+    
+    public static function construct($className, $id, $id_lang = null) {
+                
+        $def = PhenyxObjectModel::getDefinition($className);
+        $sql = new DbQuery();
+        $sql->select('a.`' . bqSQL($def['primary']) . '` as `id`, a.*');
+        $sql->from($def['table'], 'a');
+        $sql->where('a.`' . bqSQL($def['primary']) . '` = ' . (int) $id);
+        if ($id_lang && isset($def['multilang']) && $def['multilang']) {
+            $sql->select('b.*');
+            $sql->leftJoin($def['table'] . '_lang', 'b', 'a.`' . bqSQL($def['primary']) . '` = b.`' . bqSQL($def['primary']) . '` AND b.`id_lang` = ' . (int) $id_lang);
+
+        }
+        return Db::getInstance()->getRow($sql);
     }
     
     public function constructLight() {
