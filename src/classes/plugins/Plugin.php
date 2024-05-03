@@ -158,6 +158,18 @@ abstract class Plugin {
     public $favorite = false;
 
     public $context;
+    
+    public $_user;
+    
+    public $_company;    
+    
+    public $_cookie;
+    
+    public $_link;
+    
+    public $_language;
+    
+    public $_smarty;
 
     public $image_link;
 
@@ -216,8 +228,15 @@ abstract class Plugin {
         if (strlen($this->eph_versions_compliancy['max']) == 3) {
             $this->eph_versions_compliancy['max'] .= '.999.999';
         }
-
-        $this->context = $context ? $context : Context::getContext();
+        
+        $context = $context ? $context : Context::getContext();
+        $this->context = $context;
+        $this->_company = $context->company;
+        $this->_user = $context->user;
+        $this->_cookie = $context->cookie;
+        $this->_link = $context->link;
+        $this->_language = $context->language;
+        $this->_smarty = $context->smarty;
 
         $this->getPluginExtraVars();
 
