@@ -33,6 +33,7 @@ class DbAdminQuery {
     protected $query = [
         'type'   => 'SELECT',
         'select' => [],
+        'extraSelect' => [],
         'delete' => [],
         'set'    => [],
         'fields' => [],
@@ -63,6 +64,15 @@ class DbAdminQuery {
         
         if (!empty($fields)) {
             $this->query['select'][] = $fields;
+        }
+
+        return $this;
+    }
+    
+    public function extraSelect($fields) {       
+        
+        if (!empty($fields)) {
+            $this->query['extraSelect'][] = $fields;
         }
 
         return $this;
@@ -295,7 +305,7 @@ class DbAdminQuery {
     public function build() {
 
         if ($this->query['type'] == 'SELECT') {
-            $sql = 'SELECT ' . ((($this->query['select'])) ? implode(",\n", $this->query['select']) : '*') . "\n";
+            $sql = 'SELECT ' . ((($this->query['select'])) ? implode(",\n", $this->query['select']) : '*'). ((($this->query['extraSelect'])) ? ', '.implode(",\n", $this->query['extraSelect']) : '*') . "\n";
         } else
         if ($this->query['type'] == 'DELETE') {
             $sql = 'DELETE ' . (($this->query['delete']) ? implode(",\n", $this->query['delete']) : '') . "\n";

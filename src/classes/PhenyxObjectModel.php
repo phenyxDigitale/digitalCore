@@ -32,6 +32,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
      */
     const HAS_ONE = 1;
     const HAS_MANY = 2;
+    
+    protected static $instance;
 
     // @codingStandardsIgnoreStart
     /** @var int Object ID */
@@ -404,6 +406,16 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         return Tools::jsonDecode(Tools::jsonEncode($this));
         
     }
+    
+    public static function getInstance() {
+
+        $class_name = static::class;
+		if (!$class_name::$instance) {
+			$class_name::$instance = new $class_name();
+		}
+
+		return $class_name::$instance;
+	}
 
     public function &__get($property) {
 
@@ -928,6 +940,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $result &= Db::getInstance()->delete($this->def['table'], '`' . bqSQL($this->def['primary']) . '` = ' . (int) $this->id);
 
+
         if (!$result) {
             return false;
         }
@@ -1394,6 +1407,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
             } else {
                 static::$fieldsRequiredDatabase = [];
+
             }
 
         }
