@@ -173,44 +173,6 @@ abstract class Plugin {
 
     public $image_link;
 
-    public function getPluginExtraVars() {
-
-        $extraVars = Hook::exec('actionPluginGetExtraVars', [], null, true);
-
-        if (is_array($extraVars)) {
-            $extraVars = array_shift($extraVars);
-
-            if (is_array($extraVars)) {
-
-                foreach ($extraVars as $key => $value) {
-
-                    if (isset($value)) {
-                        $this->{$key}
-
-                        = $value;
-                    } else {
-                        $this->{$key};
-                    }
-
-                }
-
-            }
-
-        }
-
-    }
-
-    // @codingStandardsIgnoreEnd
-
-    /**
-     * Constructor
-     *
-     * @param string  $name Plugin unique name
-     * @param Context $context
-     *
-     * @since 2.1.0.0
-     * @throws PhenyxException
-     */
     public function __construct($name = null, Context $context = null) {
 
         if (isset($this->eph_versions_compliancy) && !isset($this->eph_versions_compliancy['min'])) {
@@ -238,7 +200,6 @@ abstract class Plugin {
         $this->_language = $context->language;
         $this->_smarty = $context->smarty;
 
-        $this->getPluginExtraVars();
 
         if (is_object($this->context->smarty)) {
             $this->smarty = $this->context->smarty->createData($this->context->smarty);
