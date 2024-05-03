@@ -52,6 +52,18 @@ abstract class PhenyxController {
     public $link_rewrite;
 
     protected $context;
+    
+    protected $_user;
+    
+    protected $_company;    
+    
+    protected $_cookie;
+    
+    protected $_link;
+    
+    protected $_language;
+    
+    protected $_smarty;
 
     /** @var string */
     protected $display;
@@ -386,7 +398,14 @@ abstract class PhenyxController {
             $this->display_footer = true;
         }
 
-        $this->context = Context::getContext();
+        $context = Context::getContext();
+        $this->context = $context;
+        $this->_company = $context->company;
+        $this->_user = $context->user;
+        $this->_cookie = $context->cookie;
+        $this->_link = $context->link;
+        $this->_language = $context->language;
+        $this->_smarty = $context->smarty;
         $this->context->getExtraContextVars();
         $this->context->controller = $this;
         $this->getExtraPhenyxVars();
@@ -2925,6 +2944,7 @@ abstract class PhenyxController {
         }
 
         $this->content_ajax .= '</table>
+
         </div>';
     }
 
