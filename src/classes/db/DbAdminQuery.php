@@ -305,7 +305,7 @@ class DbAdminQuery {
     public function build() {
 
         if ($this->query['type'] == 'SELECT') {
-            $sql = 'SELECT ' . ((($this->query['select'])) ? implode(",\n", $this->query['select']) : '*'). ((($this->query['extraSelect'])) ? ', '.implode(",\n", $this->query['extraSelect']) : '*') . "\n";
+            $sql = 'SELECT ' . ((($this->query['select'])) ? implode(",\n", $this->query['select']) : '*'). ((($this->query['extraSelect'])) ? ', '.implode(",\n", $this->query['extraSelect']) : '') . "\n";
         } else
         if ($this->query['type'] == 'DELETE') {
             $sql = 'DELETE ' . (($this->query['delete']) ? implode(",\n", $this->query['delete']) : '') . "\n";
