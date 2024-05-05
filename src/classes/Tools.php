@@ -5473,6 +5473,21 @@ FileETag none
         }
         return null;
     }
+    
+    public static function resizeImg($image) {
+
+        $destination = $image;
+
+        $fileext = Tools::strtolower(pathinfo($destination, PATHINFO_EXTENSION));
+        $newFile = str_replace("." . $fileext, '.webp', $image);
+
+        if (file_exists($newFile)) {
+            return true;
+        }
+
+        return ImageManager::actionOnImageResizeAfter($destination, $newFile);
+
+    }
 
 }
 
