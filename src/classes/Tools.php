@@ -5501,6 +5501,18 @@ FileETag none
         
     }
     
+    public static function isBool($string) {
+        
+        return is_bool($string);
+        
+    }
+    
+    public static function isFloat($string) {
+        
+        return is_float($string);
+        
+    }
+    
     public static function phpVersion() {
         
         return phpversion();
