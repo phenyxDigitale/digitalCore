@@ -1568,6 +1568,7 @@ class Tools {
         return $date;
     }
 
+
     public static function hourGenerate($hours, $minutes, $seconds) {
 
         return implode(':', [$hours, $minutes, $seconds]);
@@ -2516,72 +2517,196 @@ FileETag none
             'app/cache/purifier/CSS',
             'app/cache/purifier/URI',
         ];
-        $iterator = new AppendIterator();
-
+               
         foreach ($recursive_directory as $key => $directory) {
-
-            if (is_dir(_EPH_ROOT_DIR_ . '/' . $directory)) {
-                $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory . '/')));
+            if (is_dir(_EPH_ROOT_DIR_ . '/' . $directory)) { 
+                $path = _EPH_ROOT_DIR_ . '/' . $directory;
+                Tools::deleteDirectory($path, false);
+                Tools::generateIndexFiles($path . '/');
             }
 
         }
+        
+        
+        $path = _EPH_ROOT_DIR_ . '/content/backoffice/backend/cache/';
+        
+        if(is_dir($path)) {
+            Tools::deleteDirectory($path, false);  
+            Tools::generateIndexFiles(_EPH_ROOT_DIR_ . '/content/backoffice/backend/cache/');
+        }
+        
+        $path = _EPH_ROOT_DIR_ . '/content/themes/' . $context->theme->name . '/cache/';
+        if(is_dir($path)) {
+            Tools::deleteDirectory($path, false);  
+            Tools::generateIndexFiles(_EPH_ROOT_DIR_ . '/content/themes/' . $context->theme->name . '/cache/');
+        }
+        
+        
+    }
+    
+    
+    public static function cleanThemeDirectory() {
+
+        $folder = [];
+        $plugintochecks = [];
+
+        $iterator = new AppendIterator();
+
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/includes/plugins'));
 
         foreach ($iterator as $file) {
 
-            if (is_dir($file->getPathname())) {
-                Tools::deleteDirectory($file->getPathname());
+            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
+                continue;
+            }
+
+            $filePath = $file->getPathname();
+            $plugin = str_replace(_EPH_ROOT_DIR_ . '/includes/plugins/', '', $filePath);
+
+            if (file_exists($filePath . '/' . $plugin . '.php')) {
+                $folder[] = $plugin;
             } else {
-
-                unlink($file->getPathname());
+                Tools::deleteDirectory($file->getPathname());
             }
 
         }
 
-        mkdir(_EPH_ROOT_DIR_ . '/app/cache/smarty/cache', 0777, true);
-        Tools::generateIndexFiles(_EPH_ROOT_DIR_ . '/app/cache/smarty/cache/');
-        mkdir(_EPH_ROOT_DIR_ . '/app/cache/smarty/compile', 0777, true);
-        Tools::generateIndexFiles(_EPH_ROOT_DIR_ . '/app/cache/smarty/compile/');
-        mkdir(_EPH_ROOT_DIR_ . '/app/cache/purifier/CSS', 0777, true);
-        Tools::generateIndexFiles(_EPH_ROOT_DIR_ . '/app/cache/purifier/CSS/');
-        mkdir(_EPH_ROOT_DIR_ . '/app/cache/purifier/URI', 0777, true);
-        Tools::generateIndexFiles(_EPH_ROOT_DIR_ . '/app/cache/purifier/URI/');
-        mkdir(_EPH_ROOT_DIR_ . '/content/backoffice/backend/cache', 0777, true);
-        $iterator = new AppendIterator();
-        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/backoffice/backend/cache/'));
+        $plugins = Plugin::getPluginsOnDisk();
 
-        foreach ($iterator as $file) {
+        foreach ($plugins as $plugin) {
 
-            if (in_array($file->getFilename(), ['.', '..', 'index.php'])) {
-                continue;
+            if ($plugin->id > 0) {
+
+                if (in_array($plugin->name, $folder)) {
+                    $plugintochecks[] = $plugin->name;
+                } else {
+                    $result = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
+                        (new DbQuery())
+                            ->select('`id_hook`')
+                            ->from('hook_plugin')
+                            ->where('`id_plugin` = ' . (int) $plugin->id)
+                    );
+
+                    foreach ($result as $row) {
+                        $plugin->unregisterHook((int) $row['id_hook']);
+                        $plugin->unregisterExceptions((int) $row['id_hook']);
+                    }
+
+                    Db::getInstance()->delete('plugin_access', '`id_plugin` = ' . (int) $plugin->id);
+                    Group::truncateRestrictionsByPlugin($plugin->id);
+                    Db::getInstance()->delete('plugin', '`id_plugin` = ' . (int) $plugin->id);
+                }
+
             }
 
-            if (is_dir($file->getPathname())) {
-
-                continue;
-            }
-
-            unlink($file->getPathname());
         }
 
         $iterator = new AppendIterator();
-        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/themes/' . $context->theme->name . '/cache/'));
+
+        $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'css/plugins/'));
 
         foreach ($iterator as $file) {
 
-            if (in_array($file->getFilename(), ['.', '..', 'index.php'])) {
+            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
                 continue;
             }
 
-            if (is_dir($file->getPathname())) {
+            $filePath = $file->getPathname();
+            $filePath = str_replace(_EPH_THEME_DIR_ . 'css/plugins/', '', $filePath);
 
+            if (in_array($filePath, $plugintochecks)) {
+
+            } else {
+                Tools::deleteDirectory($file->getPathname());
+            }
+
+        }
+
+        $iterator = new AppendIterator();
+        $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'js/plugins/'));
+
+        foreach ($iterator as $file) {
+
+            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
                 continue;
             }
 
-            unlink($file->getPathname());
+            $filePath = $file->getPathname();
+            $filePath = str_replace(_EPH_THEME_DIR_ . 'js/plugins/', '', $filePath);
+
+            if (in_array($filePath, $plugintochecks)) {
+
+            } else {
+                Tools::deleteDirectory($file->getPathname());
+            }
+
+        }
+
+        $iterator = new AppendIterator();
+        $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'plugins/'));
+
+        foreach ($iterator as $file) {
+
+            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
+                continue;
+            }
+
+            $filePath = $file->getPathname();
+            $filePath = str_replace(_EPH_THEME_DIR_ . 'plugins/', '', $filePath);
+
+            if (in_array($filePath, $plugintochecks)) {
+
+            } else {
+                Tools::deleteDirectory($file->getPathname());
+            }
+
         }
 
     }
+    
+    public static function cleanEmptyDirectory() {
 
+        $recursive_directory = ['includes/classes', 'includes/controllers', 'includes/plugins', 'content/js', 'content/backoffice/backend'];
+
+        $iterator = new AppendIterator();
+
+        foreach ($recursive_directory as $key => $directory) {
+            $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory. '/'));
+        }
+
+        foreach ($iterator as $file) {
+            $fileName = $file->getFilename();
+            $filePath = $file->getPathname();
+            if (str_contains($filePath, '/cache/')) {
+				continue;
+			}
+            $path = str_replace($fileName, '', $filePath);
+
+            if (is_dir($path)) {
+                Tools::removeEmptyDirs($path);
+            }
+
+        }
+
+        $iterator = new AppendIterator();
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/'));
+
+        foreach ($iterator as $file) {
+
+            $filePath = $file->getPathname();
+            $ext = pathinfo($file->getFilename(), PATHINFO_EXTENSION);
+
+            if ($ext == 'txt') {
+                unlink($filePath);
+            }
+
+        }
+        
+        mkdir(_EPH_ROOT_DIR_ . '/content/backoffice/backend/cache', 0777, true);
+        Tools::generateIndexFiles(_EPH_ROOT_DIR_ . '/content/backoffice/backend/cache/');
+
+    }
+    
     public static function reGenerateilesIndex() {
 
         $recursive_directory = [
@@ -3233,21 +3358,6 @@ FileETag none
         return $base;
     }
 
-    /**
-     * Smarty {implode} plugin
-     *
-     * Type:     function<br>
-     * Name:     implode<br>
-     * Purpose:  implode Array
-     * Use: {implode value="" separator=""}
-     *
-     * @link http://www.smarty.net/manual/en/language.function.fetch.php {fetch}
-     *       (Smarty online manual)
-     *
-     * @param array                    $params   parameters
-     * @param Smarty_Internal_Template $template template object
-     * @return string|null if the assign parameter is passed, Smarty assigns the result to a template variable
-     */
     public static function smartyImplode($params, $template) {
 
         if (!isset($params['value'])) {
@@ -3261,50 +3371,13 @@ FileETag none
 
         return implode($params['separator'], $params['value']);
     }
-
-    /**
-     * Encode table
-     *
-     * @param array
-     *
-     * @since 1.0.4
-     *
-     * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
-     *
-     * Copyright (c) 2014 TrueServer B.V.
-     *
-     * Permission is hereby granted, free of charge, to any person obtaining a copy
-     * of this software and associated documentation files (the "Software"), to deal
-     * in the Software without restriction, including without limitation the rights
-     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-     * copies of the Software, and to permit persons to whom the Software is furnished
-     * to do so, subject to the following conditions:
-     *
-     * The above copyright notice and this permission notice shall be included in all
-     * copies or substantial portions of the Software.
-     *
-     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-     * THE SOFTWARE.
-     */
+    
     protected static $encodeTable = [
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
         'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
         'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
     ];
-    /**
-     * Decode table
-     *
-     * @param array
-     *
-     * @since 1.0.4
-     *
-     * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
-     */
+    
     protected static $decodeTable = [
         'a' => 0, 'b'  => 1, 'c'  => 2, 'd'  => 3, 'e'  => 4, 'f'  => 5,
         'g' => 6, 'h'  => 7, 'i'  => 8, 'j'  => 9, 'k'  => 10, 'l' => 11,
@@ -3314,13 +3387,6 @@ FileETag none
         '4' => 30, '5' => 31, '6' => 32, '7' => 33, '8' => 34, '9' => 35,
     ];
 
-    /**
-     * Convert a UTF-8 email addres to IDN format (domain part only)
-     *
-     * @param string $email
-     *
-     * @return string
-     */
     public static function convertEmailToIdn($email) {
 
         if (mb_detect_encoding($email, 'UTF-8', true) && mb_strpos($email, '@') > -1) {
@@ -4325,42 +4391,6 @@ FileETag none
 
     }
 
-    public static function cleanEmptyDirectory() {
-
-        $recursive_directory = ['includes/classes', 'includes/controllers', 'includes/plugins', 'content/js', 'content/backoffice/backend'];
-
-        $iterator = new AppendIterator();
-
-        foreach ($recursive_directory as $key => $directory) {
-            $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory));
-        }
-
-        foreach ($iterator as $file) {
-            $fileName = $file->getFilename();
-            $filePath = $file->getPathname();
-            $path = str_replace($fileName, '', $filePath);
-
-            if (is_dir($path)) {
-                Tools::removeEmptyDirs($path);
-            }
-
-        }
-
-        $iterator = new AppendIterator();
-        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/'));
-
-        foreach ($iterator as $file) {
-
-            $filePath = $file->getPathname();
-            $ext = pathinfo($file->getFilename(), PATHINFO_EXTENSION);
-
-            if ($ext == 'txt') {
-                unlink($filePath);
-            }
-
-        }
-
-    }
 
     public static function removeEmptyDirs($path) {
 
@@ -4788,124 +4818,6 @@ FileETag none
 
     }
 
-    public static function cleanThemeDirectory() {
-
-        $folder = [];
-        $plugintochecks = [];
-
-        $iterator = new AppendIterator();
-
-        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/includes/plugins'));
-
-        foreach ($iterator as $file) {
-
-            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
-                continue;
-            }
-
-            $filePath = $file->getPathname();
-            $plugin = str_replace(_EPH_ROOT_DIR_ . '/includes/plugins/', '', $filePath);
-
-            if (file_exists($filePath . '/' . $plugin . '.php')) {
-                $folder[] = $plugin;
-            } else {
-                Tools::deleteDirectory($file->getPathname());
-            }
-
-        }
-
-        $plugins = Plugin::getPluginsOnDisk();
-
-        foreach ($plugins as $plugin) {
-
-            if ($plugin->id > 0) {
-
-                if (in_array($plugin->name, $folder)) {
-                    $plugintochecks[] = $plugin->name;
-                } else {
-                    $result = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
-                        (new DbQuery())
-                            ->select('`id_hook`')
-                            ->from('hook_plugin')
-                            ->where('`id_plugin` = ' . (int) $plugin->id)
-                    );
-
-                    foreach ($result as $row) {
-                        $plugin->unregisterHook((int) $row['id_hook']);
-                        $plugin->unregisterExceptions((int) $row['id_hook']);
-                    }
-
-                    Db::getInstance()->delete('plugin_access', '`id_plugin` = ' . (int) $plugin->id);
-                    Group::truncateRestrictionsByPlugin($plugin->id);
-                    Db::getInstance()->delete('plugin', '`id_plugin` = ' . (int) $plugin->id);
-                }
-
-            }
-
-        }
-
-        $iterator = new AppendIterator();
-
-        $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'css/plugins'));
-
-        foreach ($iterator as $file) {
-
-            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
-                continue;
-            }
-
-            $filePath = $file->getPathname();
-            $filePath = str_replace(_EPH_THEME_DIR_ . 'css/plugins/', '', $filePath);
-
-            if (in_array($filePath, $plugintochecks)) {
-
-            } else {
-                Tools::deleteDirectory($file->getPathname());
-            }
-
-        }
-
-        $iterator = new AppendIterator();
-        $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'js/plugins'));
-
-        foreach ($iterator as $file) {
-
-            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
-                continue;
-            }
-
-            $filePath = $file->getPathname();
-            $filePath = str_replace(_EPH_THEME_DIR_ . 'js/plugins/', '', $filePath);
-
-            if (in_array($filePath, $plugintochecks)) {
-
-            } else {
-                Tools::deleteDirectory($file->getPathname());
-            }
-
-        }
-
-        $iterator = new AppendIterator();
-        $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'plugins'));
-
-        foreach ($iterator as $file) {
-
-            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
-                continue;
-            }
-
-            $filePath = $file->getPathname();
-            $filePath = str_replace(_EPH_THEME_DIR_ . 'plugins/', '', $filePath);
-
-            if (in_array($filePath, $plugintochecks)) {
-
-            } else {
-                Tools::deleteDirectory($file->getPathname());
-            }
-
-        }
-
-    }
 
     public static function singleFontsUrl() {
 
@@ -5522,6 +5434,15 @@ FileETag none
     public static function isString($string) {
         
         return is_string($string);
+        
+    }
+    
+    public static function arrayValues($array) {
+        
+        if(is_array($array)) {
+            return array_values($array);
+        }
+        return null;
         
     }
 
