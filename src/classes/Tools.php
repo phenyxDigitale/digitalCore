@@ -5488,6 +5488,30 @@ FileETag none
         return ImageManager::actionOnImageResizeAfter($destination, $newFile);
 
     }
+    
+    public static function isNull($string) {
+        
+        return is_null($string);
+        
+    }
+    
+    public static function isObject($object) {
+        
+        return is_object($object);
+        
+    }
+    
+    public static function phpVersion() {
+        
+        return phpversion();
+        
+    }
+    
+    public static function isString($string) {
+        
+        return is_string($string);
+        
+    }
 
 }
 
