@@ -1569,6 +1569,7 @@ class Tools {
     }
 
 
+
     public static function hourGenerate($hours, $minutes, $seconds) {
 
         return implode(':', [$hours, $minutes, $seconds]);
@@ -5434,6 +5435,29 @@ FileETag none
     public static function isString($string) {
         
         return is_string($string);
+        
+    }
+    
+    public static function isInteger($string) {
+        
+        return is_int($string);
+        
+    }
+    
+    public static function strReplace($field, $replace, $string) {
+        
+        if(is_string($string)) {
+            return str_replace($field, $replace, $string);
+        }
+        
+    }
+    
+    public static function varExport($array, $return = false) {
+        
+        if(is_array($array)) {
+            return var_export($array, $return);
+        }
+        return null;
         
     }
     
