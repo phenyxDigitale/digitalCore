@@ -548,10 +548,25 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 				break;
 			case 'duplicate_slider':
 				$id = $this->get_val($data, 'id');
-				$new_id = $slider->duplicate_slider_by_id($id);
-
-				if ((int) ($new_id) > 0) {
-					$new_slider = new RevSliderSlider($new_id);
+                $slider = new RevSliderSlider($id);
+                $slides = $slider->slides;
+                $staticSlides = $slider->staticSlides;
+                $newSlider = $slider->duplicateObject();
+                foreach($slides as $slide) {
+                    $slide = new RevSliderSlide($slide['id_revslider_slide']);
+                    $slide->duplicateObject();
+                    $slide->id_revslider_slider = $newSlider->id;
+                    $slide->update();
+                }
+                foreach($staticSlides as $slide) {
+                    $slide = new RevSliderStaticSlide($slide['id_revslider_static_slide']);
+                    $slide->duplicateObject();
+                    $slide->id_revslider_slider = $newSlider->id;
+                    $slide->update();
+                }
+				
+				if ((int) ($newSlider->id) > 0) {
+					$new_slider = new RevSliderSlider($newSlider->id);
 					//$new_slider->init_by_id($new_id);
 					$data = $new_slider->get_overview_data();
 					$this->ajax_response_data(['slider' => $data]);
