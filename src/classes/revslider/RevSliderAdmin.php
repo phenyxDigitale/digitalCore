@@ -552,16 +552,26 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
                 $slides = $slider->slides;
                 $staticSlides = $slider->staticSlides;
                 $newSlider = $slider->duplicateObject();
+                $newSlider->alias = 'slider-'.$newSlider->id;
+                $newSlider->params = $slider->params;
+                $newSlider->settings = $slider->settings;
+                $newSlider->update();
                 foreach($slides as $slide) {
                     $slide = new RevSliderSlide($slide['id_revslider_slide']);
-                    $slide->duplicateObject();
-                    $slide->id_revslider_slider = $newSlider->id;
+                    $newSlide = $slide->duplicateObject();
+                    $newSlide->id_revslider_slider = $newSlider->id;
+                    $newSlide->params = $slide['params'];
+                    $newSlide->settings = $slide['settings'];
+                    $newSlide->layers = $slide['layers'];
                     $slide->update();
                 }
                 foreach($staticSlides as $slide) {
                     $slide = new RevSliderStaticSlide($slide['id_revslider_static_slide']);
-                    $slide->duplicateObject();
-                    $slide->id_revslider_slider = $newSlider->id;
+                    $newSlide = $slide->duplicateObject();
+                    $newSlide->id_revslider_slider = $newSlider->id;
+                    $newSlide->params = $slide['params'];
+                    $newSlide->settings = $slide['settings'];
+                    $newSlide->layers = $slide['layers'];
                     $slide->update();
                 }
 				
