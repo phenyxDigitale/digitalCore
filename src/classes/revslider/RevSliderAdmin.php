@@ -546,7 +546,7 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 				$result = $slider->delete();
 				$this->ajax_response_success($this->l('Slider Deleted'));
 				break;
-			case 'duplicate_slider':
+			case 'duplicate_slider':                
 				$id = $this->get_val($data, 'id');
                 $slider = new RevSliderSlider($id);
                 $slides = $slider->slides;
@@ -557,33 +557,39 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
                 $newSlider->settings = $slider->settings;
                 $newSlider->update();
                 foreach($slides as $slide) {
-                    $slide = new RevSliderSlide($slide['id_revslider_slide']);
-                    $newSlide = $slide->duplicateObject();
+                    
+                    $oldslide = new RevSliderSlide($slide['id_revslider_slide']);
+                    $newSlide = $oldslide->duplicateObject();
                     $newSlide->id_revslider_slider = $newSlider->id;
-                    $newSlide->params = $slide['params'];
-                    $newSlide->settings = $slide['settings'];
-                    $newSlide->layers = $slide['layers'];
-                    $slide->update();
+                    $newSlide->params = $oldslide->params;
+                    $newSlide->settings = $oldslide->settings;
+                    $newSlide->layers = $oldslide->layers;
+                    $newSlide->update();
                 }
                 foreach($staticSlides as $slide) {
-                    $slide = new RevSliderStaticSlide($slide['id_revslider_static_slide']);
-                    $newSlide = $slide->duplicateObject();
+                    $oldslide = new RevSliderStaticSlide($slide['id_revslider_static_slide']);
+                    $newSlide = $oldslide->duplicateObject();
                     $newSlide->id_revslider_slider = $newSlider->id;
-                    $newSlide->params = $slide['params'];
-                    $newSlide->settings = $slide['settings'];
-                    $newSlide->layers = $slide['layers'];
-                    $slide->update();
+                    $newSlide->params = $oldslide->params;
+                    $newSlide->settings = $oldslide->settings;
+                    $newSlide->layers = $oldslide->layers;
+                    $newSlide->update();
                 }
 				
 				if ((int) ($newSlider->id) > 0) {
 					$new_slider = new RevSliderSlider($newSlider->id);
-					//$new_slider->init_by_id($new_id);
 					$data = $new_slider->get_overview_data();
 					$this->ajax_response_data(['slider' => $data]);
 				}
 
 				$this->ajax_response_error($this->l('Duplication Failed'));
 				break;
+            case 'deletesingleslide':
+                $id = $this->get_val($data, 'id');
+                $slide = new RevSliderSlide($id);
+                $slide->delete();
+                $this->ajax_response_success($this->l('Slide Deleted'));
+                break;
 			case 'save_slide':
                 $slide_id = $data['slide_id'];
                 $slide = new RevSliderSlide($slide_id);
@@ -788,6 +794,7 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 						$slider_found = $sliderony->get_overview_data();
 						$return = $slider_found['bg']['src'];
 						$title = $slider_found['title'];
+
 					}
 
 				}
