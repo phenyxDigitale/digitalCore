@@ -852,13 +852,27 @@ abstract class Plugin {
 
             if (file_exists(_EPH_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php')) {
                 require_once _EPH_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php';
-                $image = 'includes/plugins/' . $plugin->name . '/logo.png';
+                if(file_exists(_EPH_PLUGIN_DIR_ . $plugin->name . '/logo.webp')) {
+                    $image = 'includes/plugins/' . $plugin->name . '/logo.webp';
+                } else if(file_exists(_EPH_PLUGIN_DIR_ . $plugin->name . '/logo.png')) {
+                    $image = 'includes/plugins/' . $plugin->name . '/logo.png';
+                } else {
+                    $image = 'content/img/no-plugin.png';
+                }
             } else
 
             if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php')) {
                 require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin->name . '/' . $plugin->name . '.php';
-                $image = 'includes/specific_plugins/' . $plugin->name . '/logo.png';
+                if(file_exists(_EPH_SPECIFIC_PLUGIN_DIR_. $plugin->name . '/logo.webp')) {
+                    $image = 'includes/specific_plugins/' . $plugin->name . '/logo.webp';
+                } else if(file_exists(_EPH_SPECIFIC_PLUGIN_DIR_. $plugin->name . '/logo.png')) {
+                    $image = 'includes/specific_plugins/' . $plugin->name . '/logo.png';
+                } else {
+                    $image = 'content/img/no-plugin.png';
+                }
+                
             }
+            
 
             $tmpPlugin = Adapter_ServiceLocator::get($plugin->name);
             if (isset($pluginsInstalled[$plugin->name])) {
