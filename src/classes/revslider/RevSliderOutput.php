@@ -1281,7 +1281,7 @@ class RevSliderOutput extends RevSliderFunction {
 
 		$slide = $this->get_slide();
 		$bg_type = $slide->get_param(['bg', 'type'], 'trans');
-		$url_trans = RS_PLUGIN_URL . 'public/assets/assets/transparent.png';
+		$url_trans = RS_PLUGIN_URL . 'views/img/transparent.png';
 		$img = ['id' => false, 'src' => '', 'alt' => '', 'style' => '', 'title' => '', 'parallax' => '', 'panzoom' => '', 'width' => '', 'height' => '', 'bg' => '', 'lazyload' => ''];
 
 		if ($bg_type != 'external') {
@@ -1374,7 +1374,7 @@ class RevSliderOutput extends RevSliderFunction {
 
 		$img['src'] = (trim($img['src']) == '') ? $url_trans : $img['src']; //go back to transparent if img is empty
 		$img['data-lazyload'] = ($this->slider->get_param(['general', 'lazyLoad'], false) != 'none') ? $this->remove_http($img['src']) : '';
-		$img['src'] = ($this->slider->get_param(['general', 'lazyLoad'], false) != 'none') ? RS_PLUGIN_URL . 'public/assets/assets/dummy.png' : $img['src'];
+		$img['src'] = ($this->slider->get_param(['general', 'lazyLoad'], false) != 'none') ? RS_PLUGIN_URL . 'views/img/dummy.png' : $img['src'];
 		$img['src'] = $this->remove_http($img['src']);
 		$img['data-bg'] = $this->get_image_background_values();
 		$img['data-parallax'] = $this->get_html_parallax();
@@ -6137,7 +6137,7 @@ rs-plugin .material-icons {
 
 				if ($seo_opti === 'false' || $seo_opti === false) {
 					$additional .= ' data-lazyload="' . $this->remove_http($urlImage) . '"';
-					$urlImage = RS_PLUGIN_URL . 'public/assets/assets/dummy.png';
+					$urlImage = RS_PLUGIN_URL . 'views/img/dummy.png';
 				}
 
 			}
@@ -7666,26 +7666,26 @@ rs-plugin .material-icons {
 		//$settings	= $this->get_global_settings();
 		$slver = RevLoader::apply_filters('revslider_remove_version', RS_REVISION); //allows to remove slider version at the JavaScript and CSS inclusions
 
-		$ret = RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'public/assets/js/rbtools.min.js?rev=' . $slver . '"></script>' . "\n";
+		$ret = RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'views/js/rbtools.min.js?rev=' . $slver . '"></script>' . "\n";
 
-		if (!file_exists(RS_PLUGIN_PATH . 'public/assets/js/rs6.min.js')) {
-			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'public/assets/js/dev/rs6.main.js?rev=' . $slver . '"></script>' . "\n";
+		if (!file_exists(RS_PLUGIN_PATH . 'views/js/rs6.min.js')) {
+			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'views/js/dev/rs6.main.js?rev=' . $slver . '"></script>' . "\n";
 			//if on, load all libraries instead of dynamically loading them
-			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'public/assets/js/dev/rs6.actions.js?rev=' . $slver . '"></script>' . "\n";
-			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'public/assets/js/dev/rs6.carousel.js?rev=' . $slver . '"></script>' . "\n";
-			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'public/assets/js/dev/rs6.layeranimation.js?rev=' . $slver . '"></script>' . "\n";
-			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'public/assets/js/dev/rs6.navigation.js?rev=' . $slver . '"></script>' . "\n";
-			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'public/assets/js/dev/rs6.panzoom.js?rev=' . $slver . '"></script>' . "\n";
-			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'public/assets/js/dev/rs6.parallax.js?rev=' . $slver . '"></script>' . "\n";
-			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'public/assets/js/dev/rs6.slideanims.js?rev=' . $slver . '"></script>' . "\n";
-			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'public/assets/js/dev/rs6.video.js?rev=' . $slver . '"></script>' . "\n";
+			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'views/js/dev/rs6.actions.js?rev=' . $slver . '"></script>' . "\n";
+			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'views/js/dev/rs6.carousel.js?rev=' . $slver . '"></script>' . "\n";
+			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'views/js/dev/rs6.layeranimation.js?rev=' . $slver . '"></script>' . "\n";
+			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'views/js/dev/rs6.navigation.js?rev=' . $slver . '"></script>' . "\n";
+			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'views/js/dev/rs6.panzoom.js?rev=' . $slver . '"></script>' . "\n";
+			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'views/js/dev/rs6.parallax.js?rev=' . $slver . '"></script>' . "\n";
+			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'views/js/dev/rs6.slideanims.js?rev=' . $slver . '"></script>' . "\n";
+			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'views/js/dev/rs6.video.js?rev=' . $slver . '"></script>' . "\n";
 		} else {
-			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'public/assets/js/rs6.min.js?rev=' . $slver . '"></script>' . "\n";
+			$ret .= RS_T3 . '<script type="text/javascript" src="' . RS_PLUGIN_URL_CLEAN . 'views/js/rs6.min.js?rev=' . $slver . '"></script>' . "\n";
 		}
 
 		/**
 		 * removed in 6.0
-		 * $ret .= ($this->get_val($settings, 'enable_logs', 'off') == 'on') ? RS_T3.'<script type="text/javascript" src="'.RS_PLUGIN_URL_CLEAN.'public/assets/js/jquery.themepunch.enablelog.js?rev='.$slver.'"></script>'."\n" : '';
+		 * $ret .= ($this->get_val($settings, 'enable_logs', 'off') == 'on') ? RS_T3.'<script type="text/javascript" src="'.RS_PLUGIN_URL_CLEAN.'views/js/jquery.themepunch.enablelog.js?rev='.$slver.'"></script>'."\n" : '';
 		 **/
 
 		return $ret;
@@ -9070,7 +9070,7 @@ rs-plugin .material-icons {
 				'd' => 'standard',
 			],
 			/*'jsFileLocation' => array(
-				'v' => '//'.$js_loc_r[1] .'public/assets/js/',
+				'v' => '//'.$js_loc_r[1] .'views/js/',
 				'd' => ''
 			),*/
 			'sliderLayout'        => [

@@ -471,7 +471,6 @@ class RevLoader {
 
     function generate_svg_url($url = '') {
 
-        //$url = "/plugins/revslider-whiteboard-addon/public/assets/svg/busy-icons-svg/character07.svg";
         $url_array = explode("/", $url);
         $found_svg = false;
         $relative_url = '';
@@ -1435,14 +1434,12 @@ class RevLoader {
         }
 
         $scripts = [
-            //  RS_PLUGIN_URL . 'admin/assets/default/js/jquery.js',
-            // RS_PLUGIN_URL . 'admin/assets/default/js/jquery-ui.js',
-            RS_PLUGIN_URL . 'admin/assets/default/js/iris.min.js',
-            RS_PLUGIN_URL . 'admin/assets/default/js/wp-color-picker.js',
-            RS_PLUGIN_URL . 'admin/assets/default/js/wpdialogs.js',
-            RS_PLUGIN_URL . 'admin/assets/default/js/thickbox.js',
-            RS_PLUGIN_URL . 'admin/assets/default/js/media-upload.js',
-            RS_PLUGIN_URL . 'admin/assets/default/js/underscore.min.js',
+            RS_PLUGIN_URL . 'views/js/iris.min.js',
+            RS_PLUGIN_URL . 'views/js/wp-color-picker.js',
+            RS_PLUGIN_URL . 'views/js/wpdialogs.js',
+            RS_PLUGIN_URL . 'views/js/thickbox.js',
+            RS_PLUGIN_URL . 'views/js/media-upload.js',
+            RS_PLUGIN_URL . 'views/js/underscore.min.js',
         ];
 
         return $scripts;

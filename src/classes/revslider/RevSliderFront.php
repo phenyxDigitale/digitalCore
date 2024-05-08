@@ -54,7 +54,7 @@ class RevSliderFront extends RevSliderFunction {
 		}
 
 		if (Tools::getValue('controller') == 'AdminRevolutionsliderAjax') {
-			RevLoader::wp_enqueue_style('rs-plugin-settings', $rs_ver, [], RS_PLUGIN_URL . 'public/assets/css/rs6.css');
+			RevLoader::wp_enqueue_style('rs-plugin-settings', $rs_ver, [], RS_PLUGIN_URL . 'views/css/rs6.css');
 		}
 
 		/**
@@ -74,21 +74,21 @@ class RevSliderFront extends RevSliderFunction {
 		}
 
 		if (Tools::getValue('controller') == 'AdminRevolutionsliderAjax') {
-			RevLoader::wp_enqueue_script('tp-tools', RS_PLUGIN_URL . 'public/assets/js/rbtools.min.js', $waitfor, RS_TP_TOOLS, $inc_footer);
+			RevLoader::wp_enqueue_script('tp-tools', RS_PLUGIN_URL . 'views/js/rbtools.min.js', $waitfor, RS_TP_TOOLS, $inc_footer);
 
-			if (!file_exists(RS_PLUGIN_PATH . 'public/assets/js/rs6.min.js')) {
-				RevLoader::wp_enqueue_script('revmin', RS_PLUGIN_URL . 'public/assets/js/dev/rs6.main.js', 'tp-tools', $rs_ver, $inc_footer);
+			if (!file_exists(RS_PLUGIN_PATH . 'views/js/rs6.min.js')) {
+				RevLoader::wp_enqueue_script('revmin', RS_PLUGIN_URL . 'views/js/dev/rs6.main.js', 'tp-tools', $rs_ver, $inc_footer);
 				//if on, load all libraries instead of dynamically loading them
-				RevLoader::wp_enqueue_script('revmin-actions', RS_PLUGIN_URL . 'public/assets/js/dev/rs6.actions.js', 'tp-tools', $rs_ver, $inc_footer);
-				RevLoader::wp_enqueue_script('revmin-carousel', RS_PLUGIN_URL . 'public/assets/js/dev/rs6.carousel.js', 'tp-tools', $rs_ver, $inc_footer);
-				RevLoader::wp_enqueue_script('revmin-layeranimation', RS_PLUGIN_URL . 'public/assets/js/dev/rs6.layeranimation.js', 'tp-tools', $rs_ver, $inc_footer);
-				RevLoader::wp_enqueue_script('revmin-navigation', RS_PLUGIN_URL . 'public/assets/js/dev/rs6.navigation.js', 'tp-tools', $rs_ver, $inc_footer);
-				RevLoader::wp_enqueue_script('revmin-panzoom', RS_PLUGIN_URL . 'public/assets/js/dev/rs6.panzoom.js', 'tp-tools', $rs_ver, $inc_footer);
-				RevLoader::wp_enqueue_script('revmin-parallax', RS_PLUGIN_URL . 'public/assets/js/dev/rs6.parallax.js', 'tp-tools', $rs_ver, $inc_footer);
-				RevLoader::wp_enqueue_script('revmin-slideanims', RS_PLUGIN_URL . 'public/assets/js/dev/rs6.slideanims.js', 'tp-tools', $rs_ver, $inc_footer);
-				RevLoader::wp_enqueue_script('revmin-video', RS_PLUGIN_URL . 'public/assets/js/dev/rs6.video.js', 'tp-tools', $rs_ver, $inc_footer);
+				RevLoader::wp_enqueue_script('revmin-actions', RS_PLUGIN_URL . 'views/js/dev/rs6.actions.js', 'tp-tools', $rs_ver, $inc_footer);
+				RevLoader::wp_enqueue_script('revmin-carousel', RS_PLUGIN_URL . 'views/js/dev/rs6.carousel.js', 'tp-tools', $rs_ver, $inc_footer);
+				RevLoader::wp_enqueue_script('revmin-layeranimation', RS_PLUGIN_URL . 'views/js/dev/rs6.layeranimation.js', 'tp-tools', $rs_ver, $inc_footer);
+				RevLoader::wp_enqueue_script('revmin-navigation', RS_PLUGIN_URL . 'views/js/dev/rs6.navigation.js', 'tp-tools', $rs_ver, $inc_footer);
+				RevLoader::wp_enqueue_script('revmin-panzoom', RS_PLUGIN_URL . 'views/js/dev/rs6.panzoom.js', 'tp-tools', $rs_ver, $inc_footer);
+				RevLoader::wp_enqueue_script('revmin-parallax', RS_PLUGIN_URL . 'views/js/dev/rs6.parallax.js', 'tp-tools', $rs_ver, $inc_footer);
+				RevLoader::wp_enqueue_script('revmin-slideanims', RS_PLUGIN_URL . 'views/js/dev/rs6.slideanims.js', 'tp-tools', $rs_ver, $inc_footer);
+				RevLoader::wp_enqueue_script('revmin-video', RS_PLUGIN_URL . 'views/js/dev/rs6.video.js', 'tp-tools', $rs_ver, $inc_footer);
 			} else {
-				RevLoader::wp_enqueue_script('revmin', RS_PLUGIN_URL . 'public/assets/js/rs6.min.js', 'tp-tools', $rs_ver, $inc_footer);
+				RevLoader::wp_enqueue_script('revmin', RS_PLUGIN_URL . 'views/js/rs6.min.js', 'tp-tools', $rs_ver, $inc_footer);
 			}
 
 		}
@@ -130,8 +130,8 @@ class RevSliderFront extends RevSliderFunction {
 		$global = $func->get_global_settings();
 		$ignore_fa = $func->_truefalse($func->get_val($global, 'fontawesomedisable', false));
 
-		echo ($ignore_fa === false && ($fa_icon_var == true || $fa_var == true)) ? '<link rel="stylesheet" property="stylesheet" id="rs-icon-set-fa-icon-css" href="' . RS_PLUGIN_URL . 'public/assets/fonts/font-awesome/css/font-awesome.css" type="text/css" media="all" />' . "\n" : '';
-		echo ($pe_7s_var) ? '<link rel="stylesheet" property="stylesheet" id="rs-icon-set-pe-7s-css" href="' . RS_PLUGIN_URL . 'public/assets/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css" type="text/css" media="all" />' . "\n" : '';
+		echo ($ignore_fa === false && ($fa_icon_var == true || $fa_var == true)) ? '<link rel="stylesheet" property="stylesheet" id="rs-icon-set-fa-icon-css" href="' . RS_PLUGIN_URL . 'views/fonts/font-awesome/css/font-awesome.css" type="text/css" media="all" />' . "\n" : '';
+		echo ($pe_7s_var) ? '<link rel="stylesheet" property="stylesheet" id="rs-icon-set-pe-7s-css" href="' . RS_PLUGIN_URL . 'views/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css" type="text/css" media="all" />' . "\n" : '';
 	}
 
 	/**

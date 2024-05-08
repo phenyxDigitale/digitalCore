@@ -1222,8 +1222,8 @@ class RevSliderFunctionsAdmin extends RevSliderFunction {
 			return $sizes;
 		}
 
-		$_css = '/public/assets/css/';
-		$_js = '/public/assets/js/';
+		$_css = '/views/css/';
+		$_js = '/views/js/';
 		//these are the sizes before the AddOns where updated
 		$_a = [
 			'revslider-404-addon'             => [],

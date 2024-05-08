@@ -913,8 +913,8 @@ class RevSliderFunction extends RevsliderData {
 
 		if (!RevLoader::get_option('revslider-static-css')) {
 
-			if (file_exists(RS_PLUGIN_PATH . 'public/assets/css/static-captions.css')) {
-				$css = @file_get_contents(RS_PLUGIN_PATH . 'public/assets/css/static-captions.css');
+			if (file_exists(RS_PLUGIN_PATH . 'views/css/static-captions.css')) {
+				$css = @file_get_contents(RS_PLUGIN_PATH . 'views/css/static-captions.css');
 				$this->update_static_css($css);
 			}
 

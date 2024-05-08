@@ -5452,6 +5452,12 @@ FileETag none
         
     }
     
+    public static function smartyConstant($string) {
+        
+        return constant($string);
+        
+    }
+    
     public static function varExport($array, $return = false) {
         
         if(is_array($array)) {

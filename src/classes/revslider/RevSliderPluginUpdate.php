@@ -1957,7 +1957,7 @@ class RevSliderPluginUpdate extends RevSliderFunction {
 										//change newer path to older path
 
 										if (strpos($layers[$lk]['svg']->src, $path) !== false) {
-											$layers[$lk]['svg']->src = str_replace($path, RS_PLUGIN_URL . 'public/assets/assets/svg/', $layers[$lk]['svg']->src);
+											$layers[$lk]['svg']->src = str_replace($path, RS_PLUGIN_URL . 'views/img/svg/', $layers[$lk]['svg']->src);
 										}
 
 									}
@@ -3459,7 +3459,7 @@ class RevSliderPluginUpdate extends RevSliderFunction {
 			}
 
 			$ml['media'] = [
-				'imageUrl'        => $this->get_val($layer, 'bgimage_url', RS_PLUGIN_URL . 'admin/assets/images/transparent_placeholder.png'),
+				'imageUrl'        => $this->get_val($layer, 'bgimage_url', RS_PLUGIN_URL . 'views/img/transparent_placeholder.png'),
 				//'imageId' => $img_id,
 				'imageFromStream' => false,
 				'loaded'          => false,
@@ -3473,7 +3473,7 @@ class RevSliderPluginUpdate extends RevSliderFunction {
 			}
 
 			$ml['media'] = [
-				'imageUrl'        => $this->get_val($layer, 'image_url', RS_PLUGIN_URL . 'admin/assets/images/transparent_placeholder.png'),
+				'imageUrl'        => $this->get_val($layer, 'image_url', RS_PLUGIN_URL . 'views/img/transparent_placeholder.png'),
 				'imageId'         => $img_id,
 				'imageFromStream' => false,
 				'loaded'          => false,

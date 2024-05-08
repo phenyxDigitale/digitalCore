@@ -14,7 +14,7 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 
 	public function __construct($content = true) {
 
-		$this->path_views = RS_PLUGIN_PATH . 'admin/views/';
+		$this->path_views = RS_PLUGIN_PATH . 'views/templates/admin/revslider_sliders/';
 		$this->global_settings = $this->get_global_settings();
 
 		$this->set_current_page();
@@ -590,6 +590,13 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
                 $slide->delete();
                 $this->ajax_response_success($this->l('Slide Deleted'));
                 break;
+            case 'update_shortcode';
+                $id = $this->get_val($data, 'id');
+                $alias = $this->get_val($data, 'alias');
+                $slider = new RevSliderSlider($id);
+                $slider->alias = $alias;
+                $slider->update();
+                $this->ajax_response_success($this->l('Short code updated'));
 			case 'save_slide':
                 $slide_id = $data['slide_id'];
                 $slide = new RevSliderSlide($slide_id);
@@ -629,57 +636,66 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 				} else {
 					$this->ajax_response_error($this->l('Slide not found'));
 				}
-
+                    
 				break;
+                case 'save_orderslide':
+                    $order = $this->get_val($data, 'saveOrderSlide') ? explode(',', $this->get_val($data, 'saveOrderSlide')) : [];
+                    foreach ($order as $position => $id_slide) {
+                        if (!trim($id_slide)) {
+				            continue;
+			            }
+                        $row = ['slide_order' => (int) $position];
+			            Db::getInstance()->update('revslider_slide', $row, 'id_revslider_slide =' . (int) $id_slide);
+                    }
+                    $this->ajax_response_success($this->l('Order slide Saved'));
+                    break;
+
 			case 'save_slider':
-				$slider_id = $this->get_val($data, 'slider_id');
-                $slider = new RevSliderSlider($slider_id);
-                $params = $this->get_val($data, 'params');
-		        $params = $this->json_decode_slashes($params);
-		        $settings = $this->get_val($data, 'settings');
-		        $settings = $this->json_decode_slashes($settings);
-		        $settings['version'] = $this->get_val($params, 'version', $this->get_val($settings, 'version'));
+                    $file = fopen("save_slider.txt","w");
+				    $slider_id = $this->get_val($data, 'slider_id');
+                    $slider = new RevSliderSlider($slider_id);
+                    $params = $this->get_val($data, 'params');
+                    $params = $this->json_decode_slashes($params);
+                    fwrite($file,print_r($params, true));
+                    $settings = $this->get_val($data, 'settings');
+                    $settings = $this->json_decode_slashes($settings);
+                    $settings['version'] = $this->get_val($params, 'version', $this->get_val($settings, 'version'));
 
-		        $title = RevLoader::sanitize_text_field($this->get_val($params, 'title'));
-		        $alias = RevLoader::sanitize_text_field($this->get_val($params, 'alias'));
+                    $title = $params['title'];
+                    $alias = $params['alias'];
 
-		        $this->validate_not_empty($title, 'Title');
-		        $this->validate_not_empty($alias, 'Alias');
+                    $this->validate_not_empty($title, 'Title');
+                    $this->validate_not_empty($alias, 'Alias');
 
-		        if (empty($slider_id) && $this->check_alias($alias)) {
-			        $this->throw_error($this->l('A Slider with the given alias already exists'));
-		        }
-                $slider->title = $title;
-		        $slider->alias = $alias;
-		        $slider->params = Tools::jsonEncode($params);
-		        $slider->settings = Tools::jsonEncode($settings);
-                $return = $slider->update();
-               
-				$mod_obj = Plugin::getInstanceByName('revslider');
+                    if (empty($slider_id) && $this->check_alias($alias)) {
+                        $this->throw_error($this->l('A Slider with the given alias already exists'));
+                    }
+                    $slider->title = $title;
+                    $slider->alias = $alias;
+                    $slider->params = $params;
+                    $slider->settings = $settings;
+                    $return = $slider->update();               
+                    $mod_obj = Plugin::getInstanceByName('revslider');
 
-				if (isset($slider_params['layout']['displayhook']) && $slider_params['layout']['displayhook'] != '') {
-					$mod_obj->registerHook($slider_params['layout']['displayhook']);
-				}
-				
-				$missing_slides = [];
-				$delete_slides = [];
+                    if (isset($slider_params['layout']['displayhook']) && $slider_params['layout']['displayhook'] != '') {
+                        $mod_obj->registerHook($slider_params['layout']['displayhook']);
+                    }
+				    $missing_slides = [];
+				    $delete_slides = [];
 
-				if ($return !== false) {
-                    $slide_ids = $this->get_val($data, 'slide_ids', []);
-					if (!empty($slide_ids)) {
-						$slides = $slider->get_slides(false, true);
-						// get the missing Slides (if any at all)
+				    if ($return !== false) {
+                        $slide_ids = $this->get_val($data, 'slide_ids', []);
+					   if (!empty($slide_ids)) {
+                           $slides = $slider->get_slides(false, true);
+                           foreach ($slide_ids as $slide_id) {
+                               $found = false;
+                               $slide = new RevSliderSlide($slide_id);
+                               foreach ($slides as $_slide) {
+                                   if ($_slide->id !== $slide->id) {
+                                       continue;
+                                   }
 
-						foreach ($slide_ids as $slide_id) {
-							$found = false;
-                            $slide = new RevSliderSlide($slide_id);
-							foreach ($slides as $_slide) {
-
-								if ($_slide->id !== $slide->id) {
-									continue;
-								}
-
-								$found = true;
+                                   $found = true;
 							}
 
 							if (!$found) {
@@ -1007,14 +1023,13 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 			case 'get_full_slider_object':
 				
 				$slide_id = $this->get_val($data, 'id');
-
 				$slide_id = RevSliderFunction::esc_attr_deep($slide_id);
 				$slider_alias = $this->get_val($data, 'alias', '');
 				$slider_alias = RevSliderFunction::esc_attr_deep($slider_alias);
-
 				
 				if ($slider_alias !== '') {
 					$slider_id = $slider->init_by_alias($slider_alias);
+                    $slider = new RevSliderSlider($slider_id);
 				} else {
 
 					if (strpos($slide_id, 'slider-') !== false) {

@@ -19,8 +19,8 @@ class RevSliderObjectLibrary extends RevSliderFunction {
 		$this->upload_dir = RevLoader::wp_upload_dir();
 
 		$this->font_icon_paths = [
-			RS_PLUGIN_PATH . 'public/assets/fonts/font-awesome/css/font-awesome.css',
-			RS_PLUGIN_PATH . 'public/assets/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css',
+			RS_PLUGIN_PATH . 'views/fonts/font-awesome/css/font-awesome.css',
+			RS_PLUGIN_PATH . 'views/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css',
 		];
 		$this->font_icon_paths = RevLoader::apply_filters('revslider_object_library_icon_paths', $this->font_icon_paths);
 	}
@@ -1046,8 +1046,8 @@ class RevSliderObjectLibrary extends RevSliderFunction {
 
 		$svg_sets = [];
 
-		$path = RS_PLUGIN_PATH . 'public/assets/assets/svg/';
-		$url = RS_PLUGIN_URL . 'public/assets/assets/svg/';
+		$path = RS_PLUGIN_PATH . 'views/svg/';
+		$url = RS_PLUGIN_URL . 'views/svg/';
 
 		if (!file_exists($path . 'action/ic_3d_rotation_24px.svg')) {
 			//the path needs to be changed to the uploads folder then
