@@ -182,6 +182,8 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 		$data = Tools::getValue('data');
 		$data = ($data == '') ? [] : $data;
 		$nonce = Tools::getValue('nonce');
+        $file = fopen("testRevAdmin.txt","a");
+        fwrite($file,$action.PHP_EOL.PHP_EOL);
 		$nonce = (empty($nonce)) ? Tools::getValue('rs-nonce') : $nonce;
 		try {
 
@@ -1087,6 +1089,12 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 						'id'     => $static_slide->id,
 					];
 				}
+                    $use_category = Plugin::isInstalled('ph_ecommerce') ? 1 :0;
+                    $use_education = Plugin::isInstalled('ph_learning') ? 1 :0;
+                    if($use_education) {
+                        
+                        $use_category = Configuration::get('_EPHENYX_SHOP_ACTIVE_') ? 1 :0;
+                    }
 
 				$obj = [
 					'id'              => $slider_id,
@@ -1096,6 +1104,8 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 					'slider_settings' => $slider->settings,
 					'slides'          => $_slides,
 					'static_slide'    => $_static_slide,
+                    'use_category'    => $use_category,
+                    'use_education'    => $use_education
 				];
 
 				$this->ajax_response_data($obj);
@@ -1583,6 +1593,7 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
 									'ind'       => $ind,
 									'url'       => $this->get_val($img, 'url'),
 									'mediatype' => $mt,
+
 								];
 							}
 
