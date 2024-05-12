@@ -1966,7 +1966,7 @@ abstract class Plugin {
         if (is_array($tabs) && count($tabs)) {
 
             foreach ($tabs as $tab) {
-                $menu = New EmployeeMenu($tab['id_employee_menu']);
+                $menu = new EmployeeMenu($tab['id_employee_menu']);
                 $menu->delete();
             }
 
