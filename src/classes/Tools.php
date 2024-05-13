@@ -1008,7 +1008,7 @@ class Tools {
             $context = Context::getContext();
         }
 
-        return Tools::getAdminToken($tab . (int) EmployeeMenu::getIdFromClassName($tab) . (int) $context->employee->id);
+        return Tools::getAdminToken($tab . (int) BackTab::getIdFromClassName($tab) . (int) $context->employee->id);
     }
 
     public static function getAdminToken($string) {
@@ -1020,7 +1020,7 @@ class Tools {
 
         $context = Context::getContext();
 
-        return Tools::getAdminToken($params['tab'] . (int) EmployeeMenu::getIdFromClassName($params['tab']) . (int) $context->employee->id);
+        return Tools::getAdminToken($params['tab'] . (int) BackTab::getIdFromClassName($params['tab']) . (int) $context->employee->id);
     }
 
     public static function getAdminImageUrl($image = null, $entities = false) {
@@ -5234,11 +5234,11 @@ FileETag none
 
             
 
-            $topbars = EmployeeMenu::getEmployeeMenus($context->language->id, 1);
+            $topbars = BackTab::getBackTabs($context->language->id, 1);
 
             foreach ($topbars as $index => $tab) {
 
-                if (!EmployeeMenu::checkTabRights($tab['id_employee_menu'])) {
+                if (!BackTab::checkTabRights($tab['id_back_tab'])) {
                     unset($topbars[$index]);
                     continue;
                 }
@@ -5261,11 +5261,11 @@ FileETag none
                 }
 
                 $topbars[$index]['name'] = $tab['name'];
-                $subTabs = EmployeeMenu::getEmployeeMenus($context->language->id, $tab['id_employee_menu']);
+                $subTabs = BackTab::getBackTabs($context->language->id, $tab['id_back_tab']);
 
                 foreach ($subTabs as $index2 => &$subTab) {
 
-                    if (!EmployeeMenu::checkTabRights($subTab['id_employee_menu'])) {
+                    if (!BackTab::checkTabRights($subTab['id_back_tab'])) {
                         unset($subTabs[$index2]);
                         continue;
                     }
@@ -5293,11 +5293,11 @@ FileETag none
                         $subTabs[$index2]['name'] = $subTab['name'];
                     }
 
-                    $terTabs = EmployeeMenu::getEmployeeMenus($context->language->id, $subTab['id_employee_menu']);
+                    $terTabs = BackTab::getBackTabs($context->language->id, $subTab['id_back_tab']);
 
                     foreach ($terTabs as $index3 => $terTab) {
 
-                        if (!EmployeeMenu::checkTabRights($terTab['id_employee_menu'])) {
+                        if (!BackTab::checkTabRights($terTab['id_back_tab'])) {
                             unset($terTabs[$index3]);
                             continue;
                         }

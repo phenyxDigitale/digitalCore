@@ -1305,8 +1305,8 @@ abstract class Plugin {
             INSERT INTO `' . _DB_PREFIX_ . 'plugin_access` (`id_profile`, `id_plugin`, `view`, `configure`, `uninstall`) (
                 SELECT id_profile, ' . (int) $this->id . ', 1, 1, 1
                 FROM ' . _DB_PREFIX_ . 'employee_access a
-                WHERE id_employee_menu = (
-                    SELECT `id_employee_menu` FROM ' . _DB_PREFIX_ . 'employee_menu
+                WHERE id_back_tab = (
+                    SELECT `id_back_tab` FROM ' . _DB_PREFIX_ . 'back_tab
                     WHERE class_name = \'AdminPlugins\' LIMIT 1)
                 AND a.`view` = 1)'
         );
@@ -1316,8 +1316,8 @@ abstract class Plugin {
             INSERT INTO `' . _DB_PREFIX_ . 'plugin_access` (`id_profile`, `id_plugin`, `view`, `configure`, `uninstall`) (
                 SELECT id_profile, ' . (int) $this->id . ', 1, 0, 0
                 FROM ' . _DB_PREFIX_ . 'employee_access a
-                WHERE id_employee_menu = (
-                    SELECT `id_employee_menu` FROM ' . _DB_PREFIX_ . 'employee_menu
+                WHERE id_back_tab = (
+                    SELECT `id_back_tab` FROM ' . _DB_PREFIX_ . 'back_tab
                     WHERE class_name = \'AdminPlugins\' LIMIT 1)
                 AND a.`view` = 0)'
         );
@@ -1958,15 +1958,15 @@ abstract class Plugin {
 
         $tabs = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-                ->select('`id_employee_menu`')
-                ->from('employee_menu')
+                ->select('`id_back_tab`')
+                ->from('back_tab')
                 ->where('`plugin` = \'' . pSQL($this->name) . '\'')
         );
 
         if (is_array($tabs) && count($tabs)) {
 
             foreach ($tabs as $tab) {
-                $menu = new EmployeeMenu($tab['id_employee_menu']);
+                $menu = New BackTab($tab['id_back_tab']);
                 $menu->delete();
             }
 
@@ -1983,7 +1983,7 @@ abstract class Plugin {
         }
 
         if (!is_null($parentName)) {
-            $idParent = (int) EmployeeMenu::getIdFromClassName($parentName);
+            $idParent = (int) BackTab::getIdFromClassName($parentName);
 
             if (!$idParent) {
                 return false;
@@ -1991,10 +1991,10 @@ abstract class Plugin {
 
         }
 
-        $idTab = (int) EmployeeMenu::getIdFromClassName($class_name);
+        $idTab = (int) BackTab::getIdFromClassName($class_name);
 
         if (!$idTab) {
-            $tab = new EmployeeMenu();
+            $tab = new BackTab();
 
             if ($function) {
 
@@ -2020,7 +2020,7 @@ abstract class Plugin {
             unset($lang);
             return $tab->add(true, false, true, $position);
         } else {
-            $tab = new EmployeeMenu($idTab);
+            $tab = new BackTab($idTab);
 
             if ($function) {
 
@@ -2053,15 +2053,15 @@ abstract class Plugin {
 
         $tabs = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-                ->select('`id_employee_menu`')
-                ->from('employee_menu')
+                ->select('`id_back_tab`')
+                ->from('back_tab')
                 ->where('`plugin` = \'' . pSQL($this->name) . '\'')
         );
 
         if (is_array($tabs) && count($tabs)) {
 
             foreach ($tabs as $tab) {
-                $menu = New EmployeeMenu($tab['id_employee_menu']);
+                $menu = New BackTab($tab['id_back_tab']);
                 $menu->active = false;
                 $menu->update();
             }

@@ -1495,7 +1495,7 @@ abstract class PhenyxController {
 
     protected function initTabPluginList() {
 
-        $this->tab_plugins_list = EmployeeMenu::getTabPluginsList($this->id);
+        $this->tab_plugins_list = BackTab::getTabPluginsList($this->id);
 
         if (is_array($this->tab_plugins_list['default_list']) && count($this->tab_plugins_list['default_list'])) {
             $this->filter_plugins_list = $this->tab_plugins_list['default_list'];

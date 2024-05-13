@@ -350,8 +350,8 @@ class PhenyxBackup {
     public function generatePhenyxData() {
 
        $insertTable = [
-           _DB_PREFIX_ . 'employee_menu',
-           _DB_PREFIX_ . 'employee_menu_lang',
+           _DB_PREFIX_ . 'back_tab',
+           _DB_PREFIX_ . 'back_tab_lang',
            _DB_PREFIX_ . 'meta',
            _DB_PREFIX_ . 'meta_lang',
        ];
