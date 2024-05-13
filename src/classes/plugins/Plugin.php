@@ -2014,7 +2014,7 @@ abstract class Plugin {
             $tab->name = [];
 
             foreach (Language::getLanguages(true) as $lang) {
-                $tab->name[$lang['id_lang']] = $translator->getGoogleTranslation($name, $language['iso_code']);
+                $tab->name[$lang['id_lang']] = $translator->getGoogleTranslation($name, $lang['iso_code']);
             }
 
             unset($lang);
