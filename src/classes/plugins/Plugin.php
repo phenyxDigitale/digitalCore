@@ -2540,6 +2540,18 @@ abstract class Plugin {
     }
 
     protected static function _isTemplateOverloadedStatic($plugin_name, $template) {
+        
+        $extraTemplate = Hook::exec('actionIsTemplateOverloaded', [], null, true);
+        if(is_array($extraTemplate) && count($extraTemplate)) {
+            foreach($extraTemplate as $plugin => $path) {
+                if (file_exists($path . 'plugins/' . $plugin_name . '/' . $template)) {
+                    return $path . 'plugins/' . $plugin_name . '/' . $template;
+                } else if (file_exists($path . 'plugins/' . $plugin_name . '/' . $template)) {
+                    return $path . 'plugins/' . $plugin_name . '/' . $template;
+                }
+            }
+            
+        }     
 
         if (file_exists(_EPH_THEME_DIR_ . 'plugins/' . $plugin_name . '/' . $template)) {
             return _EPH_THEME_DIR_ . 'plugins/' . $plugin_name . '/' . $template;
@@ -2576,7 +2588,7 @@ abstract class Plugin {
         if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin_name . '/' . $template)) {
             return false;
         }
-
+        
         return null;
     }
 
