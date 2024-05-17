@@ -1973,6 +1973,25 @@ abstract class Plugin {
         }
 
     }
+    
+    public function deployPluginMeta($page, $name) {
+        
+        $result = true;
+        $idMeta = Meta::getIdMetaByPage($page);
+        if(!$idMeta) {
+            $translator = Language::getInstance();
+            $meta = new Meta();
+            $meta->controller = 'front';
+            $meta->page = $page;
+            $meta->plugin = $this->name;
+            foreach (Language::getLanguages(true) as $lang) {
+                $meta->title[$lang['id_lang']] = $translator->getGoogleTranslation($name, $lang['iso_code']);
+                $meta->url_rewrite[$lang['id_lang']] = Tools::str2url($meta->title[$lang['id_lang']]);
+            }
+            $result = $meta->add();
+        }
+        return $result;
+    }
 
     public function instalPluginTab($class_name, $name, $function = true, $idParent = null, $parentName = null, $position = null, $openFunction = null, $divider = 0) {
 
