@@ -1974,14 +1974,14 @@ abstract class Plugin {
 
     }
     
-    public function deployPluginMeta($page, $name) {
+    public function deployPluginMeta($page, $name, $type = 'front') {
         
         $result = true;
         $idMeta = Meta::getIdMetaByPage($page);
         if(!$idMeta) {
             $translator = Language::getInstance();
             $meta = new Meta();
-            $meta->controller = 'front';
+            $meta->controller = $type;
             $meta->page = $page;
             $meta->plugin = $this->name;
             foreach (Language::getLanguages(true) as $lang) {
@@ -2037,7 +2037,8 @@ abstract class Plugin {
             }
 
             unset($lang);
-            return $tab->add(true, false, true, $position);
+            $result =  $tab->add(true, false, true, $position);
+            return $this->deployPluginMeta(strtolower($class_name), $name, 'admin');
         } else {
             $tab = new BackTab($idTab);
 
@@ -2063,7 +2064,8 @@ abstract class Plugin {
             }
 
             unset($lang);
-            return $tab->update(true, false, $position);
+            $result = $tab->update(true, false, $position);
+            return $this->deployPluginMeta(strtolower($class_name), $name, 'admin');
         }
 
     }
