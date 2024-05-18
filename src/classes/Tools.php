@@ -5385,6 +5385,13 @@ FileETag none
         return str_ends_with($string, $search);
     }
     
+    public static function Rtrim($string, $char) {
+        if(!is_null($string)) {
+            return rtrim($string, $char);
+        }
+        return $string;
+    }
+    
     public static function build_date($args) {
         
         return date($args);
