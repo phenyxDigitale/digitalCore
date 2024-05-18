@@ -5375,6 +5375,16 @@ FileETag none
         return str_contains($string, $search);
     }
     
+    public static function str_starts_with($search, $string) {
+        
+        return str_starts_with($string, $search);
+    }
+    
+    public static function str_ends_with($search, $string) {
+        
+        return str_ends_with($string, $search);
+    }
+    
     public static function build_date($args) {
         
         return date($args);
