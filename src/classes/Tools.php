@@ -2529,12 +2529,7 @@ FileETag none
         }
         
         
-        $path = _EPH_ROOT_DIR_ . '/content/backoffice/backend/cache/';
-        
-        if(is_dir($path)) {
-            Tools::deleteDirectory($path, false);  
-            Tools::generateIndexFiles(_EPH_ROOT_DIR_ . '/content/backoffice/backend/cache/');
-        }
+        Media::clearAdminCache();
         Media::clearCache();
         Hook::exec('clearFrontCache', []);
         
@@ -2599,66 +2594,72 @@ FileETag none
 
         }
         
-        $iterator = new AppendIterator();
+        
+        if(is_dir(_EPH_THEME_DIR_ . 'css/plugins/')) {
+            $iterator = new AppendIterator();
+            $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'css/plugins/'));
+            foreach ($iterator as $file) {
 
-        $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'css/plugins/'));
+                if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
+                    continue;
+                }
 
-        foreach ($iterator as $file) {
+                $filePath = $file->getPathname();
+                $filePath = str_replace(_EPH_THEME_DIR_ . 'css/plugins/', '', $filePath);
 
-            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
-                continue;
+                if (in_array($filePath, $plugintochecks)) {
+
+                } else {
+                    Tools::deleteDirectory($file->getPathname());
+                }
+
             }
 
-            $filePath = $file->getPathname();
-            $filePath = str_replace(_EPH_THEME_DIR_ . 'css/plugins/', '', $filePath);
+        }       
+        if(is_dir(_EPH_THEME_DIR_ . 'js/plugins/')) {
+            $iterator = new AppendIterator();
+            $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'js/plugins/'));
 
-            if (in_array($filePath, $plugintochecks)) {
+            foreach ($iterator as $file) {
 
-            } else {
-                Tools::deleteDirectory($file->getPathname());
+                if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
+                    continue;
+                }
+
+                $filePath = $file->getPathname();
+                $filePath = str_replace(_EPH_THEME_DIR_ . 'js/plugins/', '', $filePath);
+
+                if (in_array($filePath, $plugintochecks)) {
+
+                } else {
+                    Tools::deleteDirectory($file->getPathname());
+                }
+
             }
-
         }
+        if(is_dir(_EPH_THEME_DIR_ . 'plugins/')) {
+            $iterator = new AppendIterator();
+            $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'plugins/'));
 
-        $iterator = new AppendIterator();
-        $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'js/plugins/'));
+            foreach ($iterator as $file) {
 
-        foreach ($iterator as $file) {
+                if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
+                    continue;
+                }
 
-            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
-                continue;
+                $filePath = $file->getPathname();
+                $filePath = str_replace(_EPH_THEME_DIR_ . 'plugins/', '', $filePath);
+
+                if (in_array($filePath, $plugintochecks)) {
+
+                } else {
+                    Tools::deleteDirectory($file->getPathname());
+                }
+
             }
-
-            $filePath = $file->getPathname();
-            $filePath = str_replace(_EPH_THEME_DIR_ . 'js/plugins/', '', $filePath);
-
-            if (in_array($filePath, $plugintochecks)) {
-
-            } else {
-                Tools::deleteDirectory($file->getPathname());
-            }
-
         }
-
-        $iterator = new AppendIterator();
-        $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'plugins/'));
-
-        foreach ($iterator as $file) {
-
-            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
-                continue;
-            }
-
-            $filePath = $file->getPathname();
-            $filePath = str_replace(_EPH_THEME_DIR_ . 'plugins/', '', $filePath);
-
-            if (in_array($filePath, $plugintochecks)) {
-
-            } else {
-                Tools::deleteDirectory($file->getPathname());
-            }
-
-        }
+        
+        Hook::exec('cleanThemeDirectory', ['plugintochecks' => $plugintochecks]);
 
     }
     
