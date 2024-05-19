@@ -2093,10 +2093,18 @@ abstract class Plugin {
 
     public function unregisterHook($id_hook) {
 
-        $hook = new Hook($id_hook, $this->context->language->id);
-        $hook->plugins = $hook->getPlugins(true);
-        $hook->available_plugins = $hook->getPossiblePluginList(true);
-        $hook->update(true);
+        $id_hook_plugin = Db::getInstance()->getValue((new DbQuery())
+            ->select('hm.`id_hook_plugin`')
+            ->from('hook_plugin', 'hm')
+            ->leftJoin('hook', 'h', 'h.`id_hook` = hm.`id_hook`')
+            ->where('hm.`id_plugin` = ' . (int) $this->id)
+            ->where('h.`id_hook` = ' . $id_hook));
+        if($id_hook_plugin) {
+            $hookPlugin = new HookPlugin($id_hook_plugin);
+            return $hookPlugin->delete();
+        }
+
+        return true;
 
     }
 

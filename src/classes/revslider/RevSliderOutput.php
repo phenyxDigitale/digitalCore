@@ -774,7 +774,7 @@ class RevSliderOutput extends RevSliderFunction {
 			}
 
 			$slider_id = $this->slider->id;
-			$html_id = (trim($slider_id) !== '') ? $slider_id : 'rev_slider_' . $sid . '_' . $rs_slider_serial;
+			$html_id = ($slider_id !== '') ? $slider_id : 'rev_slider_' . $sid . '_' . $rs_slider_serial;
 
 			$this->set_html_id($html_id);
 
@@ -896,7 +896,7 @@ class RevSliderOutput extends RevSliderFunction {
 		if ($fixedOnTop['v'] === true) {
 			$style .= 'position:fixed;top:0px;height:0px';
 		}
-
+        if(isset($this->slider))
 		$r = RS_T3 . '<!-- START ' . RevLoader::esc_html(str_replace('-', '', $this->slider->get_title())) . ' REVOLUTION SLIDER ' . RS_REVISION . ' --><p class="rs-p-wp-fix"></p>' . "\n";
 		$r .= RS_T3 . '<rs-plugin-wrap';
 		$this->rs_plugin_wrap_open = true;
