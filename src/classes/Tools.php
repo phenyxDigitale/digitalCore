@@ -2535,12 +2535,9 @@ FileETag none
             Tools::deleteDirectory($path, false);  
             Tools::generateIndexFiles(_EPH_ROOT_DIR_ . '/content/backoffice/backend/cache/');
         }
+        Media::clearCache();
+        Hook::exec('clearFrontCache', []);
         
-        $path = _EPH_ROOT_DIR_ . '/content/themes/' . $context->theme->name . '/cache/';
-        if(is_dir($path)) {
-            Tools::deleteDirectory($path, false);  
-            Tools::generateIndexFiles(_EPH_ROOT_DIR_ . '/content/themes/' . $context->theme->name . '/cache/');
-        }
         
         
     }
@@ -2601,7 +2598,7 @@ FileETag none
             }
 
         }
-
+        
         $iterator = new AppendIterator();
 
         $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'css/plugins/'));
