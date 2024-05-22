@@ -335,6 +335,7 @@ abstract class Plugin {
             }
 
         }
+        
 
         return true;
     }
@@ -1332,7 +1333,7 @@ abstract class Plugin {
             }
 
         }
-
+        Tools::generateIndex();
         $this->updateIoPlugins();
 
         return true;
