@@ -5490,6 +5490,15 @@ FileETag none
         return null;
         
     }
+    
+    public static function arrayChunk($array, $length, $preserve_key = false) {
+        
+        if(is_array($array)) {
+            return array_chunk($array, $length, $preserve_keys);
+        }
+        return null;
+        
+    }
 
 }
 
