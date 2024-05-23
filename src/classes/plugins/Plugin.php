@@ -312,7 +312,10 @@ abstract class Plugin {
         $sql = preg_split("/;\s*[\r\n]+/", $sql);
 
         foreach ($sql as $query) {
-            Db::getInstance()->execute(trim($query));
+            if(!empty($query)) {
+                Db::getInstance()->execute(trim($query));
+            }
+            
         }
 
         $isoCodes = Language::loadIsoCodesLanguages();
