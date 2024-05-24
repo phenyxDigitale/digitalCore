@@ -50,6 +50,8 @@ abstract class PhenyxController {
     public $identifier = false;
 
     public $link_rewrite;
+    
+    public $require_context = true;
 
     protected $context;
     
@@ -398,15 +400,17 @@ abstract class PhenyxController {
             $this->display_footer = true;
         }
 
-        $context = Context::getContext();
-        $this->context = $context;
-        $this->_company = $context->company;
-        $this->_user = $context->user;
-        $this->_cookie = $context->cookie;
-        $this->_link = $context->link;
-        $this->_language = $context->language;
-        $this->_smarty = $context->smarty;
-        $this->context->getExtraContextVars();
+        if($this->require_context) {
+            $context = Context::getContext();
+            $this->context = $context;
+            $this->_company = $context->company;
+            $this->_user = $context->user;
+            $this->_cookie = $context->cookie;
+            $this->_link = $context->link;
+            $this->_language = $context->language;
+            $this->_smarty = $context->smarty;
+            $this->context->getExtraContextVars();
+        }
         $this->context->controller = $this;
         $this->getExtraPhenyxVars();
 
@@ -811,23 +815,23 @@ abstract class PhenyxController {
 
         $this->addCSS(
             [
-                'https://cdn.ephenyx.io/paramgrid/pqSelect/pqselect.min.css',
-                'https://cdn.ephenyx.io/paramgrid/pqgrid.min.css',
-                'https://cdn.ephenyx.io/paramgrid/pqgrid.ui.min.css',
+                _EPH_JS_DIR_.'paramgrid/pqSelect/pqselect.min.css',
+                _EPH_JS_DIR_.'paramgrid/pqgrid.min.css',
+                _EPH_JS_DIR_.'paramgrid/pqgrid.ui.min.css',
             ]
         );
 
         $this->addJS([
-            'https://code.jquery.com/jquery-3.7.1.min.js',
-            'https://code.jquery.com/ui/1.13.2/jquery-ui.min.js',
-            'https://cdn.ephenyx.io/paramgrid/pqSelect/pqselect.min.js',
-            'https://cdn.ephenyx.io/paramgrid/pqgrid.min.js',
-            'https://cdn.ephenyx.io/paramgrid/localize/pq-localize-fr.js',
-            'https://cdn.ephenyx.io/paramgrid/pqTouch/pqtouch.min.js',
-            'https://cdn.ephenyx.io/paramgrid/jsZip-2.5.0/jszip.min.js',
-            'https://cdn.ephenyx.io/paramgrid/FileSaver.js',
-            'https://cdn.ephenyx.io/paramgrid/javascript-detect-element-resize/detect-element-resize.js',
-            'https://cdn.ephenyx.io/paramgrid/javascript-detect-element-resize/jquery.resize.js',
+            _EPH_JS_DIR_.'jquery/jquery-3.7.1.min.js',
+            _EPH_JS_DIR_.'jquery-ui/jquery-ui.min.js',
+            _EPH_JS_DIR_.'paramgrid/pqSelect/pqselect.min.js',
+            _EPH_JS_DIR_.'paramgrid/pqgrid.min.js',
+            _EPH_JS_DIR_.'paramgrid/localize/pq-localize-fr.js',
+            _EPH_JS_DIR_.'paramgrid/pqTouch/pqtouch.min.js',
+            _EPH_JS_DIR_.'paramgrid/jsZip-2.5.0/jszip.min.js',
+            _EPH_JS_DIR_.'paramgrid/FileSaver.js',
+            _EPH_JS_DIR_.'paramgrid/javascript-detect-element-resize/detect-element-resize.js',
+            _EPH_JS_DIR_.'paramgrid/javascript-detect-element-resize/jquery.resize.js',
 
         ]);
     }
