@@ -5491,7 +5491,7 @@ FileETag none
         
     }
     
-    public static function arrayChunk($array, $length, $preserve_key = false) {
+    public static function arrayChunk($array, $length, $preserve_keys = false) {
         
         if(is_array($array)) {
             return array_chunk($array, $length, $preserve_keys);
