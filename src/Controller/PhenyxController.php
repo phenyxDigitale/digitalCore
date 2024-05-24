@@ -813,25 +813,11 @@ abstract class PhenyxController {
 
     public function setMedia($isNewTheme = false) {
 
-        $this->addCSS(
-            [
-                _EPH_JS_DIR_.'paramgrid/pqSelect/pqselect.min.css',
-                _EPH_JS_DIR_.'paramgrid/pqgrid.min.css',
-                _EPH_JS_DIR_.'paramgrid/pqgrid.ui.min.css',
-            ]
-        );
+        
 
         $this->addJS([
-            _EPH_JS_DIR_.'jquery/jquery-3.7.1.min.js',
+            _EPH_JS_DIR_.'jquery/jquery-'._EPH_JQUERY_VERSION_.'.min.js',
             _EPH_JS_DIR_.'jquery-ui/jquery-ui.min.js',
-            _EPH_JS_DIR_.'paramgrid/pqSelect/pqselect.min.js',
-            _EPH_JS_DIR_.'paramgrid/pqgrid.min.js',
-            _EPH_JS_DIR_.'paramgrid/localize/pq-localize-fr.js',
-            _EPH_JS_DIR_.'paramgrid/pqTouch/pqtouch.min.js',
-            _EPH_JS_DIR_.'paramgrid/jsZip-2.5.0/jszip.min.js',
-            _EPH_JS_DIR_.'paramgrid/FileSaver.js',
-            _EPH_JS_DIR_.'paramgrid/javascript-detect-element-resize/detect-element-resize.js',
-            _EPH_JS_DIR_.'paramgrid/javascript-detect-element-resize/jquery.resize.js',
 
         ]);
     }
