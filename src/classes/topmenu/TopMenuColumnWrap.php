@@ -73,7 +73,7 @@ class TopMenuColumnWrap extends PhenyxObjectModel {
         
         $column = [];
         
-        $columns = new PhenyxCollection('TopMenuColumn', Context::getContext()->language->id);
+        $columns = new PhenyxCollection('TopMenuColumn', $this->context->language->id);
         $columns->where('id_topmenu_columns_wrap', '=', $this->id);
         if(!$this->request_admin) {
             $columns->where('active', '=', 1);

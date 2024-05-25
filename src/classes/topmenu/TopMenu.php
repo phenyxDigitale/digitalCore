@@ -124,9 +124,7 @@ class TopMenu extends PhenyxObjectModel {
     }
 
     public function getOutpuName() {
-
-        $context = Context::getContext();
-        
+    
         $classVars = get_class_vars(get_class($this));
         $fields = $classVars['definition']['fields'];
         
@@ -136,7 +134,7 @@ class TopMenu extends PhenyxObjectModel {
 
             if (array_key_exists('lang', $params) && $params['lang']) {
                 if(isset($this->{$field}) && is_array($this->{$field}) && count($this->{$field})) {
-                    $this->{$field} = $this->{$field}[$context->language->id];
+                    $this->{$field} = $this->{$field}[$this->context->language->id];
                 }
             }
         }
@@ -149,7 +147,7 @@ class TopMenu extends PhenyxObjectModel {
                 $name = htmlentities($this->name, ENT_COMPAT, 'UTF-8');
 
             } else {
-                $cms = new CMS($this->id_cms, $context->cookie->id_lang);
+                $cms = new CMS($this->id_cms, $this->context->cookie->id_lang);
                 $name = $cms->meta_title;
             }
 
@@ -160,7 +158,7 @@ class TopMenu extends PhenyxObjectModel {
                 $name = htmlentities($this->name, ENT_COMPAT, 'UTF-8');
 
             } else {
-                $pfg = new PGFModel($this->id_pfg, $context->cookie->id_lang);
+                $pfg = new PGFModel($this->id_pfg, $this->context->cookie->id_lang);
                 $name = $pfg->title;
             }
 
@@ -190,7 +188,7 @@ class TopMenu extends PhenyxObjectModel {
             if (!empty($this->name)) {
                 $name = htmlentities($this->name, ENT_COMPAT, 'UTF-8');
             } else {
-                $page = new Meta($this->id_specific_page, (int) $context->cookie->id_lang);
+                $page = new Meta($this->id_specific_page, (int) $this->context->cookie->id_lang);
                 $name = $page->title;
             }
 
@@ -224,8 +222,8 @@ class TopMenu extends PhenyxObjectModel {
     public function getBackOutputNameValue() {
 
         $return = '';
-        $context = Context::getContext();
-        $_iso_lang = Language::getIsoById($context->cookie->id_lang);
+       
+        $_iso_lang = Language::getIsoById($this->context->cookie->id_lang);
         
         $classVars = get_class_vars(get_class($this));
         $fields = $classVars['definition']['fields'];
@@ -234,7 +232,7 @@ class TopMenu extends PhenyxObjectModel {
 
             if (array_key_exists('lang', $params) && $params['lang']) {
                 if(isset($this->{$field}) && is_array($this->{$field}) && count($this->{$field})) {
-                    $this->{$field} = $this->{$field}[$context->language->id];
+                    $this->{$field} = $this->{$field}[$this->context->language->id];
                 }
             }
         }
@@ -247,7 +245,7 @@ class TopMenu extends PhenyxObjectModel {
                 $return .= htmlentities($this->name, ENT_COMPAT, 'UTF-8');
 
             } else {
-                $cms = new CMS($this->id_cms, $context->cookie->id_lang);
+                $cms = new CMS($this->id_cms, $this->context->cookie->id_lang);
                 $return .= $cms->meta_title;
             }
 
@@ -270,7 +268,7 @@ class TopMenu extends PhenyxObjectModel {
                 $return .= htmlentities($this->name, ENT_COMPAT, 'UTF-8');
 
             } else {
-                $pfg = new PFGModel($this->id_pfg, $context->cookie->id_lang);
+                $pfg = new PFGModel($this->id_pfg, $this->context->cookie->id_lang);
                 $return .= $pfg->meta_title;
             }
 
@@ -335,7 +333,7 @@ class TopMenu extends PhenyxObjectModel {
             if (!empty($this->name)) {
                 $return .= htmlentities($this->name, ENT_COMPAT, 'UTF-8');
             } else {
-                $page = new Meta($this->id_specific_page, (int) $context->cookie->id_lang);
+                $page = new Meta($this->id_specific_page, (int) $this->context->cookie->id_lang);
                 $return .= $page->title;
             }
 
@@ -391,11 +389,11 @@ class TopMenu extends PhenyxObjectModel {
 
     public function getFrontOutputValue() {
        
-        $context = Context::getContext();
+        
         $is_ajax = Configuration::get('EPH_FRONT_AJAX') ? 1 : 0;
 
-        $link = $context->link;
-        $_iso_lang = Language::getIsoById($context->cookie->id_lang);
+        $link = $this->context->link;
+        $_iso_lang = Language::getIsoById($this->context->cookie->id_lang);
         $return = false;
         $name = false;
         $image_legend = false;
@@ -411,7 +409,7 @@ class TopMenu extends PhenyxObjectModel {
 
             if (array_key_exists('lang', $params) && $params['lang']) {
                 if(isset($this->{$field}) && is_array($this->{$field}) && count($this->{$field})) {
-                    $this->{$field} = $this->{$field}[$context->language->id];
+                    $this->{$field} = $this->{$field}[$this->context->language->id];
                 }
             }
         }
@@ -425,7 +423,7 @@ class TopMenu extends PhenyxObjectModel {
                 $use_ajax = Configuration::get('EPH_CMS_AJAX') ? 1 : 0;
             }
 
-            $cms = new CMS($this->id_cms, $context->cookie->id_lang);
+            $cms = new CMS($this->id_cms, $this->context->cookie->id_lang);
 
             if (!empty($this->name)) {
                 $name .= htmlentities($this->name, ENT_COMPAT, 'UTF-8');
@@ -438,7 +436,7 @@ class TopMenu extends PhenyxObjectModel {
             if ($use_ajax) {
                 $return .= '<a href="javascript:void()" onClick="openAjaxCms(' . (int) $cms->id . ')" title="' . $name . '"  class="a-niveau1" data-type="cms" data-id="' . (int) $cms->id . '">';
             } else {
-                $return .= '<a href="' . $context->link->getCMSLink($cms) . '" title="' . $name . '"  class="a-niveau1" data-type="cms" data-id="' . (int) $cms->id . '">';
+                $return .= '<a href="' . $this->context->link->getCMSLink($cms) . '" title="' . $name . '"  class="a-niveau1" data-type="cms" data-id="' . (int) $cms->id . '">';
             }
 
             $return .= '<span class="phtm_menu_span phtm_menu_span_' . (int) $this->id . '">';
@@ -484,7 +482,7 @@ class TopMenu extends PhenyxObjectModel {
                 $use_ajax = Configuration::get('EPH_PGF_AJAX') ? 1 : 0;
             }
 
-            $pfg = new PFGModel($this->id_pfg, $context->cookie->id_lang);
+            $pfg = new PFGModel($this->id_pfg, $this->context->cookie->id_lang);
 
             if (!empty($this->name)) {
                 $name .= htmlentities($this->name, ENT_COMPAT, 'UTF-8');
@@ -497,7 +495,7 @@ class TopMenu extends PhenyxObjectModel {
             if ($use_ajax) {
                 $return .= '<a href="javascript:void()" onClick="openAjaxFormulaire(' . (int) $pfg->id . ')" title="' . $name . '"  class="a-niveau1" data-type="pfg" data-id="' . (int) $pfg->id . '">';
             } else {
-                $return .= '<a href="' . $context->link->getPFGLink($pfg) . '" title="' . $name . '"  class="a-niveau1" data-type="pfg" data-id="' . (int) $pfg->id . '">';
+                $return .= '<a href="' . $this->context->link->getPFGLink($pfg) . '" title="' . $name . '"  class="a-niveau1" data-type="pfg" data-id="' . (int) $pfg->id . '">';
             }
 
             $return .= '<span class="phtm_menu_span phtm_menu_span_' . (int) $this->id . '">';
@@ -602,7 +600,7 @@ class TopMenu extends PhenyxObjectModel {
             break;
 
         case 9:
-            $page = new Meta($this->id_specific_page, (int) $context->cookie->id_lang);
+            $page = new Meta($this->id_specific_page, (int) $this->context->cookie->id_lang);
 
             if (!empty($this->name)) {
                 $name .= htmlentities($this->name, ENT_COMPAT, 'UTF-8');
@@ -739,7 +737,7 @@ class TopMenu extends PhenyxObjectModel {
 
         $columnWrap = [];
 
-        $columnWraps = new PhenyxCollection('TopMenuColumnWrap', Context::getContext()->language->id);
+        $columnWraps = new PhenyxCollection('TopMenuColumnWrap', $this->context->language->id);
         $columnWraps->where('id_topmenu', '=', $this->id);
 
         if (!$this->request_admin) {
@@ -957,23 +955,23 @@ class TopMenu extends PhenyxObjectModel {
 
     public static function displayMenuForm() {
 
-        $context = Context::getContext();
-        $menus = TopMenu::getMenus($context->cookie->id_lang, false);
+        $this->context = Context::getContext();
+        $menus = TopMenu::getMenus($this->context->cookie->id_lang, false);
 
         if (is_array($menus) && count($menus)) {
 
             foreach ($menus as &$menu) {
-                $menu['columnsWrap'] = TopMenuColumnWrap::getMenuColumnsWrap($menu['id_topmenu'], $context->cookie->id_lang, false);
+                $menu['columnsWrap'] = TopMenuColumnWrap::getMenuColumnsWrap($menu['id_topmenu'], $this->context->cookie->id_lang, false);
 
                 if (count($menu['columnsWrap'])) {
 
                     foreach ($menu['columnsWrap'] as &$columnWrap) {
-                        $columnWrap['columns'] = TopMenuColumn::getMenuColums($columnWrap['id_topmenu_columns_wrap'], $context->cookie->id_lang, false);
+                        $columnWrap['columns'] = TopMenuColumn::getMenuColums($columnWrap['id_topmenu_columns_wrap'], $this->context->cookie->id_lang, false);
 
                         if (count($columnWrap['columns'])) {
 
                             foreach ($columnWrap['columns'] as &$column) {
-                                $column['columnElements'] = TopMenuElements::getMenuColumnElements($column['id_topmenu_column'], $context->cookie->id_lang, false);
+                                $column['columnElements'] = TopMenuElements::getMenuColumnElements($column['id_topmenu_column'], $this->context->cookie->id_lang, false);
 
                             }
 
@@ -987,8 +985,8 @@ class TopMenu extends PhenyxObjectModel {
 
         }
 
-        $cms = CMS::listCms((int) $context->cookie->id_lang);
-        $cmsNestedCategories = TopMenu::getNestedCmsCategories((int) $context->cookie->id_lang);
+        $cms = CMS::listCms((int) $this->context->cookie->id_lang);
+        $cmsNestedCategories = TopMenu::getNestedCmsCategories((int) $this->context->cookie->id_lang);
 
         $cmsCategories = [];
 
@@ -998,7 +996,7 @@ class TopMenu extends PhenyxObjectModel {
             TopMenu::getChildrenCmsCategories($cmsCategories, $cmsCategory, null);
         }
 
-        $alreadyDefinedCurrentIdMenu = $context->smarty->getTemplateVars('current_id_topmenu');
+        $alreadyDefinedCurrentIdMenu = $this->context->smarty->getTemplateVars('current_id_topmenu');
 
         if (empty($alreadyDefinedCurrentIdMenu)) {
             $currentIdMenu = Tools::getValue('id_topmenu', false);
@@ -1059,7 +1057,7 @@ class TopMenu extends PhenyxObjectModel {
             'cms'                  => $cms,
             'cmsCategories'        => $cmsCategories,
             'manufacturer'         => $manufacturer,
-            'linkTopMenu'          => $context->link->getAdminLink('AdminTopMenu'),
+            'linkTopMenu'          => $this->context->link->getAdminLink('AdminTopMenu'),
             'ObjTopMenu'           => $ObjEphenyxTopMenuClass,
             'ObjTopMenuColumnWrap' => $ObjEphenyxTopMenuColumnWrapClass,
             'ObjTopMenuColumn'     => $ObjEphenyxTopMenuColumnClass,

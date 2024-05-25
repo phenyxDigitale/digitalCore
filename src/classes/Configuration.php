@@ -10,6 +10,8 @@ class Configuration extends PhenyxObjectModel {
     // Default configuration consts
     // @since 1.0.1
     
+    public $require_context = false;
+    
     const ONE_PHONE_AT_LEAST = 'EPH_ONE_PHONE_AT_LEAST';
     const GROUP_FEATURE_ACTIVE = 'EPH_GROUP_FEATURE_ACTIVE';
     const COUNTRY_DEFAULT = 'EPH_COUNTRY_DEFAULT';
