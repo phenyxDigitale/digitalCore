@@ -778,6 +778,31 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         
         return $result;
     }
+    
+    public static function addObject($object) {
+        
+        
+        $object = Tools::jsonDecode(Tools::jsonEncode($object), true);
+       
+        $classe = new $class_name();
+        foreach($object as $key => $value) {
+            if(is_array($value)) {
+                foreach (Language::getIDs(false) as $idLang) {
+                    if (property_exists($classe, $key)) {
+				        $classe->{$key}[(int) $idLang] = $value[(int) $idLang];
+			         }
+                    
+                }
+            } else if (property_exists($classe, $key)) {
+				$classe->{$key} = $value;
+			}
+            
+        }
+        
+        $result = $classe->add();
+        
+        return $result;
+    }
 
     public function duplicateObject() {
 

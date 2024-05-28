@@ -31,6 +31,7 @@ class AddConfToFile {
             }
 
         }
+        $this->fd = $fd;
 
     }
 
@@ -84,7 +85,7 @@ class AddConfToFile {
      */
     public function writeEndTagPhp() {
 
-        if (!$res = @fwrite($this->fd, '?>' . "\n")) {
+        if (!$res = @fwrite($this->fd, '?>' . PHP_EOL)) {
             $this->error = 6;
 
             return false;
