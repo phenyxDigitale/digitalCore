@@ -2483,6 +2483,54 @@ FileETag none
         return $finalPath . $path;
 
     }
+    
+    public static function getWikiPath($idWiki, $path) {
+
+        $context = Context::getContext();
+
+        $ajax_mode = Configuration::get('EPH_FRONT_AJAX') ? 1 : 0;
+        $wiki_ajax_mode = Configuration::get('EPH_WIKI_AJAX') ? 1 : 0;
+
+        $idWiki = (int) $idWiki;
+
+        $path = '<span class="navigation_end">' . $path . '</span>';
+
+        $pipe = Configuration::get('EPH_NAVIGATION_PIPE');
+
+        if (empty($pipe)) {
+            $pipe = '>';
+        }
+
+        $fullPath = [];
+        $finalPath = '';
+        $cms = new PhenyxWiki($idWiki, $context->language->id);
+
+        if ($cms->level_depth == 1) {
+            return $path;
+        }
+
+        $level_depth = $cms->level_depth - 1;
+
+        for ($i = $level_depth; $i > 0; $i--) {
+            $wiki = new PhenyxWiki($wiki->id_parent, $context->language->id);
+
+            if ($ajax_mode && $wiki_ajax_mode) {
+                $fullPath[$i] = '<a href="javascript:void(0)" onClick="openAjaxCms(' . $wiki->id . ')" data-gg="">' . htmlentities($wiki->meta_title, ENT_NOQUOTES, 'UTF-8') . '</a><span class="navigation-pipe">' . $pipe . '</span>';
+            } else {
+                $fullPath[$i] = '<a href="' . $context->link->getPhenyxWikiLink($wiki->id) . '" data-gg="">' . htmlentities($wiki->meta_title, ENT_NOQUOTES, 'UTF-8') . '</a><span class="navigation-pipe">' . $pipe . '</span>';
+            }
+
+        }
+
+        ksort($fullPath);
+
+        foreach ($fullPath as $key => $value) {
+            $finalPath .= $value;
+        }
+
+        return $finalPath . $path;
+
+    }
 
     public static function getFormPath($idForm, $path) {
 
