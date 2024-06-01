@@ -432,27 +432,7 @@ class BackTab extends PhenyxObjectModel {
 
     public static function checkTabRights($idTab) {
 
-        if (Context::getContext()->employee->id_profile == _EPH_ADMIN_PROFILE_) {
-            return true;
-        }
-
-        static::$_tabAccesses = [];
-        $idProfil = Context::getContext()->employee->id_profile;
-
-        if (!isset(static::$_tabAccesses[$idProfil][$idTab])) {
-
-            if ($tabAccesses === null) {
-                $tabAccesses = Profile::getProfileAccesses($idProfil);
-            }
-
-            if (isset($tabAccesses[(int) $idTab]['view'])) {
-                static::$_tabAccesses[$idProfil][$idTab] = $tabAccesses[(int) $idTab]['view'];
-            }
-
-            return static::$_tabAccesses[$idProfil][$idTab];
-        }
-
-        return static::$_tabAccesses[$idProfil][$idTab];
+        return Context::getContext()->employee->hasAccess($idTab, Profile::PERMISSION_VIEW);
     }
 
     public static function recursiveTab($idTab, $tabs) {
