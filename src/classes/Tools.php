@@ -2503,9 +2503,9 @@ FileETag none
 
         $fullPath = [];
         $finalPath = '';
-        $cms = new PhenyxWiki($idWiki, $context->language->id);
+        $wiki = new PhenyxWiki($idWiki, $context->language->id);
 
-        if ($cms->level_depth == 1) {
+        if ($wiki->level_depth == 1) {
             return $path;
         }
 
