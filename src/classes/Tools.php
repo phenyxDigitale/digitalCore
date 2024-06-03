@@ -2509,7 +2509,7 @@ FileETag none
             return $path;
         }
 
-        $level_depth = $cms->level_depth - 1;
+        $level_depth = $wiki->level_depth - 1;
 
         for ($i = $level_depth; $i > 0; $i--) {
             $wiki = new PhenyxWiki($wiki->id_parent, $context->language->id);
