@@ -1070,6 +1070,7 @@ abstract class PhenyxController {
                 $jsPath = $jsFile;
 
 
+
                 if ($checkPath) {
                     $jsPath = Media::getJSPath($jsFile);
                 }
@@ -1444,7 +1445,6 @@ abstract class PhenyxController {
 
         $this->paragridScript = $this->generateParaGridScript();
         $this->setAjaxMedia();
-
         $data = $this->createTemplate($this->table . '.tpl');
         $extraVars = Hook::exec('action' . $this->controller_name . 'TargetGetExtraVars', ['controller_type' => $this->controller_type], null, true);
 
@@ -1471,10 +1471,11 @@ abstract class PhenyxController {
         
         
         
-        if (method_exists($this, 'get' . $this->className . 'Fields')) {
+        if (method_exists($this, 'get' . $this->className . 'Fields')) {            
             $this->addJsDef([
                 'AjaxLink'. $this->controller_name => $this->context->link->getAdminLink($this->controller_name),
-                'paragridFields' => is_array($this->configurationField) ? $this->configurationField : $this->{'get' . $this->className . 'Fields'}()
+                'paragridFields' => is_array($this->configurationField) ? $this->configurationField : $this->{'get' . $this->className . 'Fields'}
+                (),
 
             ]);
             
@@ -1586,9 +1587,9 @@ abstract class PhenyxController {
         $jsTag = 'js_def';
         $this->context->smarty->assign($jsTag, $jsTag);
         $html = $content;        
-
+        
         $html = trim($html);
-
+        
         if (!empty($html)) {
             $javascript = "";
             $domAvailable = extension_loaded('dom') ? true : false;
@@ -1597,12 +1598,17 @@ abstract class PhenyxController {
             if ($defer && $domAvailable) {
                 $html = Media::deferInlineScripts($html);
             }
-
-            $html = trim(str_replace(['</content>'], '', $html)) . "\n";
+            $head = '<div id="content'.$this->controller_name.'" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">'. "\n";
+            $foot = '</div>';
+            $header = Media::deferTagOutput('ajax_head', $html).'<content>';
+            $html = trim(str_replace($header, '', $html)) . "\n";
+            
+            $content = Media::deferIdOutput('content'.$this->controller_name, $html);
+            
             $js_def =  ($defer && $domAvailable) ? $this->js_def : [];
             $js_files = $defer ? array_unique($this->push_js_files) : [];
             $js_inline = ($defer && $domAvailable) ? Media::getInlineScript() : [];
-
+            
             $this->context->smarty->assign(
                 [
                     'js_def'      => $js_def,
@@ -1614,21 +1620,14 @@ abstract class PhenyxController {
 
             if ($defer) {
                 $javascript = $javascript.'</content>';
-                $result = [
-                    'li'         => $this->ajax_li,
-                    'html'       => $html . $javascript,
-                    'page_title' => $this->page_title,
-                ];
-
+            } 
+            $content = $head. $header. $content . $javascript.$foot;
                 
-
-            } else {
-                $result = [
-                    'li'         => $this->ajax_li,
-                    'html'       => $html . $javascript,
-                    'page_title' => $this->page_title,
-                ];
-            }
+            $result = [
+                'li'         => $this->ajax_li,
+                'html'       => $content,
+                'page_title' => $this->page_title,
+            ];
             if (_EPH_ADMIN_DEBUG_PROFILING_) {
                 $result['profiling_mode'] = true;
                 $result['profiling'] = $this->displayProfiling();
@@ -1690,6 +1689,7 @@ abstract class PhenyxController {
         }
 
         libxml_use_internal_errors(true);
+
 
         $allPluginList = [];
 

@@ -473,6 +473,15 @@ class Tools {
 
         return mb_strtolower($str, 'utf-8');
     }
+    
+    public static function isArray($str) {
+
+        if (is_array($str)) {
+            return true;
+        }
+
+        return false;
+    }
 
     public static function getRemoteAddr() {
 
