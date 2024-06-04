@@ -18,6 +18,8 @@ abstract class PhenyxController {
     public $index_js_files = [];
 
     public $index_js_def = [];
+    
+    public $js_def = [];
 
     public $push_js_files = [];
 
@@ -361,6 +363,14 @@ abstract class PhenyxController {
     protected $submit_action;
 
     public $base_tpl_form = null;
+    
+    public $page_title;
+    
+    public $page_description;
+    
+    public $ajax_li;
+    
+    public $ajax_content;
 
     public function getExtraPhenyxVars() {
 
@@ -1059,6 +1069,7 @@ abstract class PhenyxController {
             foreach ($jsUri as $jsFile) {
                 $jsPath = $jsFile;
 
+
                 if ($checkPath) {
                     $jsPath = Media::getJSPath($jsFile);
                 }
@@ -1338,6 +1349,24 @@ abstract class PhenyxController {
         return $this->push_js_files;
 
     }
+    
+    public function addJsDef($jsDef) {
+        $this->js_def = [];
+        if (is_array($jsDef)) {
+
+            foreach ($jsDef as $key => $js) {
+                // @codingStandardsIgnoreStart
+                $this->js_def[$key] = $js;
+                // @codingStandardsIgnoreEnd
+            }
+
+        } else if ($jsDef) {
+            // @codingStandardsIgnoreStart
+            $this->js_def[] = $jsDef;
+            // @codingStandardsIgnoreEnd
+        }
+
+    }
 
     public function addJqueryPlugin($name, $folder = null, $css = true) {
 
@@ -1431,7 +1460,7 @@ abstract class PhenyxController {
             
 
         }
-
+        
         if (is_array($this->extra_vars)) {
 
             foreach ($this->extra_vars as $key => $value) {
@@ -1439,14 +1468,19 @@ abstract class PhenyxController {
             }
 
         }
+        
+        $this->addJsDef([
+            'AjaxLink'. $this->controller_name => $this->context->link->getAdminLink($this->controller_name),
+            'paragridFields' => is_array($this->configurationField) ? $this->configurationField : $this->{'get' . $this->className . 'Fields'}()
 
+        ]);
+        
         if (method_exists($this, 'get' . $this->className . 'Fields')) {
             $data->assign('paragridFields', is_array($this->configurationField) ? $this->configurationField : $this->{'get' . $this->className . 'Fields'}
                 ());
         }
 
-        $data->assign([
-            'jsDef'              => $this->jsDef,
+        $data->assign([            
             'paragridScript'     => $this->paragridScript,
             'manageHeaderFields' => $this->manageHeaderFields,
             'customHeaderFields' => $this->manageFieldsVisibility($this->configurationField),
@@ -1456,26 +1490,150 @@ abstract class PhenyxController {
             'link'               => $this->context->link,
             'id_lang_default'    => $this->default_language,
             'languages'          => Language::getLanguages(false),
-            'extraJs'            => $this->push_js_files,
-            'extracss'           => $this->extracss,
             'tabs'               => $this->ajaxOptions,
             'bo_imgdir'          => __EPH_BASE_URI__ . 'content/backoffice/' . $this->bo_theme . '/img/',
         ]);
 
-        $li = '<li id="uper' . $this->controller_name . '" data-self="' . $this->link_rewrite . '" data-name="' . $this->page_title . '" data-controller="AdminDashboard"><a href="#content' . $this->controller_name . '">' . $this->publicName . '</a><button type="button" class="close tabdetail" onClick="closeTabObject(\'' . $this->controller_name . '\');" data-id="uper' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
-        $html = '<div id="content' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . $data->fetch() . '</div>';
-        $result = [
-            'li'         => $li,
-            'html'       => $html,
-            'page_title' => $this->page_title,
-        ];
+        $this->ajax_li = '<li id="uper' . $this->controller_name . '" data-self="' . $this->link_rewrite . '" data-name="' . $this->page_title . '" data-controller="AdminDashboard"><a href="#content' . $this->controller_name . '">' . $this->publicName . '</a><button type="button" class="close tabdetail" onClick="closeTabObject(\'' . $this->controller_name . '\');" data-id="uper' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
+        $this->ajax_content = '<div id="content' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . $data->fetch() . '</div>';
+        
+        
+        $this->ajaxDisplay();
 
-        if (_EPH_ADMIN_DEBUG_PROFILING_) {
-            $result['profiling_mode'] = true;
-            $result['profiling'] = $this->displayProfiling();
+    }
+    
+    public function ajaxDisplay() {
+        
+        $layout = $this->getAjaxLayout();
+        if ($layout) {
+        
+            $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
+            $domAvailable = extension_loaded('dom') ? true : false;
+
+            if ((Configuration::get('EPH_CSS_BACKOFFICE_CACHE') || Configuration::get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
+
+                if (Configuration::get('EPH_CSS_BACKOFFICE_CACHE')) {
+                    $this->extracss = Media::admincccCss($this->extracss);
+                }
+
+                if (Configuration::get('EPH_JS_BACKOFFICE_CACHE')) {
+                    $this->push_js_files = Media::admincccJS($this->push_js_files);
+                }
+
+            }
+
+            $controller = Tools::getValue('controller');
+		  
+            $this->context->smarty->assign(
+                [                    
+                    'js_def'          =>  ($defer && $domAvailable) ?   [] : $this->js_def,
+                    'extracss'        => $this->extracss,
+                    'js_files'        => $defer ? [] : $this->push_js_files,
+                    'favicon_dir'     => __EPH_BASE_URI__ . 'content/backoffice/img/',
+                    'meta_title'      => $this->page_title,
+                    'meta_description' => $this->page_description,
+                ]
+            );
+
+        
+        
+            $dir = $this->context->smarty->getTemplateDir(0);
+            $override_dir = $this->context->smarty->getTemplateDir(1) .  DIRECTORY_SEPARATOR ;
+            $pluginListDir = $this->context->smarty->getTemplateDir(0) . 'helpers' . DIRECTORY_SEPARATOR . 'plugins_list' . DIRECTORY_SEPARATOR;
+
+            $headerTpl = file_exists($dir . 'ajax_header.tpl') ? $dir . 'ajax_header.tpl' : 'ajax_header.tpl';
+		    $footerTpl = file_exists($dir . 'ajax_footer.tpl') ? $dir . 'ajax_footer.tpl' : 'ajax_footer.tpl';
+		
+            $this->context->smarty->assign(
+                [
+                    'content'   => $this->ajax_content,
+                    'ajax_header' => $this->context->smarty->fetch($headerTpl),
+                    'ajax_footer' => $this->context->smarty->fetch($footerTpl),
+                ]
+            );
+       
+            $content = $this->context->smarty->fetch($layout);
+            $this->ajaxShowContent($content);            
+        } else {
+            
+
         }
 
-        die(Tools::jsonEncode($result));
+    }
+    
+    public function getAjaxLayout() {
+
+        $layout = false;
+        
+        $layoutDir = $this->context->smarty->getTemplateDir(0);
+        
+
+        if (!$layout && file_exists($layoutDir . 'ajaxlayout.tpl')) {
+            $layout = $layoutDir . 'ajaxlayout.tpl';
+        }
+
+        return $layout;
+    }
+    
+    protected function ajaxShowContent($content) {
+
+        $this->context->cookie->write();
+        $html = '';
+        $jsTag = 'js_def';
+        $this->context->smarty->assign($jsTag, $jsTag);
+        $html = $content;        
+
+        $html = trim($html);
+
+        if (!empty($html)) {
+            $javascript = "";
+            $domAvailable = extension_loaded('dom') ? true : false;
+            $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
+
+            if ($defer && $domAvailable) {
+                $html = Media::deferInlineScripts($html);
+            }
+
+            $html = trim(str_replace(['</content>'], '', $html)) . "\n";
+            $js_def =  ($defer && $domAvailable) ? $this->js_def : [];
+            $js_files = $defer ? array_unique($this->push_js_files) : [];
+            $js_inline = ($defer && $domAvailable) ? Media::getInlineScript() : [];
+
+            $this->context->smarty->assign(
+                [
+                    'js_def'      => $js_def,
+                    'js_files'  => $js_files,
+                    'js_inline' => $js_inline,
+                ]
+            );
+            $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
+
+            if ($defer) {
+                $javascript = $javascript.'</content>';
+                $result = [
+                    'li'         => $this->ajax_li,
+                    'html'       => $html . $javascript,
+                    'page_title' => $this->page_title,
+                ];
+
+                
+
+            } else {
+                $result = [
+                    'li'         => $this->ajax_li,
+                    'html'       => $this->ajax_content,
+                    'page_title' => $this->page_title,
+                ];
+            }
+            if (_EPH_ADMIN_DEBUG_PROFILING_) {
+                $result['profiling_mode'] = true;
+                $result['profiling'] = $this->displayProfiling();
+            }
+            die(Tools::jsonEncode($result));
+
+        } 
+        
+
     }
 
     public function generateTabs(Context $context) {        
@@ -2138,7 +2296,7 @@ abstract class PhenyxController {
     public function ajaxProcessGetAccountTypeRequest() {
 
         $type = Tools::getValue('type');
-        fwrite($file, $type);
+       
 
         switch ($type) {
         case 'Banks':
