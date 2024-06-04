@@ -1625,7 +1625,7 @@ abstract class PhenyxController {
             } else {
                 $result = [
                     'li'         => $this->ajax_li,
-                    'html'       => $this->ajax_content,
+                    'html'       => $html . $javascript,
                     'page_title' => $this->page_title,
                 ];
             }
