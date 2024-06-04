@@ -1469,15 +1469,19 @@ abstract class PhenyxController {
 
         }
         
-        $this->addJsDef([
-            'AjaxLink'. $this->controller_name => $this->context->link->getAdminLink($this->controller_name),
-            'paragridFields' => is_array($this->configurationField) ? $this->configurationField : $this->{'get' . $this->className . 'Fields'}()
-
-        ]);
+        
         
         if (method_exists($this, 'get' . $this->className . 'Fields')) {
-            $data->assign('paragridFields', is_array($this->configurationField) ? $this->configurationField : $this->{'get' . $this->className . 'Fields'}
-                ());
+            $this->addJsDef([
+                'AjaxLink'. $this->controller_name => $this->context->link->getAdminLink($this->controller_name),
+                'paragridFields' => is_array($this->configurationField) ? $this->configurationField : $this->{'get' . $this->className . 'Fields'}()
+
+            ]);
+            
+        } else {
+            $this->addJsDef([
+                'AjaxLink'. $this->controller_name => $this->context->link->getAdminLink($this->controller_name)
+            ]);
         }
 
         $data->assign([            
