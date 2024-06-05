@@ -172,6 +172,8 @@ abstract class Plugin {
     public $_smarty;
 
     public $image_link;
+    
+    public $main_plugin;
 
     public function __construct($name = null, Context $context = null) {
 
@@ -190,6 +192,8 @@ abstract class Plugin {
         if (strlen($this->eph_versions_compliancy['max']) == 3) {
             $this->eph_versions_compliancy['max'] .= '.999.999';
         }
+        
+        $this->main_plugin = self::getIdPluginByName('ph_manager');
         
         $context = $context ? $context : Context::getContext();
         $this->context = $context;
@@ -267,6 +271,16 @@ abstract class Plugin {
 
         }
 
+    }
+    
+    public static function getIdPluginByName($plugin) {
+        
+        return Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+            ->select('`id_plugin`')
+            ->from('plugin')
+            ->where('LOWER(`name`) = \'' . pSQL(mb_strtolower($plugin)) . '\'')
+        );
     }
     
     public function alterSqlTable($table, $column, $type, $after) {
@@ -622,6 +636,7 @@ abstract class Plugin {
             }
 
         }
+
 
         if (isset($id2name[$idPlugin])) {
             return Plugin::getInstanceByName($id2name[$idPlugin]);
@@ -1063,6 +1078,9 @@ abstract class Plugin {
         }
 
         $sql->where('m.active = 1');
+        $sql->orderBy('m.position');
+        
+        $plugins = Db::getInstance()->executeS($sql);
 
         return Db::getInstance()->executeS($sql);
     }
@@ -1184,10 +1202,23 @@ abstract class Plugin {
                 ->where('mg.`id_group` = ' . (int) $groupId)
         );
     }
+    
+    public static function getNewLastPosition($idParent) {
+
+        return (Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+            ->select('IFNULL(MAX(`position`), 0) + 1')
+            ->from('plugin')
+            ->where('`id_plugin` = ' . (int) $idParent)
+        ));
+    }
+
 
     public function install() {
 
         Hook::exec('actionPluginInstallBefore', ['object' => $this]);
+        
+        $position = self::getNewLastPosition($this->main_plugin);
 
         if (!Validate::isPluginName($this->name)) {
             PhenyxLogger::addLog(sprintf($this->l('Unable to install the plugin (Plugin name %s is not valid).'), $this->name), 3, null, 'Plugin');
@@ -1212,13 +1243,13 @@ abstract class Plugin {
             if (count($this->dependencies) > 0) {
 
                 foreach ($this->dependencies as $dependency) {
-
-                    if (!Db::getInstance(_EPH_USE_SQL_SLAVE_)->getRow(
+                    $id_plugin = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getRow(
                         (new DbQuery())
                         ->select('`id_plugin`')
                         ->from('plugin')
                         ->where('LOWER(`name`) = \'' . pSQL(mb_strtolower($dependency)) . '\'')
-                    )) {
+                    );
+                    if (!$id_plugin) {
                         $error = Tools::displayError('Before installing this plugin, you have to install this/these plugin(s) first:') . '<br />';
 
                         foreach ($this->dependencies as $d) {
@@ -1232,6 +1263,8 @@ abstract class Plugin {
                             'message' => $error,
                         ];
                         die(Tools::jsonEncode($return));
+                    } else {
+                        $position = self::getNewLastPosition($id_plugin);
                     }
 
                 }
@@ -1291,7 +1324,7 @@ abstract class Plugin {
             return false;
         }
 
-        $result = Db::getInstance()->insert($this->table, ['name' => $this->name, 'active' => 1, 'version' => $this->version]);
+        $result = Db::getInstance()->insert($this->table, ['name' => $this->name, 'active' => 1, 'position' => $position, 'version' => $this->version]);
 
         if (!$result) {
             PhenyxLogger::addLog($this->l('Technical error: Ephenyx Digital could not install this plugin.'), 2, null, 'Plugin');
@@ -1717,6 +1750,7 @@ abstract class Plugin {
                 $pluginContent = preg_replace('/\s/', '', implode('', array_splice($pluginFile, $pluginMethod->getStartLine() - 1, $length, array_pad([], $length, '#--remove--#'))));
 
                 $replace = true;
+
 
                 if (preg_match('/\* plugin: (' . $this->name . ')/ism', $overrideFile[$method->getStartLine() - 5])) {
                     $overrideFile[$method->getStartLine() - 6] = $overrideFile[$method->getStartLine() - 5] = $overrideFile[$method->getStartLine() - 4] = $overrideFile[$method->getStartLine() - 3] = $overrideFile[$method->getStartLine() - 2] = '#--remove--#';
