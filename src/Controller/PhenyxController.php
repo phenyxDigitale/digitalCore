@@ -2491,6 +2491,119 @@ abstract class PhenyxController {
         return false;
 
     }
+    
+    protected function copyFromPost(&$object, $table, $has_keyword = false) {
+
+        /* Classical fields */
+
+        foreach ($_POST as $key => $value) {
+
+            if (property_exists($object, $key) && $key != 'id_' . $table) {
+                /* Do not take care of password field if empty */
+
+                if ($key == 'passwd' && Tools::getValue('id_' . $table) && empty($value)) {
+                    continue;
+                }
+
+                /* Automatically hash password */
+
+                if ($key == 'passwd' && !empty($value)) {
+
+                    if (property_exists($object, 'password')) {
+                        $object->password = $value;
+                    }
+
+                    $value = Tools::hash($value);
+                }
+
+                if ($key === 'email') {
+
+                    if (mb_detect_encoding($value, 'UTF-8', true) && mb_strpos($value, '@') > -1) {
+                        // Convert to IDN
+                        list($local, $domain) = explode('@', $value, 2);
+                        $domain = Tools::utf8ToIdn($domain);
+                        $value = "$local@$domain";
+                    }
+
+                }
+
+                $object->{$key}
+
+                = $value;
+            }
+
+        }
+
+        /* Multilingual fields */
+        $classVars = get_class_vars(get_class($object));
+        $fields = [];
+
+        if (isset($classVars['definition']['fields'])) {
+            $fields = $classVars['definition']['fields'];
+        }
+
+        foreach ($fields as $field => $params) {
+
+            if (array_key_exists('lang', $params) && $params['lang']) {
+
+                foreach (Language::getIDs(false) as $idLang) {
+
+                    if (Tools::isSubmit($field . '_' . (int) $idLang)) {
+
+                        if (!isset($object->{$field}) || !is_array($object->{$field})) {
+                            $object->{$field}
+
+                            = [];
+                        }
+
+                        $object->{$field}
+
+                        [(int) $idLang] = Tools::getValue($field . '_' . (int) $idLang);
+                    }
+
+                }
+
+            }
+
+        }
+        
+        if($has_keyword) {
+            foreach (Language::getIDs(false) as $idLang) {
+
+                if (isset($_POST['meta_keywords_' . $idLang])) {
+                    $_POST['meta_keywords_' . $idLang] = $this->_cleanMetaKeywords(mb_strtolower($_POST['meta_keywords_' . $idLang]));
+                    $object->keywords[$idLang] = $_POST['meta_keywords_' . $idLang];
+                }
+
+            }
+
+        }
+
+    }
+
+    
+    protected function _cleanMetaKeywords($keywords) {
+
+        if (!empty($keywords) && $keywords != '') {
+            $out = [];
+            $words = explode(',', $keywords);
+
+            foreach ($words as $wordItem) {
+                $wordItem = trim($wordItem);
+
+                if (!empty($wordItem) && $wordItem != '') {
+                    $out[] = $wordItem;
+                }
+
+            }
+
+            return ((count($out) > 0) ? implode(',', $out) : '');
+        } else {
+            return '';
+        }
+
+    }
+
 
     public function getRequest($identifier = null) {
 
