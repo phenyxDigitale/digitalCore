@@ -54,6 +54,9 @@ abstract class PhenyxController {
     public $link_rewrite;
     
     public $require_context = true;
+    
+    /** @var ObjectModel Instantiation of the class associated with the AdminController */
+    protected $object;
 
     protected $context;
     
@@ -880,6 +883,27 @@ abstract class PhenyxController {
     abstract public function initFooter();
 
     abstract public function display();
+    
+    protected function afterAdd($object) {
+
+        return true;
+    }
+    
+    protected function beforeAdd($object) {
+
+        return true;
+    }
+
+    protected function beforeUpdate($object) {
+
+        return true;
+    }
+    
+    protected function afterUpdate($object) {
+
+        return true;
+    }
+
 
     abstract public function initCursedPage();
 
@@ -941,6 +965,7 @@ abstract class PhenyxController {
         }
 
     }
+    
 
     protected function ajaxOutputContent($content) {
 
@@ -1638,6 +1663,154 @@ abstract class PhenyxController {
         
 
     }
+    
+    public function ajaxProcessEditObject() {
+
+        $this->checkAccess();
+
+        if ($this->tabAccess['edit'] == 1) {
+
+            $idObject = Tools::getValue('idObject');
+
+            $_GET[$this->identifier] = $idObject;
+            $_GET['controller'] = $this->controller_name;
+            $_GET['update' . $this->table] = "";
+
+            $html = $this->renderForm();
+            $this->ajax_li = '<li id="uperEdit' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentEdit' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeEditFormObject(\'' . $this->controller_name . '\');" class="close tabdetail" data-id="uperEdit' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
+            $this->ajax_content = '<div id="contentEdit' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display; flow-root;">' . $html . '</div>';
+
+            $this->ajaxEditDisplay();
+            
+        } else {
+            $result = [
+                'success' => false,
+                'message' => $this->la('Your administrative profile does not allow you to edit this object'),
+            ];
+        }
+
+        die(Tools::jsonEncode($result));
+    }
+    
+    public function ajaxEditDisplay() {
+        
+        $layout = $this->getAjaxLayout();
+        if ($layout) {
+        
+            $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
+            $domAvailable = extension_loaded('dom') ? true : false;
+
+            if ((Configuration::get('EPH_CSS_BACKOFFICE_CACHE') || Configuration::get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
+
+                if (Configuration::get('EPH_CSS_BACKOFFICE_CACHE')) {
+                    $this->extracss = Media::admincccCss($this->extracss);
+                }
+
+                if (Configuration::get('EPH_JS_BACKOFFICE_CACHE')) {
+                    $this->extraJs = Media::admincccJS($this->extraJs);
+                }
+
+            }
+
+            $controller = Tools::getValue('controller');
+		  
+            $this->context->smarty->assign(
+                [                    
+                    'js_def'          =>  ($defer && $domAvailable) ?   [] : $this->js_def,
+                    'extracss'        => $this->extracss,
+                    'js_files'        => $defer ? [] : $this->extraJs,
+                    'favicon_dir'     => __EPH_BASE_URI__ . 'content/backoffice/img/',
+                    'meta_title'      => $this->page_title,
+                    'meta_description' => $this->page_description,
+                ]
+            );
+
+        
+        
+            $dir = $this->context->smarty->getTemplateDir(0);
+            $override_dir = $this->context->smarty->getTemplateDir(1) .  DIRECTORY_SEPARATOR ;
+            $pluginListDir = $this->context->smarty->getTemplateDir(0) . 'helpers' . DIRECTORY_SEPARATOR . 'plugins_list' . DIRECTORY_SEPARATOR;
+
+            $headerTpl = file_exists($dir . 'ajax_header.tpl') ? $dir . 'ajax_header.tpl' : 'ajax_header.tpl';
+		    $footerTpl = file_exists($dir . 'ajax_footer.tpl') ? $dir . 'ajax_footer.tpl' : 'ajax_footer.tpl';
+		
+            $this->context->smarty->assign(
+                [
+                    'content'   => $this->ajax_content,
+                    'ajax_header' => $this->context->smarty->fetch($headerTpl),
+                    'ajax_footer' => $this->context->smarty->fetch($footerTpl),
+                ]
+            );
+       
+            $content = $this->context->smarty->fetch($layout);
+            $this->ajaxShowEditContent($content);            
+        } else {
+            
+
+        }
+
+    }
+    
+    protected function ajaxShowEditContent($content) {
+
+        $this->context->cookie->write();
+        $html = '';
+        $jsTag = 'js_def';
+        $this->context->smarty->assign($jsTag, $jsTag);
+        $html = $content;        
+        
+        $html = trim($html);
+        
+        if (!empty($html)) {
+            $javascript = "";
+            $domAvailable = extension_loaded('dom') ? true : false;
+            $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
+
+            if ($defer && $domAvailable) {
+                $html = Media::deferInlineScripts($html);
+            }
+            $head = '<div id="contentEdit'.$this->controller_name.'" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: flow-root;">'. "\n";
+            $foot = '</div>';
+            $header = Media::deferTagOutput('ajax_head', $html).'<content>';
+            $html = trim(str_replace($header, '', $html)) . "\n";
+            
+            $content = Media::deferIdOutput('contentEdit'.$this->controller_name, $html);
+            
+            $js_def =  ($defer && $domAvailable) ? $this->js_def : [];
+            $js_files = $defer ? array_unique($this->extraJs) : [];
+            $js_inline = ($defer && $domAvailable) ? Media::getInlineScript() : [];
+            
+            $this->context->smarty->assign(
+                [
+                    'js_def'      => $js_def,
+                    'js_files'  => $js_files,
+                    'js_inline' => $js_inline,
+                ]
+            );
+            $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
+
+            if ($defer) {
+                $javascript = $javascript.'</content>';
+            } 
+            $content = $head. $header. $content . $javascript.$foot;
+                
+            $result = [
+                'success'    => true,
+                'li'         => $this->ajax_li,
+                'html'       => $content,
+                'page_title' => $this->page_title,
+            ];
+            if (_EPH_ADMIN_DEBUG_PROFILING_) {
+                $result['profiling_mode'] = true;
+                $result['profiling'] = $this->displayProfiling();
+            }
+            die(Tools::jsonEncode($result));
+
+        } 
+        
+
+    }
+
 
     public function generateTabs(Context $context) {        
 
@@ -1729,43 +1902,7 @@ abstract class PhenyxController {
         return $modal_render;
     }
 
-    public function ajaxProcessEditObject() {
-
-        $this->checkAccess();
-
-        if ($this->tabAccess['edit'] == 1) {
-
-            $idObject = Tools::getValue('idObject');
-
-            $_GET[$this->identifier] = $idObject;
-            $_GET['controller'] = $this->controller_name;
-            $_GET['update' . $this->table] = "";
-
-            $html = $this->renderForm();
-            $li = '<li id="uperEdit' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentEdit' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeEditFormObject(\'' . $this->controller_name . '\');" class="close tabdetail" data-id="uperEdit' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
-            $html = '<div id="contentEdit' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display; flow-root;">' . $html . '</div>';
-
-            $result = [
-                'success' => true,
-                'li'      => $li,
-                'html'    => $html,
-            ];
-
-            if (_EPH_ADMIN_DEBUG_PROFILING_) {
-                $result['profiling_mode'] = true;
-                $result['profiling'] = $this->displayProfiling();
-            }
-
-        } else {
-            $result = [
-                'success' => false,
-                'message' => $this->la('Your administrative profile does not allow you to edit this object'),
-            ];
-        }
-
-        die(Tools::jsonEncode($result));
-    }
-
+   
     public function ajaxProcessDuplicateObject() {
 
         $this->checkAccess();
@@ -1845,10 +1982,11 @@ abstract class PhenyxController {
     public function ajaxProcessUpdateObject() {
 
         $this->checkAccess();
+        $has_keyword = Tools::getValue('has_keyword');
         $idObject = Tools::getValue($this->identifier);
         $this->object = new $this->className($idObject);
 
-        $this->copyFromPost($this->object, $this->table);
+        $this->copyFromPost($this->object, $this->table, $has_keyword);
 
         $this->beforeUpdate($this->object);
 
@@ -1860,7 +1998,7 @@ abstract class PhenyxController {
 
             $return = [
                 'success' => true,
-                'message' => sprintf($this->la('Object of type % was successfully updated'), $this->className),
+                'message' => sprintf($this->la('Object of type %s was successfully updated'), $this->className)
             ];
         } else {
             $return = [
@@ -1872,7 +2010,7 @@ abstract class PhenyxController {
         die(Tools::jsonEncode($return));
     }
 
-    public function ajaxProcessAddNewAjaxObject() {
+    public function ajaxProcessAddNewObject() {
 
         $this->checkAccess();
         $this->object = new $this->className();
