@@ -645,17 +645,14 @@ abstract class PhenyxController {
         $paragrid->history = $this->paramhistory;
         $paragrid->autoRow = $this->paramAutoRow;
         $paragrid->beforeCellClick = $this->beforeCellClick;
-        
         $extraVars = Hook::exec('action'.$this->controller_name.'ParaGridScript', ['controller_name' => $this->controller_name], null, true);
         if (is_array($extraVars)) {
            foreach ($extraVars as $plugin => $values) {
                if (is_array($values)) {
                    foreach ($values as $key => $value) {
                        if (isset($value)) {
-                           $this->{$key} = $value;
-                       } else {
-                           $this->{$key};
-                       }    
+                           $paragrid->{$key} = [$value];
+                       } 
                    }
                }
            }
