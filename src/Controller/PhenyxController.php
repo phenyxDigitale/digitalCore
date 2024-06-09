@@ -1692,6 +1692,24 @@ abstract class PhenyxController {
         die(Tools::jsonEncode($result));
     }
     
+     public function ajaxProcessAddObject() {
+
+        $this->checkAccess();
+        $_GET['controller'] = $this->controller_name;
+        $_GET['add' . $this->table] = "";
+        $_GET['id_parent'] = Tools::getValue('idParent', '');
+
+        $scripHeader = Hook::exec('displayBackOfficeHeader', []);
+        $scriptFooter = Hook::exec('displayBackOfficeFooter', []);
+        $html = $this->renderForm();
+
+        $this->ajax_li = '<li id="uperAdd' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentAdd' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeAddFormObject(\'' . $this->controller_name . '\')" class="close tabdetail" data-id="uperAdd' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
+        $this->ajax_content = '<div id="contentAdd' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display; flow-root;">' . $scripHeader . $html . $scriptFooter . '</div>';
+
+        $this->ajaxEditDisplay();
+    }
+
+    
     public function ajaxEditDisplay() {
         
         $layout = $this->getAjaxLayout();
@@ -1752,7 +1770,7 @@ abstract class PhenyxController {
     }
     
     protected function ajaxShowEditContent($content) {
-
+       
         $this->context->cookie->write();
         $html = '';
         $jsTag = 'js_def';
@@ -1769,12 +1787,19 @@ abstract class PhenyxController {
             if ($defer && $domAvailable) {
                 $html = Media::deferInlineScripts($html);
             }
-            $head = '<div id="contentEdit'.$this->controller_name.'" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: flow-root;">'. "\n";
+            if(isset($this->object->id) && $this->object->id > 0) {
+                $head = '<div id="contentEdit'.$this->controller_name.'" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: flow-root;">'. "\n";
+            } else {
+                $head = '<div id="contentAdd'.$this->controller_name.'" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: flow-root;">'. "\n";
+            }
             $foot = '</div>';
             $header = Media::deferTagOutput('ajax_head', $html).'<content>';
             $html = trim(str_replace($header, '', $html)) . "\n";
-            
-            $content = Media::deferIdOutput('contentEdit'.$this->controller_name, $html);
+            if(isset($this->object->id) && $this->object->id > 0) {
+                $content = Media::deferIdOutput('contentEdit'.$this->controller_name, $html);
+            } else {
+                $content = Media::deferIdOutput('contentAdd'.$this->controller_name, $html);
+            }
             
             $js_def =  ($defer && $domAvailable) ? $this->js_def : [];
             $js_files = $defer ? array_unique($this->extraJs) : [];
@@ -1937,29 +1962,7 @@ abstract class PhenyxController {
         die(Tools::jsonEncode($result));
     }
 
-    public function ajaxProcessAddObject() {
-
-        $this->checkAccess();
-        $_GET['controller'] = $this->controller_name;
-        $_GET['add' . $this->table] = "";
-        $_GET['id_parent'] = Tools::getValue('idParent', '');
-
-        $scripHeader = Hook::exec('displayBackOfficeHeader', []);
-        $scriptFooter = Hook::exec('displayBackOfficeFooter', []);
-        $html = $this->renderForm();
-
-        $li = '<li id="uperAdd' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentAdd' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeAddFormObject(\'' . $this->controller_name . '\')" class="close tabdetail" data-id="uperAdd' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
-        $html = '<div id="contentAdd' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display; flow-root;">' . $scripHeader . $html . $scriptFooter . '</div>';
-
-        $result = [
-            'li'   => $li,
-
-            'html' => $html,
-        ];
-
-        die(Tools::jsonEncode($result));
-    }
-
+   
     public function ajaxProcessDeleteObject() {
 
         $this->checkAccess();
