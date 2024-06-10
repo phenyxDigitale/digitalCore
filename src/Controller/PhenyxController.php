@@ -881,22 +881,22 @@ abstract class PhenyxController {
 
     abstract public function display();
     
-    protected function afterAdd($object) {
+    protected function afterAdd() {
 
         return true;
     }
     
-    protected function beforeAdd($object) {
+    protected function beforeAdd() {
 
         return true;
     }
 
-    protected function beforeUpdate($object) {
+    protected function beforeUpdate() {
 
         return true;
     }
     
-    protected function afterUpdate($object) {
+    protected function afterUpdate() {
 
         return true;
     }
@@ -1988,11 +1988,11 @@ abstract class PhenyxController {
 
         $this->copyFromPost($this->object, $this->table, $has_keyword);
 
-        $this->beforeUpdate($this->object);
+        $this->beforeUpdate();
 
         $result = $this->object->update();
 
-        $this->afterUpdate($this->object);
+        $this->afterUpdate();
 
         if ($result) {
 
@@ -2017,14 +2017,14 @@ abstract class PhenyxController {
 
         $this->copyFromPost($this->object, $this->table);
 
-        $this->beforeAdd($this->object);
+        $this->beforeAdd();
 
         $result = $this->object->update();
 
-        $this->afterAdd($this->object);
+        
 
         if ($result) {
-            $this->afterAdd($this->object);
+            $this->afterAdd();
 
         } else {
             $return = [
@@ -2276,12 +2276,6 @@ abstract class PhenyxController {
 
             $fieldsValue = $this->getFieldsValue($this->object);
 
-            if ($this->form_ajax) {
-                $fieldsValue['ajax'] = $this->form_ajax;
-            }
-
-            $fieldsValue['action'] = $this->form_action;
-
             if ($this->tabList == true) {
                 $this->tpl_form_vars['controller'] = Tools::getValue('controller');
                 $this->tpl_form_vars['tabScript'] = $this->generateTabScript(Tools::getValue('controller'));
@@ -2334,12 +2328,6 @@ abstract class PhenyxController {
         if ($this->fields_form && is_array($this->fields_form)) {
 
             $fieldsValue = $this->getWizardFieldsValues($this->object);
-
-            if ($this->form_ajax) {
-                $fieldsValue['ajax'] = $this->form_ajax;
-            }
-
-            $fieldsValue['action'] = $this->form_action;
 
             $has_editor = false;
 
