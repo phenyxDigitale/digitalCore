@@ -111,17 +111,21 @@ class PhenyxTools {
             ['_RIJNDAEL_KEY_', _RIJNDAEL_KEY_],
             ['_RIJNDAEL_IV_', _RIJNDAEL_IV_],
             ['_EPH_VERSION_', $version],
+            ['_EPH_VENDOR_DIR_', _EPH_VENDOR_DIR_],
             ['_PHP_ENCRYPTION_KEY_', _PHP_ENCRYPTION_KEY_],
         ];
         
         if (defined('_FORUM_MODE_')) {
-            $dates[] = ['_FORUM_MODE_', _FORUM_MODE_];
+            $datas[] = ['_FORUM_MODE_', _FORUM_MODE_];
         }
         if (defined('_BLOG_MODE_')) {
-            $dates[] = ['_BLOG_MODE_', _BLOG_MODE_];
+            $datas[] = ['_BLOG_MODE_', _BLOG_MODE_];
         }
         if (defined('_WIKI_MODE_')) {
-            $dates[] = ['_WIKI_MODE_', _WIKI_MODE_];
+            $datas[] = ['_WIKI_MODE_', _WIKI_MODE_];
+        }
+        if (defined('_EPHENYX_MODE_')) {
+            $datas[] = ['_EPHENYX_MODE_', _EPHENYX_MODE_];
         }
         
         foreach ($datas as $data) {
