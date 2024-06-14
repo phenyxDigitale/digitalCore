@@ -46,7 +46,7 @@ abstract class CacheApi {
 	public function __construct() {
 
         $this->boardurl = Context::getContext()->link->getBaseLink();
-        $this->cachedir = _EPH_CONFIG_DIR_;
+        $this->cachedir = _EPH_CACHE_DIR_;
         $this->boarddir = _EPH_ROOT_DIR_;
 		$this->setPrefix();
 	}
