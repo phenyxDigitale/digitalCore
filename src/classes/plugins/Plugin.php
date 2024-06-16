@@ -1216,7 +1216,6 @@ abstract class Plugin {
             (new DbQuery())
             ->select('IFNULL(MAX(`position`), 0) + 1')
             ->from('plugin')
-            ->where('`id_plugin` = ' . (int) $idParent)
         ));
     }
 
