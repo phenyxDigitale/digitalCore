@@ -1,7 +1,5 @@
 <?php
 
-use Memcache;
-
 /**
  * Our Cache API class
  *

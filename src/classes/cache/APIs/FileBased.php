@@ -1,8 +1,5 @@
 <?php
 
-use FilesystemIterator;
-use GlobIterator;
-
 /**
  * Our Cache API class
  *
@@ -13,7 +10,7 @@ class FileBased extends CacheApi implements CacheApiInterface {
 	/**
 	 * @var string The path to the current $cachedir directory.
 	 */
-	private $cachedir = null;
+	public $cachedir = null;
 
 	/**
 	 * {@inheritDoc}

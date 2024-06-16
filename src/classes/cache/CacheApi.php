@@ -4,7 +4,6 @@
 abstract class CacheApi {
 
 	const APIS_FOLDER = 'APIs';
-	const APIS_NAMESPACE = 'EPH\Cache\APIs\\';
 	const APIS_DEFAULT = 'FileBased';
 
 	/**

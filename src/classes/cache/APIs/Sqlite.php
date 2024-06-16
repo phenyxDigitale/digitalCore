@@ -1,7 +1,5 @@
 <?php
 
-use SQLite3;
-
 /**
  * SQLite Cache API class
  *
