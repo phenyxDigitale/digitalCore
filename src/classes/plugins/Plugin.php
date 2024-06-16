@@ -1263,9 +1263,7 @@ abstract class Plugin {
                             'message' => $error,
                         ];
                         die(Tools::jsonEncode($return));
-                    } else {
-                        $position = self::getNewLastPosition($id_plugin);
-                    }
+                    } 
 
                 }
 
