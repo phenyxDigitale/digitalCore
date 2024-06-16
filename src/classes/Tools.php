@@ -5404,24 +5404,38 @@ FileETag none
     
     public static function getGoogleTranslation($google_api_key, $text, $target) {
         
+        if($target == 'en' || $target == 'gb') {
+            $return = [
+                'translation' => $text,
+            ];
+        } else {
         
-        if($target == 'gb') {
-            $target = 'en';
+            $existKey = Translation::getExistingTranslation($target, $text);
+            if(!is_null($existKey)) {
+                $return = [
+                    'translation' => $existKey,
+                ];
+            } else {
+
+                $translate = new TranslateClient([
+                    'key' => $google_api_key,
+                ]);
+
+                $result = $translate->translate($text, [
+                    'target' => $target,
+                ]);
+                $translation = new Translation();
+                $translation->iso_code = $target;
+                $translation->origin = $text;
+                $translation->translation = $result['text'];
+                $translation->add();
+
+                $return = [
+                    'translation' => $result['text'],
+                ];
+            }
         }
-        
-        $translate = new TranslateClient([
-            'key' => $google_api_key
-        ]);
-
-        $result = $translate->translate($text, [
-            'target' => $target
-        ]);
-        
-        $return = [
-			'translation'   => $result['text'],
-		];
-
-		return $return;
+       	return $return;
     }
 
     
