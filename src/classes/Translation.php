@@ -16,8 +16,8 @@ class Translation extends PhenyxObjectModel {
         'primary' => 'id_translation',
         'fields'  => [
             'iso_code'         => ['type' => self::TYPE_STRING, 'validate' => 'isLanguageIsoCode', 'required' => true, 'size' => 2],
-            'origin'           => ['type' => self::TYPE_STRING,  'required' => true],
-            'translation'      => ['type' => self::TYPE_STRING,  'required' => true],
+            'origin'           => ['type' => self::TYPE_HTML,  'required' => true],
+            'translation'      => ['type' => self::TYPE_HTML,  'required' => true],
         ],
     ];
     /** @var string Name */
