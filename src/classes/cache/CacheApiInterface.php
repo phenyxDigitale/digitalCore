@@ -1,6 +1,5 @@
 <?php
 
-namespace EPH\Cache;
 
 interface CacheApiInterface {
 	/**

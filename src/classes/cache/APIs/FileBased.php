@@ -1,9 +1,5 @@
 <?php
 
-namespace EPH\Cache\APIs;
-
-use EPH\Cache\CacheApi;
-use EPH\Cache\CacheApiInterface;
 use FilesystemIterator;
 use GlobIterator;
 

@@ -1,10 +1,5 @@
 <?php
 
-namespace EPH\Cache;
-
-if (!defined('SMF')) {
-	die('No direct access...');
-}
 
 abstract class CacheApi {
 
