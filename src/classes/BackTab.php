@@ -62,7 +62,7 @@ class BackTab extends PhenyxObjectModel {
 
             /* Lang fields */
             'generated'       => ['type' => self::TYPE_BOOL, 'lang' => true],
-            'name'            => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isTabName', 'size' => 64],
+            'name'            => ['type' => self::TYPE_STRING, 'lang' => true],
         ],
     ];
 
