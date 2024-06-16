@@ -5411,7 +5411,7 @@ FileETag none
         } else {
         
             $existKey = Translation::getExistingTranslation($target, $text);
-            if(!is_null($existKey)) {
+            if(!empty($existKey)) {
                 $return = [
                     'translation' => $existKey,
                 ];

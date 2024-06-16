@@ -13,7 +13,7 @@ class Translation extends PhenyxObjectModel {
      */
     public static $definition = [
         'table'   => 'translation',
-        'primary' => 'id_zone',
+        'primary' => 'id_translation',
         'fields'  => [
             'iso_code'         => ['type' => self::TYPE_STRING, 'validate' => 'isLanguageIsoCode', 'required' => true, 'size' => 2],
             'origin'           => ['type' => self::TYPE_STRING,  'required' => true],
@@ -30,10 +30,10 @@ class Translation extends PhenyxObjectModel {
        
        return Db::getInstance()->getValue(
 			(new DbQuery())
-				->select('`translation`')
-				->from('translation')
-				->where('`iso_code` = \'' . $iso_code.'\'')
-				->where('`origin` = \'' . $origin.'\'')
+			->select('`translation`')
+			->from('translation')
+			->where('`iso_code` = \'' . trim($iso_code).'\'')
+			->where('`origin` = \'' . trim($origin).'\'')
 		);
    }
 
