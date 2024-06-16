@@ -174,6 +174,10 @@ abstract class Plugin {
     public $image_link;
     
     public $main_plugin;
+    
+    public $google_api_key;
+    
+    public $has_api_key;
 
     public function __construct($name = null, Context $context = null) {
 
@@ -194,6 +198,9 @@ abstract class Plugin {
         }
         
         $this->main_plugin = self::getIdPluginByName('ph_manager');
+        
+        $this->google_api_key = Configuration::get('EPH_GOOGLE_TRANSLATE_API_KEY');
+        $this->has_api_key = !empty($this->google_api_key) ? 1 : 0;  
         
         $context = $context ? $context : Context::getContext();
         $this->context = $context;
@@ -2020,9 +2027,14 @@ abstract class Plugin {
             $meta->controller = $type;
             $meta->page = $page;
             $meta->plugin = $this->name;
-            foreach (Language::getLanguages(true) as $lang) {
-                $meta->title[$lang['id_lang']] = $translator->getGoogleTranslation($name, $lang['iso_code']);
-                $meta->url_rewrite[$lang['id_lang']] = Tools::str2url($meta->title[$lang['id_lang']]);
+            foreach (Language::getLanguages(true) as $lang) {     
+                if($this->has_api_key) {
+                    $meta->title[$lang['id_lang']] = Tools::getGoogleTranslation($this->google_api_key, $name, $lang['iso_code']);
+                    $meta->url_rewrite[$lang['id_lang']] = Tools::str2url($meta->title[$lang['id_lang']]);
+                } else {
+                    $meta->title[$lang['id_lang']] = $name;
+                    $meta->url_rewrite[$lang['id_lang']] = Tools::str2url($name);
+                }
             }
             $result = $meta->add();
         }
@@ -2030,8 +2042,6 @@ abstract class Plugin {
     }
 
     public function instalPluginTab($class_name, $name, $function = true, $idParent = null, $parentName = null, $position = null, $openFunction = null, $divider = 0) {
-
-        $translator = Language::getInstance();
 
         if (is_null($parentName) && is_null($idParent)) {
             return false;
@@ -2069,7 +2079,11 @@ abstract class Plugin {
             $tab->name = [];
 
             foreach (Language::getLanguages(true) as $lang) {
-                $tab->name[$lang['id_lang']] = $translator->getGoogleTranslation($name, $lang['iso_code']);
+                if($this->has_api_key) {
+                    $tab->name[$lang['id_lang']] = Tools::getGoogleTranslation($this->google_api_key, $name, $lang['iso_code']);
+                } else {
+                    $tab->name[$lang['id_lang']] = $name;
+                }
             }
 
             unset($lang);
@@ -2096,7 +2110,11 @@ abstract class Plugin {
             $tab->name = [];
 
             foreach (Language::getLanguages(true) as $lang) {
-                $tab->name[$lang['id_lang']] = $translator->getGoogleTranslation($name, $lang['iso_code']);
+                if($this->has_api_key) {
+                    $tab->name[$lang['id_lang']] = Tools::getGoogleTranslation($this->google_api_key, $name, $lang['iso_code']);
+                } else {
+                    $tab->name[$lang['id_lang']] = $name;
+                }
             }
 
             unset($lang);
