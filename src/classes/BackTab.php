@@ -53,7 +53,7 @@ class BackTab extends PhenyxObjectModel {
             'id_parent'       => ['type' => self::TYPE_INT, 'validate' => 'isInt'],
             'position'        => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
             'function'        => ['type' => self::TYPE_STRING, 'size' => 64],
-            'plugin'          => ['type' => self::TYPE_STRING, 'validate' => 'isTabName', 'size' => 64],
+            'plugin'          => ['type' => self::TYPE_STRING],
             'has_divider'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
             'is_global'       => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
             'specific_config' => ['type' => self::TYPE_STRING],
