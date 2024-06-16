@@ -291,15 +291,15 @@ abstract class Plugin {
     }
     
     public function alterSqlTable($table, $column, $type, $after) {
-        
+                
         $query = 'SELECT `COLUMN_NAME`
             FROM `INFORMATION_SCHEMA`.`COLUMNS`
             WHERE `TABLE_SCHEMA`="'._DB_NAME_.'"
             AND `TABLE_NAME`= "'._DB_PREFIX_.$table.'"
             AND `COLUMN_NAME`= "'.$column.'"';
         
-        $result = Db::getInstance()->execute(trim($query));
-        if(!$result) {
+        $result = Db::getInstance()->getValue(trim($query));
+        if($result != $column) {           
             $sql = 'ALTER TABLE `'._DB_PREFIX_.$table.'` ADD `'.$column.'` '.$type.' AFTER `'.$after.'`';
             Db::getInstance()->execute(trim($sql));
         }
@@ -619,6 +619,7 @@ abstract class Plugin {
             }
 
         }
+
 
         return static::$classInPlugin[$currentClass];
     }
@@ -1976,9 +1977,16 @@ abstract class Plugin {
                 Db::getInstance()->delete('meta', '`id_meta` = ' . (int) $meta);
             }
 
+
         }
 
         $this->uninstallTab();
+        
+        $metas = new PhenyxCollection('Meta');
+        $metas->where('plugin', '=', $this->name);
+        foreach($metas as $meta) {
+            $meta->delete();
+        }
 
         $this->disable(true);
 
@@ -1988,11 +1996,11 @@ abstract class Plugin {
 
         if (Db::getInstance()->delete('plugin', '`id_plugin` = ' . (int) $this->id)) {
             Cache::clean('Plugin::getPluginIdByName_' . pSQL($this->name));
-
+            $this->updateIoPlugins();
             return true;
         }
 
-        $this->updateIoPlugins();
+        
         return false;
     }
 
@@ -2021,15 +2029,15 @@ abstract class Plugin {
         $result = true;
         $idMeta = Meta::getIdMetaByPage($page);
         if(!$idMeta) {
-            $translator = Language::getInstance();
             $meta = new Meta();
             $meta->controller = $type;
             $meta->page = $page;
             $meta->plugin = $this->name;
             foreach (Language::getLanguages(true) as $lang) {     
                 if($this->has_api_key) {
-                    $meta->title[$lang['id_lang']] = Tools::getGoogleTranslation($this->google_api_key, $name, $lang['iso_code']);
-                    $meta->url_rewrite[$lang['id_lang']] = Tools::str2url($meta->title[$lang['id_lang']]);
+                    $title = Tools::getGoogleTranslation($this->google_api_key, $name, $lang['iso_code']);
+                    $meta->title[$lang['id_lang']] = $title['translation'];
+                    $meta->url_rewrite[$lang['id_lang']] = Tools::str2url($title['translation']);
                 } else {
                     $meta->title[$lang['id_lang']] = $name;
                     $meta->url_rewrite[$lang['id_lang']] = Tools::str2url($name);
@@ -2079,7 +2087,8 @@ abstract class Plugin {
 
             foreach (Language::getLanguages(true) as $lang) {
                 if($this->has_api_key) {
-                    $tab->name[$lang['id_lang']] = Tools::getGoogleTranslation($this->google_api_key, $name, $lang['iso_code']);
+                    $tab_name = Tools::getGoogleTranslation($this->google_api_key, $name, $lang['iso_code']);
+                    $tab->name[$lang['id_lang']] = $tab_name['translation'];
                 } else {
                     $tab->name[$lang['id_lang']] = $name;
                 }
@@ -2110,7 +2119,8 @@ abstract class Plugin {
 
             foreach (Language::getLanguages(true) as $lang) {
                 if($this->has_api_key) {
-                    $tab->name[$lang['id_lang']] = Tools::getGoogleTranslation($this->google_api_key, $name, $lang['iso_code']);
+                    $tab_name = Tools::getGoogleTranslation($this->google_api_key, $name, $lang['iso_code']);
+                    $tab->name[$lang['id_lang']] = $tab_name['translation'];
                 } else {
                     $tab->name[$lang['id_lang']] = $name;
                 }
