@@ -240,7 +240,7 @@ class FileBased extends CacheApi implements CacheApiInterface {
 		// If its invalid, use EPH's.
 
 		if (is_null($dir) || !is_writable($dir)) {
-			$this->cachedir = _EPH_CONFIG_DIR_;
+			$this->cachedir = _EPH_CACHE_DIR_.'cacheapi/';
 		} else {
 			$this->cachedir = $dir;
 		}

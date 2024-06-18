@@ -2635,12 +2635,16 @@ abstract class Plugin {
         
         $extraTemplate = Hook::exec('actionIsTemplateOverloaded', [], null, true);
         if(is_array($extraTemplate) && count($extraTemplate)) {
+            $returnPath = '';
             foreach($extraTemplate as $plugin => $path) {
                 if (file_exists($path . 'plugins/' . $plugin_name . '/' . $template)) {
-                    return $path . 'plugins/' . $plugin_name . '/' . $template;
+                    $returnPath = $path . 'plugins/' . $plugin_name . '/' . $template;
                 } else if (file_exists($path . 'plugins/' . $plugin_name . '/' . $template)) {
-                    return $path . 'plugins/' . $plugin_name . '/' . $template;
+                    $returnPath = $path . 'plugins/' . $plugin_name . '/' . $template;
                 }
+            }
+            if(!empty($returnPath)) {
+                return $returnPath;
             }
             
         }     
