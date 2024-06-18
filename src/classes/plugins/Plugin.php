@@ -3061,47 +3061,41 @@ abstract class Plugin {
     
     public function loadCacheAccelerator() {
         
-        $file = fopen("testLoadPluginCache.txt","w");
+        
         if (!($this->context->cache_enable)) {
-            fwrite($file,"pas glop".PHP_EOL);
             return false;
         }
 
         if (is_object($this->context->cache_api)) {
-            fwrite($file,"is object return".PHP_EOL);
             return $this->context->cache_api;
         } else if (is_null($this->context->cache_api)) {
             $cache_api = false;
         }
-
-        // What accelerator we are going to try.
-        $cache_class_name = CacheApi::APIS_DEFAULT;
+        if (class_exists('CacheApi')) {
+            // What accelerator we are going to try.
+            $cache_class_name = CacheApi::APIS_DEFAULT;
         
-        if (class_exists($cache_class_name)) {
-           fwrite($file,"go cow".PHP_EOL);
-            $cache_api = new $cache_class_name($this->context);
+            if (class_exists($cache_class_name)) {
+                $cache_api = new $cache_class_name($this->context);
 
-            // There are rules you know...
+                // There are rules you know...
 
-            if (!($cache_api instanceof CacheApiInterface) || !($cache_api instanceof CacheApi)) {
-                fwrite($file,"pas glop 2".PHP_EOL);
-                return false;
+                if (!($cache_api instanceof CacheApiInterface) || !($cache_api instanceof CacheApi)) {
+                    return false;
+                }
+                if (!$cache_api->isSupported()) {
+                    return false;   
+                }
+
+                // Connect up to the accelerator.
+
+                if ($cache_api->connect() === false) {
+                    return false;
+                }
+
+                return $cache_api;
             }
-
-
-            if (!$cache_api->isSupported()) {
-                fwrite($file,"pas glop 3".PHP_EOL);
-                return false;
-            }
-
-            // Connect up to the accelerator.
-
-            if ($cache_api->connect() === false) {
-                fwrite($file,"pas glop 4".PHP_EOL);
-                return false;
-            }
-
-            return $cache_api;
+            return false;
         }
 
         return false;
