@@ -239,15 +239,17 @@ class Configuration extends PhenyxObjectModel {
         if (defined('_EPH_DO_NOT_LOAD_CONFIGURATION_') && _EPH_DO_NOT_LOAD_CONFIGURATION_) {
             return false;
         }
-        $context = Context::getContext();          
+        if (class_exists('Context')) {
+            $context = Context::getContext();          
         
-        $cache = $context->cache_api;
-        if($context->cache_enable && is_object($context->cache_api)) {
-           $value = $cache->getData('cnfig_'.$key, 864000);
-           $temp = empty($value) ? null : Tools::jsonDecode($value, true);
-           if(!empty($temp)) {
-               return $temp;
-           }
+            $cache = $context->cache_api;
+            if($context->cache_enable && is_object($context->cache_api)) {
+                $value = $cache->getData('cnfig_'.$key, 864000);
+                $temp = empty($value) ? null : Tools::jsonDecode($value, true);
+                if(!empty($temp)) {
+                    return $temp;
+                }
+            }
         }
         
         
@@ -274,7 +276,7 @@ class Configuration extends PhenyxObjectModel {
 			
             $result = purifyFetch(static::$_cache['configuration'][$idLang]['global'][$key]);
             
-             if($context->cache_enable && is_object($context->cache_api)) {
+             if(class_exists('Context') && $context->cache_enable && is_object($context->cache_api)) {
                 $temp = $result === null ? null : Tools::jsonEncode($result);
                 $cache->putData('cnfig_'.$key, $temp);
             }		
@@ -288,7 +290,7 @@ class Configuration extends PhenyxObjectModel {
                     ->where('`name` LIKE \'' . $key . '\'')
             );
             
-             if($context->cache_enable && is_object($context->cache_api)) {
+             if(class_exists('Context') && $context->cache_enable && is_object($context->cache_api)) {
                 $temp = $value === null ? null : Tools::jsonEncode($value);
                 $cache->putData('cnfig_'.$key, $temp);
             }	
@@ -317,7 +319,6 @@ class Configuration extends PhenyxObjectModel {
         // What accelerator we are going to try.
         $cache_class_name = CacheApi::APIS_DEFAULT;
         
-
         if (class_exists($cache_class_name)) {
            
             $cache_api = new $cache_class_name($context);
