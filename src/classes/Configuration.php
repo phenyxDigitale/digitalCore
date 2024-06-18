@@ -9,8 +9,8 @@ class Configuration extends PhenyxObjectModel {
 
     // Default configuration consts
     // @since 1.0.1
+    public static $instance = null;
     
-    public $require_context = false;
     
     const ONE_PHONE_AT_LEAST = 'EPH_ONE_PHONE_AT_LEAST';
     const GROUP_FEATURE_ACTIVE = 'EPH_GROUP_FEATURE_ACTIVE';
@@ -117,6 +117,16 @@ class Configuration extends PhenyxObjectModel {
     const CUSTOMCODE_JS = 'EPH_CUSTOMCODE_JS';
     const STORE_REGISTERED = 'EPH_STORE_REGISTERED';
     const EPHENYX_LICENSE_KEY = '_EPHENYX_LICENSE_KEY_';
+    
+    public $cachedConfigurations = [
+        'EPH_PAGE_CACHE_ENABLED',
+        'EPH_CACHE_ENABLED',
+        'EPH_DEDUCTIBLE_VAT_DEFAULT_ACCOUNT',
+        'EPH_PROFIT_DEFAULT_ACCOUNT',
+        'EPH_PURCHASE_DEFAULT_ACCOUNT',
+        'EPH_LANG_DEFAULT',
+        'EPH_PAGE_CACHE_HOOKS'
+    ];
     // @codingStandardsIgnoreStart
     /**
      * @see PhenyxObjectModel::$definition
@@ -150,6 +160,23 @@ class Configuration extends PhenyxObjectModel {
     public $date_add;
     /** @var string Object last modification date */
     public $date_upd;
+    
+    public function __construct($id = null, $idLang = null) {
+
+        parent::__construct($id, $idLang);
+        $this->context->cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
+        $this->context->cache_api = $this->loadCacheAccelerator();
+        
+    }
+    
+     public static function getInstance() {
+
+        if (!static::$instance) {
+            static::$instance = new static();
+        }
+
+        return static::$instance;
+    }
     
     // @codingStandardsIgnoreEnd
 
@@ -212,6 +239,21 @@ class Configuration extends PhenyxObjectModel {
         if (defined('_EPH_DO_NOT_LOAD_CONFIGURATION_') && _EPH_DO_NOT_LOAD_CONFIGURATION_) {
             return false;
         }
+        $context = Context::getContext();          
+        
+        $cache = $context->cache_api;
+        if($context->cache_enable && is_object($context->cache_api)) {
+           $value = $cache->getData('cnfig_'.$key, 864000);
+           $temp = empty($value) ? null : Tools::jsonDecode($value, true);
+           if(!empty($temp)) {
+               return $temp;
+           }
+        }
+        
+        
+        //$cache = new FileBased(Context::getContext());
+                
+        //return $config->getKey($key, $idLang);
 
         static::validateKey($key);
 		
@@ -230,7 +272,14 @@ class Configuration extends PhenyxObjectModel {
         
         if (Configuration::hasKey($key, $idLang) && isset(static::$_cache['configuration'][$idLang]['global'][$key])) {
 			
-            return purifyFetch(static::$_cache['configuration'][$idLang]['global'][$key]);
+            $result = purifyFetch(static::$_cache['configuration'][$idLang]['global'][$key]);
+            
+             if($context->cache_enable && is_object($context->cache_api)) {
+                $temp = $result === null ? null : Tools::jsonEncode($result);
+                $cache->putData('cnfig_'.$key, $temp);
+            }		
+           
+            return $result;
         } else {
             $value = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
@@ -238,6 +287,110 @@ class Configuration extends PhenyxObjectModel {
                     ->from('configuration')
                     ->where('`name` LIKE \'' . $key . '\'')
             );
+            
+             if($context->cache_enable && is_object($context->cache_api)) {
+                $temp = $value === null ? null : Tools::jsonEncode($value);
+                $cache->putData('cnfig_'.$key, $temp);
+            }	
+            
+            static::$_cache['configuration'][$idLang]['global'][$key] = $value;
+            return $value;
+        }
+
+        return false;
+    }
+    
+    public static function loadConfigurationCacheAccelerator(Context $context) {
+        
+        if (!($context->cache_enable)) {
+            return false;
+        }
+
+        if (is_object($context->cache_api)) {
+            return $context->cache_api;
+        } else
+
+        if (is_null($context->cache_api)) {
+            $cache_api = false;
+        }
+
+        // What accelerator we are going to try.
+        $cache_class_name = CacheApi::APIS_DEFAULT;
+        
+
+        if (class_exists($cache_class_name)) {
+           
+            $cache_api = new $cache_class_name($context);
+
+            // There are rules you know...
+
+            if (!($cache_api instanceof CacheApiInterface) || !($cache_api instanceof CacheApi)) {
+                return false;
+            }
+
+
+            if (!$cache_api->isSupported()) {
+                return false;
+            }
+
+            // Connect up to the accelerator.
+
+            if ($cache_api->connect() === false) {
+                return false;
+            }
+
+            return $cache_api;
+        }
+
+        return false;
+    }
+    
+    public function getKey($key, $idLang = null) {
+
+        if (defined('_EPH_DO_NOT_LOAD_CONFIGURATION_') && _EPH_DO_NOT_LOAD_CONFIGURATION_) {
+            return false;
+        }
+        
+        if($this->context->cache_enable) {
+            $temp = self::cacheGetdata('cnfig_'.$key, $context, 864000);
+            if(!empty($temp)) {
+                return $temp;
+            }
+        }
+
+        static::validateKey($key);
+		
+
+        if (!static::configurationIsLoaded()) {
+            Configuration::loadConfiguration();
+        }
+
+        $idLang = (int) $idLang;
+
+       
+        if (!isset(static::$_cache['configuration'][$idLang])) {
+            $idLang = 0;
+        }
+
+        
+        if (Configuration::hasKey($key, $idLang) && isset(static::$_cache['configuration'][$idLang]['global'][$key])) {
+			
+            $result = purifyFetch(static::$_cache['configuration'][$idLang]['global'][$key]);
+            if($this->context->cache_enable) {
+                $this->cache_put_data('cnfig_'.$key, $result, $context);
+            }
+			
+            return $result;
+        } else {
+            $value = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('`value`')
+                    ->from('configuration')
+                    ->where('`name` LIKE \'' . $key . '\'')
+            );
+            if($this->context->cache_enable) {
+                $this->cache_put_data('cnfig_'.$key, $value, $context);
+            }
             static::$_cache['configuration'][$idLang]['global'][$key] = $value;
             return $value;
         }

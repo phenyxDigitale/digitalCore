@@ -152,6 +152,15 @@ class BackTab extends PhenyxObjectModel {
         if (!is_null($className)) {
             $className = strtolower($className);
         }
+        $context = Context::getContext();        
+        $cache = $context->cache_api;
+        if($context->cache_enable && is_object($context->cache_api)) {
+           $value = $cache->getData('idTabfrom_'.$className, 864000);
+           $temp = empty($value) ? null : Tools::jsonDecode($value, true);
+           if(!empty($temp)) {
+               return $temp;
+           }
+        }
 
         if (static::$_getIdFromClassName === null) {
             static::$_getIdFromClassName = [];
@@ -172,8 +181,13 @@ class BackTab extends PhenyxObjectModel {
             }
 
         }
+        $result = (isset(static::$_getIdFromClassName[$className]) ? (int) static::$_getIdFromClassName[$className] : false);
+        if($context->cache_enable && is_object($context->cache_api)) {
+            $temp = $result === null ? null : Tools::jsonEncode($result);
+            $cache->putData('idTabfrom_'.$className, $temp);
+        }	
 
-        return (isset(static::$_getIdFromClassName[$className]) ? (int) static::$_getIdFromClassName[$className] : false);
+        return $result;
     }
 
     public function getBrothers() {
@@ -329,6 +343,16 @@ class BackTab extends PhenyxObjectModel {
     }
 
     public static function getBackTabs($idLang, $idParent = null) {
+        
+        $context = Context::getContext();        
+        $cache = $context->cache_api;
+        if($context->cache_enable && is_object($context->cache_api)) {
+           $value = $cache->getData('getBckTab_'.$idLang.'_'.$idParent, 864000);
+           $temp = empty($value) ? null : Tools::jsonDecode($value, true);
+           if(!empty($temp)) {
+               return $temp;
+           }
+        }
 
         if (!isset(static::$_cache_back_tab[$idLang])) {
             static::$_cache_back_tab[$idLang] = [];
@@ -363,11 +387,21 @@ class BackTab extends PhenyxObjectModel {
             foreach (static::$_cache_back_tab[$idLang] as $arrayParent) {
                 $arrayAll = array_merge($arrayAll, $arrayParent);
             }
+            if($context->cache_enable && is_object($context->cache_api)) {
+                $temp = $arrayAll === null ? null : Tools::jsonEncode($arrayAll);
+                $cache->putData('getBckTab_'.$idLang.'_'.$idParent, $temp);
+            }	
 
             return $arrayAll;
         }
+        
+        $result = (isset(static::$_cache_back_tab[$idLang][$idParent]) ? static::$_cache_back_tab[$idLang][$idParent] : []);
+        if($context->cache_enable && is_object($context->cache_api)) {
+            $temp = $result === null ? null : Tools::jsonEncode($result);
+            $cache->putData('getBckTab_'.$idLang.'_'.$idParent, $temp);
+        }	
 
-        return (isset(static::$_cache_back_tab[$idLang][$idParent]) ? static::$_cache_back_tab[$idLang][$idParent] : []);
+        return $result;
 
     }
 
