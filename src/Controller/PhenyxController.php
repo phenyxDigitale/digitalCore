@@ -425,6 +425,8 @@ abstract class PhenyxController {
             $this->context->getExtraContextVars();
         }
         $this->context->controller = $this;
+        $this->context->cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
+        $this->context->cache_api = $this->loadCacheAccelerator();
         $this->getExtraPhenyxVars();
 
         $this->ajax = Tools::getValue('ajax') || Tools::isSubmit('ajax');

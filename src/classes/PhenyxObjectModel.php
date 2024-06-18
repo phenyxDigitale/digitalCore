@@ -350,6 +350,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             $this->_language = $context->language;
             $this->_smarty = $context->smarty;
         }
+        $this->context->cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
+        $this->context->cache_api = $this->loadCacheAccelerator();
         $this->use_session = Configuration::get('EPH_USE_SESSION_DAY');
         $this->use_education_device = Configuration::get('EPH_USE_EDUCATION_DEVICE');
 
