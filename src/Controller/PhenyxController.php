@@ -3455,5 +3455,78 @@ abstract class PhenyxController {
         return $this->content_ajax;
 
     }
+    
+    public function loadCacheAccelerator() {
+        
+        if (!($this->context->cache_enable)) {
+            return false;
+        }
+
+        if (is_object($this->context->cache_api)) {
+            return $this->context->cache_api;
+        } else
+
+        if (is_null($this->context->cache_api)) {
+            $cache_api = false;
+        }
+
+        // What accelerator we are going to try.
+        $cache_class_name = CacheApi::APIS_DEFAULT;
+        
+        if (class_exists($cache_class_name)) {
+           
+            $cache_api = new $cache_class_name($this->context);
+
+            // There are rules you know...
+
+            if (!($cache_api instanceof CacheApiInterface) || !($cache_api instanceof CacheApi)) {
+                return false;
+            }
+
+
+            if (!$cache_api->isSupported()) {
+                return false;
+            }
+
+            // Connect up to the accelerator.
+
+            if ($cache_api->connect() === false) {
+                return false;
+            }
+
+            return $cache_api;
+        }
+
+        return false;
+    }
+    
+    public function cache_put_data($key, $value, $ttl = 120) {
+		
+        
+		if (empty($this->context->cache_enable)) {
+			return;
+		}
+        if (empty($this->context->cache_api)) {
+            $this->context->cache_api = $this->loadCacheAccelerator();
+			return;
+		}
+
+		$value = $value === null ? null : Tools::jsonEncode($value);
+		$this->context->cache_api->putData($key, $value, $ttl);
+
+
+	}
+
+	public function cache_get_data($key, $ttl = 120) {
+
+		if (empty($this->context->cache_enable) || empty($this->context->cache_api)) {
+			return null;
+		}
+
+		$value = $this->context->cache_api->getData($key, $ttl);
+
+		return empty($value) ? null : Tools::jsonDecode($value, true);
+	}
+
 
 }
