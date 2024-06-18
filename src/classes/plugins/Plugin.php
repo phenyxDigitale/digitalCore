@@ -210,6 +210,8 @@ abstract class Plugin {
         $this->_link = $context->link;
         $this->_language = $context->language;
         $this->_smarty = $context->smarty;
+        $this->context->cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
+        $this->context->cache_api = $this->loadCacheAccelerator();
 
 
         if (is_object($this->context->smarty)) {
@@ -806,6 +808,8 @@ abstract class Plugin {
                     'onclick_option'         => method_exists($plugin, 'onclickOption') ? true : false,
                 ];
 
+
+
                 if ($item['onclick_option']) {
                     $href = Context::getContext()->link->getAdminLink('Plugin', true) . '&plugin_name=' . $tmpPlugin->name . '&tab_plugin=' . $tmpPlugin->tab;
                     $item['onclick_option_content'] = [];
@@ -895,6 +899,7 @@ abstract class Plugin {
                 } else if(file_exists(_EPH_SPECIFIC_PLUGIN_DIR_. $plugin->name . '/logo.png')) {
                     $image = 'includes/specific_plugins/' . $plugin->name . '/logo.png';
                 } else {
+
                     $image = 'content/img/no-plugin.png';
                 }
                 
@@ -1255,6 +1260,7 @@ abstract class Plugin {
                         ->select('`id_plugin`')
                         ->from('plugin')
                         ->where('LOWER(`name`) = \'' . pSQL(mb_strtolower($dependency)) . '\'')
+
                     );
                     if (!$id_plugin) {
                         $error = Tools::displayError('Before installing this plugin, you have to install this/these plugin(s) first:') . '<br />';
@@ -3052,6 +3058,54 @@ abstract class Plugin {
         }
 
     }
+    
+    public function loadCacheAccelerator() {
+        
+        $file = fopen("testLoadPluginCache.txt","w");
+        if (!($this->context->cache_enable)) {
+            fwrite($file,"pas glop".PHP_EOL);
+            return false;
+        }
+
+        if (is_object($this->context->cache_api)) {
+            fwrite($file,"is object return".PHP_EOL);
+            return $this->context->cache_api;
+        } else if (is_null($this->context->cache_api)) {
+            $cache_api = false;
+        }
+
+        // What accelerator we are going to try.
+        $cache_class_name = CacheApi::APIS_DEFAULT;
+        
+        if (class_exists($cache_class_name)) {
+           fwrite($file,"go cow".PHP_EOL);
+            $cache_api = new $cache_class_name($this->context);
+
+            // There are rules you know...
+
+            if (!($cache_api instanceof CacheApiInterface) || !($cache_api instanceof CacheApi)) {
+                fwrite($file,"pas glop 2".PHP_EOL);
+                return false;
+            }
+
+
+            if (!$cache_api->isSupported()) {
+                fwrite($file,"pas glop 3".PHP_EOL);
+                return false;
+            }
+
+            // Connect up to the accelerator.
+
+            if ($cache_api->connect() === false) {
+                fwrite($file,"pas glop 4".PHP_EOL);
+                return false;
+            }
+
+            return $cache_api;
+        }
+
+        return false;
+    }
 
     public function isMobileDevice() {
 
@@ -3066,9 +3120,36 @@ abstract class Plugin {
 
         $this->context->controller->informations[] = $msg;
     }
+    
+    public function cache_put_data($key, $value, $ttl = 120) {
+		
+        
+		if (empty($this->context->cache_enable)) {
+			return;
+		}
+        if (empty($this->context->cache_api)) {
+            $this->context->cache_api = $this->loadCacheAccelerator();
+			return;
+		}
+
+		$value = $value === null ? null : Tools::jsonEncode($value);
+		$this->context->cache_api->putData($key, $value, $ttl);
+
+
+	}
+
+	public function cache_get_data($key, $ttl = 120) {
+
+		if (empty($this->context->cache_enable) || empty($this->context->cache_api)) {
+			return null;
+		}
+
+		$value = $this->context->cache_api->getData($key, $ttl);
+
+		return empty($value) ? null : Tools::jsonDecode($value, true);
+	}
 
 }
-
 function ps_plugin_version_sort($a, $b) {
 
     return version_compare($a['version'], $b['version']);

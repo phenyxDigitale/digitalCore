@@ -15,9 +15,9 @@ class FileBased extends CacheApi implements CacheApiInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct() {
+	public function __construct(Context $context) {
 
-		parent::__construct();
+		parent::__construct($context);
 
 		// Set our default cachedir.
 		$this->setCachedir();

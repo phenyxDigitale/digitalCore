@@ -37,9 +37,14 @@ abstract class CacheApi {
 	 *
 	 * @access public
 	 */
-	public function __construct() {
-
-        $this->boardurl = Context::getContext()->link->getBaseLink();
+	public function __construct(Context $context) {
+        $context = Context::getContext();
+        $context->company = Company::initialize();
+        $context->link = new Link();
+        $language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT')))); 
+        $context->language = $language;
+       
+        $this->boardurl = $context->link->getBaseLink();
         $this->cachedir = _EPH_CACHE_DIR_.'cacheapi/';
         $this->boarddir = _EPH_ROOT_DIR_;
 		$this->setPrefix();
@@ -54,7 +59,7 @@ abstract class CacheApi {
 	 */
 	public function isSupported($test = false) {
 
-		global $cache_enable;
+		$cache_enable = Context::getContext()->cache_enable;
 
 		if ($test) {
 			return true;
