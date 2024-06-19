@@ -40,6 +40,19 @@ class PhenyxRedis extends PhenyxObjectModel {
 
         parent::__construct($id);
     }
+    
+    public static function getSeverbyId($idServer) {
+        
+        $sql = new DbQuery();
+		$sql->select('*');
+		$sql->from(bqSQL(static::$definition['table']));
+		$sql->where('`id_redis_servers` = ' . $idServer);
+        
+        $server = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getRow($sql);
+
+		return Tools::jsonDecode(Tools::jsonEncode($server));
+        
+    }
 
     
 

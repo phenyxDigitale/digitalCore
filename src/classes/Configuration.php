@@ -234,12 +234,12 @@ class Configuration extends PhenyxObjectModel {
      * @version 1.8.1.0 Initial version
      * @throws PhenyxException
      */
-    public static function get($key, $idLang = null) {
+    public static function get($key, $idLang = null, $use_cache = true) {
 
         if (defined('_EPH_DO_NOT_LOAD_CONFIGURATION_') && _EPH_DO_NOT_LOAD_CONFIGURATION_) {
             return false;
         }
-        if (class_exists('Context')) {
+        if ($use_cache && class_exists('Context')) {
             $context = Context::getContext();          
         
             $cache = $context->cache_api;
@@ -276,7 +276,7 @@ class Configuration extends PhenyxObjectModel {
 			
             $result = purifyFetch(static::$_cache['configuration'][$idLang]['global'][$key]);
             
-             if(class_exists('Context') && $context->cache_enable && is_object($context->cache_api)) {
+             if($use_cache && class_exists('Context') && $context->cache_enable && is_object($context->cache_api)) {
                 $temp = $result === null ? null : Tools::jsonEncode($result);
                 $cache->putData('cnfig_'.$key, $temp);
             }		
@@ -290,7 +290,7 @@ class Configuration extends PhenyxObjectModel {
                     ->where('`name` LIKE \'' . $key . '\'')
             );
             
-             if(class_exists('Context') && $context->cache_enable && is_object($context->cache_api)) {
+             if($use_cache&& class_exists('Context') && $context->cache_enable && is_object($context->cache_api)) {
                 $temp = $value === null ? null : Tools::jsonEncode($value);
                 $cache->putData('cnfig_'.$key, $temp);
             }	

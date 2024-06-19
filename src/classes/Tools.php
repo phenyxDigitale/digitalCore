@@ -5437,6 +5437,19 @@ FileETag none
         }
        	return $return;
     }
+    
+    public static function getRedisSeverbyId($idServer) {
+        
+        $sql = new DbQuery();
+		$sql->select('*');
+		$sql->from('redis_servers');
+		$sql->where('`id_redis_server` = ' . $idServer);
+        
+        $server = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getRow($sql);
+
+		return Tools::jsonDecode(Tools::jsonEncode($server));
+        
+    }
 
     
     public static function str_contains($search, $string) {
