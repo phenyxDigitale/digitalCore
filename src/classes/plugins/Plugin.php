@@ -1440,22 +1440,28 @@ abstract class Plugin {
     }
 
     public static function getPluginIdByName($name, $use_cache = true) {
-
-        $cacheId = 'Plugin::getPluginIdByName_' . pSQL($name);
-
-        if (!Cache::isStored($cacheId) || $use_cache) {
-
-            $result = (int) Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
-                (new DbQuery())
-                    ->select('`id_plugin`')
-                    ->from('plugin')
-                    ->where('`name` = \'' . pSQL($name) . '\'')
-            );
-            Cache::store($cacheId, $result);
-            return $result;
+        
+        $context = Context::getContext();
+        $cache = $context->cache_api;
+        if($use_cache && $context->cache_enable && is_object($context->cache_api)) {
+            $value = $cache->getData('getPluginIdByName_' .pSQL($name));
+            $temp = empty($value) ? null : Tools::jsonDecode($value, true);
+            if(!empty($temp)) {
+                return $temp;
+            }            
         }
-
-        return Cache::retrieve($cacheId);
+        $result = (int) Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+            ->select('`id_plugin`')
+            ->from('plugin')
+            ->where('`name` = \'' . pSQL($name) . '\'')
+        );
+        if($use_cache && $context->cache_enable && is_object($context->cache_api)) {
+            $temp = $value === null ? null : Tools::jsonEncode($result);
+            $cache->putData('getPluginIdByName_' .pSQL($name), $temp);
+        }
+        return $result;
+       
     }
 
     public static function getActivePluginIdByName($name) {

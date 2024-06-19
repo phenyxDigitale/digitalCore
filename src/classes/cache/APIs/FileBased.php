@@ -126,6 +126,24 @@ class FileBased extends CacheApi implements CacheApiInterface {
 
 		return null;
 	}
+    
+    public function removeData($key) {
+
+		$file = sprintf('%s/data_%s.cache',
+			$this->cachedir,
+			$this->prefix . strtr($key, ':/', '-_')
+		);
+
+		// EPH Data returns $value and $expired.  $expired has a unix timestamp of when this expires.
+
+		if (file_exists($file)) {
+
+			@unlink($file);
+
+		}
+
+		return null;
+	}
 
 	/**
 	 * {@inheritDoc}

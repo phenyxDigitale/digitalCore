@@ -499,7 +499,15 @@ abstract class PhenyxController {
         return $contextMenu->buildContextMenu();
     }
 
-    public function generateParaGridScript($idObjet = null) {
+    public function generateParaGridScript($idObjet = null, $use_cache = true) {
+        
+        if($use_cache  && $this->context->cache_enable) {
+            $temp = $this->cache_get_data('grid_'.$this->className.'_'.$idObjet);
+            if(!empty($temp)) {
+                return $temp;
+            }
+            
+        }
 
         $paragrid = new ParamGrid(
             (!empty($this->paramClassName) ? $this->paramClassName : $this->className),
@@ -670,8 +678,14 @@ abstract class PhenyxController {
         if ($this->is_subModel) {
             return $this->paragridScript;
         }
+        
+        
+        $result = '<script type="text/javascript">' . PHP_EOL . $this->paragridScript . PHP_EOL . '</script>';
+        if($use_cache  && $this->context->cache_enable) {
+            $this->cache_put_data('grid_'.$this->className.'_'.$idObjet, $result);
+        }
 
-        return '<script type="text/javascript">' . PHP_EOL . $this->paragridScript . PHP_EOL . '</script>';
+        return $result;
     }
 
     public static function myErrorHandler($errno, $errstr, $errfile, $errline) {
@@ -1651,6 +1665,7 @@ abstract class PhenyxController {
                 'li'         => $this->ajax_li,
                 'html'       => $content,
                 'page_title' => $this->page_title,
+                'load_time'                 => sprintf($this->la('Load time %s seconds'), round(microtime(true) - TIME_START, 3))
             ];
             if (_EPH_ADMIN_DEBUG_PROFILING_) {
                 $result['profiling_mode'] = true;
@@ -1823,6 +1838,7 @@ abstract class PhenyxController {
                 'li'         => $this->ajax_li,
                 'html'       => $content,
                 'page_title' => $this->page_title,
+                'load_time'                 => sprintf($this->la('Load time %s seconds'), round(microtime(true) - TIME_START, 3))
             ];
             if (_EPH_ADMIN_DEBUG_PROFILING_) {
                 $result['profiling_mode'] = true;
@@ -3309,6 +3325,7 @@ abstract class PhenyxController {
                 <thead>
                     <tr>
                         <th style="width:50%">Query</th>
+
                         <th style="width:10%">Time (ms)</th>
                         <th style="width:10%">Rows</th>
                         <th style="width:5%">Filesort</th>
