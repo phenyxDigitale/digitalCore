@@ -5275,7 +5275,7 @@ FileETag none
         return $langs;
     }
 
-    public static function generateTabs(Context $context) {
+    public static function generateTabs(Context $context, $use_cache = true) {
 
         $hookBars = Hook::exec('actionAdminTabs', [], null, true);
 
@@ -5289,7 +5289,7 @@ FileETag none
 
             
 
-            $topbars = BackTab::getBackTabs($context->language->id, 1);
+            $topbars = BackTab::getBackTabs($context->language->id, 1, $use_cache);
 
             foreach ($topbars as $index => $tab) {
 
@@ -5316,7 +5316,7 @@ FileETag none
                 }
 
                 $topbars[$index]['name'] = $tab['name'];
-                $subTabs = BackTab::getBackTabs($context->language->id, $tab['id_back_tab']);
+                $subTabs = BackTab::getBackTabs($context->language->id, $tab['id_back_tab'], $use_cache);
 
                 foreach ($subTabs as $index2 => &$subTab) {
 
@@ -5348,7 +5348,7 @@ FileETag none
                         $subTabs[$index2]['name'] = $subTab['name'];
                     }
 
-                    $terTabs = BackTab::getBackTabs($context->language->id, $subTab['id_back_tab']);
+                    $terTabs = BackTab::getBackTabs($context->language->id, $subTab['id_back_tab'], $use_cache);
 
                     foreach ($terTabs as $index3 => $terTab) {
 

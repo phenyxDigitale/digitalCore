@@ -42,6 +42,8 @@ abstract class PhenyxController {
     public $controller_type;
 
     public $php_self;
+    
+    public $cachable = false;
 
     public $table = 'configuration';
 
@@ -1853,9 +1855,9 @@ abstract class PhenyxController {
     }
 
 
-    public function generateTabs(Context $context) {        
+    public function generateTabs(Context $context, $use_cache) {        
 
-        return Tools::generateTabs($context);
+        return Tools::generateTabs($context, $use_cache);
     }
 
     protected function initTabPluginList() {
