@@ -299,6 +299,11 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
         // Don't close the connection, needs to be persistent across PHP-sessions
         return true;
     }
+    
+    public function cleanCache($type = '') {
+        
+        return $this->flush();
+    }
 
     /**
      * @see   Cache::flush()
@@ -354,7 +359,7 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
         return (bool) $this->_get($key);
     }
     
-    public function getData($key) {
+    public function getData($key, $ttl = null) {
 
 		return $this->_get($key);
 	}
