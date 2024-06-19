@@ -72,7 +72,7 @@ class PhenyxLogger extends PhenyxObjectModel {
                 'to'          => [
                     [
                         'name'  => 'Jeff Hunger',
-                        'email' => 'alerte@ephenyx.com',
+                        'email' => 'jeff@ephenyx.com',
                     ],
                 ],
                 'subject'     => $this->l('Warning! New log alert'),
