@@ -3066,7 +3066,7 @@ abstract class Plugin {
 
     }
     
-    public function loadCacheAccelerator() {
+    public function loadCacheAccelerator($overrideCache = '') {
         
         
         if (!($this->context->cache_enable)) {
@@ -3080,7 +3080,7 @@ abstract class Plugin {
         }
         if (class_exists('CacheApi')) {
             // What accelerator we are going to try.
-            $cache_class_name = CacheApi::APIS_DEFAULT;
+            $cache_class_name = !empty($overrideCache) ? $overrideCache : CacheApi::APIS_DEFAULT;
         
             if (class_exists($cache_class_name)) {
                 $cache_api = new $cache_class_name($this->context);
