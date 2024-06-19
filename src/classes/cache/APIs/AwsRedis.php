@@ -321,9 +321,9 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
         return (bool) $this->redis->flushDB();
     }
     
-    public function putData($key, $value, $ttl = null) {
+    public function putData($key, $value, $ttl = 3600) {
 
-		return $this->_set($key, $value, $ttl);
+		return $this->redis->setEx($key, $ttl, $value);
 
 	}
 
@@ -361,7 +361,7 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
     
     public function getData($key, $ttl = null) {
 
-		return $this->_get($key);
+		return $this->redis->get($key);
 	}
 
     /**

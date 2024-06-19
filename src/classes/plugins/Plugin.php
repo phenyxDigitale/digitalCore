@@ -285,12 +285,27 @@ abstract class Plugin {
     
     public static function getIdPluginByName($plugin) {
         
-        return Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
+        $context = Context::getContext();
+        $cache = $context->cache_api;
+        if($context->cache_enable && is_object($context->cache_api)) {
+            $value = $cache->getData('getIdPluginByName_' .$plugin);
+            $temp = empty($value) ? null : $value;
+            if(!empty($temp)) {
+                return $temp;
+            }            
+        }
+        
+        $result = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
             ->select('`id_plugin`')
             ->from('plugin')
             ->where('LOWER(`name`) = \'' . pSQL(mb_strtolower($plugin)) . '\'')
         );
+        if($context->cache_enable && is_object($context->cache_api)) {
+            $temp = $value === null ? null : Tools::jsonEncode($result);
+            $cache->putData('getIdPluginByName_' .$plugin, $temp);
+        }
+        return $result;
     }
     
     public function alterSqlTable($table, $column, $type, $after) {
@@ -1446,7 +1461,7 @@ abstract class Plugin {
         $cache = $context->cache_api;
         if($use_cache && $context->cache_enable && is_object($context->cache_api)) {
             $value = $cache->getData('getPluginIdByName_' .pSQL($name));
-            $temp = empty($value) ? null : Tools::jsonDecode($value, true);
+            $temp = empty($value) ? null : $value;
             if(!empty($temp)) {
                 return $temp;
             }            
@@ -1458,7 +1473,7 @@ abstract class Plugin {
             ->where('`name` = \'' . pSQL($name) . '\'')
         );
         if($use_cache && $context->cache_enable && is_object($context->cache_api)) {
-            $temp = $value === null ? null : Tools::jsonEncode($result);
+            $temp = $result === null ? null : $result;
             $cache->putData('getPluginIdByName_' .pSQL($name), $temp);
         }
         return $result;

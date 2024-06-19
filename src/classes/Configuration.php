@@ -300,51 +300,8 @@ class Configuration extends PhenyxObjectModel {
         }
 
         return false;
-    }
-    
-    public static function loadConfigurationCacheAccelerator(Context $context) {
-        
-        if (!($context->cache_enable)) {
-            return false;
-        }
-
-        if (is_object($context->cache_api)) {
-            return $context->cache_api;
-        } else
-
-        if (is_null($context->cache_api)) {
-            $cache_api = false;
-        }
-
-        // What accelerator we are going to try.
-        $cache_class_name = CacheApi::APIS_DEFAULT;
-        
-        if (class_exists($cache_class_name)) {
-           
-            $cache_api = new $cache_class_name($context);
-
-            // There are rules you know...
-
-            if (!($cache_api instanceof CacheApiInterface) || !($cache_api instanceof CacheApi)) {
-                return false;
-            }
-
-
-            if (!$cache_api->isSupported()) {
-                return false;
-            }
-
-            // Connect up to the accelerator.
-
-            if ($cache_api->connect() === false) {
-                return false;
-            }
-
-            return $cache_api;
-        }
-
-        return false;
-    }
+    }    
+   
     
     public function getKey($key, $idLang = null) {
 
@@ -421,13 +378,30 @@ class Configuration extends PhenyxObjectModel {
     public static function loadConfigurationFromDB($connection) {
 
         static::$_cache['configuration'] = [];
-
-        $rows = $connection->executeS(
-            (new DbQuery())
+        $rows = null;
+        if (class_exists('Context')) {
+            $context = Context::getContext();      
+            $cache = $context->cache_api;
+            if($context->cache_enable && is_object($context->cache_api)) {
+                $value = $cache->getData('loadConfigurationFromDB', 864000);
+                $temp = empty($value) ? null : Tools::jsonDecode($value, true);
+                if(!empty($temp)) {
+                    $rows = $temp;
+                }
+            }
+        }
+        if(is_null($rows)) {
+            $rows = $connection->executeS(
+                (new DbQuery())
                 ->select('c.`name`, cl.`id_lang`, IFNULL(cl.`value_lang`, c.`value`) AS `value`')
                 ->from('configuration', 'c')
                 ->leftJoin('configuration_lang', 'cl', 'c.`id_configuration` = cl.`id_configuration`')
-        );
+            );
+            if(class_exists('Context') && $context->cache_enable && is_object($context->cache_api)) {
+                $temp = $rows === null ? null : Tools::jsonEncode($rows);
+                $cache->putData('cnfig_'.$key, $temp);
+            }	
+        }
 
         if (!is_array($rows)) {
             return;
@@ -451,13 +425,30 @@ class Configuration extends PhenyxObjectModel {
 
     
     public static function hasKey($key, $idLang = null) {
+        
+        if (class_exists('Context')) {
+            $context = Context::getContext();      
+            $cache = $context->cache_api;
+            if($context->cache_enable && is_object($context->cache_api)) {
+                $value = $cache->getData('hasKey_'.$key, 864000);
+                $temp = empty($value) ? null : $value;
+                if(!empty($temp)) {
+                    return $temp;
+                }
+            }
+        }
 
-        return (bool) Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
+        $result = (bool) Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('`id_configuration`')
                 ->from('configuration')
                 ->where('`name` = \''.$key.'\'')
         );
+        if(class_exists('Context') && $context->cache_enable && is_object($context->cache_api)) {
+            $temp = $result === null ? null : $result;
+            $cache->putData('hasKey_'.$key, $temp);
+        }	
+        return $result;
     }
 
     public static function getInt($key) {
@@ -501,6 +492,9 @@ class Configuration extends PhenyxObjectModel {
     
     public static function updateValue($key, $values, $html = false, $script = false) {
 
+        if (class_exists('Context')) {
+            $context = Context::getContext();   
+        }
 
         static::validateKey($key);
 
@@ -570,6 +564,10 @@ class Configuration extends PhenyxObjectModel {
             }
 
         }
+        if(class_exists('Context') && $context->cache_enable && is_object($context->cache_api)) {
+            $temp = $value === null ? null : Tools::jsonEncode($value);
+            $cache->putData('cnfig_'.$key, $temp);
+        }	
 
         Configuration::set($key, $values);
 
