@@ -494,6 +494,7 @@ class Configuration extends PhenyxObjectModel {
 
         if (class_exists('Context')) {
             $context = Context::getContext();   
+            $cache = $context->cache_api;
         }
 
         static::validateKey($key);
