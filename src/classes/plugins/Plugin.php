@@ -211,7 +211,8 @@ abstract class Plugin {
         $this->_language = $context->language;
         $this->_smarty = $context->smarty;
         $this->context->cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
-        $this->context->cache_api = $this->loadCacheAccelerator();
+        $cache_type = !empty(Configuration::get('EPH_PAGE_CACHE_TYPE')) ? Configuration::get('EPH_PAGE_CACHE_TYPE') :null;
+        $this->context->cache_api = $this->loadCacheAccelerator($cache_type);
 
 
         if (is_object($this->context->smarty)) {
