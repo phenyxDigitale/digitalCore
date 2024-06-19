@@ -2085,7 +2085,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         return $logo;
     }
     
-    public function loadCacheAccelerator() {
+    public function loadCacheAccelerator($overrideCache = '') {
         
         if (!($this->context->cache_enable)) {
             return false;
@@ -2100,7 +2100,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         }
         if (class_exists('CacheApi')) {
             // What accelerator we are going to try.
-            $cache_class_name = CacheApi::APIS_DEFAULT;
+            $cache_class_name = !empty($overrideCache) ? $overrideCache : CacheApi::APIS_DEFAULT;
         
             if (class_exists($cache_class_name)) {
            

@@ -426,7 +426,8 @@ abstract class PhenyxController {
         }
         $this->context->controller = $this;
         $this->context->cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
-        $this->context->cache_api = $this->loadCacheAccelerator();
+        $cache_type = !empty(Configuration::get('EPH_PAGE_CACHE_TYPE')) ? Configuration::get('EPH_PAGE_CACHE_TYPE') :null;
+        $this->context->cache_api = $this->loadCacheAccelerator($cache_type);
         $this->getExtraPhenyxVars();
 
         $this->ajax = Tools::getValue('ajax') || Tools::isSubmit('ajax');
@@ -3475,7 +3476,7 @@ abstract class PhenyxController {
 
     }
     
-    public function loadCacheAccelerator() {
+    public function loadCacheAccelerator($overrideCache = '') {
         
         if (!($this->context->cache_enable)) {
             return false;
@@ -3491,7 +3492,7 @@ abstract class PhenyxController {
 
         if (class_exists('CacheApi')) {
             // What accelerator we are going to try.
-            $cache_class_name = CacheApi::APIS_DEFAULT;
+            $cache_class_name = !empty($overrideCache) ? $overrideCache : CacheApi::APIS_DEFAULT;
         
             if (class_exists($cache_class_name)) {
            
