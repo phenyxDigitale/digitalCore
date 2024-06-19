@@ -1855,7 +1855,7 @@ abstract class PhenyxController {
     }
 
 
-    public function generateTabs(Context $context, $use_cache) {        
+    public function generateTabs(Context $context, $use_cache = true) {        
 
         return Tools::generateTabs($context, $use_cache);
     }
