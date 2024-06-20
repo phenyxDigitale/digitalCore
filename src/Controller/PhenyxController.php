@@ -2825,14 +2825,14 @@ abstract class PhenyxController {
     private function displaySQLQueries($n) {
 
         if ($n > 150) {
-            return '<span style="color:red">' . $n . ' queries</span>';
+            return '<span style="color:red">' . $n .' ' . $this->la('queries').'</span>';
         }
 
         if ($n > 100) {
-            return '<span style="color:#EF8B00">' . $n . ' queries</span>';
+            return '<span style="color:#EF8B00">' . $n .' ' . $this->la('queries').'</span>';
         }
 
-        return '<span style="color:green">' . $n . ' quer' . ($n == 1 ? 'y' : 'ies') . '</span>';
+        return '<span style="color:green">' . $n . ' ' . ($n == 1 ? $this->la('query') : $this->la('queries')) . '</span>';
     }
 
     private function displayRowsBrowsed($n) {
@@ -2851,44 +2851,44 @@ abstract class PhenyxController {
     private function getPhpVersionColor($version) {
 
         if (version_compare($version, '5.3') < 0) {
-            return '<span style="color:red">' . $version . ' (Upgrade strongly recommended)</span>';
+            return '<span style="color:red">' . $version . $this->la('(Upgrade strongly recommended)').'</span>';
         } else
 
         if (version_compare($version, '5.4') < 0) {
-            return '<span style="color:#EF8B00">' . $version . ' (Consider upgrading)</span>';
+            return '<span style="color:#EF8B00">' . $version . $this->la('(Consider upgrading)').' </span>';
         }
 
-        return '<span style="color:green">' . $version . ' (OK)</span>';
+        return '<span style="color:green">' . $version . $this->la('(OK)').'</span>';
     }
 
     private function getMySQLVersionColor($version) {
 
         if (version_compare($version, '5.5') < 0) {
-            return '<span style="color:red">' . $version . ' (Upgrade strongly recommended)</span>';
+            return '<span style="color:red">' . $version . $this->la('(Upgrade strongly recommended)').'</span>';
         } else
 
         if (version_compare($version, '5.6') < 0) {
-            return '<span style="color:#EF8B00">' . $version . ' (Consider upgrading)</span>';
+            return '<span style="color:#EF8B00">' . $version . $this->la('(Consider upgrading)').' </span>';
         }
 
-        return '<span style="color:green">' . $version . ' (OK)</span>';
+        return '<span style="color:green">' . $version . $this->la('(OK)').'</span>';
     }
 
     private function getLoadTimeColor($n, $kikoo = false) {
 
         if ($n > 1.6) {
-            return '<span style="color:red">' . round($n * 1000) . '</span>' . ($kikoo ? ' ms - You\'d better run your shop on a toaster' : '');
+            return '<span style="color:red">' . round($n * 1000) . '</span>' . ($kikoo ? $this->la('You\'d better run your shop on a toaster')  : '');
         } else
 
         if ($n > 0.8) {
-            return '<span style="color:#EF8B00">' . round($n * 1000) . '</span>' . ($kikoo ? ' ms - OK... for a shared hosting' : '');
+            return '<span style="color:#EF8B00">' . round($n * 1000) . '</span>' . ($kikoo ? $this->la('OK... for a shared hosting')  : '');
         } else
 
         if ($n > 0) {
-            return '<span style="color:green">' . round($n * 1000) . '</span>' . ($kikoo ? ' ms - Unicorn powered webserver!' : '');
+            return '<span style="color:green">' . round($n * 1000) . '</span>' . ($kikoo ? $this->la('Unicorn powered webserver!')  : '');
         }
 
-        return '<span style="color:green">-</span>' . ($kikoo ? ' ms - Faster than light' : '');
+        return '<span style="color:green">-</span>' . ($kikoo ? $this->la('Faster than light')  : '');
     }
 
     private function getTotalQueriyingTimeColor($n) {
@@ -3124,11 +3124,11 @@ abstract class PhenyxController {
         $this->content_ajax .= '
         <div id="profiling_link" class="subTabs col-lg-12">
             <ul>
-                <li><a href="#stopwatch">Stopwatch SQL</a></li>
-                <li><a href="#sql_doubles">Doubles</a></li>
-                <li><a href="#stress_tables">Tables stress</a></li>
-                ' . (isset(PhenyxObjectModel::$debug_list) ? '<li><a href="#objectModels">ObjectModel instances</a></li>' : '') . '
-                <li><a href="#includedFiles">Included Files</a></li>
+                <li><a href="#stopwatch">'.$this->la('Stopwatch SQL').'</a></li>
+                <li><a href="#sql_doubles">'.$this->la('Doubles').'</a></li>
+                <li><a href="#stress_tables">'.$this->la('Tables stress').'</a></li>
+                ' . (isset(PhenyxObjectModel::$debug_list) ? '<li><a href="#objectModels">'.$this->la('ObjectModel instances').'</a></li>' : '') . '
+                <li><a href="#includedFiles">'.$this->la('Included Files').'</a></li>
             </ul>
         <div id="tabs-profilling-content" class="tabs-controller-content">';
     }
@@ -3147,12 +3147,12 @@ abstract class PhenyxController {
         $this->content_ajax .= '
         <div class="col-4">
             <table class="table table-condensed">
-                <tr><td>Load time</td><td>' . $this->getLoadTimeColor($this->profiler[count($this->profiler) - 1]['time'] - $start_time, true) . '</td></tr>
-                <tr><td>Querying time</td><td>' . $this->getTotalQueriyingTimeColor(round(1000 * $this->total_query_time)) . ' ms</span>
-                <tr><td>Queries</td><td>' . $this->getNbQueriesColor(count($this->array_queries)) . '</td></tr>
-                <tr><td>Memory peak usage</td><td>' . $this->getPeakMemoryColor($this->profiler[count($this->profiler) - 1]['peak_memory_usage']) . ' Mb</td></tr>
-                <tr><td>Included files</td><td>' . count(get_included_files()) . ' files - ' . $this->getMemoryColor($this->total_filesize) . ' Mb</td></tr>
-                <tr><td>ephenyx cache</td><td>' . $this->getMemoryColor($this->total_cache_size) . ' Mb</td></tr>
+                <tr><td>'.$this->la('Load time').'</td><td>' . $this->getLoadTimeColor($this->profiler[count($this->profiler) - 1]['time'] - $start_time, true) . '</td></tr>
+                <tr><td>'.$this->la('Querying time').'</td><td>' . $this->getTotalQueriyingTimeColor(round(1000 * $this->total_query_time)) . ' ms</span>
+                <tr><td>'.$this->la('Queries').'</td><td>' . $this->getNbQueriesColor(count($this->array_queries)) . '</td></tr>
+                <tr><td>'.$this->la('Memory peak usage').'</td><td>' . $this->getPeakMemoryColor($this->profiler[count($this->profiler) - 1]['peak_memory_usage']) . ' Mb</td></tr>
+                <tr><td>'.$this->la('Included files').'</td><td>' . count(get_included_files()) . ' files - ' . $this->getMemoryColor($this->total_filesize) . ' Mb</td></tr>
+                <tr><td>'.$this->la('Ephenyx cache').'</td><td>' . $this->getMemoryColor($this->total_cache_size) . ' Mb</td></tr>
                 <tr><td><a href="javascript:void(0);" onclick="$(\'.global_vars_detail\').toggle();">Global vars</a></td><td>' . $this->getMemoryColor($this->total_global_var_size) . ' Mb</td></tr>';
 
         foreach ($this->global_var_size as $global => $size) {
@@ -3166,17 +3166,18 @@ abstract class PhenyxController {
 
     protected function displayProfilingConfiguration() {
 
+        $compileType = Configuration::get('EPH_PAGE_CACHE_TYPE');
         $this->content_ajax .= '
         <div class="col-4">
             <table class="table table-condensed">
-                <tr><td>ephenyx version</td><td>' . _EPH_VERSION_ . '</td></tr>
-                <tr><td>PhenyxShop (emulated) version</td><td>' . _EPH_VERSION_ . '</td></tr>
-                <tr><td>PHP version</td><td>' . $this->getPhpVersionColor(phpversion()) . '</td></tr>
-                <tr><td>MySQL version</td><td>' . $this->getMySQLVersionColor(Db::getInstance()->getVersion()) . '</td></tr>
-                <tr><td>Memory limit</td><td>' . ini_get('memory_limit') . '</td></tr>
-                <tr><td>Max execution time</td><td>' . ini_get('max_execution_time') . 's</td></tr>
-                <tr><td>Smarty cache</td><td><span style="color:' . (Configuration::get('EPH_SMARTY_CACHE') ? 'green">enabled' : 'red">disabled') . '</td></tr>
-                <tr><td>Smarty Compilation</td><td><span style="color:' . (Configuration::get('EPH_SMARTY_FORCE_COMPILE') == 0 ? 'green">never recompile' : (Configuration::get('EPH_SMARTY_FORCE_COMPILE') == 1 ? '#EF8B00">auto' : 'red">force compile')) . '</td></tr>
+                <tr><td>'.$this->la('Ephenyx version').'</td><td>' . _EPH_VERSION_ . '</td></tr>
+                <tr><td>'.$this->la('Ephenyx (emulated) version').'</td><td>' . _EPH_VERSION_ . '</td></tr>
+                <tr><td>'.$this->la('PHP version').'</td><td>' . $this->getPhpVersionColor(phpversion()) . '</td></tr>
+                <tr><td>'.$this->la('MySQL version').'</td><td>' . $this->getMySQLVersionColor(Db::getInstance()->getVersion()) . '</td></tr>
+                <tr><td>'.$this->la('Memory limit').'</td><td>' . ini_get('memory_limit') . '</td></tr>
+                <tr><td>'.$this->la('Max execution time').'</td><td>' . ini_get('max_execution_time') . 's</td></tr>
+                <tr><td>'.$this->la('Smarty cache').'</td><td><span style="color:' . (Configuration::get('EPH_PAGE_CACHE_ENABLED') ? 'green">enabled' : 'red">disabled') . '</td></tr>
+                <tr><td>'.$this->la('Smarty Compilation').'</td><td><span style="color:' . ($compileType == 'AwsRedis' ? 'green">' .$this->la('Redis'): '#EF8B00">'.$compileType) . '</td></tr>
             </table>
         </div>';
     }
@@ -3188,7 +3189,7 @@ abstract class PhenyxController {
         $this->content_ajax .= '
         <div class="col-4">
             <table class="table table-condensed">
-                <tr><th>&nbsp;</th><th>Time</th><th>Cumulated Time</th><th>Memory Usage</th><th>Memory Peak Usage</th></tr>';
+                <tr><th>&nbsp;</th><th>'.$this->la('Time').'</th><th>'.$this->la('Cumulated Time').'</th><th>'.$this->la('Memory Usage').'</th><th>'.$this->la('Memory Peak Usage').'</th></tr>';
         $last = ['time' => $start_time, 'memory_usage' => 0];
 
         foreach ($this->profiler as $row) {
@@ -3323,17 +3324,17 @@ abstract class PhenyxController {
 
         $this->content_ajax .= '
         <div id="stopwatch">
-            <h2><a name="stopwatch">Stopwatch SQL - ' . count($this->array_queries) . ' queries</a></h2>
+            <h2><a name="stopwatch">'.$this->la('Stopwatch SQL').' - ' . count($this->array_queries) . ' queries</a></h2>
             <table class="table table-condensed table-bordered sortable col-lg-12">
                 <thead>
                     <tr>
                         <th style="width:50%">Query</th>
 
-                        <th style="width:10%">Time (ms)</th>
-                        <th style="width:10%">Rows</th>
-                        <th style="width:5%">Filesort</th>
-                        <th style="width:5%">Group By</th>
-                        <th style="width:20%">Location</th>
+                        <th style="width:10%">'.$this->la('Time (ms)').'</th>
+                        <th style="width:10%">'.$this->la('Rows').'</th>
+                        <th style="width:5%">'.$this->la('Filesort').'</th>
+                        <th style="width:5%">'.$this->la('Group By').'</th>
+                        <th style="width:20%">'.$this->la('Time (ms)').'</th>
                     </tr>
                 </thead>
                 <tbody>';
@@ -3347,8 +3348,8 @@ abstract class PhenyxController {
                     <td class="pre" style="width:50%; display:table-cell">' . preg_replace("/(^[\s]*)/m", "", htmlspecialchars($data['query'], ENT_NOQUOTES, 'utf-8', false)) . '</td>
                     <td style="width:10%"><span ' . $this->getTimeColor($data['time'] * 1000) . '>' . (round($data['time'] * 1000, 1) < 0.1 ? '< 1' : round($data['time'] * 1000, 1)) . '</span></td>
                     <td>' . (int) $data['rows'] . '</td>
-                    <td>' . ($data['filesort'] ? '<span style="color:red">Yes</span>' : '') . '</td>
-                    <td>' . ($data['group_by'] ? '<span style="color:red">Yes</span>' : '') . '</td>
+                    <td>' . ($data['filesort'] ? '<span style="color:red">'.$this->la('Yes').'</span>' : '') . '</td>
+                    <td>' . ($data['group_by'] ? '<span style="color:red">'.$this->la('Yes').'</span>' : '') . '</td>
                     <td>
                         <a href="javascript:void(0);" onclick="$(\'#callstack_' . $callstack_md5 . '\').toggle();">' . $data['location'] . '</a>
                         <div id="callstack_' . $callstack_md5 . '" style="display:none">' . implode('<br>', $data['stack']) . '</div>
@@ -3364,7 +3365,7 @@ abstract class PhenyxController {
     protected function displayProfilingDoubles() {
 
         $this->content_ajax .= '<div id="sql_doubles">
-        <h2><a name="doubles">Doubles</a></h2>
+        <h2><a name="doubles">'.$this->la('Doubles').'</a></h2>
             <table class="table table-condensed">';
 
         foreach (Db::getInstance()->uniqQueries as $q => $nb) {
@@ -3382,7 +3383,7 @@ abstract class PhenyxController {
     protected function displayProfilingTableStress() {
 
         $this->content_ajax .= '<div id="stress_tables">
-        <h2><a name="tables">Tables stress</a></h2>
+        <h2><a name="tables">'.$this->la('Tables stress').'</a></h2>
         <table class="table table-condensed">';
 
         foreach (Db::getInstance()->tables as $table => $nb) {
@@ -3397,9 +3398,9 @@ abstract class PhenyxController {
 
         $this->content_ajax .= '
         <div id="objectModels">
-            <h2><a name="objectModels">ObjectModel instances</a></h2>
+            <h2><a name="objectModels">'.$this->la('ObjectModel instances').'</a></h2>
             <table class="table table-condensed">
-                <tr><th>Name</th><th>Instances</th><th>Source</th></tr>';
+                <tr><th>'.$this->la('Name').'</th><th>'.$this->la('Instances').'</th><th>'.$this->la('Source').'</th></tr>';
 
         foreach (PhenyxObjectModel::$debug_list as $class => $info) {
             $this->content_ajax .= '<tr>
@@ -3424,9 +3425,9 @@ abstract class PhenyxController {
         $i = 0;
 
         $this->content_ajax .= '<div id="includedFiles">
-        <h2><a name="includedFiles">Included Files</a></h2>
+        <h2><a name="includedFiles">'.$this->la('Included Files').'</a></h2>
         <table class="table table-condensed">
-            <tr><th>#</th><th>Filename</th></tr>';
+            <tr><th>#</th><th>'.$this->la('File name').'</th></tr>';
 
         foreach (get_included_files() as $file) {
             $file = str_replace('\\', '/', str_replace(_EPH_ROOT_DIR_, '', $file));
@@ -3453,7 +3454,7 @@ abstract class PhenyxController {
 
         $this->content_ajax .= '<div id="phenyxshop_profiling" class="bootstrap">';
 
-        $this->content_ajax .= 'Summary' . '<div class="row">';
+        $this->content_ajax .= $this->la('Summary').'<div class="row">';
         $this->displayProfilingSummary();
         $this->displayProfilingConfiguration();
         $this->displayProfilingRun();

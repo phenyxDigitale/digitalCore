@@ -340,6 +340,7 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
                 $result[$value] = Tools::jsonDecode($this->redis->get($value), true);
             }
         }
+        ksort($result);
         return $result;
     }
 

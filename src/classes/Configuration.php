@@ -399,7 +399,7 @@ class Configuration extends PhenyxObjectModel {
             );
             if(class_exists('Context') && $context->cache_enable && is_object($context->cache_api)) {
                 $temp = $rows === null ? null : Tools::jsonEncode($rows);
-                $cache->putData('cnfig_'.$key, $temp);
+                $cache->putData('loadConfigurationFromDB', $temp);
             }	
         }
 
