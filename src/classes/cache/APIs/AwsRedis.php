@@ -326,6 +326,22 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
 		return $this->redis->setEx($key, $ttl, $value);
 
 	}
+    
+    public function getKeys() {
+        
+        return $this->redis->keys('*');
+    }
+    
+    public function getRedisValues() {
+        $result = [];
+        $values = $this->redis->keys('*');
+        if(is_array($values)) {
+            foreach($values as $value) {
+                $result[$value] = Tools::jsonDecode($this->redis->get($value), true);
+            }
+        }
+        return $result;
+    }
 
     /**
      * @see   Cache::_set()
@@ -384,6 +400,16 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
 
 		return $this->_delete($key);
 	}
+    
+    public function getnbKeys() {
+        
+        return $this->redis->dbSize();
+    }
+    
+    public function getRedisInfo() {
+        
+        return $this->redis->info();
+    }
 
 
     /**
