@@ -275,10 +275,6 @@ abstract class Db {
             );
             $connection = static::$instance[$idServer];
 
-            if (!Configuration::configurationIsLoaded()) {
-                Configuration::loadConfigurationFromDB($connection);
-            }
-
             $connection->setTimeZone(Tools::getTimeZone());
         }
 
@@ -317,10 +313,6 @@ abstract class Db {
                 static::$_crm_servers[$idServer]['database']
             );
             $connection = static::$crmInstance[$idServer];
-
-            if (!Configuration::configurationIsLoaded()) {
-                Configuration::loadConfigurationFromDB($connection);
-            }
 
             $connection->setTimeZone(Tools::getTimeZone());
         }

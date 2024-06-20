@@ -428,8 +428,9 @@ abstract class PhenyxController {
         }
         $this->context->controller = $this;
         $this->context->cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
-        $cache_type = !empty(Configuration::get('EPH_PAGE_CACHE_TYPE')) ? Configuration::get('EPH_PAGE_CACHE_TYPE') :null;
-        $this->context->cache_api = $this->loadCacheAccelerator($cache_type);
+        if($this->context->cache_enable) {
+            $this->context->cache_api = CacheApi::getInstance();
+        }
         $this->getExtraPhenyxVars();
 
         $this->ajax = Tools::getValue('ajax') || Tools::isSubmit('ajax');
@@ -3147,7 +3148,7 @@ abstract class PhenyxController {
         $this->content_ajax .= '
         <div class="col-4">
             <table class="table table-condensed">
-                <tr><td>'.$this->la('Load time').'</td><td>' . $this->getLoadTimeColor($this->profiler[count($this->profiler) - 1]['time'] - $start_time, true) . '</td></tr>
+                <tr><td>'.$this->la('Load time').'</td><td>' . $this->getLoadTimeColor(round(microtime(true) - TIME_START, 3) - $start_time, true) . '</td></tr>
                 <tr><td>'.$this->la('Querying time').'</td><td>' . $this->getTotalQueriyingTimeColor(round(1000 * $this->total_query_time)) . ' ms</span>
                 <tr><td>'.$this->la('Queries').'</td><td>' . $this->getNbQueriesColor(count($this->array_queries)) . '</td></tr>
                 <tr><td>'.$this->la('Memory peak usage').'</td><td>' . $this->getPeakMemoryColor($this->profiler[count($this->profiler) - 1]['peak_memory_usage']) . ' Mb</td></tr>

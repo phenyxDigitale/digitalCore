@@ -9,9 +9,7 @@ class Configuration extends PhenyxObjectModel {
 
     // Default configuration consts
     // @since 1.0.1
-    public static $instance = null;
-    
-    
+       
     const ONE_PHONE_AT_LEAST = 'EPH_ONE_PHONE_AT_LEAST';
     const GROUP_FEATURE_ACTIVE = 'EPH_GROUP_FEATURE_ACTIVE';
     const COUNTRY_DEFAULT = 'EPH_COUNTRY_DEFAULT';
@@ -149,6 +147,10 @@ class Configuration extends PhenyxObjectModel {
     protected static $_cache = [];
     /** @var array Vars types */
     protected static $types = [];
+    
+    public static $cache_enable;
+    
+    public static $cache_api;
     /** @var string Key */
     public $name;
     /** @var string Value */
@@ -164,19 +166,13 @@ class Configuration extends PhenyxObjectModel {
     public function __construct($id = null, $idLang = null) {
 
         parent::__construct($id, $idLang);
-        $this->context->cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
-        $this->context->cache_api = $this->loadCacheAccelerator();
+        static::$cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
+        if(static::$cache_enable) {
+            $this->context->cache_api = CacheApi::getInstance();
+        }
         
     }
     
-     public static function getInstance() {
-
-        if (!static::$instance) {
-            static::$instance = new static();
-        }
-
-        return static::$instance;
-    }
     
     // @codingStandardsIgnoreEnd
 
@@ -239,6 +235,7 @@ class Configuration extends PhenyxObjectModel {
         if (defined('_EPH_DO_NOT_LOAD_CONFIGURATION_') && _EPH_DO_NOT_LOAD_CONFIGURATION_) {
             return false;
         }
+        $context = null;
         if ($use_cache && class_exists('Context')) {
             $context = Context::getContext();          
         
@@ -261,7 +258,7 @@ class Configuration extends PhenyxObjectModel {
 		
 
         if (!static::configurationIsLoaded()) {
-            Configuration::loadConfiguration();
+            Configuration::loadConfiguration($context);
         }
 
         $idLang = (int) $idLang;
@@ -355,6 +352,17 @@ class Configuration extends PhenyxObjectModel {
 
         return false;
     }
+    
+    public static function getCacheStatus() {
+        $sql = new DbQuery();
+        $sql->select('`value`');
+        $sql->from('configuration');
+        $sql->where('`name` = \'EPH_PAGE_CACHE_ENABLED\'');
+        static::$cache_enable = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue($sql, false);
+        if(static::$cache_enable) {
+            static::$cache_api = CacheApi::getInstance();
+        }
+    }
 
     /**
      * Load all configuration data
@@ -364,6 +372,7 @@ class Configuration extends PhenyxObjectModel {
      */
     public static function loadConfiguration() {
 
+        static::getCacheStatus();
         return static::loadConfigurationFromDB(Db::getInstance(_EPH_USE_SQL_SLAVE_));
     }
 
@@ -376,30 +385,27 @@ class Configuration extends PhenyxObjectModel {
      * @version 1.0.7 Initial version
      */
     public static function loadConfigurationFromDB($connection) {
-
+        
         static::$_cache['configuration'] = [];
-        $rows = null;
-        if (class_exists('Context')) {
-            $context = Context::getContext();      
-            $cache = $context->cache_api;
-            if($context->cache_enable && is_object($context->cache_api)) {
-                $value = $cache->getData('loadConfigurationFromDB', 864000);
-                $temp = empty($value) ? null : Tools::jsonDecode($value, true);
-                if(!empty($temp)) {
-                    $rows = $temp;
-                }
+        $rows = null;        
+        static::$cache_api = CacheApi::getInstance(); 
+        if(static::$cache_enable && is_object(static::$cache_api)) {
+            $value = static::$cache_api->getData('loadConfigurationFromDB', 864000);
+            $temp = empty($value) ? null : Tools::jsonDecode($value, true);
+            if(!empty($temp)) {
+                $rows = $temp;
             }
         }
-        if(is_null($rows)) {
+        if(empty($rows)) {
             $rows = $connection->executeS(
                 (new DbQuery())
                 ->select('c.`name`, cl.`id_lang`, IFNULL(cl.`value_lang`, c.`value`) AS `value`')
                 ->from('configuration', 'c')
                 ->leftJoin('configuration_lang', 'cl', 'c.`id_configuration` = cl.`id_configuration`')
             );
-            if(class_exists('Context') && $context->cache_enable && is_object($context->cache_api)) {
+            if(static::$cache_enable && is_object(static::$cache_api)) {
                 $temp = $rows === null ? null : Tools::jsonEncode($rows);
-                $cache->putData('loadConfigurationFromDB', $temp);
+                static::$cache_api->putData('loadConfigurationFromDB', $temp);
             }	
         }
 
@@ -662,6 +668,53 @@ class Configuration extends PhenyxObjectModel {
             die($e->displayMessage());
         }
 
+    }
+    
+     public function loadCacheAccelerator($overrideCache = '') {
+        
+        if (!($this->context->cache_enable)) {
+            return false;
+        }
+
+        if (is_object($this->context->cache_api)) {
+            return $this->context->cache_api;
+        } else
+
+        if (is_null($this->context->cache_api)) {
+            $cache_api = false;
+        }
+
+        if (class_exists('CacheApi')) {
+            // What accelerator we are going to try.
+            $cache_class_name = !empty($overrideCache) ? $overrideCache : CacheApi::APIS_DEFAULT;
+        
+            if (class_exists($cache_class_name)) {
+           
+                $cache_api = new $cache_class_name($this->context);
+
+                // There are rules you know...
+
+                if (!($cache_api instanceof CacheApiInterface) || !($cache_api instanceof CacheApi)) {
+                    return false;
+                }
+
+
+                if (!$cache_api->isSupported()) {
+                    return false;
+                }
+
+                // Connect up to the accelerator.
+
+                if ($cache_api->connect() === false) {
+                    return false;
+                }
+
+                return $cache_api;
+            }
+            return false;
+        }
+
+        return false;
     }
     
 }

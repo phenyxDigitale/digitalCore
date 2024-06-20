@@ -3,9 +3,10 @@
 
 abstract class CacheApi {
 
-	const APIS_FOLDER = 'APIs';
+	
 	const APIS_DEFAULT = 'FileBased';
 
+    protected static $instance;
 	/**
 	 * @var string The maximum SMF version that this will work with.
 	 */
@@ -15,6 +16,18 @@ abstract class CacheApi {
 	 * @var string The minimum SMF version that this will work with.
 	 */
 	protected $min_eph_version = _EPH_VERSION_;
+    
+    abstract protected function _set($key, $value, $ttl = 0);
+    
+    abstract protected function _get($key);
+    
+    abstract protected function _exists($key);
+    
+    abstract protected function _writeKeys();
+    
+    abstract protected function _delete($key);
+    
+    abstract public function flush();
 
 	/**
 	 * @var string The prefix for all keys.
@@ -31,24 +44,54 @@ abstract class CacheApi {
     public $cachedir;
     
     public $boarddir;
+    
+    public $context;
 
 	/**
 	 * Does basic setup of a cache method when we create the object but before we call connect.
 	 *
 	 * @access public
 	 */
-	public function __construct(Context $context) {
-        $context = Context::getContext();
-        $context->company = Company::initialize();
-        $context->link = new Link();
-        $language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT')))); 
-        $context->language = $language;
+	public function __construct() {
+        
+        $this->context = Context::getContext();
+        if(!isset($this->context->company)) {
+            $this->context->company = Company::initialize();
+        }
+        if(!isset($this->context->link)) {
+            $this->context->link = new Link();
+        }
+        if(!isset($this->context->language)) {
+            $language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT')))); 
+            $this->context->language = $language;
+        }
        
-        $this->boardurl = $context->link->getBaseLink();
+        $this->boardurl = $this->context->link->getBaseLink();
         $this->cachedir = _EPH_CACHE_DIR_.'cacheapi/';
         $this->boarddir = _EPH_ROOT_DIR_;
 		$this->setPrefix();
 	}
+    
+    public static function getInstance() {
+
+        if (!static::$instance) {
+            $sql = new DbQuery();
+            $sql->select('`value`');
+            $sql->from('configuration');
+            $sql->where('`name` = \'EPH_PAGE_CACHE_TYPE\'');
+            $cachingSystem = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue($sql, false);
+
+            if ($cachingSystem) {
+                static::$instance = new $cachingSystem();
+            } else {
+                static::$instance = new FileBased();
+            }
+
+        }
+
+        return static::$instance;
+    }
+
 
 	/**
 	 * Checks whether we can use the cache method performed by this API.

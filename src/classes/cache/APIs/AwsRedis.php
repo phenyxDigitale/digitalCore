@@ -47,15 +47,6 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
 
     }
 
-    /**
-     * Connect to redis server
-     *
-     * @return void
-     *
-     * @throws PhenyxDatabaseExceptionException
-     * @throws PhenyxException
-     * @since 1.0.0
-     */
     public function connect() {
 
         $this->is_connected = false;
@@ -159,15 +150,6 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
 
     }
 
-    /**
-     * Get list of redis server information
-     *
-     * @return array
-     *
-     * @throws PhenyxDatabaseExceptionException
-     * @throws PhenyxException
-     * @since 1.0.0
-     */
     public static function getRedisServer() {
 
         $server = [];
@@ -198,18 +180,6 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
         
     }
 
-    /**
-     *Add a redis server
-     *
-     * @param string $ip   IP address or hostname
-     * @param int    $port Port number
-     * @param string $auth Authentication key
-     * @param int    $db   Redis database ID
-     *
-     * @return bool Whether the server was successfully added
-     * @throws PhenyxDatabaseExceptionException
-     * @throws PhenyxException
-     */
     public static function addServer($ip, $port, $auth, $db) {
 
         $sql = new DbQuery();
@@ -241,13 +211,6 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
         );
     }
 
-    /**
-     * Get list of redis server information
-     *
-     * @return array
-     * @throws PhenyxDatabaseExceptionException
-     * @throws PhenyxException
-     */
     public static function getRedisServers() {
 
         $sql = new DbQuery();
@@ -256,15 +219,7 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
 
         return Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS($sql, true, false);
     }
-
-    /**
-     * Delete a redis server
-     *
-     * @param int $idServer Server ID
-     *
-     * @return bool Whether the server was successfully deleted
-     * @throws PhenyxDatabaseExceptionException
-     */
+    
     public static function deleteServer($idServer) {
 
         return Db::getInstance()->delete(
@@ -275,21 +230,11 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
         );
     }
 
-    /**
-     * @since 1.0.0
-     */
     public function __destruct() {
 
         $this->close();
     }
 
-    /**
-     * Close connection to redis server
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
     protected function close() {
 
         if (!$this->is_connected) {
@@ -305,28 +250,11 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
         return $this->flush();
     }
 
-    /**
-     * @see   Cache::flush()
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
     public function flush() {
-
-        if (!$this->is_connected) {
-            return false;
-        }
 
         return (bool) $this->redis->flushDB();
     }
-    
-    public function putData($key, $value, $ttl = 3600) {
-
-		return $this->redis->setEx($key, $ttl, $value);
-
-	}
-    
+        
     public function getKeys() {
         
         return $this->redis->keys('*');
@@ -343,35 +271,25 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
         ksort($result);
         return $result;
     }
+    
+    public function putData($key, $value, $ttl = 3600) {
 
-    /**
-     * @see   Cache::_set()
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
+		return $this->_set($key, $value, $ttl);
+
+	}
+
     protected function _set($key, $value, $ttl = 0) {
-
-        if (!$this->is_connected) {
-            return false;
-        }
 
         return $this->redis->set($key, $value);
     }
+    
+    public function keyExist($key) {
 
-    /**
-     * @see   Cache::_exists()
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
+		return $this->_get($key);
+
+	}
+
     protected function _exists($key) {
-
-        if (!$this->is_connected) {
-            return false;
-        }
 
         return (bool) $this->_get($key);
     }
@@ -381,25 +299,14 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
 		return $this->redis->get($key);
 	}
 
-    /**
-     * @see   Cache::_get()
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
     protected function _get($key) {
-
-        if (!$this->is_connected) {
-            return false;
-        }
 
         return $this->redis->get($key);
     }
     
     public function removeData($key) {
 
-		return $this->_delete($key);
+		return $this->redis->delete($key);
 	}
     
     public function getnbKeys() {
@@ -413,31 +320,12 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
     }
 
 
-    /**
-     * @see   Cache::_delete()
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
     protected function _delete($key) {
-
-        if (!$this->is_connected) {
-            return false;
-        }
 
         return $this->redis->del($key);
     }
     
     
-
-    /**
-     * @see   Cache::_writeKeys()
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
     protected function _writeKeys() {
 
         if (!$this->is_connected) {

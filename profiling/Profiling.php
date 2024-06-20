@@ -62,7 +62,14 @@ class Profiling {
             $default_controller = 'AdminDashboard';
         }
 
-        $controllers = Performer::getControllers([_EPH_ADMIN_DIR_ . '/tabs/', _EPH_ADMIN_CONTROLLER_DIR_, _EPH_OVERRIDE_DIR_ . 'controllers/admin/']);
+        $controllers = Performer::getControllers(
+            [ 
+                _EPH_ADMIN_CONTROLLER_DIR_,
+                _EPH_SPECIFIC_CONTROLLER_DIR_,
+                _EPH_OVERRIDE_DIR_ . 'controllers/admin/',
+            ]
+        );
+        $controllers['admindashboard'] = 'AdminDashboardController';
 
         if (!isset($controllers[strtolower($default_controller)])) {
             $default_controller = 'adminnotfound';

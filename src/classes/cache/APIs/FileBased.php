@@ -105,9 +105,14 @@ class FileBased extends CacheApi implements CacheApiInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getData($key, $ttl = null) {
+	public function getData($key) {
 
-		$file = sprintf('%s/data_%s.cache',
+		return $this->_get($key);
+	}
+    
+    protected function _get($key) {
+
+        $file = sprintf('%s/data_%s.cache',
 			$this->cachedir,
 			$this->prefix . strtr($key, ':/', '-_')
 		);
@@ -125,7 +130,7 @@ class FileBased extends CacheApi implements CacheApiInterface {
 		}
 
 		return null;
-	}
+    }
     
     public function removeData($key) {
 
@@ -150,7 +155,12 @@ class FileBased extends CacheApi implements CacheApiInterface {
 	 */
 	public function putData($key, $value, $ttl = null) {
 
-		$file = sprintf('%s/data_%s.cache',
+		return $this->_set($key, $value, $ttl);
+	}
+    
+    protected function _set($key, $value, $ttl = 0) {
+
+        $file = sprintf('%s/data_%s.cache',
 			$this->cachedir,
 			$this->prefix . strtr($key, ':/', '-_')
 		);
@@ -178,8 +188,7 @@ class FileBased extends CacheApi implements CacheApiInterface {
 			}
 
 		}
-
-	}
+    }
 
 	/**
 	 * {@inheritDoc}
