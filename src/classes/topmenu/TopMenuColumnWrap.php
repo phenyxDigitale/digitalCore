@@ -2,7 +2,7 @@
 
 class TopMenuColumnWrap extends PhenyxObjectModel {
 
-     public $id_topmenu;
+    public $id_topmenu;
     public $id_menu_depend;
     public $internal_name;
     public $bg_color;
@@ -72,8 +72,8 @@ class TopMenuColumnWrap extends PhenyxObjectModel {
     public function getMenuColums() {
         
         if($this->context->cache_enable && is_object($this->context->cache_api)) {
-            $value = $cache->getData('getMenuColums_'.$this->id, 864000);
-            $temp = empty($value) ? null : Tools::jsonDecode($value, true);
+            $value = $this->context->cache_api->getData('getMenuColums_'.$this->id, 864000);
+            $temp = empty($value) ? null : Tools::jsonDecode($value);
             if(!empty($temp)) {
                 return $temp;
             }
@@ -93,7 +93,7 @@ class TopMenuColumnWrap extends PhenyxObjectModel {
         }
         if($this->context->cache_enable && is_object($this->context->cache_api)) {
             $temp = $column === null ? null : Tools::jsonEncode($column);
-            $cache->putData('getMenuColums_'.$this->id, $temp);
+            $this->context->cache_api->putData('getMenuColums_'.$this->id, $temp);
         }	
         
         return $column;
