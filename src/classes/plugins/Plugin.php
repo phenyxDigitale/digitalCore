@@ -527,26 +527,7 @@ abstract class Plugin {
             $r = static::$_INSTANCE[$pluginName] = Adapter_ServiceLocator::get($pluginName);
         }
 
-        // @codingStandardsIgnoreStart
-
-        if (Plugin::$_log_plugins_perfs) {
-            // @codingStandardsIgnoreEnd
-            $timeEnd = microtime(true);
-            $memoryEnd = memory_get_usage(true);
-
-            Db::getInstance()->insert(
-                'plugins_perfs',
-                [
-                    'session'      => (int) Plugin::$_log_plugins_perfs_session,
-                    'plugin'       => pSQL($pluginName),
-                    'method'       => '__construct',
-                    'time_start'   => pSQL($timeStart),
-                    'time_end'     => pSQL($timeEnd),
-                    'memory_start' => (int) $memoryStart,
-                    'memory_end'   => (int) $memoryEnd,
-                ]
-            );
-        }
+        
 
         return $r;
     }

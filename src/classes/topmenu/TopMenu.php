@@ -734,6 +734,14 @@ class TopMenu extends PhenyxObjectModel {
     }
 
     public function getColumnsWrap() {
+        
+        if($this->context->cache_enable && is_object($this->context->cache_api)) {
+            $value = $cache->getData('getColumnsWrap_'.$this->id, 864000);
+            $temp = empty($value) ? null : Tools::jsonDecode($value, true);
+            if(!empty($temp)) {
+                return $temp;
+            }
+        }
 
         $columnWrap = [];
 
@@ -749,6 +757,10 @@ class TopMenu extends PhenyxObjectModel {
         foreach ($columnWraps as $wrap) {
             $columnWrap[] = new TopMenuColumnWrap($wrap->id);
         }
+        if($this->context->cache_enable && is_object($this->context->cache_api)) {
+            $temp = $columnWrap === null ? null : Tools::jsonEncode($columnWrap);
+            $cache->putData('getColumnsWrap_'.$this->id, $temp);
+        }	
 
         return $columnWrap;
     }

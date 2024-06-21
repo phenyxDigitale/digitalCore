@@ -559,12 +559,6 @@ abstract class Db {
 
             $this->uniqQueries[$uniqSql]++;
 
-            // No cache for query
-
-            if ($this->disableCache && !stripos($sql, 'SQL_NO_CACHE')) {
-                $sql = preg_replace('/^\s*select\s+/i', 'SELECT SQL_NO_CACHE ', trim($sql));
-            }
-
             // Get tables in query
             preg_match_all('/(from|join)\s+`?' . _DB_PREFIX_ . '([a-z0-9_-]+)/ui', $sql, $matches);
 

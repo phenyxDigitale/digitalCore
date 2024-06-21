@@ -5566,6 +5566,22 @@ FileETag none
         
     }
     
+    public static function pregReplace($pattern, $replacement, $subject, $limit = -1, &$count = null) {
+        
+        return preg_replace($pattern, $replacement, $string, $limit, $count);
+        
+    }
+    
+    public static function intVal($value, $base = 10) {
+        
+        return intval($value, $base);               
+    }
+    
+    public static function strStr($haystack, $needle, $before = false) {
+        
+        return strstr($haystack, $needle, $before);
+    }
+    
     public static function arrayValues($array) {
         
         if(is_array($array)) {
