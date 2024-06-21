@@ -53,20 +53,8 @@ abstract class CacheApi {
 	 * @access public
 	 */
 	public function __construct() {
-        
-        $this->context = Context::getContext();
-        if(!isset($this->context->company)) {
-            $this->context->company = Company::initialize();
-        }
-        if(!isset($this->context->link)) {
-            $this->context->link = new Link();
-        }
-        if(!isset($this->context->language)) {
-            $language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT')))); 
-            $this->context->language = $language;
-        }
-       
-        $this->boardurl = $this->context->link->getBaseLink();
+               
+        $this->boardurl = $_SERVER['SERVER_NAME'];
         $this->cachedir = _EPH_CACHE_DIR_.'cacheapi/';
         $this->boarddir = _EPH_ROOT_DIR_;
 		$this->setPrefix();

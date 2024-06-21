@@ -15,9 +15,9 @@ class FileBased extends CacheApi implements CacheApiInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(Context $context) {
+	public function __construct() {
 
-		parent::__construct($context);
+		parent::__construct();
 
 		// Set our default cachedir.
 		$this->setCachedir();
@@ -105,7 +105,7 @@ class FileBased extends CacheApi implements CacheApiInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getData($key) {
+	public function getData($key, $ttl = null) {
 
 		return $this->_get($key);
 	}
@@ -132,9 +132,29 @@ class FileBased extends CacheApi implements CacheApiInterface {
 		return null;
     }
     
+    protected function _exists($key) {
+        
+        $file = sprintf('%s/data_%s.cache',
+			$this->cachedir,
+			$this->prefix . strtr($key, ':/', '-_')
+		);
+
+        return (bool) file_exists($file);
+    }
+    
     public function removeData($key) {
 
-		$file = sprintf('%s/data_%s.cache',
+		return $this->_delete($key);
+	}
+    
+    public function flush() {
+
+        return true;
+    }
+    
+    protected function _delete($key) {
+
+        $file = sprintf('%s/data_%s.cache',
 			$this->cachedir,
 			$this->prefix . strtr($key, ':/', '-_')
 		);
@@ -148,7 +168,7 @@ class FileBased extends CacheApi implements CacheApiInterface {
 		}
 
 		return null;
-	}
+    }
 
 	/**
 	 * {@inheritDoc}
@@ -292,6 +312,12 @@ class FileBased extends CacheApi implements CacheApiInterface {
 
 		return _EPH_VERSION_;
 	}
+    
+    protected function _writeKeys() {
+
+        return true;
+    }
+
 
 }
 
