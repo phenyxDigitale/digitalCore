@@ -1,6 +1,6 @@
 <?php
 
-class TopMenuColumnWrap extends PhenyxObjectModel {
+class TopMenuColumn extends PhenyxObjectModel {
 
      public $id_topmenu;
     public $id_menu_depend;
