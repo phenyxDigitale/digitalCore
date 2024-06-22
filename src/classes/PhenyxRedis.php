@@ -17,14 +17,16 @@ class PhenyxRedis extends PhenyxObjectModel {
             'ip'   => ['type' => self::TYPE_STRING, 'copy_post' => false],
             'port' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false],
             'auth' => ['type' => self::TYPE_STRING, 'copy_post' => false],
-            'db'   => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false],
+            'rdb'   => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false],
+            'main'   => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false],
 
         ],
     ];
     public $ip;
     public $port;
     public $auth;
-    public $db;
+    public $rdb;
+    public $main
 
     /**
      * GenderCore constructor.

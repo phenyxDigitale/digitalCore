@@ -6675,13 +6675,13 @@ rs-plugin .material-icons {
 
 			if (empty($url)) {
 				//try to get resized thumb
-				$url = rev_aq_resize($slide->image_url, $w, $h, true, true, true);
+				$url = $this->rev_aq_resize($slide->image_url, $w, $h, true, true, true);
 			} else {
-				$url = rev_aq_resize($url, $w, $h, true, true, true);
+				$url = $this->rev_aq_resize($url, $w, $h, true, true, true);
 
 				if (empty($url)) {
 					$url = $slide->image_url;
-					$url = rev_aq_resize($url, $w, $h, true, true, true);
+					$url = $this->rev_aq_resize($url, $w, $h, true, true, true);
 				}
 
 			}
@@ -6694,6 +6694,22 @@ rs-plugin .material-icons {
 		$url = str_replace("revslider//", "revslider/", $url);
 		return ($url !== '') ? ' data-thumb="' . $url . '"' : $url;
 	}
+    
+    public function rev_aq_resize($url, $width = null, $height = null, $crop = null, $single = true, $upscale = false) {
+
+        /* WPML Fix */
+
+        if (defined('ICL_SITEPRESS_VERSION')) {
+            global $sitepress;
+            $url = $sitepress->convert_url($url, $sitepress->get_default_language());
+        }
+
+        /* WPML Fix */
+        $aq_resize = Rev_Aq_Resize::getInstance();
+        $image = $aq_resize->process($url, $width, $height, $crop, $single, $upscale);
+
+        return (!empty($image) || $image === false) ? $image : $url;
+    }
 
 	/**
 	 * get slide link if set in slide settings

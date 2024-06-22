@@ -56,62 +56,12 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
             return;
         } else {
 
-            if (count($this->_servers) > 1) {
-                // Multiple servers, set up redis array
-                $hosts = [];
+         
+           $this->redis = new Redis();
 
-                foreach ($this->_servers as $server) {
-                    $hosts[] = $server['ip'] . ':' . $server['port'];
-                }
-
-                $this->redis = new RedisArray($hosts, ['pconnect' => true]);
-
-                foreach ($this->_servers as $server) {
-                    $instance = $this->redis->_instance($server['ip'] . ':' . $server['port']);
-
-                    if (!empty($server['auth'])) {
-
-                        if (is_object($instance)) {
-
-                            if ($instance->auth($server['auth'])) {
-                                // We're connected as soon as authentication is successful
-                                $this->is_connected = true;
-                            }
-
-                        }
-
-                    } else {
-                        $ping = $this->redis->ping();
-                        // We're connected if a connection without +AUTH receives a +PONG
-
-                        if ($ping === '+PONG') {
-                            $this->is_connected = true;
-                        } else if (is_array($ping)) {
-                            $ping = array_values($ping);
-
-                            if (!empty($ping) && $ping[0] === '+PONG') {
-                                $this->is_connected = true;
-                            }
-
-                        }
-
-                    }
-
-                }
-
-                if (!empty($this->_servers[0]['auth'])) {
-
-                    if (!($this->redis->auth($this->_servers[0]['auth']))) {
-                        return;
-                    }
-
-                }
-
-            } else if (count($this->_servers) === 1) {
-                $this->redis = new Redis();
-
-                if ($this->redis->pconnect($this->_servers[0]['ip'], $this->_servers[0]['port'])) {
-                    $this->redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
+           if ($this->redis->pconnect($this->_servers[0]['ip'], $this->_servers[0]['port'])) {
+                
+               $this->redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
 
                     if (!empty($this->_servers[0]['auth'])) {
 
@@ -123,7 +73,7 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
 
                     } else {
                         try {
-                            $this->redis->select($this->_servers[0]['db']);
+                            $this->redis->select($this->_servers[0]['rdb']);
                             $ping = $this->redis->ping();
 
                             if (is_array($ping)) {
@@ -144,7 +94,7 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
 
                 }
 
-            }
+            
 
         }
 
@@ -158,11 +108,10 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
         $sql->select('`name`, `value`');
         $sql->from('configuration');
         $sql->where('`name` = \'EPH_REDIS_SERVER\' OR `name` = \'EPH_REDIS_PORT\' OR name = \'EPH_REDIS_AUTH\' OR name = \'EPH_REDIS_DB\'');
-        $params = Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS($sql, true, false);
+        $sql->where('main = 1');
+        $params = Db::getInstance(_EPH_USE_SQL_SLAVE_)->grtValue($sql, true, false);
 
-        foreach ($params as $key => $val) {
-            $server[$val['name']] = $val['value'];
-        }
+        $server[$params['name']] = $params['value'];
 
         return $server;
     }
@@ -188,7 +137,7 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
         $sql->where('`ip` = \'' . pSQL($ip) . '\'');
         $sql->where('`port` = ' . (int) $port);
         $sql->where('`auth` = \'' . pSQL($auth) . '\'');
-        $sql->where('`db` = ' . (int) $db);
+        $sql->where('`rdb` = ' . (int) $db);
 
         if (Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue($sql, false)) {
             $context = Context::getContext();
@@ -204,12 +153,14 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
                 'ip'   => pSQL($ip),
                 'port' => (int) $port,
                 'auth' => pSQL($auth),
-                'db'   => (int) $db,
+                'rdb'   => (int) $db,
             ],
             false,
             false
         );
     }
+    
+    
 
     public static function getRedisServers() {
 
@@ -255,9 +206,9 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
         return (bool) $this->redis->flushDB();
     }
         
-    public function getKeys() {
+    public function getKeys($prefix = null) {
         
-        return $this->redis->keys('*');
+        return $this->redis->keys($prefix.'*');
     }
     
     public function getRedisValues() {
@@ -280,7 +231,7 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
 
     protected function _set($key, $value, $ttl = 0) {
 
-        return $this->redis->set($key, $value);
+        return $this->redis->set($key, $value, $ttl);
     }
     
     public function keyExist($key) {
@@ -306,7 +257,7 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
     
     public function removeData($key) {
 
-		return $this->redis->delete($key);
+		return $this->_delete($key);
 	}
     
     public function getnbKeys() {
