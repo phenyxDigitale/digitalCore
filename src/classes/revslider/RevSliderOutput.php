@@ -998,7 +998,7 @@ class RevSliderOutput extends RevSliderFunction {
 	 * get the Slides HTML of the Slider
 	 **/
 	public function get_slides() {
-
+       
 		$layouttype = $this->slider->get_param('type', 'standard');
 		$order = $this->get_custom_order();
 		$gallery_ids = $this->get_gallery_ids();
@@ -1034,7 +1034,7 @@ class RevSliderOutput extends RevSliderFunction {
 			$hero = $this->get_hero_slide($slides);
 			$slides = (!empty($hero)) ? [$hero] : [];
 		}
-
+       
 		$slides = $this->remove_slide_if_mobile($slides);
 
 		if ($this->get_preview_mode() === false) {
@@ -6010,7 +6010,7 @@ rs-plugin .material-icons {
 	 * get the HTML layer
 	 **/
 	public function get_html_layer() {
-
+              
 		$layer = $this->get_layer();
 		$html = '';
 		$type = $this->get_val($layer, 'type', 'text');
@@ -6067,6 +6067,24 @@ rs-plugin .material-icons {
 			$do_ll = $this->get_val($layer, ['behavior', 'lazyLoad'], 'auto');
 			$lazyLoad = $this->slider->get_param(['general', 'lazyLoad'], false);
 			$img_size = ($img_change !== 'auto') ? $img_change : $this->slider->get_param(['def', 'background', 'imageSourceType'], 'full');
+            if(!is_null($urlImage)) {
+                $urlData = parse_url($urlImage);
+                $ext = pathinfo($urlImage, PATHINFO_EXTENSION);
+                if (array_key_exists('host', $urlData)) {
+                    $urlImage = $urlData['path'];
+                
+                    $test = str_replace($ext, 'webp', $urlImage);
+                    if(file_exists(_EPH_ROOT_DIR_ .$test)) {
+                        $urlImage = $test;
+                    }
+            
+                } else {
+                    $test = str_replace($ext, 'webp', $urlImage);
+                    if(file_exists(_EPH_ROOT_DIR_ .$test)) {
+                        $urlImage = $test;
+                    }
+                }
+            }
 
 			if ($img_size !== 'full' && $cur_img_id !== false && !empty($cur_img_id)) {
 				$_urlImage = wp_get_attachment_image_src($cur_img_id, $img_size);
@@ -6851,6 +6869,8 @@ rs-plugin .material-icons {
 		$duration = str_replace('default', 'd', $duration);
 
 		return (!empty($duration)) ? 's:' . $duration . ';' : '';
+
+
 	}
 
 	/**
@@ -8696,6 +8716,7 @@ rs-plugin .material-icons {
 		if (!empty($se)) {
 			$ff = true;
 			$html .= RS_T8 . 'sbtimeline: {' . "\n";
+
 
 			foreach ($se as $k => $v) {
 				$html .= ($ff === true) ? '' : ',' . "\n";
