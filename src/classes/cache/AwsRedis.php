@@ -198,7 +198,7 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
     
     public function cleanCache($type = '') {
         
-        return $this->flush();
+        return (bool) $this->redis->flushDB();
     }
 
     public function flush() {

@@ -225,6 +225,9 @@ class Validate {
     
     public static function isHtml($string) {
 
+        if(is_array($string)) {
+            return false;
+        }
         if(!is_null($string)) {
             return $string != strip_tags($string) ? true:false;
         }
