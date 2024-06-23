@@ -263,6 +263,24 @@ abstract class CacheApi {
         return isset(CacheApi::$local[$key]);
     }
     
+    public static function store($key, $value) {
+
+        // PHP is not efficient at storing array
+        // Better delete the whole cache if there are
+        // more than 1000 elements in the array
+
+        if (count(CacheApi::$local) > 1000) {
+            CacheApi::$local = [];
+        }
+
+        CacheApi::$local[$key] = $value;
+    }
+    
+    public static function retrieve($key) {
+
+        return isset(CacheApi::$local[$key]) ? CacheApi::$local[$key] : null;
+    }
+    
 	/**
 	 * Run housekeeping of this cache
 	 * exp. clean up old data or do optimization
