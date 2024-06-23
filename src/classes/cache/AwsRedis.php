@@ -18,7 +18,7 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
      *
      * @since 1.0.0
      */
-    protected $redis;
+    public $redis;
     /**
      * @var array RedisParams
      *
@@ -34,21 +34,15 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
      */
     public function __construct() {
 
+        parent::__construct();
         $this->connect();
 
-        if ($this->is_connected) {
-            $this->keys = $this->prefix;
-
-            if (!is_array($this->keys)) {
-                $this->keys = [];
-            }
-
-        }
 
     }
 
     public function connect() {
 
+       
         $this->is_connected = false;
         $this->_servers = static::getRedisServers();
 
@@ -59,13 +53,13 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
          
            $this->redis = new Redis();
 
-           if ($this->redis->pconnect($this->_servers[0]['ip'], $this->_servers[0]['port'])) {
-                
+           if ($this->redis->pconnect($this->_servers['ip'], $this->_servers['port'])) {
+               
                $this->redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
 
-                    if (!empty($this->_servers[0]['auth'])) {
+                    if (!empty($this->_servers['auth'])) {
 
-                        if (!($this->redis->auth($this->_servers[0]['auth']))) {
+                        if (!($this->redis->auth($this->_servers['auth']))) {
                             return;
                         } else {
                             $this->is_connected = true;
@@ -73,16 +67,11 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
 
                     } else {
                         try {
-                            $this->redis->select($this->_servers[0]['rdb']);
+                             $ping = $this->redis->ping();
+                            $this->redis->select($this->_servers['rdb']);
                             $ping = $this->redis->ping();
-
-                            if (is_array($ping)) {
-                                $ping = array_values($ping);
-
-                                if (!empty($ping) && $ping[0] === '+PONG') {
-                                    // We're connected if a connection without +AUTH receives a +PONG
-                                    $this->is_connected = true;
-                                }
+                            if ($ping) {
+                                $this->is_connected = true;
 
                             }
 
@@ -109,7 +98,7 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
         $sql->from('configuration');
         $sql->where('`name` = \'EPH_REDIS_SERVER\' OR `name` = \'EPH_REDIS_PORT\' OR name = \'EPH_REDIS_AUTH\' OR name = \'EPH_REDIS_DB\'');
         $sql->where('main = 1');
-        $params = Db::getInstance(_EPH_USE_SQL_SLAVE_)->grtValue($sql, true, false);
+        $params = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue($sql, true, false);
 
         $server[$params['name']] = $params['value'];
 
@@ -167,8 +156,9 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
         $sql = new DbQuery();
         $sql->select('*');
         $sql->from('redis_servers');
+        $sql->where('main = 1');
 
-        return Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS($sql, true, false);
+        return Db::getInstance(_EPH_USE_SQL_SLAVE_)->getRow($sql, true, false);
     }
     
     public static function deleteServer($idServer) {
@@ -204,6 +194,11 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
     public function flush() {
 
         return (bool) $this->redis->flushDB();
+    }
+    
+    public function getDbNum() {
+        
+        return $this->redis->getDbNum();
     }
         
     public function getKeys($prefix = null) {
