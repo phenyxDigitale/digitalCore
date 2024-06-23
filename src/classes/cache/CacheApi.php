@@ -28,6 +28,8 @@ abstract class CacheApi {
     abstract protected function _delete($key);
     
     abstract public function flush();
+    
+    protected $keys = [];
 
 	/**
 	 * @var string The prefix for all keys.
@@ -78,6 +80,15 @@ abstract class CacheApi {
         }
 
         return static::$instance;
+    }
+    
+    public function get($key) {
+
+        if (!isset($this->keys[$key])) {
+            return false;
+        }
+
+        return $this->_get($key);
     }
 
 
@@ -248,7 +259,7 @@ abstract class CacheApi {
         
         return $this->_exists($key);
     }
-
+    
 	/**
 	 * Run housekeeping of this cache
 	 * exp. clean up old data or do optimization

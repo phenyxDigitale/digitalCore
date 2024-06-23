@@ -220,6 +220,8 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
     }
     
     public function putData($key, $value, $ttl = 3600) {
+        
+        $this->keys[$key] = ($ttl == 0) ? 0 : time() + $ttl;
 
 		return $this->_set($key, $value, $ttl);
 
