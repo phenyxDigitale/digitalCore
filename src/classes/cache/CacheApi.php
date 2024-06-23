@@ -30,6 +30,8 @@ abstract class CacheApi {
     abstract public function flush();
     
     protected $keys = [];
+    
+    protected static $local = [];
 
 	/**
 	 * @var string The prefix for all keys.
@@ -255,9 +257,10 @@ abstract class CacheApi {
 		return $this->min_eph_version;
 	}
     
-    public function isStored($key) {
-        
-        return $this->_exists($key);
+    
+    public static function isStored($key) {
+
+        return isset(CacheApi::$local[$key]);
     }
     
 	/**

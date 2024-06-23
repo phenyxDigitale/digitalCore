@@ -5,343 +5,177 @@
  *
  * @since 1.0.0
  */
-class CacheMemcache extends Cache {
-
-    /**
-     * @var Memcache
-     */
-    protected $memcache;
-
-    /**
-     * @var bool Connection status
-     */
-    protected $is_connected = false;
-
-    /**
-     * CacheMemcacheCore constructor.
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function __construct() {
-
-        $this->connect();
-    }
-
-    /**
-     * CacheMemcacheCore destructor.
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function __destruct() {
-
-        $this->close();
-    }
-
-    /**
-     * Connect to memcache server
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function connect() {
-
-        if (class_exists('Memcache') && extension_loaded('memcache')) {
-            $this->memcache = new Memcache();
-        } else {
-            return;
-        }
-
-        $servers = static::getMemcachedServers();
-
-        if (!$servers) {
-            return;
-        }
-
-        foreach ($servers as $server) {
-            $this->memcache->addServer($server['ip'], $server['port'], true, (int) $server['weight']);
-        }
-
-        $this->is_connected = true;
-    }
-
-    /**
-     * @see Cache::_set()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    protected function _set($key, $value, $ttl = 0) {
-
-        if (!$this->is_connected) {
-            return false;
-        }
-
-        return $this->memcache->set($key, $value, 0, $ttl);
-    }
-
-    /**
-     * @see Cache::_get()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    protected function _get($key) {
-
-        if (!$this->is_connected) {
-            return false;
-        }
-
-        return $this->memcache->get($key);
-    }
-
-    /**
-     * @see Cache::_exists()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    protected function _exists($key) {
-
-        if (!$this->is_connected) {
-            return false;
-        }
-
-        return ($this->memcache->get($key) !== false);
-    }
-
-    /**
-     * @see Cache::_delete()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    protected function _delete($key) {
-
-        if (!$this->is_connected) {
-            return false;
-        }
-
-        return $this->memcache->delete($key);
-    }
-
-    /**
-     * @see Cache::_writeKeys()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    protected function _writeKeys() {
-
-        if (!$this->is_connected) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * @see Cache::flush()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function flush() {
-
-        if (!$this->is_connected) {
-            return false;
-        }
-
-        return $this->memcache->flush();
-    }
-
-    /**
-     * Store a data in cache
-     *
-     * @param string $key
-     * @param mixed  $value
-     * @param int    $ttl
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function set($key, $value, $ttl = 0) {
-
-        return $this->_set($key, $value, $ttl);
-    }
-
-    /**
-     * Retrieve a data from cache
-     *
-     * @param string $key
-     *
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function get($key) {
-
-        return $this->_get($key);
-    }
-
-    /**
-     * Check if a data is cached
-     *
-     * @param string $key
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function exists($key) {
-
-        return $this->_exists($key);
-    }
-
-    /**
-     * Delete one or several data from cache (* joker can be used, but avoid it !)
-     *    E.g.: delete('*'); delete('my_prefix_*'); delete('my_key_name');
-     *
-     * @param string $key
-     *
-     * @return bool
-     *
-     * @throws PhenyxDatabaseExceptionException
-     * @throws PhenyxException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function delete($key) {
-
-        if ($key == '*') {
-            $this->flush();
-        } else if (strpos($key, '*') === false) {
-            $this->_delete($key);
-        } else {
-            // Get keys (this code comes from Doctrine 2 project)
-            $pattern = str_replace('\\*', '.*', preg_quote($key));
-            $servers = $this->getMemcachedServers();
-
-            if (is_array($servers) && count($servers) > 0 && method_exists('Memcache', 'getStats')) {
-                $allSlabs = $this->memcache->getStats('slabs');
-            }
-
-            if (isset($allSlabs) && is_array($allSlabs)) {
-
-                foreach ($allSlabs as $server => $slabs) {
-
-                    if (is_array($slabs)) {
-
-                        foreach (array_keys($slabs) as $i => $slabId) // $slab_id is not an int but a string, using the key instead ?
-                        {
-
-                            if (is_int($i)) {
-                                $dump = $this->memcache->getStats('cachedump', (int) $i);
-
-                                if ($dump) {
-
-                                    foreach ($dump as $entries) {
-
-                                        if ($entries) {
-
-                                            foreach ($entries as $key => $data) {
-
-                                                if (preg_match('#^' . $pattern . '$#', $key)) {
-                                                    $this->_delete($key);
-                                                }
-
-                                            }
-
-                                        }
-
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-
-        return true;
-    }
-
-    /**
-     * Close connection to memcache server
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    protected function close() {
-
-        if (!$this->is_connected) {
-            return false;
-        }
-
-        return $this->memcache->close();
-    }
-
-    /**
-     * Add a memcache server
-     *
-     * @param string $ip
-     * @param int    $port
-     * @param int    $weight
-     *
-     * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PhenyxException
-     */
-    public static function addServer($ip, $port, $weight) {
-
-        return Db::getInstance()->execute('INSERT INTO ' . _DB_PREFIX_ . 'memcached_servers (ip, port, weight) VALUES(\'' . pSQL($ip) . '\', ' . (int) $port . ', ' . (int) $weight . ')', false);
-    }
-
-    /**
-     * Get list of memcached servers
-     *
-     * @return array
-     *
-     * @throws PhenyxDatabaseExceptionException
-     * @throws PhenyxException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public static function getMemcachedServers() {
-
-        return Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'memcached_servers', true, false);
-    }
-
-    /**
-     * Delete a memcache server
-     *
-     * @param int $idServer
-     *
-     * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     * @throws PhenyxException
-     */
-    public static function deleteServer($idServer) {
-
-        return Db::getInstance()->execute('DELETE FROM ' . _DB_PREFIX_ . 'memcached_servers WHERE id_memcached_server=' . (int) $idServer);
-    }
+class CacheMemcache extends CacheApi implements CacheApiInterface {
 
+    const CLASS_KEY = 'cache_memcached';
+
+	/**
+	 * @var Memcache The memcache instance.
+	 */
+	private $memcache = null;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function isSupported($test = false) {
+
+		global $cache_memcached;
+
+		$supported = class_exists('Memcache');
+
+		if ($test) {
+			return $supported;
+		}
+
+		return parent::isSupported() && $supported && !empty($cache_memcached);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function connect() {
+
+		global $db_persist, $cache_memcached;
+
+		$this->memcache = new Memcache();
+
+		$servers = explode(',', $cache_memcached);
+		$port = 0;
+
+		// Don't try more times than we have servers!
+		$connected = false;
+		$level = 0;
+
+		// We should keep trying if a server times out, but only for the amount of servers we have.
+
+		while (!$connected && $level < count($servers)) {
+			++$level;
+
+			$server = trim($servers[array_rand($servers)]);
+
+			// No server, can't connect to this.
+
+			if (empty($server)) {
+				continue;
+			}
+
+			// Normal host names do not contain slashes, while e.g. unix sockets do. Assume alternative transport pipe with port 0.
+
+			if (strpos($server, '/') !== false) {
+				$host = $server;
+			} else {
+				$server = explode(':', $server);
+				$host = $server[0];
+				$port = isset($server[1]) ? $server[1] : 11211;
+			}
+
+			// Don't wait too long: yes, we want the server, but we might be able to run the query faster!
+
+			if (empty($db_persist)) {
+				$connected = $this->memcache->connect($host, $port);
+			} else {
+				$connected = $this->memcache->pconnect($host, $port);
+			}
+
+		}
+
+		return $connected;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getData($key, $ttl = null) {
+
+		$key = $this->prefix . strtr($key, ':/', '-_');
+
+		$value = $this->memcache->get($key);
+
+		// $value should return either data or false (from failure, key not found or empty array).
+
+		if ($value === false) {
+			return null;
+		}
+
+		return $value;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function putData($key, $value, $ttl = null) {
+
+		$key = $this->prefix . strtr($key, ':/', '-_');
+
+		return $this->memcache->set($key, $value, 0, $ttl !== null ? $ttl : $this->ttl);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function quit() {
+
+		return $this->memcache->close();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function cleanCache($type = '') {
+
+		$this->invalidateCache();
+
+		return $this->memcache->flush();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function cacheSettings(array &$config_vars) {
+
+		global $context, $txt;
+
+		if (!in_array($txt[self::CLASS_KEY . '_settings'], $config_vars)) {
+			$config_vars[] = $txt[self::CLASS_KEY . '_settings'];
+			$config_vars[] = [
+				self::CLASS_KEY,
+				$txt[self::CLASS_KEY . '_servers'],
+				'file',
+				'text',
+				0,
+				'subtext' => $txt[self::CLASS_KEY . '_servers_subtext']];
+		}
+
+		if (!isset($context['settings_post_javascript'])) {
+			$context['settings_post_javascript'] = '';
+		}
+
+		if (empty($context['settings_not_writable'])) {
+			$context['settings_post_javascript'] .= '
+			$("#cache_accelerator").change(function (e) {
+				var cache_type = e.currentTarget.value;
+				$("#' . self::CLASS_KEY . '").prop("disabled", cache_type != "MemcacheImplementation" && cache_type != "MemcachedImplementation");
+			});';
+		}
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getVersion() {
+
+		if (!is_object($this->memcache)) {
+			return false;
+		}
+
+		// This gets called in Subs-Admin getServerVersions when loading up support information.  If we can't get a connection, return nothing.
+		$result = $this->memcache->getVersion();
+
+		if (!empty($result)) {
+			return $result;
+		}
+
+		return false;
+	}
 }
