@@ -207,6 +207,7 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
     }
     
     public function getRedisValues() {
+        ini_set('memory_limit', '-1');
         $result = [];
         $values = $this->redis->keys('*');
         if(is_array($values)) {
