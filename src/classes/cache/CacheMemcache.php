@@ -81,13 +81,28 @@ class CacheMemcache extends CacheApi implements CacheApiInterface {
 
 		return $connected;
 	}
+    
+    public static function getMemcachedServers() {
+
+        return Db::getInstance(_EPH_USE_SQL_SLAVE_)->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'memcached_servers', true, false);
+    }
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function getData($key, $ttl = null) {
+		
+		return $this->_get($key);
+	}
+    
+    protected function _exists($key) {
 
-		$key = $this->prefix . strtr($key, ':/', '-_');
+        return (bool) $this->_get($key);
+    }
+    
+    protected function _get($key) {
+
+        $key = $this->prefix . strtr($key, ':/', '-_');
 
 		$value = $this->memcache->get($key);
 
@@ -98,17 +113,40 @@ class CacheMemcache extends CacheApi implements CacheApiInterface {
 		}
 
 		return $value;
-	}
+    }
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function putData($key, $value, $ttl = null) {
 
-		$key = $this->prefix . strtr($key, ':/', '-_');
+		return $this->_set($key, $value, $ttl);
+	}
+    
+    protected function _set($key, $value, $ttl = 0) {
+
+        $key = $this->prefix . strtr($key, ':/', '-_');
 
 		return $this->memcache->set($key, $value, 0, $ttl !== null ? $ttl : $this->ttl);
-	}
+    }
+    
+    protected function _delete($key) {
+
+        if (!$this->is_connected) {
+            return false;
+        }
+
+        return $this->memcache->delete($key);
+    }
+    
+    protected function _writeKeys() {
+
+        if (!$this->is_connected) {
+            return false;
+        }
+
+        return true;
+    }
 
 	/**
 	 * {@inheritDoc}
@@ -127,6 +165,11 @@ class CacheMemcache extends CacheApi implements CacheApiInterface {
 
 		return $this->memcache->flush();
 	}
+    
+    public function flush() {
+
+        return $this->memcache->flush();
+    }
 
 	/**
 	 * {@inheritDoc}

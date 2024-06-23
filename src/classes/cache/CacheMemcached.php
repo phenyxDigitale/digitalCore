@@ -105,8 +105,18 @@ class CacheMemcached extends CacheApi implements CacheApiInterface {
 	 * {@inheritDoc}
 	 */
 	public function getData($key, $ttl = null) {
+		
+		return $this->_get($key);
+	}
+    
+    protected function _exists($key) {
 
-		$key = $this->prefix . strtr($key, ':/', '-_');
+        return (bool) $this->_get($key);
+    }
+    
+    protected function _get($key) {
+
+        $key = $this->prefix . strtr($key, ':/', '-_');
 
 		$value = $this->memcached->get($key);
 
@@ -117,17 +127,32 @@ class CacheMemcached extends CacheApi implements CacheApiInterface {
 		}
 
 		return $value;
-	}
+    }
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function putData($key, $value, $ttl = null) {
 
-		$key = $this->prefix . strtr($key, ':/', '-_');
+		return $this->_set($key, $value, $ttl);
+	}
+    
+    protected function _set($key, $value, $ttl = 0) {
+
+        $key = $this->prefix . strtr($key, ':/', '-_');
 
 		return $this->memcached->set($key, $value, $ttl !== null ? $ttl : $this->ttl);
-	}
+    }
+    
+    protected function _writeKeys() {
+
+        if (!$this->is_connected) {
+            return false;
+        }
+
+        return true;
+    }
+
 
 	/**
 	 * {@inheritDoc}
@@ -139,6 +164,20 @@ class CacheMemcached extends CacheApi implements CacheApiInterface {
 		// Memcached accepts a delay parameter, always use 0 (instant).
 		return $this->memcached->flush(0);
 	}
+    
+    public function flush() {
+
+        return $this->memcached->flush();
+    }
+    
+    protected function _delete($key) {
+
+        if (!$this->is_connected) {
+            return false;
+        }
+
+        return $this->memcached->delete($key);
+    }
 
 	/**
 	 * {@inheritDoc}
