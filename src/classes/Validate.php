@@ -222,6 +222,13 @@ class Validate {
 
         return (bool) preg_match('/^[a-zA-Z0-9\\\_-]+$/', $hook);
     }
+    
+    public static function isHtml($string) {
+
+        if(!is_null($string)) {
+            return $string != strip_tags($string) ? true:false;
+        }
+    }
 
     /**
      * Check for sender name validity

@@ -239,6 +239,11 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
 		return $this->_get($key);
 
 	}
+    
+    public function isStored($key) {
+        
+        return $this->_exists($key);
+    }
 
     protected function _exists($key) {
 

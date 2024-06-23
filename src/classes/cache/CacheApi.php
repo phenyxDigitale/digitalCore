@@ -243,6 +243,11 @@ abstract class CacheApi {
 
 		return $this->min_eph_version;
 	}
+    
+    public function isStored($key) {
+        
+        return $this->_exists($key);
+    }
 
 	/**
 	 * Run housekeeping of this cache
