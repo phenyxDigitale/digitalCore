@@ -896,26 +896,27 @@ class RevSliderOutput extends RevSliderFunction {
 		if ($fixedOnTop['v'] === true) {
 			$style .= 'position:fixed;top:0px;height:0px';
 		}
-        if(isset($this->slider))
-		$r = RS_T3 . '<!-- START ' . RevLoader::esc_html(str_replace('-', '', $this->slider->get_title())) . ' REVOLUTION SLIDER ' . RS_REVISION . ' --><p class="rs-p-wp-fix"></p>' . "\n";
-		$r .= RS_T3 . '<rs-plugin-wrap';
-		$this->rs_plugin_wrap_open = true;
-		$r .= ' id="' . $this->get_html_id() . '_wrapper"';
-		$r .= (!empty($class)) ? ' class="' . trim($class) . '"' : '';
-		$r .= ' data-alias="' . RevLoader::esc_attr($this->slider->get_alias()) . '"';
+        if(isset($this->slider) && !is_null($this->slider->get_title())) {
+            $r = RS_T3 . '<!-- START ' . RevLoader::esc_html(str_replace('-', '', $this->slider->get_title())) . ' REVOLUTION SLIDER ' . RS_REVISION . ' --><p class="rs-p-wp-fix"></p>' . "\n";
+            $r .= RS_T3 . '<rs-plugin-wrap';
+            $this->rs_plugin_wrap_open = true;
+            $r .= ' id="' . $this->get_html_id() . '_wrapper"';
+            $r .= (!empty($class)) ? ' class="' . trim($class) . '"' : '';
+            $r .= ' data-alias="' . RevLoader::esc_attr($this->slider->get_alias()) . '"';
 
-		$r .= ' data-source="' . $this->slider->get_param('sourcetype') . '"';
-		$show_alternate = $this->slider->get_param(['troubleshooting', 'alternateImageType'], 'off');
+            $r .= ' data-source="' . $this->slider->get_param('sourcetype') . '"';
+            $show_alternate = $this->slider->get_param(['troubleshooting', 'alternateImageType'], 'off');
 
-		if ($show_alternate !== 'off') {
-			$show_alternate_image = $this->slider->get_param(['troubleshooting', 'alternateURL'], '');
-			$r .= ' data-aimg="' . $show_alternate_image . '" ';
-			$r .= ($show_alternate == 'mobile' || $show_alternate == 'mobile-ie8') ? ' data-amobile="enabled" ' : '';
-			$r .= ($show_alternate == 'mobile-ie8' || $show_alternate == 'ie8') ? ' data-aie8="enabled" ' : '';
-		}
+            if ($show_alternate !== 'off') {
+                $show_alternate_image = $this->slider->get_param(['troubleshooting', 'alternateURL'], '');
+                $r .= ' data-aimg="' . $show_alternate_image . '" ';
+                $r .= ($show_alternate == 'mobile' || $show_alternate == 'mobile-ie8') ? ' data-amobile="enabled" ' : '';
+                $r .= ($show_alternate == 'mobile-ie8' || $show_alternate == 'ie8') ? ' data-aie8="enabled" ' : '';
+            }
 
-		$r .= ' style="' . $style . '">' . "\n";
-		return RevLoader::apply_filters('revslider_get_slider_wrapper_div', $r, $this);
+            $r .= ' style="' . $style . '">' . "\n";
+            return RevLoader::apply_filters('revslider_get_slider_wrapper_div', $r, $this);
+        }
 	}
 
 	/**

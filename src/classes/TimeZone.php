@@ -12,6 +12,8 @@ class TimeZone extends PhenyxObjectModel {
     
     /** @var string $name */
     public $name;
+    
+    public $date_format;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -22,6 +24,7 @@ class TimeZone extends PhenyxObjectModel {
         'primary' => 'id_timezone',
         'fields'  => [
             'name'  => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
+            'date_format'  => ['type' => self::TYPE_STRING,  'required' => true, 'size' => 32],
             
         ],
     ];
