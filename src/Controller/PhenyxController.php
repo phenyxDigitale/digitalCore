@@ -1822,7 +1822,7 @@ abstract class PhenyxController {
             }
             
             $js_def =  ($defer && $domAvailable) ? $this->js_def : [];
-            $js_files = $defer ? array_unique($this->extraJs) : [];
+            $js_files = (!is_null($this->extraJs) && $defer) ? array_unique($this->extraJs) : [];
             $js_inline = ($defer && $domAvailable) ? Media::getInlineScript() : [];
             
             $this->context->smarty->assign(
