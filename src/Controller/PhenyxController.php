@@ -2041,7 +2041,7 @@ abstract class PhenyxController {
 
         $this->beforeAdd();
 
-        $result = $this->object->update();
+        $result = $this->object->add();
 
         
 
