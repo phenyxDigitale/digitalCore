@@ -223,6 +223,7 @@ abstract class PhenyxController {
     public $summaryData = '';
 
 
+
     public $editModel;
 
     public $sortModel;
@@ -2044,18 +2045,22 @@ abstract class PhenyxController {
 
         $result = $this->object->add();
 
-        
+        $this->afterAdd();
 
         if ($result) {
-            $this->afterAdd();
+            $return = [
+                'success' => true,
+                'message' => sprintf($this->la('Object of type %s was successfully added'), $this->className)
+            ];
 
         } else {
             $return = [
                 'success' => false,
                 'message' => $this->la('An error occurred while trying to add this object'),
             ];
-            die(Tools::jsonEncode($return));
+            
         }
+        die(Tools::jsonEncode($return));
 
     }
     
