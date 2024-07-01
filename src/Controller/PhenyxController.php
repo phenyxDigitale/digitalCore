@@ -222,6 +222,7 @@ abstract class PhenyxController {
 
     public $summaryData = '';
 
+
     public $editModel;
 
     public $sortModel;
@@ -2689,7 +2690,7 @@ abstract class PhenyxController {
         if (isset($classVars['definition']['fields'])) {
             $fields = $classVars['definition']['fields'];
         }
-
+        
         foreach ($fields as $field => $params) {
 
             if (array_key_exists('lang', $params) && $params['lang']) {
@@ -2697,25 +2698,26 @@ abstract class PhenyxController {
                 foreach (Language::getIDs(false) as $idLang) {
 
                     if (Tools::isSubmit($field . '_' . (int) $idLang)) {
-                        if($idLang = $this->context->language->id)
 
                         if (!isset($object->{$field}) || !is_array($object->{$field})) {
                             $object->{$field}
 
                             = [];
                         }
-                        if($idLang = $this->context->language->id) {
+                        if($idLang == $this->context->language->id) {
                             $referent = Tools::getValue($field . '_' . (int) $idLang);
                         }
                         
                         $value = !empty(Tools::getValue($field . '_' . (int) $idLang)) ? Tools::getValue($field . '_' . (int) $idLang) : $referent;
-
                         $object->{$field}[(int) $idLang] = $value;
+                    } else {
+                        $object->{$field}[(int) $idLang] = $referent;
                     }
 
                 }
 
             }
+            
 
         }
         
