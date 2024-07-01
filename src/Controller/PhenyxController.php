@@ -2697,16 +2697,20 @@ abstract class PhenyxController {
                 foreach (Language::getIDs(false) as $idLang) {
 
                     if (Tools::isSubmit($field . '_' . (int) $idLang)) {
+                        if($idLang = $this->context->language->id)
 
                         if (!isset($object->{$field}) || !is_array($object->{$field})) {
                             $object->{$field}
 
                             = [];
                         }
+                        if($idLang = $this->context->language->id) {
+                            $referent = Tools::getValue($field . '_' . (int) $idLang);
+                        }
+                        
+                        $value = !empty(Tools::getValue($field . '_' . (int) $idLang)) ? Tools::getValue($field . '_' . (int) $idLang) : $referent;
 
-                        $object->{$field}
-
-                        [(int) $idLang] = Tools::getValue($field . '_' . (int) $idLang);
+                        $object->{$field}[(int) $idLang] = $value;
                     }
 
                 }
