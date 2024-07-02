@@ -998,6 +998,11 @@ class Composer {
         return $processor->process($content);
 
     }
+    
+    public static function removeSgortCode($string) {
+        
+        return preg_replace("/\[(\/*)?vc_(.*?)\]/", "", $string);
+    }
 
     public static function do_shortcode($content, $hook_name = '') {
 
