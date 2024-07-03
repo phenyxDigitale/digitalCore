@@ -224,6 +224,8 @@ abstract class PhenyxController {
 
 
 
+
+
     public $editModel;
 
     public $sortModel;
@@ -483,21 +485,33 @@ abstract class PhenyxController {
 
     public function generateParaGridContextMenu() {
 
+        $menuItem = [];
         $contextMenu = new ParamContextMenu($this->className, $this->controller_name);
-
+        
         $contextMenuItems = Hook::exec('action' . $this->controller_name . 'generateParaGridContextMenu', ['class' => $this->className, 'contextMenuItems' => $this->contextMenuItems], null, true);
 
         if (!empty($contextMenuItems)) {
-
+           
             foreach ($contextMenuItems as $plugin => $contextMenuItem) {
                 if (is_array($contextMenuItem)) {
-                    foreach ($contextMenuItem as $key => $item) {
-                        $this->contextMenuItems[$key] = $item;
+                    $idPlugin = Plugin::getIdPluginByName($plugin);
+                    if(count($menuItem) > 0) {
+                        $contextMenuPlugin = Hook::exec('action' . $this->controller_name . 'generateParaGridContextMenu', ['class' => $this->className, 'contextMenuItems' => $menuItem[$last_plugin]], $idPlugin, true);
+                    } else {                        
+                        $contextMenuPlugin = Hook::exec('action' . $this->controller_name . 'generateParaGridContextMenu', ['class' => $this->className, 'contextMenuItems' => $this->contextMenuItems], $idPlugin, true);
                     }
+                    
+                    foreach ($contextMenuPlugin[$plugin] as $key => $item) {
+                        $menuItem[$plugin][$key] = $item;
+                    }
+                    $last_plugin = $plugin;
                 }
-
             }
+            
 
+        }
+        if(isset($last_plugin) && is_array($menuItem[$last_plugin]) && count($menuItem[$last_plugin]) > 0) {
+            $this->contextMenuItems = $menuItem[$last_plugin];
         }
 
         $contextMenu->items = $this->contextMenuItems;

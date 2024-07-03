@@ -999,7 +999,7 @@ class Composer {
 
     }
     
-    public static function removeSgortCode($string) {
+    public static function removeShortCode($string) {
         
         return preg_replace("/\[(\/*)?vc_(.*?)\]/", "", $string);
     }
