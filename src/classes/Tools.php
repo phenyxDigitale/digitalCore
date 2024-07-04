@@ -2181,6 +2181,151 @@ FileETag none
         return true;
     }
     
+    
+    public static function generateCurrentJson() {
+        
+        if(file_exists(_EPH_CONFIG_DIR_ . 'json/new_json.json')) {
+            $md5List = file_get_contents(_EPH_CONFIG_DIR_ . 'json/new_json.json');
+            unlink(_EPH_CONFIG_DIR_ . 'json/new_json.json');
+		    return Tools::jsonDecode($md5List, true);
+        }
+
+        $plugins = [];
+        $installed_plugins = Plugin::getPluginsDirOnDisk();
+        foreach ($installed_plugins as $plugin) {
+            if(Plugin::isInstalled($plugin, false)) {
+                $plugins[] = $plugin;
+            }
+        }
+        
+		$recursive_directory = [
+            'app/xml',
+            'content/backoffice',
+            'content/css',
+            'content/fonts',
+            'content/js',
+            'content/img/pdfWorker',
+            'content/mails',
+            'content/mp3',
+            'content/pdf',
+            'content/themes/phenyx-theme-default',
+			'includes/classes',
+			'includes/controllers',
+			'vendor/phenyxdigitale',
+            'webephenyx',
+		];
+        $iso_langs = [];
+        $languages = Language::getLanguages(false);
+        foreach ($languages as $language) {
+            $recursive_directory[] = 'content/translations/'.$language['iso_code'];
+            $iso_langs[] = $language['iso_code'];
+        }
+        foreach($plugins as $plugin) {
+            if(is_dir(_EPH_PLUGIN_DIR_ .$plugin)) {
+                $recursive_directory[] = 'includes/plugins/'.$plugin;
+            } 
+        }
+
+       
+		
+        $iterator = new AppendIterator();
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/themes/'));
+        foreach ($recursive_directory as $key => $directory) {
+			if(is_dir(_EPH_ROOT_DIR_ . '/' . $directory )) {
+				$iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory . '/')));
+			}
+        }
+		
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/app/'));
+        
+        $excludes = ['/phenyx-shop-default/css/', '/phenyx-shop-default/fonts/', '/phenyx-shop-default/font/', '/phenyx-shop-default/img/', '/phenyx-shop-default/js/', '/phenyx-shop-default/plugins/', '/phenyx-shop-default/pdf/'];
+        $extraExludes = Hook::exec('actionGetExludes', [], null, true);
+        if (is_array($extraExludes) && count($extraExludes)) {
+            foreach ($extraExludes as $plugin => $exclude) {
+                $excludes = array_merge(
+                    $excludes,
+                    $exclude
+                );
+            }
+        }
+
+        foreach ($iterator as $file) {
+            $filePath = $file->getPathname();
+            $filePath = str_replace(_EPH_ROOT_DIR_, '', $filePath);
+			
+            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'settings.inc.php',  '.php-ini', '.php-version'])) {
+                continue;
+            }
+            $inExclude = false;
+            foreach($excludes as $exclude) {              
+                if (str_contains($filePath, $exclude)) {
+                    $inExclude = true;
+			        continue;
+                }
+            }    
+            if($inExclude) {
+                continue;
+            }
+			
+            if (is_dir($file->getPathname())) {
+								
+                continue;
+            }
+
+            $ext = pathinfo($file->getFilename(), PATHINFO_EXTENSION);
+
+            if ($ext == 'txt') {
+                continue;
+            }
+			if ($ext == 'zip') {
+				continue;
+			}
+            if (str_contains($filePath, '/plugins/') && str_contains($filePath, '/translations/')) {
+                
+                foreach($plugins as $plugin) {
+                    if (str_contains($filePath, '/plugins/'.$plugin.'/translations/')) {
+                        $test = str_replace('/includes/plugins/'.$plugin.'/translations/', '', $filePath);
+                        $test = str_replace('.php', '', $test);
+                        if(!in_array($test,$iso_langs)) {
+                            continue;
+
+                        }
+                    }
+                }
+			}
+			
+           
+           if (str_contains($filePath, '/uploads/')) {
+				continue;
+			}
+             if (str_contains($filePath, '/cache/')) {
+				continue;
+			}   
+            if (str_contains($filePath, '/views/docs/')) {
+				continue;
+			} 
+             
+
+            $md5List[$filePath] = md5_file($file->getPathname());
+        }
+
+        return $md5List;
+
+    }
+    
+    public static function generateOwnCurrentJson() {
+        
+        $md5List = self::generateCurrentJson();
+        if (is_array($md5List)) {
+			file_put_contents(
+				_EPH_CONFIG_DIR_ . 'json/new_json.json',
+				json_encode($md5List, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+			);
+		}
+    }
+    
+       
+    
     public static function generateShopFile($iso_langs, $plugins, $excludes) {
        
 		$recursive_directory = [
