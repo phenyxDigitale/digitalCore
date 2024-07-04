@@ -2012,6 +2012,7 @@ class Tools {
 
         fwrite($write_fd, 'RewriteRule ^api$ api/ [L]' . "\n\n");
         fwrite($write_fd, 'RewriteRule ^api/(.*)$ %{ENV:REWRITEBASE}webephenyx/dispatcher.php?url=$1 [QSA,L]' . "\n\n");
+        
 
         $media_domains = '';
 
@@ -2030,6 +2031,20 @@ class Tools {
                 // Webservice
                 fwrite($write_fd, 'RewriteRule ^api$ api/ [L]' . "\n\n");
                 fwrite($write_fd, 'RewriteRule ^api/(.*)$ %{ENV:REWRITEBASE}webephenyx/dispatcher.php?url=$1 [QSA,L]' . "\n\n");
+                
+                if($domain == 'ephenyx.io') {
+                    fwrite($write_fd, 'RewriteRule ^veille$ veille/ [L]' . "\n\n");
+                    fwrite($write_fd, 'RewriteRule ^veille/(.*)$ %{ENV:REWRITEBASE}webephenyx/veille.php?url=$1 [QSA,L]' . "\n\n");
+        
+                    fwrite($write_fd, 'RewriteRule ^css$ css/ [L]' . "\n\n");
+                    fwrite($write_fd, 'RewriteRule ^css/(.*)$ %{ENV:REWRITEBASE}webephenyx/css.php?url=$1 [QSA,L]' . "\n\n");
+
+                    fwrite($write_fd, 'RewriteCond %{HTTP_HOST} ^cdn.ephenyx.io$ [NC]' . "\n\n");
+                    fwrite($write_fd, 'RewriteRule ^(.*)$ https://ephenyx.io/ressource/$1 [L,NC,QSA]' . "\n\n");
+         
+                    fwrite($write_fd, 'RewriteCond %{HTTP_HOST} ^translations.ephenyx.io$ [NC]' . "\n\n");
+                    fwrite($write_fd, 'RewriteRule ^(.*)$ https://ephenyx.io/ressource/$1 [L,NC,QSA]' . "\n\n");
+                }
 
                 if (!$rewrite_settings) {
                     $rewrite_settings = (int) Configuration::get(Configuration::REWRITING_SETTINGS);
@@ -2165,6 +2180,226 @@ FileETag none
 
         return true;
     }
+    
+    public static function generateShopFile($iso_langs, $plugins, $excludes) {
+       
+		$recursive_directory = [
+            'phenyxDigital/content/themes/phenyx-theme-default',
+			'phenyxShop/vendor/phenyxdigitale',
+            'phenyxShop/webephenyx',
+            'phenyxShop/app/xml',
+		];
+         foreach($iso_langs as $lang) {
+            $recursive_directory[] = 'phenyxShop/content/translations/'.$lang;
+        }
+        foreach($plugins as $plugin) {
+            $recursive_directory[] = 'includes/plugins/'.$plugin;
+        }
+
+
+		$iterator = new AppendIterator();
+
+		foreach ($recursive_directory as $key => $directory) {
+
+			if (is_dir(_EPH_ROOT_DIR_ . '/' . $directory)) {
+				$iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory . '/')));
+			}
+
+		}
+        
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/phenyxShop/app/'));
+		$iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/phenyxDigital/content/themes/'));
+
+
+
+		foreach ($iterator as $file) {
+			$filePath = $file->getPathname();
+			$filePath = str_replace(_EPH_ROOT_DIR_, '', $filePath);
+
+			if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'settings.inc.php',  '.php-ini', '.php-version'])) {
+				continue;
+			}
+
+			if (is_dir($file->getPathname())) {
+
+				continue;
+			}
+            $inExclude = false;
+            foreach($excludes as $exclude) {              
+                if (str_contains($filePath, $exclude)) {
+                    $inExclude = true;
+			        continue;
+                }
+            }    
+            if($inExclude) {
+                continue;
+            }
+
+			$ext = pathinfo($file->getFilename(), PATHINFO_EXTENSION);
+            
+            if (str_contains($filePath, '/plugins/') && str_contains($filePath, '/translations/')) {
+                foreach($plugins as $plugin) {
+                    if (str_contains($filePath, '/plugins/'.$plugin.'/translations/')) {
+                        $test = str_replace('/includes/plugins/'.$plugin.'/translations/', '', $filePath);
+                        $test = str_replace('.php', '', $test);
+                        if(!in_array($test,$iso_langs)) {
+                            continue;
+                        }
+                    }
+                }
+			}
+
+			if ($ext == 'txt') {
+				continue;
+			}
+
+			if ($ext == 'zip') {
+				continue;
+			}
+
+
+			 if (str_contains($filePath, '/uploads/')) {
+				continue;
+			}
+             if (str_contains($filePath, '/cache/')) {
+				continue;
+			}     
+
+			$md5List[$filePath] = md5_file($file->getPathname());
+		}
+
+		return $md5List;
+
+	}
+    
+    public static function generateDigitalFiles($iso_langs, $plugins) {
+
+		
+        $recursive_directory = [
+            'phenyxDigital/app/xml',
+            'phenyxDigital/content/backoffice', 
+            'phenyxDigital/content/css', 
+            'phenyxDigital/content/fonts', 
+            'phenyxDigital/content/img/pdfWorker',
+            'phenyxDigital/content/js', 
+            'phenyxDigital/content/mails',
+            'phenyxDigital/content/mp3',
+            'phenyxDigital/content/pdf',        
+            'phenyxDigital/content/themes/phenyx-theme-default',
+            'phenyxDigital/includes/classes',		
+            'phenyxDigital/includes/controllers',	
+            'phenyxDigital/vendor/phenyxdigitale',
+			'phenyxDigital/webephenyx',
+		];
+        foreach($iso_langs as $lang) {
+            $recursive_directory[] = 'phenyxDigital/content/translations/'.$lang;
+        }
+        foreach($plugins as $plugin) {
+            $recursive_directory[] = 'includes/plugins/'.$plugin;
+        }
+        
+
+		$iterator = new AppendIterator();
+
+		foreach ($recursive_directory as $key => $directory) {
+
+			if (is_dir(_EPH_ROOT_DIR_ . '/' . $directory)) {
+				$iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory . '/')));
+			}
+
+		}
+
+		$iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/phenyxDigital/app/'));
+		$iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/phenyxDigital/content/themes/'));
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/phenyxDigital/'));
+        
+
+		foreach ($iterator as $file) {
+			$filePath = $file->getPathname();
+			$filePath = str_replace(_EPH_ROOT_DIR_, '', $filePath);
+
+			if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'settings.inc.php', '.php-ini', '.php-version'])) {
+				continue;
+			}
+            
+
+			if (is_dir($file->getPathname())) {
+
+				continue;
+			}
+
+			$ext = pathinfo($file->getFilename(), PATHINFO_EXTENSION);
+            if (str_contains($filePath, '/plugins/') && str_contains($filePath, '/translations/')) {
+                foreach($plugins as $plugin) {
+                    if (str_contains($filePath, '/plugins/'.$plugin.'/translations/')) {
+                        $test = str_replace('/includes/plugins/'.$plugin.'/translations/', '', $filePath);
+                        $test = str_replace('.php', '', $test);
+                        if(!in_array($test,$iso_langs)) {
+                            continue;
+                        }
+                    }
+                }
+			}
+
+			if ($ext == 'txt') {
+				continue;
+			}
+
+			if ($ext == 'zip') {
+				continue;
+			}
+
+			 if (str_contains($filePath, '/uploads/')) {
+				continue;
+			}
+             if (str_contains($filePath, '/cache/')) {
+				continue;
+			}     
+
+			$md5List[$filePath] = md5_file($file->getPathname());
+		}
+
+		return $md5List;
+
+	}
+    
+    public static function generateLastPhenyxShopZip() {
+        
+        
+        if(file_exists(_EPH_ROOT_DIR_.'/phenyxTools/phenyxShop.zip')) {
+            unlink(_EPH_ROOT_DIR_.'/phenyxTools/phenyxShop.zip');
+        }
+        
+        $rootPath = _EPH_ROOT_DIR_.'/phenyxShop';
+        $zip = new ZipArchive();
+        $zip->open(_EPH_ROOT_DIR_.'/phenyxTools/phenyxShop.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+        $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($rootPath),
+            RecursiveIteratorIterator::LEAVES_ONLY
+        );
+
+        foreach ($files as $name => $file) {    
+            if (!$file->isDir())  {        
+                $filePath = $file->getRealPath();
+                $relativePath = substr($filePath, strlen($rootPath) + 1);        
+                $zip->addFile($filePath, $relativePath);
+            }
+        }
+
+        $zip->close();
+    }
+    
+    
+    public static function deleteFiles($file) {
+		
+		if(file_exists(_EPH_ROOT_DIR_.$file)) {
+            unlink(_EPH_ROOT_DIR_.$file);
+        }
+		return true;
+		
+	}    
+    
 
     public static function generateIndex() {
 
