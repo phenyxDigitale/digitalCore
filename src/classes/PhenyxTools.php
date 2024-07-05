@@ -85,17 +85,19 @@ class PhenyxTools {
 
 	public static function writeNewSettings($version) {
 
-		$seeting_files = _EPH_CONFIG_DIR_ . 'settings.inc.php';
+       	$seeting_files = _EPH_CONFIG_DIR_ . 'settings.inc.php';
 
 		$mysqlEngine = (defined('_MYSQL_ENGINE_') ? _MYSQL_ENGINE_ : 'InnoDB');
 
 		copy($seeting_files, str_replace('.php', '.old.php', $seeting_files));
-		$confFile = new AddConfToFile($seeting_files, 'w');
+		$confFile = fopen($seeting_files, 'w');
+        fwrite($confFile, '<?php' . PHP_EOL. PHP_EOL);
 
-		$caches = ['CacheMemcache', 'CacheApc', 'CacheFs', 'CacheMemcached', 'CacheXcache'];
+		$caches = ['CacheMemcache', 'CacheApc', 'FileBased', 'AwsRedis', 'CacheMemcached', 'CacheXcache'];
+        $current_cache = !(empty(Configuration::get('EPH_PAGE_CACHE_TYPE'))) ? Configuration::get('EPH_PAGE_CACHE_TYPE') : 'FileBased';
 
 		$datas = [
-			['_EPH_CACHING_SYSTEM_', (defined('_EPH_CACHING_SYSTEM_') && in_array(_EPH_CACHING_SYSTEM_, $caches)) ? _EPH_CACHING_SYSTEM_ : 'CacheFs'],
+			['_EPH_CACHING_SYSTEM_', (defined('_EPH_CACHING_SYSTEM_') && in_array(_EPH_CACHING_SYSTEM_, $caches)) ? _EPH_CACHING_SYSTEM_ : $current_cache],
 			['_DB_NAME_', _DB_NAME_],
 			['_MYSQL_ENGINE_', $mysqlEngine],
 			['_DB_SERVER_', _DB_SERVER_],
@@ -112,6 +114,7 @@ class PhenyxTools {
 			['_PHP_ENCRYPTION_KEY_', _PHP_ENCRYPTION_KEY_],
 		];
 
+		
 		if (defined('_FORUM_MODE_')) {
 			$datas[] = ['_FORUM_MODE_', _FORUM_MODE_];
 		}
@@ -127,16 +130,27 @@ class PhenyxTools {
 		if (defined('_EPHENYX_MODE_')) {
 			$datas[] = ['_EPHENYX_MODE_', _EPHENYX_MODE_];
 		}
+        
+        
 
-		foreach ($datas as $data) {
-			$confFile->writeInFile($data[0], $data[1]);
+		foreach ($datas as $data) {            
+			fwrite($confFile, 'define(\'' . $data[0] . '\', \'' . self::checkString($data[1]) . '\');' . PHP_EOL);
 		}
 
-		if ($confFile->error != false) {
-			return false;
-		}
+		
 
 		return true;
 	}
+    
+    public static  function checkString($string) {
+
+        
+        if (!is_numeric($string)) {
+            $string = addslashes($string);
+        }
+        
+
+        return $string;
+    }
 
 }
