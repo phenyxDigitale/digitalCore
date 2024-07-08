@@ -2329,8 +2329,8 @@ FileETag none
     public static function generateShopFile($iso_langs, $plugins, $excludes) {
        
 		$recursive_directory = [
-            'phenyxDigital/content/themes/phenyx-theme-default',
-			'phenyxShop/vendor/phenyxdigitale',
+            'content/themes/phenyx-theme-default',
+			'vendor/phenyxdigitale',
             'phenyxShop/webephenyx',
             'phenyxShop/app/xml',
 		];
@@ -2353,7 +2353,7 @@ FileETag none
 		}
         
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/phenyxShop/app/'));
-		$iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/phenyxDigital/content/themes/'));
+		$iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/themes/'));
 
 
 
@@ -2422,18 +2422,18 @@ FileETag none
 		
         $recursive_directory = [
             'phenyxDigital/app/xml',
-            'phenyxDigital/content/backoffice', 
-            'phenyxDigital/content/css', 
-            'phenyxDigital/content/fonts', 
-            'phenyxDigital/content/img/pdfWorker',
-            'phenyxDigital/content/js', 
-            'phenyxDigital/content/mails',
-            'phenyxDigital/content/mp3',
-            'phenyxDigital/content/pdf',        
-            'phenyxDigital/content/themes/phenyx-theme-default',
-            'phenyxDigital/includes/classes',		
-            'phenyxDigital/includes/controllers',	
-            'phenyxDigital/vendor/phenyxdigitale',
+            'content/backoffice', 
+            'content/css', 
+            'content/fonts', 
+            'content/img/pdfWorker',
+            'content/js', 
+            'content/mails',
+            'content/mp3',
+            'content/pdf',        
+            'content/themes/phenyx-theme-default',
+            'includes/classes',		
+            'includes/controllers',	
+            'vendor/phenyxdigitale',
 			'phenyxDigital/webephenyx',
 		];
         foreach($iso_langs as $lang) {
@@ -2455,7 +2455,7 @@ FileETag none
 		}
 
 		$iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/phenyxDigital/app/'));
-		$iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/phenyxDigital/content/themes/'));
+		$iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/themes/'));
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/phenyxDigital/'));
         
 
@@ -5721,6 +5721,19 @@ FileETag none
                 'translation' => $text,
             ];
         } else {
+            $cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
+            if($cache_enable) {
+                $cache_api = CacheApi::getInstance();
+            }
+            $cacheId = "translate_".$target.'_'.str_replace(" ", '', $text);
+            if($cache_enable) {
+                $value =   $cache_api->getData($cacheId, 3600);
+                if(!empty($value)) {
+                    return [
+                        'translation' => $value,
+                    ];
+                }
+            }
         
             $existKey = Translation::getExistingTranslation($target, $text);
             if(!empty($existKey)) {
@@ -5741,6 +5754,9 @@ FileETag none
                 $translation->origin = $text;
                 $translation->translation = $result['text'];
                 $translation->add();
+                if($cache_enable && is_object($cache_api)) {
+                    $cache_api->putData($cacheId, $result['text']);
+                }	
 
                 $return = [
                     'translation' => $result['text'],
