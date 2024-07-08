@@ -1621,7 +1621,7 @@ class Composer {
         return $values;
     }
 
-    public static function getTPLPath($template = '', $plugin_name = 'phenyxthememanager') {
+    public static function getTPLPath($template = '', $plugin_name = 'ph_manager') {
 
         if (Tools::file_exists_cache(_EPH_THEME_DIR_ . 'plugins/' . $plugin_name . '/' . $template)) {
             return _EPH_THEME_DIR_ . 'plugins/' . $plugin_name . '/' . $template;
