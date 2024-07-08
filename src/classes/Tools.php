@@ -2465,7 +2465,7 @@ FileETag none
 			$filePath = $file->getPathname();
 			$filePath = str_replace(_EPH_ROOT_DIR_, '', $filePath);
 
-			if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'settings.inc.php', '.php-ini', '.php-version'])) {
+			if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'settings.inc.php', '.user.ini', '.php-ini', '.php-version'])) {
 				continue;
 			}
             
@@ -2502,6 +2502,11 @@ FileETag none
              if (str_contains($filePath, '/cache/')) {
 				continue;
 			}     
+            $fileName = $file->getFilename();
+
+			if (substr($fileName, 0, 4) == 'truc') {
+				continue;
+			}
 
 			$md5List[$filePath] = md5_file($file->getPathname());
 		}
