@@ -2237,6 +2237,7 @@ FileETag none
         }
 		
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/app/'));
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/'));
         
         $excludes = ['/phenyx-shop-default/css/', '/phenyx-shop-default/fonts/', '/phenyx-shop-default/font/', '/phenyx-shop-default/img/', '/phenyx-shop-default/js/', '/phenyx-shop-default/plugins/', '/phenyx-shop-default/pdf/'];
         $extraExludes = Hook::exec('actionGetExludes', [], null, true);
