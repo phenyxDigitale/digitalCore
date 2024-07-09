@@ -68,14 +68,7 @@ class AddConfToFile {
      */
     public function writeInFile($name, $data) {
 
-        if (!$res = @fwrite(
-            $this->fd,
-            'define(\'' . $name . '\', \'' . $this->checkString($data) . '\');' . "\n"
-        )) {
-            $this->error = 6;
-
-            return false;
-        }
+        fwrite($this->fd,'define(\'' . $name . '\', \'' . $this->checkString($data) . '\');' . PHP_EOL);        
 
         return true;
     }
@@ -85,11 +78,8 @@ class AddConfToFile {
      */
     public function writeEndTagPhp() {
 
-        if (!$res = @fwrite($this->fd, '?>' . PHP_EOL)) {
-            $this->error = 6;
-
-            return false;
-        }
+        fwrite($this->fd, '?>' . PHP_EOL);
+        
 
         return true;
     }
@@ -101,10 +91,8 @@ class AddConfToFile {
      */
     public function checkString($string) {
 
-        
-        if (!is_numeric($string)) {
+       if (!is_numeric($string)) {
             $string = addslashes($string);
-            $string = str_replace(["\n", "\r"], '', $string);
         }
         
 
