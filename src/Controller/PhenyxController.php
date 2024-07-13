@@ -226,6 +226,7 @@ abstract class PhenyxController {
 
 
 
+
     public $editModel;
 
     public $sortModel;
@@ -1980,6 +1981,7 @@ abstract class PhenyxController {
             $html = $this->renderForm();
 
             $li = '<li id="uperEdit' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentEdit' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeEditFormObject(\'' . $this->controller_name . '\');" class="close tabdetail" data-id="uperEdit' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
+
             $html = '<div id="contentEdit' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display; flow-root;">' . $html . '</div>';
 
             $result = [
@@ -2903,7 +2905,7 @@ abstract class PhenyxController {
     private function getLoadTimeColor($n, $kikoo = false) {
 
         if ($n > 1.6) {
-            return '<span style="color:red">' . round($n * 1000) . '</span>' . ($kikoo ? $this->la('You\'d better run your shop on a toaster')  : '');
+            return '<span style="color:red">' . round($n * 1000) . '</span>' . ($kikoo ? $this->la('You‘d better run your shop on a toaster')  : '');
         } else
 
         if ($n > 0.8) {

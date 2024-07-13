@@ -571,7 +571,7 @@ class Translate {
         return Translate::postProcessTranslation($string, ['tags' => $tags]);
     }
 
-    public static function getInstallerTranslation($string, $class, $addslashes = false, $htmlentities = true, $sprintf = null, $context = null) {
+    public static function getInstallerTranslation($string, $class, $addslashes = false, $htmlentities = true, $sprintf = null) {
 
         global $_LANGINSTALL;
 

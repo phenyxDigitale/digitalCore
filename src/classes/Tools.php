@@ -4756,6 +4756,7 @@ FileETag none
 
         $metas = $doc->getElementsByTagName('meta');
 
+
         for ($i = 0; $i < $metas->length; $i++) {
             $meta = $metas->item($i);
 
@@ -5722,55 +5723,51 @@ FileETag none
     }
     
     public static function getGoogleTranslation($google_api_key, $text, $target) {
-        
-        if($target == 'en' || $target == 'gb') {
-            $return = [
-                'translation' => $text,
-            ];
-        } else {
-            $cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
-            if($cache_enable) {
-                $cache_api = CacheApi::getInstance();
-            }
-            $cacheId = "translate_".$target.'_'.str_replace(" ", '', $text);
-            if($cache_enable) {
-                $value =   $cache_api->getData($cacheId, 3600);
-                if(!empty($value)) {
-                    return [
-                        'translation' => $value,
-                    ];
-                }
-            }
-        
-            $existKey = Translation::getExistingTranslation($target, $text);
-            if(!empty($existKey)) {
-                $return = [
-                    'translation' => $existKey,
-                ];
-            } else {
-
-                $translate = new TranslateClient([
-                    'key' => $google_api_key,
-                ]);
-
-                $result = $translate->translate($text, [
-                    'target' => $target,
-                ]);
-                $translation = new Translation();
-                $translation->iso_code = $target;
-                $translation->origin = $text;
-                $translation->translation = $result['text'];
-                $translation->add();
-                if($cache_enable && is_object($cache_api)) {
-                    $cache_api->putData($cacheId, $result['text']);
-                }	
-
-                $return = [
-                    'translation' => $result['text'],
+                
+        if(empty($text)) {
+            return $text;
+        }
+        $cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
+        if($cache_enable) {
+            $cache_api = CacheApi::getInstance();
+        }
+        $cacheId = "translate_".$target.'_'.str_replace(" ", '', $text);
+        if($cache_enable) {
+            $value =   $cache_api->getData($cacheId, 3600);
+            if(!empty($value)) {
+                return [
+                    'translation' => $value,
                 ];
             }
         }
-       	return $return;
+        
+        $existKey = Translation::getExistingTranslation($target, $text);
+        if(!empty($existKey)) {
+            $return = [
+                'translation' => $existKey,
+            ];
+        } else {
+
+            $translate = new TranslateClient([
+                'key' => $google_api_key,
+            ]);
+
+            $result = $translate->translate($text, [
+                'target' => $target,
+            ]);
+            $translation = new Translation();
+            $translation->iso_code = $target;
+            $translation->origin = $text;
+            $translation->translation = $result['text'];
+            $translation->add();
+            if($cache_enable && is_object($cache_api)) {
+                $cache_api->putData($cacheId, $result['text']);
+            }	
+            $return = [
+                'translation' => $result['text'],
+            ];
+        }
+        return $return;
     }
     
     public static function getRedisSeverbyId($idServer) {
@@ -5923,6 +5920,22 @@ FileETag none
             return array_values($array);
         }
         return null;
+        
+    }
+    
+    public static function printR($array) {
+        if(is_array($array)) {
+            return print_r($array);
+        }
+        return $array;
+        
+    }
+    
+    public static function inArray($string, $array) {
+        if(is_array($array)) {
+            return in_array($string, $array);
+        }
+        return $array;
         
     }
     

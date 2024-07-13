@@ -33,7 +33,7 @@ class Translation extends PhenyxObjectModel {
 			->select('`translation`')
 			->from('translation')
 			->where('`iso_code` = \'' . trim($iso_code).'\'')
-			->where('`origin` = \'' . trim($origin).'\'')
+			->where('`origin` = \'' . bqSQL(trim($origin)).'\'')
 		);
    }
 
