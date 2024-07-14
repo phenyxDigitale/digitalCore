@@ -2333,11 +2333,10 @@ FileETag none
 		$recursive_directory = [
             'content/themes/phenyx-theme-default',
 			'vendor/phenyxdigitale',
-            'phenyxShop/webephenyx',
             'phenyxShop/app/xml',
 		];
          foreach($iso_langs as $lang) {
-            $recursive_directory[] = 'phenyxShop/content/translations/'.$lang;
+            $recursive_directory[] = 'content/translations/'.$lang;
         }
         foreach($plugins as $plugin) {
             $recursive_directory[] = 'includes/plugins/'.$plugin;

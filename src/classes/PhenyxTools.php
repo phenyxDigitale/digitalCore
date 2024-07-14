@@ -578,7 +578,37 @@ class PhenyxTools {
 		}
 
 		Hook::getArgs(true);
+        self::resetPlugin();
 
 	}
+    
+    public static function resetPlugin() {
+        
+        $query = 'SELECT *  FROM `' . _DB_PREFIX_ . 'plugin` ORDER BY id_plugin ASC';
+		$plugins = Db::getInstance()->executeS($query);
+        
+        foreach ($plugins as $plugin) {
+
+			if (file_exists(_EPH_PLUGIN_DIR_ . $plugin['name'] . '/' . $plugin['name'] . '.php')) {
+				require_once _EPH_PLUGIN_DIR_ . $plugin['name'] . '/' . $plugin['name'] . '.php';
+			} else
+
+			if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin['name'] . '/' . $plugin['name'] . '.php')) {
+				require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin['name'] . '/' . $plugin['name'] . '.php';
+			}
+            
+            if (class_exists($plugin['name'], false)) {
+
+                $tmpPlugin = Adapter_ServiceLocator::get($plugin['name']);
+                
+                if (method_exists($tmpPlugin, 'reset')) {
+                    $plugin = Plugin::getInstanceByName($plugin['name']);
+                    $plugin->reset();
+                    
+                }
+                
+            }
+        }
+    }
 
 }

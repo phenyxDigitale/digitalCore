@@ -36,6 +36,68 @@ class PhenyxMaintenance {
         }
 
     }
+    
+     public static function cleanUserAccount() {
+
+        $context::getContext();
+        $accounts = StdAccount::getCustomerStdAccount($context);
+
+        foreach ($accounts as $account) {
+
+            $id_user = Db::getInstance()->getValue(
+                (new DbQuery())
+                    ->select('`id_user`')
+                    ->from('user')
+                    ->where('`id_stdaccount` = ' . (int) $account->id)
+            );
+
+            if ($id_user > 0) {
+                continue;
+            }
+
+            $account->delete();
+        }
+
+    }
+
+    public static function cleanOutdatedUser() {
+
+        $date = date('Y-m-d');
+        $time = new DateTime($date);
+        $time->modify('-5 year');
+        $renewalDate = $time->format('Y-m-d');
+
+        $customerToDeletes = [];
+
+        $customers = Db::getInstance()->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('user')
+                ->where('`last_connection_date` <= "' . (int) $renewalDate . '"')
+        );
+
+        foreach ($customers as $customer) {
+
+            $orders = Db::getInstance()->executeS(
+                (new DbQuery())
+                    ->select('*')
+                    ->from('customer_pieces')
+                    ->where('`date_add` >= "' . (int) $renewalDate . '" AND `id_customer` = ' . $customer['id_customer'])
+            );
+
+            if (is_array($orders) && count($orders)) {
+                continue;
+            }
+
+            $customerToDeletes[] = $customer['id_customer'];
+        }
+
+        foreach ($customerToDeletes as $id_customer) {
+            $user = new Customer($id_customer);
+            $user->delete();
+        }
+
+    }
 
     
 }
