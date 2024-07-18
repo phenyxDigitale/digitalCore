@@ -610,5 +610,97 @@ class PhenyxTools {
             }
         }
     }
+    
+    public function exportLang($iso, $theme, $plugins) {
+
+		$file = fopen("testProcessSubmitExportLan.txt", "w");
+
+		if ($iso && $theme) {
+
+			$items = array_flip(Language::getFilesList($iso, $theme, false, false, false, false, false));
+			$plugins = array_flip($this->getPluginFilesList($iso, $theme, $plugins));
+			$fileName = _EPH_TRANSLATIONS_DIR_ . '/export/' . $iso . '.gzip';
+			$gz = new Archive_Tar($fileName, true);
+			$gz->createModify($items, null, _SHOP_ROOT_DIR_);
+			$gz->addModify($plugins, null, _EPH_ROOT_DIR_ . '/includes');
+
+			$pathFile = _EPH_ROOT_DIR_ . '/packs/' . _EPH_VERSION_ . '/' . $iso. '/' . $iso . '.gzip';
+			copy($fileName, $pathFile);
+
+		} else {
+
+			$this->errors[] = $this->la('Please select a language and a theme.');
+		}
+
+		if (count($this->errors)) {
+			$result = [
+				'success' => false,
+				'message' => implode(PHP_EOL, $this->errors),
+			];
+		} else {
+
+			$result = [
+				'success' => true,
+				'message' => $this->la('Language has been exported successfully'),
+			];
+		}
+
+		die(Tools::jsonEncode($result));
+	}
+    
+    public function getPluginFilesList($isoFrom, $themeFrom, $plugins) {
+
+        $filesPlugins = [];
+        
+        foreach ($plugins as $mod) {
+            if(is_dir(_EPH_PLUGIN_DIR_ .$mod)) {
+                $modDir = _EPH_PLUGIN_DIR_ . $mod;
+            } else if(is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ .$mod)) {
+                $modDir = _EPH_SPECIFIC_PLUGIN_DIR_ . $mod;
+            }
+                    // Lang file
+
+            if (file_exists($modDir . '/translations/' . (string) $isoFrom . '.php')) {
+                $filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '.php'] = ++$number;
+            } elseif (file_exists($modDir . '/translations/' . (string) $isoFrom . '/admin.php')) {
+                $filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '/admin.php'] = ++$number;
+            } elseif (file_exists($modDir . '/translations/' . (string) $isoFrom . '/class.php')) {
+                $filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '/class.php'] = ++$number;
+            } elseif (file_exists($modDir . '/translations/' . (string) $isoFrom . '/front.php')) {
+                $filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '/front.php'] = ++$number;
+            } 
+
+                    // Mails files
+            $modMailDirFrom = $modDir . '/mails/' . (string) $isoFrom;
+
+            if (file_exists($modMailDirFrom)) {
+                $dirFiles = scandir($modMailDirFrom);
+
+                foreach ($dirFiles as $file) {
+
+                    if (file_exists($modMailDirFrom . '/' . $file) && $file != '.' && $file != '..' && $file != '.svn') {
+                        $filesPlugins[$modMailDirFrom . '/' . $file] = ++$number;
+                    }
+                }
+            }
+            
+            $modPdfDirFrom = $modDir . '/pdf/' . (string) $isoFrom;
+
+            if (file_exists($modPdfDirFrom)) {
+                $dirFiles = scandir($modPdfDirFrom);
+
+                foreach ($dirFiles as $file) {
+
+                    if (file_exists($modPdfDirFrom . '/' . $file) && $file != '.' && $file != '..' && $file != '.svn') {
+                        $filesPlugins[$modPdfDirFrom . '/' . $file] = ++$number;
+                    }
+                }
+            }
+        }
+        
+        return $filesPlugins;
+    }
+
+
 
 }
