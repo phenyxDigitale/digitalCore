@@ -1377,10 +1377,92 @@ abstract class Plugin {
             }
 
         }
+        $this->mergeLanguages();
         Tools::generateIndex();
         $this->updateIoPlugins();
 
         return true;
+    }
+    
+    public function mergeLanguages() {
+        
+        foreach (Language::getLanguages(true) as $lang) {    
+            $iso= $lang['iso_code'];
+            if (!file_existes(_EPH_PLUGIN_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'translations/' . $lang['iso_code'] . '/admin.php')) {
+				
+				require_once _EPH_TRANSLATIONS_DIR_ . $lang['iso_code'] . '/admin.php';
+                $current_translation = $_LANGADM;
+                require_once _EPH_PLUGIN_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'translations/' . $lang['iso_code'] . '/admin.php';
+                $complementary_language = $_LANGADM;
+                if(is_array($current_translation) && is_array($complementary_language)) {
+                    $langAdmin = array_merge(
+                        $current_translation,
+                        $complementary_language
+                    );
+                }
+                
+                $toInsert = array_unique($langAdmin);
+                $file = fopen(_EPH_TRANSLATIONS_DIR_ .$lang['iso_code'] . '/admin.php', "w");
+				fwrite($file, "<?php\n\nglobal \$_LANGADM;\n\n");
+                foreach ($toInsert as $key => $value) {
+				    $value = htmlspecialchars_decode($value, ENT_QUOTES);
+					fwrite($file, '$_LANGADM[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
+				}
+                fwrite($file, "\n" . 'return $_LANGADM;' . "\n");
+				fclose($file);
+			}
+            
+            if (!file_existes(_EPH_PLUGIN_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'translations/' . $lang['iso_code'] . '/class.php')) {
+				
+				require_once _EPH_TRANSLATIONS_DIR_ . $lang['iso_code'] . '/class.php';
+                $current_translation = $_LANGCLASS;
+                require_once _EPH_PLUGIN_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'translations/' . $lang['iso_code'] . '/class.php';
+                $complementary_language = $_LANGCLASS;
+                if(is_array($current_translation) && is_array($complementary_language)) {
+                    $langAdmin = array_merge(
+                        $current_translation,
+                        $complementary_language
+                    );
+                }
+                
+                $toInsert = array_unique($langAdmin);
+                $file = fopen(_EPH_TRANSLATIONS_DIR_ . $lang['iso_code'] . '/class.php', "w");
+				fwrite($file, "<?php\n\nglobal \$_LANGCLASS;\n\n");
+                foreach ($toInsert as $key => $value) {
+				    $value = htmlspecialchars_decode($value, ENT_QUOTES);
+					fwrite($file, '$_LANGCLASS[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
+				}
+                fwrite($file, "\n" . 'return $_LANGCLASS;' . "\n");
+				fclose($file);
+			}
+            
+            if (!file_existes(_EPH_PLUGIN_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'translations/' . $lang['iso_code'] . '/front.php')) {
+				
+				require_once _EPH_TRANSLATIONS_DIR_ . $lang['iso_code'] . '/front.php';
+                $current_translation = $_LANGFRONT;
+                require_once _EPH_PLUGIN_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'translations/' . $lang['iso_code'] . '/front.php';
+                $complementary_language = $_LANGFRONT;
+                if(is_array($current_translation) && is_array($complementary_language)) {
+                    $langAdmin = array_merge(
+                        $current_translation,
+                        $complementary_language
+                    );
+                }
+                
+                $toInsert = array_unique($langAdmin);
+                $file = fopen(_EPH_TRANSLATIONS_DIR_ . $lang['iso_code'] . '/front.php', "w");
+				fwrite($file, "<?php\n\nglobal \$_LANGFRONT;\n\n");
+                foreach ($toInsert as $key => $value) {
+				    $value = htmlspecialchars_decode($value, ENT_QUOTES);
+					fwrite($file, '$_LANGFRONT[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
+				}
+                fwrite($file, "\n" . 'return $_LANGFRONT;' . "\n");
+				fclose($file);
+			}
+            
+            
+        }
+        
     }
 
     public function updateIoPlugins() {
