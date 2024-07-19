@@ -8,6 +8,8 @@
 class Translate {
 
     public static function getAdminTranslation($string, $class = 'Phenyx', $addslashes = false, $htmlentities = true, $sprintf = null, $context = null) {
+        
+        $string = str_replace('"', '`', $string);
 
         global $_LANGADM, $_LANGOVADM;
 
@@ -78,6 +80,7 @@ class Translate {
 
     public static function getFrontTranslation($string, $class, $addslashes = false, $htmlentities = true, $sprintf = null, $context = null) {
 
+        $string = str_replace('"', '`', $string);
         global $_LANGFRONT, $_LANGOVFRONT;
 
         if ($_LANGFRONT == null) {
@@ -141,6 +144,8 @@ class Translate {
     }
 
     public static function getClassTranslation($string, $class, $addslashes = false, $htmlentities = true, $sprintf = null, $context = null) {
+        
+        $string = str_replace('"', '`', $string);
 
         global $_LANGCLASS, $_LANGOVCLASS;
 
@@ -226,6 +231,7 @@ class Translate {
 
     public static function getPluginTranslation($plugin, $string, $source, $sprintf = null, $js = false, $context = null) {
 
+        $string = str_replace('"', '`', $string);
         global $_PLUGINS, $_PLUGIN, $_LANGADM;
 
         if (empty($string)) {
@@ -445,6 +451,7 @@ class Translate {
 
     public static function getPdfTranslation($string, $file, $sprintf = null, $context = null) {
 
+        $string = str_replace('"', '`', $string);
         global $_LANGPDF;
 
         if (!is_null($context)) {
@@ -493,6 +500,7 @@ class Translate {
 
     public static function getMailsTranslation($string, $file, $sprintf = null, $context = null) {
 
+        $string = str_replace('"', '`', $string);
         global $_LANGMAIL;
 
         if (!is_null($context)) {
