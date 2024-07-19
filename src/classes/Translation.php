@@ -38,9 +38,11 @@ class Translation extends PhenyxObjectModel {
     }
 
     public static function getExistingTranslationByIso($iso_code) {
+        
+        $dbParams = self::getdBParam();
 
         $javareturn = [];
-        $results = Db::getInstance()->executeS(
+        $results = Db::getCrmInstance($dbParams['_DB_USER_'], $dbParams['_DB_PASSWD_'], $dbParams['_DB_NAME_'])->executeS(
             (new DbQuery())
                 ->select('*')
                 ->from('translation')
@@ -53,5 +55,25 @@ class Translation extends PhenyxObjectModel {
 
         return $javareturn;
     }
+    
+    public static function getdBParam() {
+
+		$url = 'https://ephenyx.io/api';
+        $company = Context::getContext()->company;
+		$string = Configuration::get('_EPHENYX_LICENSE_KEY_') . '/' . $company->company_url;
+		$crypto_key = Tools::encrypt_decrypt('encrypt', $string, _PHP_ENCRYPTION_KEY_, Configuration::get('_EPHENYX_LICENSE_KEY_'));
+
+		$data_array = [
+			'action'     => 'getdBParam',
+			'crypto_key' => $crypto_key,
+		];
+		$curl = new Curl();
+		$curl->setDefaultJsonDecoder($assoc = true);
+		$curl->setHeader('Content-Type', 'application/json');
+		$curl->post($url, json_encode($data_array));
+		return $curl->response;
+
+	}
+
 
 }
