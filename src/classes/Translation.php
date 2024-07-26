@@ -1,5 +1,6 @@
 <?php
-
+use Defuse\Crypto\Crypto;
+use \Curl\Curl;
 /**
  * Class Translation
  *
@@ -39,10 +40,10 @@ class Translation extends PhenyxObjectModel {
 
     public static function getExistingTranslationByIso($iso_code) {
         
-        $dbParams = self::getdBParam();
+        //$dbParams = self::getdBParam();
 
         $javareturn = [];
-        $results = Db::getCrmInstance($dbParams['_DB_USER_'], $dbParams['_DB_PASSWD_'], $dbParams['_DB_NAME_'])->executeS(
+        $results = Db::getInstance()->executeS(
             (new DbQuery())
                 ->select('*')
                 ->from('translation')
