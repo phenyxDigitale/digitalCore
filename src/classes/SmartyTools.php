@@ -165,6 +165,14 @@ class SmartyTools {
         
         return addcslashes($string, $characters);
     }
+    
+    public static function curRent($array) {
+        return current($array);
+    }
+    
+    public static function reSet($array) {
+        return reset($array);
+    }
 
 
   
