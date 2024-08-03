@@ -173,6 +173,31 @@ class SmartyTools {
     public static function reSet($array) {
         return reset($array);
     }
+    
+    public static function printR($array) {
+        if(is_array($array)) {
+            return print_r($array);
+        }
+        return $array;
+        
+    }
+    
+    public static function inArray($string, $array) {
+        if(is_array($array)) {
+            return in_array($string, $array);
+        }
+        return $array;
+        
+    }
+    
+    public static function arrayChunk($array, $length, $preserve_keys = false) {
+        
+        if(is_array($array)) {
+            return array_chunk($array, $length, $preserve_keys);
+        }
+        return null;
+        
+    }
 
 
   
