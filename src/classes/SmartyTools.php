@@ -227,6 +227,22 @@ class SmartyTools {
         }
         return null;
     }
+    
+    public static function arrayValues($array) {
+        
+        if(is_array($array)) {
+            return array_values($array);
+        }
+        return null;
+        
+    }
+    
+    public static function sizeOf($array) {
+        if(is_array($array)) {
+            return sizeof($array);
+        }
+        return null;
+    }
 
   
 }
