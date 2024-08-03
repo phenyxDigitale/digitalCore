@@ -64,6 +64,108 @@ class SmartyTools {
 
         return (bool) $value;
     }
+    
+    public static function isString($string) {
+        
+        return is_string($string);
+        
+    }
+    
+     public static function varExport($array, $return = false) {
+        
+        if(is_array($array)) {
+            return var_export($array, $return);
+        }
+        return null;
+        
+    }
+    
+    public static function isFloat($string) {
+        
+        return is_float($string);
+        
+    }
+    
+    public static function isInteger($string) {
+        
+        return is_int($string);
+        
+    }
+    
+    public static function strReplace($field, $replace, $string) {
+        
+        if(is_string($string)) {
+            return str_replace($field, $replace, $string);
+        }
+        
+    }
+    
+    public static function isArray($str) {
+
+        if (is_array($str)) {
+            return true;
+        }
+
+        return false;
+    }
+    
+    public static function isNull($string) {
+        
+        return is_null($string);
+        
+    }
+    
+    public static function isObject($object) {
+        
+        return is_object($object);
+        
+    }
+    
+    public static function isBool($string) {
+        
+        return is_bool($string);
+        
+    }
+    
+    public static function str_contains($search, $string) {
+        
+        return str_contains($string, $search);
+    }
+    
+    public static function str_starts_with($search, $string) {
+        
+        return str_starts_with($string, $search);
+    }
+    
+    public static function str_ends_with($search, $string) {
+        
+        return str_ends_with($string, $search);
+    }
+    
+    public static function Rtrim($string, $char) {
+        if(!is_null($string)) {
+            return rtrim($string, $char);
+        }
+        return $string;
+    }
+    
+    public static function build_date($args) {
+        
+        return date($args);
+    }
+    
+    public static function smartyCount($array) {
+        if(is_array($array)) {
+            return count($array);
+        }
+        return null;
+    }
+    
+    public static function addCslashes($string, $character) {
+        
+        return addcslashes($string, $characters);
+    }
+
 
   
 }

@@ -1,6 +1,5 @@
 <?php
 #[AllowDynamicProperties]
-use Smarty\Smarty;
 /**
  * Class ControllerCore
  *
