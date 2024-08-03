@@ -203,6 +203,17 @@ class SmartyTools {
         
         return strtolower($string);
     }
+    
+    public static function strStr($haystack, $needle, $before = false) {
+        
+        return strstr($haystack, $needle, $before);
+    }
+    
+    public static function pregReplace($pattern, $replacement, $subject, $limit = -1, &$count = null) {
+        
+        return preg_replace($pattern, $replacement, $string, $limit, $count);
+        
+    }
 
 
   
