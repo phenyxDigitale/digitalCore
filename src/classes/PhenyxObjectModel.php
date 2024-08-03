@@ -44,35 +44,6 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
     public $is_archivable = false;
 
-    public $use_session;
-
-    public $use_education_device;
-
-    public $use_sale_agent;
-
-    public $use_education_platform;
-
-    public $use_education_step;
-
-    public $ephenyx_shop_active;
-
-    public $ephenyx_education_active;
-
-    public $deft_vat_collected = null;
-
-    public $deft_vat_collected_account;
-
-    public $deft_vat_deduct = null;
-
-    public $deft_vat_deduct_account;
-
-    public $deft_profit = null;
-
-    public $deft_profit_account;
-
-    public $deft_purchase = null;
-
-    public $deft_purchase_account;   
     
     public $require_context = true;
 
@@ -351,27 +322,10 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             $this->_language = $context->language;
             $this->_smarty = $context->smarty;
         }
-        $this->use_session = Configuration::get('EPH_USE_SESSION_DAY');
-        $this->use_education_device = Configuration::get('EPH_USE_EDUCATION_DEVICE');
-
-        if (Plugin::IsInstalled('ph_saleagent')) {
-            $this->use_sale_agent = Configuration::get('EPH_USE_SALE_AGENT');
-        }
-
-        $this->use_education_platform = Configuration::get('EPH_USE_EDUCATION_PLATFORM');
-        $this->use_education_step = Configuration::get('EPH_USE_EDUCATION_STEP');
-        $this->ephenyx_shop_active = Configuration::get('_EPHENYX_SHOP_ACTIVE_');
-        $this->ephenyx_education_active = Configuration::get('_EPHENYX_EDUCATION_ACTIVE_');
-
-        $this->deft_vat_collected = Configuration::get('EPH_COLLECTED_VAT_DEFAULT_ACCOUNT') ? Configuration::get('EPH_COLLECTED_VAT_DEFAULT_ACCOUNT') : 423;
-
-        $this->deft_vat_deduct = Configuration::get('EPH_DEDUCTIBLE_VAT_DEFAULT_ACCOUNT') ? Configuration::get('EPH_DEDUCTIBLE_VAT_DEFAULT_ACCOUNT') : 415;
-
-        $this->deft_profit = Configuration::get('EPH_PROFIT_DEFAULT_ACCOUNT') ? Configuration::get('EPH_PROFIT_DEFAULT_ACCOUNT') : 817;
-
-        $this->deft_purchase = Configuration::get('EPH_PURCHASE_DEFAULT_ACCOUNT') ? Configuration::get('EPH_PURCHASE_DEFAULT_ACCOUNT') : 582;
         
-        $this->excludes = ['is_archivable', 'use_session', 'use_education_device', 'use_sale_agent', 'use_education_platform', 'use_education_step', 'ephenyx_shop_active', 'ephenyx_education_active', 'deft_vat_collected', 'deft_vat_collected_account', 'deft_vat_deduct', 'deft_vat_deduct_account', 'deft_profit', 'deft_profit_account', 'deft_purchase', 'deft_purchase_account', 'tables', 'identifier', 'fieldsRequired', 'fieldsSize', 'fieldsValidate', 'fieldsRequiredLang', 'fieldsSizeLang', 'fieldsValidateLang', 'image_dir', 'image_format', 'update_fields', 'request_admin', 'extraVars', 'force_id','paramFields', '_languages', 'webserviceParameters'];
+
+        
+        $this->excludes = ['is_archivable', 'tables', 'identifier', 'fieldsRequired', 'fieldsSize', 'fieldsValidate', 'fieldsRequiredLang', 'fieldsSizeLang', 'fieldsValidateLang', 'image_dir', 'image_format', 'update_fields', 'request_admin', 'extraVars', 'force_id','paramFields', '_languages', 'webserviceParameters'];
         
         if($light) {
             foreach(Tools::jsonDecode(Tools::jsonEncode($this)) as $field => $value) {
