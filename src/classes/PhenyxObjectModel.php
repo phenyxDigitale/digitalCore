@@ -1,5 +1,6 @@
 <?php
 #[AllowDynamicProperties]
+use \Smarty\Smarty;
 /**
  * Class PhenyxObjectModel
  *
