@@ -215,6 +215,18 @@ class SmartyTools {
         
     }
 
+    public static function intVal($value, $base = 10) {
+        
+        return intval($value, $base);               
+    }
+    
+    public static function trimString($string) {
+        
+        if(!is_null($string)) {
+            return trim($string);
+        }
+        return null;
+    }
 
   
 }
