@@ -198,6 +198,11 @@ class SmartyTools {
         return null;
         
     }
+    
+    public static function strTolower($string) {
+        
+        return strtolower($string);
+    }
 
 
   
