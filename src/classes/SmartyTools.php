@@ -248,6 +248,11 @@ class SmartyTools {
         
         return sprintf($string, $args);
     }
+    
+    public static function htmlEntities($string) {
+        
+        return htmlentities($string);
+    }
 
   
 }
