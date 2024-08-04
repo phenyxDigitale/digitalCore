@@ -253,6 +253,11 @@ class SmartyTools {
         
         return htmlentities($string, $flags, $encoding, $double_encode);
     }
+    
+    public static function ucFirst($str) {
+
+        return ucfirst($str);
+    }
 
   
 }
