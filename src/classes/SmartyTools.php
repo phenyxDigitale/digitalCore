@@ -249,9 +249,9 @@ class SmartyTools {
         return sprintf($string, $args);
     }
     
-    public static function htmlEntities($string) {
+    public static function htmlEntities($string, $flags = ENT_QUOTES, $encoding = null, $double_encode = true) {
         
-        return htmlentities($string);
+        return htmlentities($string, $flags, $encoding, $double_encode);
     }
 
   
