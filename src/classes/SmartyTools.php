@@ -243,6 +243,11 @@ class SmartyTools {
         }
         return null;
     }
+    
+    public static function sprinTf($string, $args) {
+        
+        return sprintf($string, $args);
+    }
 
   
 }
