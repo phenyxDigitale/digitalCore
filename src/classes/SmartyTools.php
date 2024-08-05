@@ -258,6 +258,15 @@ class SmartyTools {
 
         return ucfirst($str);
     }
+    
+    public static function arrayKeyExists($key, $array) {
+        
+        if(is_array($array)) {
+            return array_key_exists($key, $array);
+        }
+        return false;
+        
+    }
 
   
 }

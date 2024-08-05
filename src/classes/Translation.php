@@ -68,7 +68,7 @@ class Translation extends PhenyxObjectModel {
 			'action'     => 'getdBParam',
 			'crypto_key' => $crypto_key,
 		];
-		$curl = new Curl();
+		$curl = new \Curl\Curl();
 		$curl->setDefaultJsonDecoder($assoc = true);
 		$curl->setHeader('Content-Type', 'application/json');
 		$curl->post($url, json_encode($data_array));
