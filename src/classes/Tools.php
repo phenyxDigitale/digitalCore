@@ -2356,6 +2356,7 @@ FileETag none
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/phenyxShop/app/'));
 		$iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/themes/'));
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/phenyxShop/'));
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/phenyxDigital/webephenyx/'));
 
 
 
