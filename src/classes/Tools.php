@@ -5758,7 +5758,7 @@ FileETag none
 
             $result = $translate->translate($text, [
                 'target' => $target,
-            ]);
+            ]);            
             $translation = new Translation();
             $translation->iso_code = $target;
             $translation->origin = $text;
