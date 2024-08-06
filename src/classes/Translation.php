@@ -46,6 +46,14 @@ class Translation extends PhenyxObjectModel {
 
         return Translation::$instance;
     }
+    
+    public function add($autoDate = false, $nullValues = false) {
+        
+        $result = $this->dispatchTranslation();
+        
+        return $result;
+        
+    }
 
     public function getExistingTranslation($iso_code, $origin) {
 
@@ -95,6 +103,45 @@ class Translation extends PhenyxObjectModel {
 		return $curl->response;
 
 	}
+    
+    public function dispatchTranslation() {
+        
+        $result = true;
+        $url = 'https://ephenyx.io/api';
+		$string = Configuration::get('_EPHENYX_LICENSE_KEY_') . '/' . $this->context->company->company_url;
+		$crypto_key = Tools::encrypt_decrypt('encrypt', $string, _PHP_ENCRYPTION_KEY_, _COOKIE_KEY_);
+        
+        $data_array = [
+			'action' => 'createTranslation',
+            'object' => $this,
+            'crypto_key' => $crypto_key,
+		];
+		$curl = new Curl();
+		$curl->setDefaultJsonDecoder($assoc = true);
+		$curl->setHeader('Content-Type', 'application/json');
+		$curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
+		$curl->post($url, json_encode($data_array));
+
+        
+    }
+    
+    public static function addTranslation($object) {
+        
+        
+        $object = Tools::jsonDecode(Tools::jsonEncode($object), true);
+       
+        $translation = new Translation();
+        foreach($object as $key => $value) {
+             if (property_exists($translation, $key)) {
+				$translation->{$key} = $value;
+			}
+            
+        }
+        
+        $result = $translation->add();
+        
+        return $result;
+    }
 
 
 }
