@@ -2336,7 +2336,7 @@ FileETag none
             'phenyxShop/app/xml',
 		];
          foreach($iso_langs as $lang) {
-            $recursive_directory[] = 'content/translations/'.$lang;
+            $recursive_directory[] = 'phenyxShop/content/translations/'.$lang;
         }
         foreach($plugins as $plugin) {
             $recursive_directory[] = 'includes/plugins/'.$plugin;
@@ -5132,6 +5132,8 @@ FileETag none
         return false;
     }
 
+
+
     public static function get_media_thumbnail_url($id = '') {
 
         if (isset($id) && !empty($id)) {
@@ -5741,8 +5743,9 @@ FileETag none
                 ];
             }
         }
+        $translation = Translation::getInstance();
         
-        $existKey = Translation::getExistingTranslation($target, $text);
+        $existKey = $translation->getExistingTranslation($target, $text);
         if(!empty($existKey)) {
             $return = [
                 'translation' => $existKey,

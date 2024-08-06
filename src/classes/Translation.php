@@ -7,8 +7,10 @@ use \Curl\Curl;
  * @since 1.9.1.0
  */
 class Translation extends PhenyxObjectModel {
-
-    public $require_context = false;
+    
+    protected static $instance;
+    
+    public $dbParams;
     /**
      * @see PhenyxObjectModel::$definition
      */
@@ -19,6 +21,7 @@ class Translation extends PhenyxObjectModel {
             'iso_code'    => ['type' => self::TYPE_STRING, 'validate' => 'isLanguageIsoCode', 'required' => true, 'size' => 2],
             'origin'      => ['type' => self::TYPE_HTML, 'required' => true],
             'translation' => ['type' => self::TYPE_HTML, 'required' => true],
+            'date_upd' => ['type' => self::TYPE_HTML, 'required' => true],
         ],
     ];
     /** @var string Name */
@@ -26,10 +29,27 @@ class Translation extends PhenyxObjectModel {
 
     public $origin;
     public $translation;
+    public $date_upd;
+    
+    public function __construct($id = null, $full = true, $idLang = null) {
 
-    public static function getExistingTranslation($iso_code, $origin) {
+        parent::__construct($id, $idLang);
+        $this->dbParams = $this->getdBParam();
 
-        return Db::getInstance()->getValue(
+    }
+    
+    public static function getInstance() {
+
+        if (!Translation::$instance) {
+            Translation::$instance = new Translation();
+        }
+
+        return Translation::$instance;
+    }
+
+    public function getExistingTranslation($iso_code, $origin) {
+
+        return Db::getCrmInstance($this->dbParams['_DB_USER_'], $this->dbParams['_DB_PASSWD_'], $this->dbParams['_DB_NAME_'])->getValue(
             (new DbQuery())
                 ->select('`translation`')
                 ->from('translation')
@@ -57,15 +77,15 @@ class Translation extends PhenyxObjectModel {
         return $javareturn;
     }
     
-    public static function getdBParam() {
+    public function getdBParam() {
 
 		$url = 'https://ephenyx.io/api';
-        $company = Context::getContext()->company;
-		$string = Configuration::get('_EPHENYX_LICENSE_KEY_') . '/' . $company->company_url;
-		$crypto_key = Tools::encrypt_decrypt('encrypt', $string, _PHP_ENCRYPTION_KEY_, Configuration::get('_EPHENYX_LICENSE_KEY_'));
+		$string = Configuration::get('_EPHENYX_LICENSE_KEY_') . '/' . $this->context->company->company_url;
+		$crypto_key = Tools::encrypt_decrypt('encrypt', $string, _PHP_ENCRYPTION_KEY_, _COOKIE_KEY_);
 
 		$data_array = [
 			'action'     => 'getdBParam',
+            'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_'),
 			'crypto_key' => $crypto_key,
 		];
 		$curl = new \Curl\Curl();
