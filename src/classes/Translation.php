@@ -34,7 +34,9 @@ class Translation extends PhenyxObjectModel {
     public function __construct($id = null, $full = true, $idLang = null) {
 
         parent::__construct($id, $idLang);
+        if (!defined('_IS_MASTER_')) {
         $this->dbParams = $this->getdBParam();
+        }
 
     }
     
@@ -124,6 +126,7 @@ class Translation extends PhenyxObjectModel {
         $data_array = [
 			'action' => 'createTranslation',
             'object' => $this,
+            'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_'),
             'crypto_key' => $crypto_key,
 		];
 		$curl = new Curl();
