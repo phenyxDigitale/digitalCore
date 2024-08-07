@@ -35,7 +35,7 @@ class Translation extends PhenyxObjectModel {
 
         parent::__construct($id, $idLang);
         if (!defined('_IS_MASTER_')) {
-        $this->dbParams = $this->getdBParam();
+            $this->dbParams = $this->getdBParam();
         }
 
     }
@@ -50,7 +50,9 @@ class Translation extends PhenyxObjectModel {
     }
     
     public function add($autoDate = false, $nullValues = false) {
-        
+         if (defined('_IS_MASTER_') && _IS_MASTER_) {
+             return parent::add($autoDate, $nullValues);
+         }
         $result = $this->dispatchTranslation();
         
         return $result;
