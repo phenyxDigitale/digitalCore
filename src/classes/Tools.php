@@ -5727,51 +5727,32 @@ FileETag none
     }
     
     public static function getGoogleTranslation($google_api_key, $text, $target) {
-                
+        $file = fopen("testGoogleTranslation.txt","a");
         if(empty($text)) {
             return $text;
         }
-        $cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
-        if($cache_enable) {
-            $cache_api = CacheApi::getInstance();
-        }
-        $cacheId = "translate_".$target.'_'.str_replace(" ", '', $text);
-        if($cache_enable) {
-            $value =   $cache_api->getData($cacheId, 3600);
-            if(!empty($value)) {
-                return [
-                    'translation' => $value,
-                ];
-            }
-        }
-        $translation = Translation::getInstance();
         
-        $existKey = $translation->getExistingTranslation($target, $text);
-        if(!empty($existKey)) {
-            $return = [
-                'translation' => $existKey,
-            ];
-        } else {
+        $translate = new TranslateClient([
+            'key' => $google_api_key,
+        ]);
 
-            $translate = new TranslateClient([
-                'key' => $google_api_key,
-            ]);
-
-            $result = $translate->translate($text, [
-                'target' => $target,
-            ]);            
-            $translation = new Translation();
-            $translation->iso_code = $target;
-            $translation->origin = $text;
-            $translation->translation = $result['text'];
+        $result = $translate->translate($text, [
+            'target' => $target,
+        ]);    
+        $translation = new Translation();
+        $translation->iso_code = $target;
+        $translation->origin = $text;
+        $translation->translation = $result['text'];
+        $translation->date_upd = date('Y-m-d H:i:s');
+        try {
             $translation->add();
-            if($cache_enable && is_object($cache_api)) {
-                $cache_api->putData($cacheId, $result['text']);
-            }	
-            $return = [
-                'translation' => $result['text'],
-            ];
+        } catch (exception $e) {
+            Logger::addLog($this->l('getGoogleTranslation', 'Tools', false, false), 1, null, 'Tools', $e->getMessage(), true, 0);
         }
+        
+        $return = [
+            'translation' => $result['text'],
+        ];
         return $return;
     }
     
