@@ -24,7 +24,7 @@ class PhenyxTools {
 		$this->context = Context::getContext();
 
 		$this->_url = 'https://ephenyx.io/api';
-		$string = Configuration::get('_EPHENYX_LICENSE_KEY_') . '/' . $this->context->company->domain_ssl;
+		$string = Configuration::get('_EPHENYX_LICENSE_KEY_') . '/' . $this->context->company->company_url;
 		$this->_crypto_key = Tools::encrypt_decrypt('encrypt', $string, _PHP_ENCRYPTION_KEY_, _COOKIE_KEY_);
 
 		$this->license = $this->checkLicense();
