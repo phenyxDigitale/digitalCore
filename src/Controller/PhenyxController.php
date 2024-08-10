@@ -918,34 +918,7 @@ abstract class PhenyxController {
         ]);
     }
 
-    public function ajaxProcessSetLanguage() {
-
-        $idLang = Tools::getValue('id_lang');
-        $cookieIdLang = $this->context->cookie->id_lang;
-        $configurationIdLang = Configuration::get(Configuration::LANG_DEFAULT);
-
-        $this->context->cookie->id_lang = $idLang;
-        $language = new Language($idLang);
-
-        if (Validate::isLoadedObject($language) && $language->active) {
-            $this->context->language = $language;
-        }
-
-        if (Validate::isUnsignedId($this->context->user->id)) {
-            $user = new User($this->context->user->id);
-
-            if ($user->is_admin) {
-                $user = new Employee($user->id);
-            }
-
-            $user->id_lang = $idLang;
-            $user->update();
-            $this->context->user = $user;
-        }
-
-        die(true);
-    }
-
+    
     public function getUserIpAddr() {
 
         return $_SERVER['SERVER_ADDR'];
