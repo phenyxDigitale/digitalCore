@@ -475,6 +475,7 @@ abstract class PhenyxController {
             $this->_language = $this->context->language = $language;
             $this->context->employee->id_lang = $idLang;
             $this->context->employee->update();
+            $this->processClearRedisCache;
         }
 
         $result = [
@@ -507,9 +508,16 @@ abstract class PhenyxController {
             $user->id_lang = $idLang;
             $user->update();
             $this->_user = $this->context->user = $user;
+            $this->processClearRedisCache;
         }
 
         die(true);
+    }
+    
+    public function processClearRedisCache() {
+        $currentDb = $this->context->cache_api->redis->getDbNum();
+        $result = $this->context->cache_api->cleanCache();
+        die($result);
     }
 
     public function generateParaGridToolBar() {
