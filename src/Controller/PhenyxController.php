@@ -462,6 +462,55 @@ abstract class PhenyxController {
 
         return new $className($auth, $ssl);
     }
+    
+    public function ajaxProcessSwitchAdminLanguage() {
+
+        $idLang = Tools::getValue('id_lang');
+
+        $language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', (int) $idLang)));
+
+        if (Validate::isLoadedObject($language) && $language->active) {
+            $this->context->cookie->id_lang = $idLang;
+            $this->context->cookie->write();
+            $this->_language = $this->context->language = $language;
+            $this->context->employee->id_lang = $idLang;
+            $this->context->employee->update();
+        }
+
+        $result = [
+            'link' => $this->context->link->getAdminLink('admindashboard'),
+        ];
+
+        die(Tools::jsonEncode($result));
+    }
+    
+    public function ajaxProcessSetLanguage() {
+
+        $idLang = Tools::getValue('id_lang');
+        $cookieIdLang = $this->context->cookie->id_lang;
+        $configurationIdLang = Configuration::get(Configuration::LANG_DEFAULT);
+
+        $this->context->cookie->id_lang = $idLang;
+        $language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', (int) $idLang)));
+
+        if (Validate::isLoadedObject($language) && $language->active) {
+            $this->_language = $this->context->language = $language;
+        }
+
+        if (Validate::isUnsignedId($this->_user->id)) {
+            $user = new User($this->_user->id);
+
+            if ($user->is_admin) {
+                $user = new Employee($user->id);
+            }
+
+            $user->id_lang = $idLang;
+            $user->update();
+            $this->_user = $this->context->user = $user;
+        }
+
+        die(true);
+    }
 
     public function generateParaGridToolBar() {
 
