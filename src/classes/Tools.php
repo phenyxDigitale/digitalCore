@@ -5727,7 +5727,7 @@ FileETag none
     }
     
     public static function getGoogleTranslation($google_api_key, $text, $target) {
-        $file = fopen("testGoogleTranslation.txt","a");
+       
         if(empty($text)) {
             return $text;
         }
