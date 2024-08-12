@@ -102,12 +102,12 @@ class Translation extends PhenyxObjectModel {
     public function getdBParam() {
 
 		$url = 'https://ephenyx.io/api';
-		$string = Configuration::get('_EPHENYX_LICENSE_KEY_') . '/' . $this->context->company->company_url;
+		$string = Configuration::get('_EPHENYX_LICENSE_KEY_', null, false) . '/' . $this->context->company->company_url;
 		$crypto_key = Tools::encrypt_decrypt('encrypt', $string, _PHP_ENCRYPTION_KEY_, _COOKIE_KEY_);
 
 		$data_array = [
 			'action'     => 'getdBParam',
-            'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_'),
+            'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_', null, false),
 			'crypto_key' => $crypto_key,
 		];
 		$curl = new \Curl\Curl();
@@ -122,13 +122,13 @@ class Translation extends PhenyxObjectModel {
         
         $result = true;
         $url = 'https://ephenyx.io/api';
-		$string = Configuration::get('_EPHENYX_LICENSE_KEY_') . '/' . $this->context->company->company_url;
+		$string = Configuration::get('_EPHENYX_LICENSE_KEY_', null, false) . '/' . $this->context->company->company_url;
 		$crypto_key = Tools::encrypt_decrypt('encrypt', $string, _PHP_ENCRYPTION_KEY_, _COOKIE_KEY_);
         
         $data_array = [
 			'action' => 'createTranslation',
             'object' => $this,
-            'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_'),
+            'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_', null, false),
             'crypto_key' => $crypto_key,
 		];
 		$curl = new Curl();

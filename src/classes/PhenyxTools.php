@@ -24,7 +24,7 @@ class PhenyxTools {
 		$this->context = Context::getContext();
 
 		$this->_url = 'https://ephenyx.io/api';
-		$string = Configuration::get('_EPHENYX_LICENSE_KEY_') . '/' . $this->context->company->company_url;
+		$string = Configuration::get('_EPHENYX_LICENSE_KEY_', null, false) . '/' . $this->context->company->company_url;
 		$this->_crypto_key = Tools::encrypt_decrypt('encrypt', $string, _PHP_ENCRYPTION_KEY_, _COOKIE_KEY_);
 
 		$this->license = $this->checkLicense();
@@ -45,7 +45,7 @@ class PhenyxTools {
 
 		$data_array = [
 			'action'      => 'checkLicence',
-			'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_'),
+			'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_', null, false),
 			'crypto_key'  => $this->_crypto_key,
 		];
 		$curl = new Curl();
@@ -61,7 +61,7 @@ class PhenyxTools {
 
 		$data_array = [
 			'action'      => 'getPhenyxPlugins',
-			'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_'),
+			'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_', null, false),
 			'crypto_key'  => $this->_crypto_key,
 		];
 		$curl = new Curl();
