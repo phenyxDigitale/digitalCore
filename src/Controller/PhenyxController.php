@@ -469,7 +469,7 @@ abstract class PhenyxController {
         if (empty(static::$_plugins)) {
             static::$_plugins = $this->getPlugins();
         }
-        static::$_is_merge_lang = Configuration::get('CURENT_MERGE_LANG_'.$this->context->language->iso_code);
+        static::$_is_merge_lang = Configuration::get('CURENT_MERGE_LANG_'.$this->context->language->iso_code, null, false);
         if (!static::$_is_merge_lang) {
             $this->mergeLanguages($this->context->language->iso_code);
         }
@@ -481,11 +481,13 @@ abstract class PhenyxController {
     }
 
     public function mergeLanguages($iso) {
+        $file = fopen("testmergeLanguages.txt","w");
+        fwrite($file,date('m-d:H:m'));
+
+        global $_LANGADM, $_LANGCLASS, $_LANGFRONT, $_LANGMAIL, $_LANGPDF;
 
         foreach (static::$_plugins as $plugin) {
-
-            global $_LANGADM, $_LANGCLASS, $_LANGFRONT, $_LANGMAIL, $_LANGPDF;
-
+            
             if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php')) {
 
                 require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php';
@@ -501,10 +503,23 @@ abstract class PhenyxController {
                         $complementary_language
                     );
                 }
+                
+                if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
+
+                    include_once _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php';
+                    if(isset($_LANGOVADM) && is_array($_LANGOVADM)) {
+                        $langAdmin = array_merge(
+                            $langAdmin,
+                            $_LANGOVADM
+                        );
+                    }
+                }
+
+                 
 
                 $toInsert = array_unique($langAdmin);
                 ksort($toInsert);
-
+                
                 $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php', "w");
                 fwrite($file, "<?php\n\nglobal \$_LANGADM;\n\n");
 
@@ -515,6 +530,7 @@ abstract class PhenyxController {
 
                 fwrite($file, "\n" . 'return $_LANGADM;' . "\n");
                 fclose($file);
+                
             }
 
         }
@@ -536,6 +552,16 @@ abstract class PhenyxController {
                         $complementary_language
                     );
                 }
+                if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
+
+                    include_once _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php';
+                    if(isset($_LANGOVCLASS) && is_array($_LANGOVCLASS)) {
+                        $langAdmin = array_merge(
+                            $langAdmin,
+                            $_LANGOVCLASS
+                        );
+                    }
+                }
 
                 $toInsert = array_unique($langAdmin);
                 ksort($toInsert);
@@ -549,6 +575,7 @@ abstract class PhenyxController {
 
                 fwrite($file, "\n" . 'return $_LANGCLASS;' . "\n");
                 fclose($file);
+                
             }
 
         }
@@ -570,6 +597,16 @@ abstract class PhenyxController {
                         $complementary_language
                     );
                 }
+                if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
+
+                    include_once _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php';
+                    if(isset($_LANGOVFRONT) && is_array($_LANGOVFRONT)) {
+                        $langAdmin = array_merge(
+                            $langAdmin,
+                            $_LANGOVFRONT
+                        );
+                    }
+                }
 
                 $toInsert = array_unique($langAdmin);
                 ksort($toInsert);
@@ -583,6 +620,7 @@ abstract class PhenyxController {
 
                 fwrite($file, "\n" . 'return $_LANGFRONT;' . "\n");
                 fclose($file);
+                
             }
 
         }
@@ -617,6 +655,7 @@ abstract class PhenyxController {
 
                 fwrite($file, "\n" . 'return $_LANGMAIL;' . "\n");
                 fclose($file);
+                
             }
 
         }
@@ -651,9 +690,12 @@ abstract class PhenyxController {
 
                 fwrite($file, "\n" . 'return $_LANGPDF;' . "\n");
                 fclose($file);
+                
             }
 
         }
+        
+        $this->context->translations = new Translate($iso);
         Configuration::updateValue('CURENT_MERGE_LANG_'.$this->context->language->iso_code, 1);
         
 
@@ -1506,6 +1548,7 @@ abstract class PhenyxController {
                 $version = $jsUri[1];
             }
 
+
             $jsPath = $jsUri = $jsUri[0];
 
             if ($checkPath) {
@@ -1643,6 +1686,7 @@ abstract class PhenyxController {
                 }
 
                 // $key = is_array($js_path) ? key($js_path) : $js_path;
+
 
                 if ($jsPath && !in_array($jsPath, $this->push_js_files)) {
                     $this->push_js_files[] = $jsPath . ($version ? '?' . $version : '');
