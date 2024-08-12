@@ -26,11 +26,21 @@ class Translate {
     public function __construct($iso) {
         
         global $_LANGADM, $_LANGCLASS, $_LANGFRONT, $_LANGMAIL, $_LANGPDF;
-        require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php';
+        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
+            require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php';
+        }
+        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
         require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/class.php';
+        }
+        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
         require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/front.php';
+        }
+        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php')) {
         require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php';
+        }
+        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php')) {
         require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php';
+        }
         
         $this->langadmin = $_LANGADM;
         $this->langclass = $_LANGCLASS;
