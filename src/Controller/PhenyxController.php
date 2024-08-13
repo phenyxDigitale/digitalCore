@@ -481,8 +481,6 @@ abstract class PhenyxController {
     }
 
     public function mergeLanguages($iso) {
-        $file = fopen("testmergeLanguages.txt","w");
-        fwrite($file,date('m-d:H:m'));
 
         global $_LANGADM, $_LANGCLASS, $_LANGFRONT, $_LANGMAIL, $_LANGPDF;
 
@@ -521,7 +519,8 @@ abstract class PhenyxController {
                 ksort($toInsert);
                 
                 $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php', "w");
-                fwrite($file, "<?php\n\nglobal \$_LANGADM;\n\n");
+                fwrite($file, "<?php\n\nglobal \$_LANGADM;\n\n");                
+                fwrite($file, "\$_LANGADM = [];\n");
 
                 foreach ($toInsert as $key => $value) {
                     $value = htmlspecialchars_decode($value, ENT_QUOTES);
@@ -567,6 +566,7 @@ abstract class PhenyxController {
                 ksort($toInsert);
                 $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php', "w");
                 fwrite($file, "<?php\n\nglobal \$_LANGCLASS;\n\n");
+                fwrite($file, "\$_LANGCLASS = [];\n");
 
                 foreach ($toInsert as $key => $value) {
                     $value = htmlspecialchars_decode($value, ENT_QUOTES);
@@ -612,6 +612,7 @@ abstract class PhenyxController {
                 ksort($toInsert);
                 $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php', "w");
                 fwrite($file, "<?php\n\nglobal \$_LANGFRONT;\n\n");
+                fwrite($file, "\$_LANGFRONT = [];\n");
 
                 foreach ($toInsert as $key => $value) {
                     $value = htmlspecialchars_decode($value, ENT_QUOTES);
@@ -647,6 +648,7 @@ abstract class PhenyxController {
                 ksort($toInsert);
                 $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php', "w");
                 fwrite($file, "<?php\n\nglobal \$_LANGMAIL;\n\n");
+                fwrite($file, "\$_LANGMAIL = [];\n");
 
                 foreach ($toInsert as $key => $value) {
                     $value = htmlspecialchars_decode($value, ENT_QUOTES);
@@ -682,6 +684,7 @@ abstract class PhenyxController {
                 ksort($toInsert);
                 $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php', "w");
                 fwrite($file, "<?php\n\nglobal \$_LANGPDF;\n\n");
+                fwrite($file, "\$_LANGPDF = [];\n");
 
                 foreach ($toInsert as $key => $value) {
                     $value = htmlspecialchars_decode($value, ENT_QUOTES);
