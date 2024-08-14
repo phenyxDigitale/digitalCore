@@ -80,17 +80,26 @@ class Translation extends PhenyxObjectModel {
         );
     }
 
-    public static function getExistingTranslationByIso($iso_code) {
+    public function getExistingTranslationByIso($iso_code) {
         
         //$dbParams = self::getdBParam();
 
         $javareturn = [];
-        $results = Db::getInstance()->executeS(
-            (new DbQuery())
+        if (defined('_IS_MASTER_') && _IS_MASTER_) {
+            $results = Db::getInstance()->executeS(
+                (new DbQuery())
                 ->select('*')
                 ->from('translation')
                 ->where('`iso_code` = \'' . trim($iso_code) . '\'')
-        );
+            );
+         } else {
+             $results = Db::getCrmInstance($this->dbParams['_DB_USER_'], $this->dbParams['_DB_PASSWD_'], $this->dbParams['_DB_NAME_'])->executeS(
+                (new DbQuery())
+                ->select('*')
+                ->from('translation')
+                ->where('`iso_code` = \'' . trim($iso_code) . '\'')
+            );
+         }
 
         foreach ($results as $result) {
             $javareturn[$result['origin']] = $result['translation'];
