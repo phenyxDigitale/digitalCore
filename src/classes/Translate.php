@@ -145,7 +145,7 @@ class Translate {
             $str = $_LANGOVADM[$class . $key];
 
         } else {
-            $str = Translate::getGenericAdminTranslation($string, $_context->translations->langfront, $key);
+            $str = Translate::getGenericAdminTranslation($string, static::$_context->translations->langfront, $key);
         }
         }
 
