@@ -260,8 +260,7 @@ abstract class CacheApi {
     
     public static function isStored($key) {
         
-        $cache = self::getInstance();
-        return $cache->keyExist($key);
+        return isset(CacheApi::$local[$key]);
     }
     
     public static function store($key, $value) {
@@ -278,10 +277,8 @@ abstract class CacheApi {
     }
     
     public static function retrieve($key) {
-        
-        $cache = self::getInstance();
-        $value = $cache->getData($key);
-        return empty($value) ? null : Tools::jsonDecode($value, true);
+
+        return isset(CacheApi::$local[$key]) ? CacheApi::$local[$key] : null;
     }
     
 	/**
