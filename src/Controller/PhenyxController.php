@@ -1259,7 +1259,7 @@ abstract class PhenyxController {
         $html = '';
         $jsTag = 'js_def';
         $this->context->smarty->assign($jsTag, $jsTag);
-
+        $this->context->smarty->assign('load_time', round(microtime(true) - TIME_START, 3));
         if (is_array($content)) {
 
             foreach ($content as $tpl) {
