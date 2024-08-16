@@ -1253,7 +1253,7 @@ abstract class PhenyxController {
 
     abstract public function initCursedPage();
 
-    protected function smartyOutputContent($content) {
+    public function smartyOutputContent($content) {
 
         $this->context->cookie->write();
         $html = '';
