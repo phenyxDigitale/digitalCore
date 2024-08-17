@@ -430,7 +430,7 @@ abstract class PhenyxController {
         if (is_null($this->display_footer)) {
             $this->display_footer = true;
         }
-        if($this->cachable) {
+        if($this->controller_type = 'admin' && $this->cachable) {
             $this->cacheId = 'pageAdminCache_'. $this->php_self.'_' . $this->context->employee->id_profile;
         }
 
