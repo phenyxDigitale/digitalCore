@@ -430,6 +430,9 @@ abstract class PhenyxController {
         if (is_null($this->display_footer)) {
             $this->display_footer = true;
         }
+        if($this->cachable) {
+            $this->cacheId = 'pageAdminCache_'. $this->php_self.'_' . $this->context->employee->id_profile;
+        }
 
         if ($this->require_context) {
             $context = Context::getContext();
