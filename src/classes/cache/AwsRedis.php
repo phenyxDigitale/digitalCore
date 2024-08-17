@@ -219,6 +219,19 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
         return $result;
     }
     
+    public function cleanByStartingKey($key) {
+        ini_set('memory_limit', '-1');
+        $result = true;
+        $values = $this->redis->keys($key.'*');
+        if(is_array($values)) {
+            foreach($values as $value) {
+                $result = $this->_delete($value);
+            }
+        }
+        
+        return $result;
+    }
+    
     public function putData($key, $value, $ttl = 3600) {
         
         $this->keys[$key] = ($ttl == 0) ? 0 : time() + $ttl;
