@@ -430,11 +430,7 @@ abstract class PhenyxController {
         if (is_null($this->display_footer)) {
             $this->display_footer = true;
         }
-        if($this->controller_type = 'admin' && $this->cachable) {
-            $this->cacheId = 'pageAdminCache_'. $this->php_self.'_' . $this->context->employee->id_profile;
-        } else if($this->controller_type = 'front' && $this->cachable) {
-            $this->cacheId = 'pageCache_'. $this->php_self.'_' . $tag;
-        }
+        
 
         if ($this->require_context) {
             $context = Context::getContext();
@@ -1193,6 +1189,12 @@ abstract class PhenyxController {
     }
 
     public function init() {
+        
+        if($this->controller_type = 'admin' && $this->cachable && isset($this->context->employee)) {
+            $this->cacheId = 'pageAdminCache_'. $this->php_self.'_' . $this->context->employee->id_profile;
+        } else if($this->controller_type = 'front' && $this->cachable) {
+            $this->cacheId = 'pageCache_'. $this->php_self.'_' . $tag;
+        }
 
         if (_EPH_MODE_DEV_ && $this->controller_type == 'admin') {
             set_error_handler([__CLASS__, 'myErrorHandler']);
