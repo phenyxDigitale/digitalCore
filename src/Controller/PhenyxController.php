@@ -432,6 +432,8 @@ abstract class PhenyxController {
         }
         if($this->controller_type = 'admin' && $this->cachable) {
             $this->cacheId = 'pageAdminCache_'. $this->php_self.'_' . $this->context->employee->id_profile;
+        } else if($this->controller_type = 'front' && $this->cachable) {
+            $this->cacheId = 'pageCache_'. $this->php_self.'_' . $tag;
         }
 
         if ($this->require_context) {
@@ -1834,7 +1836,7 @@ abstract class PhenyxController {
 
                     }
 
-            }
+                }
             }
 
         }
