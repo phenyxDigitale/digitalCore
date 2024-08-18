@@ -1823,6 +1823,21 @@ abstract class PhenyxController {
     }
 
     public function ajaxProcessOpenTargetController() {
+        
+        if ($this->cachable) {
+            if ($this->context->cache_enable) {
+                if (is_object($this->context->cache_api)) {
+                    $value = $this->context->cache_api->getData($this->cacheId);
+                    $result = empty($value) ? null : Tools::jsonDecode($value, true);
+                    if (!empty($temp)) {
+                        die(Tools::jsonEncode($result));
+
+                    }
+
+            }
+            }
+
+        }
                 
         $this->paragridScript = $this->generateParaGridScript();
         $this->setAjaxMedia();
@@ -1897,20 +1912,20 @@ abstract class PhenyxController {
 
             $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
             if ($this->cachable) {
-            if ($this->context->cache_enable) {
-                if (is_object($this->context->cache_api)) {
-                    $value = $this->context->cache_api->getData($this->cacheId);
-                    $result = empty($value) ? null : Tools::jsonDecode($value, true);
-                    if (!empty($temp)) {
-                        die(Tools::jsonEncode($result));
+                if ($this->context->cache_enable) {
+                    if (is_object($this->context->cache_api)) {
+                        $value = $this->context->cache_api->getData($this->cacheId);
+                        $result = empty($value) ? null : Tools::jsonDecode($value, true);
+                        if (!empty($temp)) {
+                            die(Tools::jsonEncode($result));
+
+                        }
 
                     }
 
                 }
 
             }
-
-        }
             $domAvailable = extension_loaded('dom') ? true : false;
 
             if ((Configuration::get('EPH_CSS_BACKOFFICE_CACHE') || Configuration::get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
@@ -3740,6 +3755,7 @@ abstract class PhenyxController {
         }
 
         $this->content_ajax .= '</table>
+
 
         </div>';
     }
