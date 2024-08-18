@@ -1193,6 +1193,11 @@ abstract class PhenyxController {
         if($this->controller_type = 'admin' && $this->cachable && isset($this->context->employee)) {
             $this->cacheId = 'pageAdminCache_'. $this->php_self.'_' . $this->context->employee->id_profile;
         } else if($this->controller_type = 'front' && $this->cachable) {
+            if(isset($this->context->user->id)) {
+                $tag = str_replace(' ', '', $this->context->user->group);
+            } else {
+                $tag = 'guest';
+            }
             $this->cacheId = 'pageCache_'. $this->php_self.'_' . $tag;
         }
 
