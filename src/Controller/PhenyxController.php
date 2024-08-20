@@ -432,17 +432,19 @@ abstract class PhenyxController {
         }
         
 
-        if ($this->require_context) {
-            $context = Context::getContext();
-            $this->context = $context;
-            $this->_company = $context->company;
-            $this->_user = $context->user;
-            $this->_cookie = $context->cookie;
-            $this->_link = $context->link;
-            $this->_language = $context->language;
-            $this->_smarty = $context->smarty;
-            $this->context->getExtraContextVars();
-        }
+        $this->context = Context::getContext();       
+        
+        $this->context->smarty->assign([
+            'shopName'=> $this->context->company->company_name,
+            'css_dir'=> 'https://' . $this->context->company->domain_ssl . _THEME_CSS_DIR_,
+            'shop_url'=> 'https://' . $this->context->company->domain_ssl,
+            'shop_mail'=> $this->context->company->company_email,
+            'company'=> $this->context->company,
+            'today'=> date("Y-m-d"),
+            'smarty_now'=> date("Y-m-d H:m:s"),
+            'smarty_year'=> date("Y"),
+            'smarty_tag'=> date("i-s")
+        ]);
 
         $this->context->controller = $this;
         $this->context->cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
