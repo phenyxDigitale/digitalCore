@@ -432,7 +432,11 @@ abstract class PhenyxController {
         }
         
 
-        $this->context = Context::getContext();       
+        $this->context = Context::getContext();      
+        $this->context->getExtraContextVars();
+        if(!isset($this->context->language)) {
+            $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT')))); 
+        }
         
         $this->context->smarty->assign([
             'shopName'=> $this->context->company->company_name,
