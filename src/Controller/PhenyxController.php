@@ -1332,7 +1332,7 @@ abstract class PhenyxController {
 
     }
 
-    protected function ajaxOutputContent($content) {
+    public function ajaxOutputContent($content) {
 
         $this->context->cookie->write();
         $html = '';
@@ -1383,6 +1383,11 @@ abstract class PhenyxController {
                 'ajax_head'    => $this->ajax_head,
                 'html'         => $templ,
             ];
+        }
+        
+        if(!is_null($this->cacheId) && $this->cachable && $this->context->cache_enable) {
+            $temp = $return === null ? null : Tools::jsonEncode($return);
+            $this->context->cache_api->putData($this->cacheId, $temp, 1864000);
         }
 
         die(Tools::jsonEncode($return));
