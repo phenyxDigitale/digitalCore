@@ -16,6 +16,8 @@ abstract class PhenyxController {
     public $css_files = [];
 
     public $js_footers = [];
+    
+    public $js_heads = [];
 
     public $js_files = [];
 
@@ -1309,6 +1311,7 @@ abstract class PhenyxController {
                     $jsTag      => Media::getJsDef(),
                     'js_files'  => $defer ? array_unique($this->js_files) : [],
                     'js_inline' => ($defer && $domAvailable) ? Media::getInlineScript() : [],
+                    'js_heads'         => $this->js_heads,
                 ]
             );
             $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
@@ -1363,6 +1366,7 @@ abstract class PhenyxController {
                 $jsTag      => Media::getJsDef(),
                 'js_files'  => $defer ? array_unique($this->js_files) : [],
                 'js_inline' => [],
+                'js_heads'         => $this->js_heads,
             ]
         );
         $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
@@ -1539,6 +1543,55 @@ abstract class PhenyxController {
 
             if ($jsPath && !in_array($jsPath, $this->js_files)) {
                 $this->js_files[] = $jsPath . ($version ? '?' . $version : '');
+            }
+
+        }
+
+    }
+    
+     public function addHeaderJS($jsUri, $checkPath = true) {
+
+        if (is_array($jsUri)) {
+
+            foreach ($jsUri as $jsFile) {
+                $jsFile = explode('?', $jsFile);
+                $version = '';
+
+                if (isset($jsFile[1]) && $jsFile[1]) {
+                    $version = $jsFile[1];
+                }
+
+                $jsPath = $jsFile = $jsFile[0];
+
+                if ($checkPath) {
+                    $jsPath = Media::getJSPath($jsFile);
+                }
+
+                // $key = is_array($js_path) ? key($js_path) : $js_path;
+
+                if ($jsPath && !in_array($jsPath, $this->js_heads)) {
+                    $this->js_heads[] = $jsPath . ($version ? '?' . $version : '');
+                }
+
+            }
+
+        } else {
+            $jsUri = explode('?', $jsUri);
+            $version = '';
+
+            if (isset($jsUri[1]) && $jsUri[1]) {
+                $version = $jsUri[1];
+            }
+
+
+            $jsPath = $jsUri = $jsUri[0];
+
+            if ($checkPath) {
+                $jsPath = Media::getJSPath($jsUri);
+            }
+
+            if ($jsPath && !in_array($jsPath, $this->js_heads)) {
+                $this->js_heads[] = $jsPath . ($version ? '?' . $version : '');
             }
 
         }
@@ -1968,6 +2021,7 @@ abstract class PhenyxController {
                     'js_def'           => ($defer && $domAvailable) ? [] : $this->js_def,
                     'extracss'         => $this->extracss,
                     'js_files'         => $defer ? [] : $this->push_js_files,
+                    'js_heads'         => $this->js_heads,
                     'favicon_dir'      => __EPH_BASE_URI__ . 'content/backoffice/img/',
                     'meta_title'       => $this->page_title,
                     'meta_description' => $this->page_description,
@@ -2045,6 +2099,7 @@ abstract class PhenyxController {
                     'js_def'    => $js_def,
                     'js_files'  => $js_files,
                     'js_inline' => $js_inline,
+                    'js_heads'  => $this->js_heads,
                 ]
             );
             $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
@@ -2152,6 +2207,7 @@ abstract class PhenyxController {
                     'js_def'           => ($defer && $domAvailable) ? [] : $this->js_def,
                     'extracss'         => $this->extracss,
                     'js_files'         => $defer ? [] : $this->extraJs,
+                    'js_heads'         => $this->js_heads,
                     'favicon_dir'      => __EPH_BASE_URI__ . 'content/backoffice/img/',
                     'meta_title'       => $this->page_title,
                     'meta_description' => $this->page_description,
@@ -2225,6 +2281,7 @@ abstract class PhenyxController {
                     'js_def'    => $js_def,
                     'js_files'  => $js_files,
                     'js_inline' => $js_inline,
+                    'js_heads'         => $this->js_heads,
                 ]
             );
             $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
