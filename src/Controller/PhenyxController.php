@@ -1225,7 +1225,7 @@ abstract class PhenyxController {
 
     public function setMedia($isNewTheme = false) {
 
-        $this->addJS([
+        $this->addHeaderJS([
             _EPH_JS_DIR_ . 'jquery/jquery-' . _EPH_JQUERY_VERSION_ . '.min.js',
             _EPH_JS_DIR_ . 'jquery/jquery-migrate-1.4.1.min.js',
             _EPH_JS_DIR_ . 'jquery-ui/jquery-ui.min.js',
