@@ -2098,7 +2098,6 @@ abstract class PhenyxController {
                     'js_def'    => $js_def,
                     'js_files'  => $js_files,
                     'js_inline' => $js_inline,
-                    'js_heads'  => $this->js_heads,
                 ]
             );
             $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
