@@ -706,6 +706,7 @@ abstract class Plugin {
         global $_PLUGINS;
 
         $context = Context::getContext();
+        $link = new Link();
 
         $pluginList = [];
         $pluginNameList = [];
@@ -808,7 +809,7 @@ abstract class Plugin {
 
 
                 if ($item['onclick_option']) {
-                    $href = Context::getContext()->link->getAdminLink('Plugin', true) . '&plugin_name=' . $tmpPlugin->name . '&tab_plugin=' . $tmpPlugin->tab;
+                    $href = $link->getAdminLink('Plugin', true) . '&plugin_name=' . $tmpPlugin->name . '&tab_plugin=' . $tmpPlugin->tab;
                     $item['onclick_option_content'] = [];
                     $optionTab = ['desactive', 'reset', 'configure', 'delete'];
 
@@ -921,7 +922,7 @@ abstract class Plugin {
                 $plugin->enable_device = $pluginsInstalled[$plugin->name]['enable_device'];
                 $plugin->active = $pluginsInstalled[$plugin->name]['active'];
                 $plugin->dependencies = $tmpPlugin->dependencies;
-                $plugin->image_link = $context->link->getBaseFrontLink() . $image;
+                $plugin->image_link = "/" . $image;
                 $plugin->is_ondisk = true;
             } else {
                 $plugin->removable = true;
@@ -929,7 +930,7 @@ abstract class Plugin {
                 $plugin->database_version = 0;
                 $plugin->interest = 0;
                 $plugin->dependencies = $tmpPlugin->dependencies;
-                $plugin->image_link = $context->link->getBaseFrontLink() . $image;
+                $plugin->image_link = "/" . $image;
                 $plugin->is_ondisk = true;
             }
 
@@ -1162,6 +1163,7 @@ abstract class Plugin {
                 ->from('plugin', 'm')
                 ->join($frontend ? 'LEFT JOIN `' . _DB_PREFIX_ . 'plugin_country` mc ON (m.`id_plugin` = mc.`id_plugin`)' : '')
                 ->join($frontend && $useGroups ? 'INNER JOIN `' . _DB_PREFIX_ . 'plugin_group` mg ON (m.`id_plugin` = mg.`id_plugin`' . ')' : '')
+
                 ->join($frontend && isset($context->user) && $useGroups ? 'INNER JOIN `' . _DB_PREFIX_ . 'customer_group` cg on (cg.`id_group` = mg.`id_group`AND cg.`id_customer` = ' . (int) $context->user->id . ')' : '')
                 ->leftJoin('hook_plugin', 'hm', 'hm.`id_plugin` = m.`id_plugin`')
                 ->leftJoin('hook', 'h', 'hm.`id_hook` = h.`id_hook`')
@@ -2935,6 +2937,7 @@ abstract class Plugin {
         if (file_exists(_EPH_THEME_DIR_ . 'plugins/' . $plugin_name . '/views/templates/hook/' . $template)) {
             return _EPH_THEME_DIR_ . 'plugins/' . $plugin_name . '/views/templates/hook/' . $template;
         } else
+
 
         if (file_exists(_EPH_THEME_DIR_ . 'plugins/' . $plugin_name . '/views/templates/front/' . $template)) {
             return _EPH_THEME_DIR_ . 'plugins/' . $plugin_name . '/views/templates/front/' . $template;

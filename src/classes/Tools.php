@@ -2984,8 +2984,18 @@ FileETag none
     }
     
     
-    public static function cleanThemeDirectory() {
+    public static function cleanThemeDirectory(Context $context = null) {
 
+        
+        if(is_null($context)) {
+            $context = Context::getContext();
+        }
+        
+        if (!is_null($context->theme->plugin)) {
+            $path = _EPH_PLUGIN_DIR_ . $context->theme->plugin . '/views/themes/' . $theme . '/';
+        } else {
+            $path = _EPH_THEME_DIR_;
+        }
         $folder = [];
         $plugintochecks = [];
 
@@ -3041,9 +3051,9 @@ FileETag none
         }
         
         
-        if(is_dir(_EPH_THEME_DIR_ . 'css/plugins/')) {
+        if(is_dir($path. 'css/plugins/')) {
             $iterator = new AppendIterator();
-            $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'css/plugins/'));
+            $iterator->append(new DirectoryIterator($path . 'css/plugins/'));
             foreach ($iterator as $file) {
 
                 if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'index.php'])) {
@@ -3051,7 +3061,7 @@ FileETag none
                 }
 
                 $filePath = $file->getPathname();
-                $filePath = str_replace(_EPH_THEME_DIR_ . 'css/plugins/', '', $filePath);
+                $filePath = str_replace($path. 'css/plugins/', '', $filePath);
 
                 if (in_array($filePath, $plugintochecks)) {
 
@@ -3062,9 +3072,9 @@ FileETag none
             }
 
         }       
-        if(is_dir(_EPH_THEME_DIR_ . 'js/plugins/')) {
+        if(is_dir($path . 'js/plugins/')) {
             $iterator = new AppendIterator();
-            $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'js/plugins/'));
+            $iterator->append(new DirectoryIterator($path . 'js/plugins/'));
 
             foreach ($iterator as $file) {
 
@@ -3073,7 +3083,7 @@ FileETag none
                 }
 
                 $filePath = $file->getPathname();
-                $filePath = str_replace(_EPH_THEME_DIR_ . 'js/plugins/', '', $filePath);
+                $filePath = str_replace($path . 'js/plugins/', '', $filePath);
 
                 if (in_array($filePath, $plugintochecks)) {
 
@@ -3083,9 +3093,9 @@ FileETag none
 
             }
         }
-        if(is_dir(_EPH_THEME_DIR_ . 'plugins/')) {
+        if(is_dir($path . 'plugins/')) {
             $iterator = new AppendIterator();
-            $iterator->append(new DirectoryIterator(_EPH_THEME_DIR_ . 'plugins/'));
+            $iterator->append(new DirectoryIterator($path . 'plugins/'));
 
             foreach ($iterator as $file) {
 
@@ -3094,7 +3104,7 @@ FileETag none
                 }
 
                 $filePath = $file->getPathname();
-                $filePath = str_replace(_EPH_THEME_DIR_ . 'plugins/', '', $filePath);
+                $filePath = str_replace($path . 'plugins/', '', $filePath);
 
                 if (in_array($filePath, $plugintochecks)) {
 
@@ -3194,6 +3204,56 @@ FileETag none
 
         }
 
+    }
+    
+    public static function rebuildInexFiles() {
+        
+        $recursive_directory = [
+            'includes',
+            'app', 
+	       'content'
+        ];
+
+        $iterator = new AppendIterator();
+
+        foreach ($recursive_directory as $key => $directory) {
+            if(is_dir(_EPH_ROOT_DIR_ . '/' . $directory )) {
+                $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory . '/')));
+            }
+        }
+
+        foreach ($iterator as $file) {
+    
+            if ($file->getFilename() == '..') {
+                $filePathTest = $file->getPathname();
+                $test = str_replace('..', '', $filePathTest);
+                if(!file_exists($test.'index.php')) {
+                    $diretory = str_replace(_EPH_ROOT_DIR_, '', $test);
+                    $level = substr_count($diretory, '/') -1;
+                    Tools::generateIndexFiles($test, $level);
+                } 
+            }
+    
+	       if($file->getFilename() == 'index.php') {
+                $path = '';
+                $filePath = $file->getPathname();
+                $diretory = str_replace(_EPH_ROOT_DIR_, '', $filePath);
+                $level = substr_count($diretory, '/') -1;
+                for($i = 0; $i <= $level; $i++) {
+                    $path .= "../";
+                }
+        
+                Tools::generateIndexFiles(str_replace('index.php', '', $filePath), $level);
+            }	
+            if($file->getFilename() == '..index.php') {
+                $filePath = $file->getPathname();
+                unlink($filePath);
+            }
+            if($file->getFilename() == '.index.php') {
+                $filePath = $file->getPathname();
+                unlink($filePath);
+            }
+        }
     }
 
     public static function generateIndexFiles($directory, $level = 1) {

@@ -212,7 +212,10 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
         $values = $this->redis->keys('*');
         if(is_array($values)) {
             foreach($values as $value) {
-                $result[$value] = Tools::jsonDecode($this->redis->get($value), true);
+                $val = $this->redis->get($value);
+                if(!is_null($val) && !is_object($val)) {
+                    $result[$value] = !is_array($val) ? Tools::jsonDecode($val, true): $val;
+                }
             }
         }
         ksort($result);
