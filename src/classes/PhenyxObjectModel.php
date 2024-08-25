@@ -35,10 +35,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     
     protected static $instance;
     
-    protected static $hook_instance;
+    public static $hook_instance;
     
-    public $_hook;
-
     // @codingStandardsIgnoreStart
     /** @var int Object ID */
     public $id;
@@ -222,9 +220,11 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $this->className = get_class($this);
         $this->context = Context::getContext();
-        if(!isset($this->context->_hook)) {
-            $this->context->_hook = Hook::getInstance();
+        if (!PhenyxObjectModel::$hook_instance) {
+            PhenyxObjectModel::$hook_instance = new Hook();
+            $this->context->_hook = PhenyxObjectModel::$hook_instance;
         }
+        
         $this->getExtraVars($this->className);
 
         if (!isset(PhenyxObjectModel::$loaded_classes[$this->className])) {
@@ -319,13 +319,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             }
 
         }
-        
-        if($this->require_context) {
-            $this->context = Context::getContext();
-        }
-        
-
-        
+               
         $this->excludes = ['is_archivable', 'tables', 'identifier', 'fieldsRequired', 'fieldsSize', 'fieldsValidate', 'fieldsRequiredLang', 'fieldsSizeLang', 'fieldsValidateLang', 'image_dir', 'image_format', 'update_fields', 'request_admin', 'extraVars', 'force_id','paramFields', '_languages', 'webserviceParameters'];
         
         if($light) {
@@ -1982,6 +1976,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         case 'QUOTATION':
             return $this->l('Quotation');
+
             break;
         case 'ORDER':
             return $this->l('Order');

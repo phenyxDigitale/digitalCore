@@ -5,146 +5,76 @@
  *
  * @since 1.8.1.0
  */
-class Translate {
-
-    protected static $_plugins = [];
-
+class NewTranslate {
+    
     protected static $_language;
-
-    protected static $_context;
-      
-    public $langadmin;
     
-    public $langclass;
+    protected static $_adminTranslation = [];
     
-    public $langfront;
-    
-    public $langmail;
-    
-    public $langpdf;
-
-    public function __construct($iso) {
+    public function __construct() {
         
-        global $_LANGADM, $_LANGCLASS, $_LANGFRONT, $_LANGMAIL, $_LANGPDF;
-        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
-            require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php';
-        }
-        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
-        require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/class.php';
-        }
-        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
-        require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/front.php';
-        }
-        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php')) {
-        require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php';
-        }
-        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php')) {
-        require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php';
-        }
-        
-        $this->langadmin = $_LANGADM;
-        $this->langclass = $_LANGCLASS;
-        $this->langfront = $_LANGFRONT;
-        $this->langmail = $_LANGMAIL;
-        $this->langpdf = $_LANGPDF;
+        static::$_language = Context::getContext()->language;
+
+        //static::$_adminTranslation =
 
     }
 
+
     public static function getAdminTranslation($string, $class = 'Phenyx', $addslashes = false, $htmlentities = true, $sprintf = null, $context = null) {
-
-        $file = fopen("testgetAdminTranslation.txt", "w");
-
-        if (empty(static::$_language)) {
-            static::$_language = Context::getContext()->language;
-        }
-
-        if (empty(static::$_context)) {
-            static::$_context = Context::getContext();
-        }
-
-        $iso = static::$_language->iso_code;
-        if(!isset(static::$_context->translations)) {
-            static::$_context->translations = new Translate($iso);
-        }
-        $string = str_replace('"', '`', $string);
-        $string = preg_replace("/\\\*'/", "\'", $string);
-
-        $key = md5($string);
-        if(isset(static::$_context->translations->langadmin)) {
-            
-            if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
-
-                include_once _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php';
-            }
-            if (isset(static::$_context->translations->langadmin[$class . $key])) {
-
-                $str = static::$_context->translations->langadmin[$class . $key];
-
-            } elseif (isset(static::$_context->translations->langadmin['Phenyx' . $key])) {
-
-                $str = static::$_context->translations->langadmin['Phenyx' . $key];
-
-            } elseif (isset($_LANGOVADM[$class . $key])) {
-
-                $str = $_LANGOVADM[$class . $key];
-
-            } else {
-                $str = Translate::getGenericAdminTranslation($string, static::$_context->translations->langadmin, $key);
-            }
-            
-        } else {
         
-        global $_LANGADMS, $_LANGADM, $_LANGOVADM;
+        $string = str_replace('"', '`', $string);
 
-        if (empty($_LANGADMS)) {
-            $_LANGADMS = [];
+        global $_LANGADM, $_LANGOVADM;
 
-            if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
-                include_once _EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php';
+        if (!is_null($context)) {
 
-                if (is_array($_LANGADM)) {
-                    $_LANGADMS = array_merge(
-                        $_LANGADMS,
-                        $_LANGADM
-                    );
-                }
-
+            if (!isset($context->language)) {
+                $context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT'))));
             }
 
+            $iso = $context->language->iso_code;
+        } else {
+            $iso = Context::getContext()->language->iso_code;
+        }
+
+        if (empty($iso)) {
+            try {
+                $iso = Language::getIsoById((int) Context::getContext()->language->id);
+            } catch (PhenyxException $e) {
+                $iso = 'en';
+            }
+
+        }
+
+        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
+            include_once _EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php';
         }
 
         if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
 
             include_once _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php';
-            if(isset($_LANGOVADM) && is_array($_LANGOVADM)) {
-                $_LANGADMS = array_merge(
-                    $_LANGADMS,
-                    $_LANGOVADM
-                );
-            }
         }
 
-        
+        $string = preg_replace("/\\\*'/", "\'", $string);
 
-        if (isset(static::$_context->translations->langadmin[$class . $key])) {
+        $key = md5($string);
 
-            $str = static::$_context->translations->langadmin[$class . $key];
+        if (isset($_LANGADM[$class . $key])) {
 
-        } else
-
-        if (isset(static::$_context->translations->langadmin['Phenyx' . $key])) {
-
-            $str = static::$_context->translations->langadmin['Phenyx' . $key];
+            $str = $_LANGADM[$class . $key];
 
         } else
+        if (isset($_LANGADM['Phenyx' . $key])) {
 
+            $str = $_LANGADM['Phenyx' . $key];
+
+        } else
         if (isset($_LANGOVADM[$class . $key])) {
 
             $str = $_LANGOVADM[$class . $key];
 
         } else {
-            $str = Translate::getGenericAdminTranslation($string, static::$_context->translations->langfront, $key);
-        }
+            $str = Translate::getGenericAdminTranslation($string, $_LANGADM, $key);
         }
 
         if ($htmlentities) {
@@ -162,65 +92,53 @@ class Translate {
 
     public static function getFrontTranslation($string, $class, $addslashes = false, $htmlentities = true, $sprintf = null, $context = null) {
 
-        if (empty(static::$_language)) {
-            static::$_language = Context::getContext()->language;
-        }
-
-        if (empty(static::$_context)) {
-            static::$_context = Context::getContext();
-        }
-
         $string = str_replace('"', '`', $string);
-        $iso = static::$_language->iso_code;
+        global $_LANGFRONT, $_LANGOVFRONT;
+
+        if ($_LANGFRONT == null) {
+
+            if (!is_null($context)) {
+
+                if (!isset($context->language)) {
+                    $context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT'))));
+                }
+
+                $iso = $context->language->iso_code;
+            } else {
+                $iso = Context::getContext()->language->iso_code;
+            }
+
+            if (empty($iso)) {
+                try {
+                    $iso = Language::getIsoById((int) Context::getContext()->language->id);
+                } catch (PhenyxException $e) {
+                    $iso = 'en';
+                }
+
+            }
+
+            if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
+                include_once _EPH_TRANSLATIONS_DIR_ . $iso . '/front.php';
+            }
+
+
+            if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
+
+                include_once _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php';
+            }
+
+        }
+
         $string = preg_replace("/\\\*'/", "\'", $string);
         $key = md5($string);
-        if(!isset(static::$_context->translations)) {
-            static::$_context->translations = new Translate($iso);
-        }
-        if(isset(static::$_context->translations->langfront)) {
-            
-            if (isset(static::$_context->translations->langfront[$class . $key])) {
-                $str = static::$_context->translations->langfront[$class . $key];
-            } else {
-                $str = Translate::getGenericFrontTranslation($string, static::$_context->translations->langfront, $key);
-            }
-            
+
+        if (isset($_LANGFRONT[$class . $key])) {
+            $str = $_LANGFRONT[$class . $key];
+        } else
+        if (isset($_LANGOVFRONT[$class . $key])) {
+            $str = $_LANGFRONT[$class . $key];
         } else {
-
-            global $_LANGFRONTS, $_LANGFRONT, $_LANGOVFRONT;
-
-            if (empty($_LANGFRONTS)) {
-                $_LANGFRONTS = [];
-
-                if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
-                    include_once _EPH_TRANSLATIONS_DIR_ . $iso . '/front.php';
-
-                    if (is_array($_LANGFRONT)) {
-                        $_LANGFRONTS = array_merge(
-                            $_LANGFRONTS,
-                            $_LANGFRONT
-                        );
-                    }
-
-                }
-
-
-                if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
-
-                    include_once _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php';
-                }
-
-            }
-
-            if (isset($_LANGFRONTS[$class . $key])) {
-                $str = $_LANGFRONTS[$class . $key];
-            } else
-
-            if (isset($_LANGOVFRONT[$class . $key])) {
-                $str = $_LANGFRONT[$class . $key];
-            } else {
-                $str = Translate::getGenericFrontTranslation($string, $_LANGOVFRONT, $key);
-            }
+            $str = Translate::getGenericFrontTranslation($string, $_LANGOVFRONT, $key);
         }
 
         if ($htmlentities) {
@@ -238,73 +156,73 @@ class Translate {
 
     public static function getClassTranslation($string, $class, $addslashes = false, $htmlentities = true, $sprintf = null, $context = null) {
         
+        $string = str_replace('"', '`', $string);
+
+        global $_LANGCLASS, $_LANGOVCLASS;
+
         if (is_null($string)) {
             return $string;
         }
 
-        if (empty(static::$_language)) {
-            static::$_language = Context::getContext()->language;
-        }
-        if (empty(static::$_context)) {
-            static::$_context = Context::getContext();
-        }
+        if ($_LANGCLASS == null) {
 
-        $string = str_replace('"', '`', $string);
-        $string = preg_replace("/\\\*'/", "\'", $string);
-        $key = md5($string);
-        $iso = static::$_language->iso_code;
-        if(!isset(static::$_context->translations)) {
-            static::$_context->translations = new Translate($iso);
-        }
-        
-        if(isset(static::$_context->translations->langclass)) {
-            if (isset(static::$_context->translations->langclass[$class . $key])) {
+            if (!is_null($context)) {
 
-                $str = static::$_context->translations->langclass[$class . $key];
+                if (!isset($context->language)) {
+                    $language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT'))));
+                    $iso = $language->iso_code;
+                    $context->language = $language;
+                } else {
+                    $iso = $context->language->iso_code;
+                }
 
             } else {
-                $str = Translate::getGenericFrontTranslation($string, static::$_context->translations->langclass, $key);
-            }
-            
-        } else {
+                $context = Context::getContext();
 
-            global $_LANGCLASSS, $_LANGCLASS, $_LANGOVCLASS;
-
-            if (empty($_LANGCLASSS == null)) {
-                $_LANGCLASSS = [];
-
-                if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
-                    include_once _EPH_TRANSLATIONS_DIR_ . $iso . '/class.php';
-
-                    if (is_array($_LANGCLASS)) {
-                        $_LANGCLASSS = array_merge(
-                            $_LANGCLASSS,
-                            $_LANGCLASS
-                        );
-                    }
-
-                }   
-
-                if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
-
-                    include_once _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php';
+                if (!isset($context->language)) {
+                    $language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT'))));
+                    $iso = $language->iso_code;
+                    $context->language = $language;
+                } else {
+                    $iso = $context->language->iso_code;
                 }
 
             }
 
-        
+            if (empty($iso)) {
+                try {
+                    $iso = Language::getIsoById((int) Context::getContext()->language->id);
+                } catch (PhenyxException $e) {
+                    $iso = 'en';
+                }
 
-            if (isset($_LANGCLASSS[$class . $key])) {
-
-                $str = $_LANGCLASSS[$class . $key];
-
-            } elseif (isset($_LANGOVCLASS[$class . $key])) {
-
-                $str = $_LANGOVCLASS[$class . $key];
-
-            } else {
-                $str = Translate::getGenericFrontTranslation($string, $_LANGCLASSS, $key);
             }
+
+            if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
+                include_once _EPH_TRANSLATIONS_DIR_ . $iso . '/class.php';
+            }
+
+            if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
+
+                include_once _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php';
+            }
+
+        }
+
+        $string = preg_replace("/\\\*'/", "\'", $string);
+        $key = md5($string);
+
+        if (isset($_LANGCLASS[$class . $key])) {
+
+            $str = $_LANGCLASS[$class . $key];
+
+        } else
+        if (isset($_LANGOVCLASS[$class . $key])) {
+
+            $str = $_LANGOVCLASS[$class . $key];
+
+        } else {
+            $str = Translate::getGenericFrontTranslation($string, $_LANGCLASS, $key);
         }
 
         if ($htmlentities) {
@@ -422,27 +340,21 @@ class Translate {
             if (isset($currentKeyFile) && !empty($_PLUGINS[$currentKeyFile])) {
                 $ret = stripslashes($_PLUGINS[$currentKeyFile]);
             } else
-
             if (isset($defaultKeyFile) && !empty($_PLUGINS[$defaultKeyFile])) {
                 $ret = stripslashes($_PLUGINS[$defaultKeyFile]);
             } else
-
             if (isset($PhenyxShopKeyFile) && !empty($_PLUGINS[$PhenyxShopKeyFile])) {
                 $ret = stripslashes($_PLUGINS[$PhenyxShopKeyFile]);
             } else
-
             if (!empty($_PLUGINS[$currentKey])) {
                 $ret = stripslashes($_PLUGINS[$currentKey]);
             } else
-
             if (!empty($_PLUGINS[$defaultKey])) {
                 $ret = stripslashes($_PLUGINS[$defaultKey]);
             } else
-
             if (!empty($_PLUGINS[$PhenyxShopKey])) {
                 $ret = stripslashes($_PLUGINS[$PhenyxShopKey]);
             } else
-
             if (!empty($_PLUGINS)) {
 
                 foreach ($_PLUGINS as $k => $value) {
@@ -454,11 +366,9 @@ class Translate {
                 }
 
             } else
-
             if (!empty($_LANGADM)) {
                 $ret = stripslashes(Translate::getGenericAdminTranslation($string, $_LANGADM, $key));
             } else
-
             if (is_null($ret)) {
                 $ret = stripslashes($string);
             }
@@ -470,7 +380,6 @@ class Translate {
             if ($js) {
                 $ret = addslashes($ret);
             } else
-
             if (!is_null($ret)) {
                 $ret = htmlspecialchars($ret, ENT_COMPAT, 'UTF-8');
             }
@@ -511,11 +420,9 @@ class Translate {
         if (isset($langArray['AdminController' . $key])) {
             $str = $langArray['AdminController' . $key];
         } else
-
         if (isset($langArray['Helper' . $key])) {
             $str = $langArray['Helper' . $key];
         } else
-
         if (isset($langArray['AdminTab' . $key])) {
             $str = $langArray['AdminTab' . $key];
         } else {
@@ -553,55 +460,43 @@ class Translate {
 
     public static function getPdfTranslation($string, $file, $sprintf = null, $context = null) {
 
-        if (empty(static::$_language)) {
-            static::$_language = Context::getContext()->language;
-        }
-        if (empty(static::$_context)) {
-            static::$_context = Context::getContext();
+        $string = str_replace('"', '`', $string);
+        global $_LANGPDF;
+
+        if (!is_null($context)) {
+
+            if (!isset($context->language)) {
+                $context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT'))));
+            }
+
+            $iso = $context->language->iso_code;
+        } else {
+            $iso = Context::getContext()->language->iso_code;
         }
 
-        $string = str_replace('"', '`', $string);
+        if (!Validate::isLangIsoCode($iso)) {
+            $this->l(sprintf('Invalid iso lang (%s)', Tools::safeOutput($iso)));
+        }
+
+        $overrideI18NFile = _EPH_THEME_DIR_ . 'pdf/lang/' . $iso . '.php';
+        $i18NFile = _EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php';
+
+        if (file_exists($overrideI18NFile)) {
+            $i18NFile = $overrideI18NFile;
+        }
+
+        if (!include ($i18NFile)) {
+            $this->l(sprintf('Cannot include PDF translation language file : %s', $i18NFile));
+        }
+
+        if (!isset($_LANGPDF) || !is_array($_LANGPDF)) {
+            return str_replace('"', '&quot;', $string);
+        }
+
         $string = preg_replace("/\\\*'/", "\'", $string);
         $key = md5($string);
-        $iso = static::$_language->iso_code;
-        if(!isset(static::$_context->translations)) {
-            static::$_context->translations = new Translate($iso);
-        }
-        
-        if(isset(static::$_context->translations->langpdf)) {
-            $str = (array_key_exists($file . $key, static::$_context->translations->langpdf) ? static::$_context->translations->langpdf[$file . $key] : $string);
-        } else {
 
-            global $_LANGPDFS, $_LANGPDF;
-
-            if (empty($_LANGPDFS)) {
-                $_LANGPDFS = [];
-                $overrideI18NFile = _EPH_THEME_DIR_ . 'pdf/lang/' . $iso . '.php';
-                $i18NFile = _EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php';
-
-                if (file_exists($overrideI18NFile)) {
-                    $i18NFile = $overrideI18NFile;
-                }
-
-                if (!include ($i18NFile)) {
-                    $this->l(sprintf('Cannot include PDF translation language file : %s', $i18NFile));
-                 }
-
-                if (is_array($_LANGPDF)) {
-                    $_LANGPDFS = array_merge(
-                        $_LANGPDFS,
-                        $_LANGPDF
-                    );
-                }
-
-            }
-
-            if (!isset($_LANGPDFS) || !is_array($_LANGPDFS)) {
-                return str_replace('"', '&quot;', $string);
-            }
-
-            $str = (array_key_exists($file . $key, $_LANGPDFS) ? $_LANGPDFS[$file . $key] : $string);
-        }
+        $str = (array_key_exists($file . $key, $_LANGPDF) ? $_LANGPDF[$file . $key] : $string);
 
         if ($sprintf !== null) {
             $str = Translate::checkAndReplaceArgs($str, $sprintf);
@@ -612,42 +507,38 @@ class Translate {
 
     public static function getMailsTranslation($string, $file, $sprintf = null, $context = null) {
 
-        if (empty(static::$_language)) {
-            static::$_language = Context::getContext()->language;
-        }
-        if (empty(static::$_context)) {
-            static::$_context = Context::getContext();
+        $string = str_replace('"', '`', $string);
+        global $_LANGMAIL;
+
+        if (!is_null($context)) {
+
+            if (!isset($context->language)) {
+                $context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT'))));
+            }
+
+            $iso = $context->language->iso_code;
+        } else {
+            $iso = Context::getContext()->language->iso_code;
         }
 
-        $string = str_replace('"', '`', $string);
+        if (!Validate::isLangIsoCode($iso)) {
+            $this->l(sprintf('Invalid iso lang (%s)', Tools::safeOutput($iso)));
+        }
+
+        $i18NFile = _EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php';
+
+        if (!include ($i18NFile)) {
+            $this->l(sprintf('Cannot include PDF translation language file : %s', $i18NFile));
+        }
+
+        if (!isset($_LANGMAIL) || !is_array($_LANGMAIL)) {
+            return str_replace('"', '&quot;', $string);
+        }
+
         $string = preg_replace("/\\\*'/", "\'", $string);
         $key = md5($string);
-        $iso = static::$_language->iso_code;
-        if(!isset(static::$_context->translations)) {
-            static::$_context->translations = new Translate($iso);
-        }
-        
-        if(isset(static::$_context->translations->langmail)) {
-            $str = (array_key_exists($file . $key, static::$_context->translations->langmail) ? static::$_context->translations->langmail[$file . $key] : $string);
-        } else {
-            $_LANGMAILS = [];
-            global $_LANGMAIL;
 
-            $i18NFile = _EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php';
-            static::$_context->_hook->exec('actionMailsTranslate', ['iso' => $iso]);
-
-            if (!include ($i18NFile)) {
-                $this->l(sprintf('Cannot include PDF translation language file : %s', $i18NFile));
-            }
-
-            $_LANGMAILS = !empty($_LANGMAIL) ? $_LANGMAILS + $_LANGMAIL : $_LANGMAIL;
-
-            if (!isset($_LANGMAILS) || !is_array($_LANGMAILS)) {
-                return str_replace('"', '&quot;', $string);
-            }
-
-            $str = (array_key_exists($file . $key, $_LANGMAILS) ? $_LANGMAILS[$file . $key] : $string);
-        }
+        $str = (array_key_exists($file . $key, $_LANGMAIL) ? $_LANGMAIL[$file . $key] : $string);
 
         if ($sprintf !== null) {
             $str = Translate::checkAndReplaceArgs($str, $sprintf);
@@ -737,7 +628,6 @@ class Translate {
         if (isset($_LANGFRONT[$class . $key])) {
             $str = $_LANGFRONT[$class . $key];
         } else
-
         if (isset($_LANGOVFRONT[$class . $key])) {
             $str = $_LANGFRONT[$class . $key];
         } else {

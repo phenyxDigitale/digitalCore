@@ -440,7 +440,7 @@ abstract class PhenyxController {
         
         $this->context = Context::getContext();   
         if(!isset($this->context->_hook)) {
-            $this->context->_hook = Hook::getInstance();
+            $this->context->_hook = new Hook();
         }
         $this->context->getExtraContextVars();
         if(!isset($this->context->language)) {
