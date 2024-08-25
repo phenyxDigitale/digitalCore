@@ -145,7 +145,7 @@ class InstallerController extends PhenyxController {
 
         $font = array_unique($font);
 
-        $hookHeader = Hook::exec('displayHeader');
+        $hookHeader = $this->_hook->exec('displayHeader');
 
         $faviconTemplate = !empty(Configuration::get('EPH_SOURCE_FAVICON_CODE')) ? preg_replace('/\<br(\s*)?\/?\>/i', "\n", Configuration::get('EPH_SOURCE_FAVICON_CODE')) : null;
 
@@ -213,9 +213,9 @@ class InstallerController extends PhenyxController {
                 'xprt'              => $xprt,
                 'is_admin'          => $this->context->cookie->is_admin ? $this->context->cookie->is_admin : 0,
                 'HOOK_HEADER'       => $hookHeader,
-                'HOOK_TOP'          => Hook::exec('displayTop'),
-                'HOOK_LEFT_COLUMN'  => ($this->display_column_left ? Hook::exec('displayLeftColumn') : ''),
-                'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? Hook::exec('displayRightColumn') : ''),
+                'HOOK_TOP'          => $this->_hook->exec('displayTop'),
+                'HOOK_LEFT_COLUMN'  => ($this->display_column_left ? $this->_hook->exec('displayLeftColumn') : ''),
+                'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? $this->_hook->exec('displayRightColumn') : ''),
                 'usePhenyxMenu'     => $this->usePhenyxMenu,
                 'menuvars'          => $this->menuVars,
                 'showSlider'        => Configuration::get('EPH_HOME_SLIDER_ACTIVE'),
@@ -231,7 +231,7 @@ class InstallerController extends PhenyxController {
             ]
         );
 
-        Hook::exec('action' . ucfirst($this->php_self) . 'InitContent', []);
+        $this->_hook->exec('action' . ucfirst($this->php_self) . 'InitContent', []);
 
     }
 
@@ -325,7 +325,7 @@ class InstallerController extends PhenyxController {
         Tools::displayAsDeprecated();
 
         $this->initHeader();
-        $hookHeader = Hook::exec('displayHeader');
+        $hookHeader = $this->_hook->exec('displayHeader');
 
         if ((Configuration::get('EPH_CSS_THEME_CACHE') || Configuration::get('EPH_JS_THEME_CACHE')) && is_writable(_EPH_THEME_DIR_ . 'cache')) {
             // CSS compressor management
@@ -346,10 +346,10 @@ class InstallerController extends PhenyxController {
         $this->context->smarty->assign(
             [
                 'HOOK_HEADER'       => $hookHeader,
-                'HOOK_TOP'          => Hook::exec('displayTop'),
-                'HOOK_LEFT_COLUMN'  => ($this->display_column_left ? Hook::exec('displayLeftColumn') : ''),
-                'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? Hook::exec('displayRightColumn', ['cart' => $this->context->cart]) : ''),
-                'HOOK_FOOTER'       => Hook::exec('displayFooter'),
+                'HOOK_TOP'          => $this->_hook->exec('displayTop'),
+                'HOOK_LEFT_COLUMN'  => ($this->display_column_left ? $this->_hook->exec('displayLeftColumn') : ''),
+                'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? $this->_hook->exec('displayRightColumn', ['cart' => $this->context->cart]) : ''),
+                'HOOK_FOOTER'       => $this->_hook->exec('displayFooter'),
             ]
         );
 
@@ -367,7 +367,7 @@ class InstallerController extends PhenyxController {
     public function displayAjaxHeader($js_def) {
 
         $this->initHeader();
-        $hookHeader = Hook::exec('displayHeader');
+        $hookHeader = $this->_hook->exec('displayHeader');
 
         if ((Configuration::get('EPH_CSS_THEME_CACHE') || Configuration::get('EPH_JS_THEME_CACHE')) && is_writable(_EPH_THEME_DIR_ . 'cache')) {
             // CSS compressor management
@@ -406,7 +406,7 @@ class InstallerController extends PhenyxController {
 
         $this->context->smarty->assign(
             [
-                'HOOK_FOOTER' => Hook::exec('displayFooter'),
+                'HOOK_FOOTER' => $this->_hook->exec('displayFooter'),
                 'js_footers'  => ($this->getLayout() && (bool) Configuration::get('EPH_JS_DEFER')) ? [] : $this->js_footers,
             ]
         );
@@ -513,7 +513,7 @@ class InstallerController extends PhenyxController {
 
         $layoutDir = $this->getThemeDir();
         $layoutOverrideDir = $this->getOverrideThemeDir();
-        $extralayoutDir = Hook::exec('getextralayoutDir', [], null, true);
+        $extralayoutDir = $this->_hook->exec('getextralayoutDir', [], null, true);
 
         if (is_array($extralayoutDir) && count($extralayoutDir)) {
 
@@ -732,8 +732,8 @@ class InstallerController extends PhenyxController {
                 $maintenance_text = $this->context->smarty->fetch('string:' . Configuration::get('EPH_MAINTENANCE_TEXT', (int) $this->context->language->id));
                 $this->context->smarty->assign(
                     [
-                        'HOOK_HEADER'      => Hook::exec('displayHeader'),
-                        'HOOK_MAINTENANCE' => Hook::exec('displayMaintenance', []),
+                        'HOOK_HEADER'      => $this->_hook->exec('displayHeader'),
+                        'HOOK_MAINTENANCE' => $this->_hook->exec('displayMaintenance', []),
                         'maintenance_text' => $maintenance_text,
                         'css_files'        => $this->css_files,
                         'js_files'         => $this->js_files,
@@ -864,7 +864,7 @@ class InstallerController extends PhenyxController {
     public function setAjaxMedia() {
 
         $this->push_js_files = [];
-        Hook::exec('action' . $this->controller_name . 'SetAjaxMedia');
+        $this->_hook->exec('action' . $this->controller_name . 'SetAjaxMedia');
     }
 
     public function setMedia($isNewTheme = false) {
@@ -949,10 +949,10 @@ class InstallerController extends PhenyxController {
             Media::addJsDef(['profiling_title' => $this->l('Profilling report')]);
         }
 
-        Hook::exec('actionFrontControllerSetMedia', []);
+        $this->_hook->exec('actionFrontControllerSetMedia', []);
 
         if (isset($this->php_self)) {
-            Hook::exec('action' . ucfirst($this->php_self) . 'SetMedia', []);
+            $this->_hook->exec('action' . ucfirst($this->php_self) . 'SetMedia', []);
         }
 
         $this->assignExtramedia();
@@ -1096,7 +1096,7 @@ class InstallerController extends PhenyxController {
 
     public function initFooter() {
 
-        $hookFooter = Hook::exec('displayFooter');
+        $hookFooter = $this->_hook->exec('displayFooter');
 
         if ((Configuration::get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
 
@@ -1414,7 +1414,7 @@ class InstallerController extends PhenyxController {
 
         $this->displayMaintenancePage();
 
-        Hook::exec('actionInitFrontController');
+        $this->_hook->exec('actionInitFrontController');
 
         if ($this->restrictedCountry) {
             $this->displayRestrictedCountryPage();
@@ -1727,7 +1727,7 @@ class InstallerController extends PhenyxController {
 
     public function getOverrideTemplate() {
 
-        return Hook::exec('DisplayOverrideTemplate', ['controller' => $this]);
+        return $this->_hook->exec('DisplayOverrideTemplate', ['controller' => $this]);
     }
 
     protected function getLogo() {

@@ -183,7 +183,7 @@ class TopMenuColumn extends PhenyxObjectModel {
 
         }
         
-        $hookname = Hook::exec('displayTopMenuColumnOutPutName', ['type' => $this->type, 'menu' => $this], null, true);
+        $hookname = $this->_hook->exec('displayTopMenuColumnOutPutName', ['type' => $this->type, 'menu' => $this], null, true);
         if(is_array($hookname)) {
             $hookname = array_shift($hookname);
             if(!empty($hookname)) {
@@ -350,7 +350,7 @@ class TopMenuColumn extends PhenyxObjectModel {
             break;
         }
         
-        $hookname = Hook::exec('displayTopMenuColumnBackOutputNameValue', ['type' => $this->type, 'menu' => $this], null, true);
+        $hookname = $this->_hook->exec('displayTopMenuColumnBackOutputNameValue', ['type' => $this->type, 'menu' => $this], null, true);
         if(is_array($hookname)) {
             $hookname = array_shift($hookname);
             if(!empty($hookname)) {
@@ -680,7 +680,7 @@ class TopMenuColumn extends PhenyxObjectModel {
             $return .= '</div>';
         }
         
-        $hookname = Hook::exec('displayTopMenuColumnFrontOutputValue', ['type' => $this->type, 'menu' => $this], null, true);
+        $hookname = $this->_hook->exec('displayTopMenuColumnFrontOutputValue', ['type' => $this->type, 'menu' => $this], null, true);
         if(is_array($hookname)) {
             foreach($hookname as $plugin => $value) {
                 $return = $value;

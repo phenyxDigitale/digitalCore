@@ -125,7 +125,7 @@ class Translate {
         }
 
         
-        Hook::exec('actionAdminTranslate', ['iso' => $iso]);
+        $this->_hook->exec('actionAdminTranslate', ['iso' => $iso]);
         
 
         if (isset(static::$_context->translations->langadmin[$class . $key])) {
@@ -206,7 +206,7 @@ class Translate {
 
                 }
 
-                Hook::exec('actionFrontTranslate', ['iso' => $iso]);
+                $this->_hook->exec('actionFrontTranslate', ['iso' => $iso]);
 
                 if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
 
@@ -288,7 +288,7 @@ class Translate {
 
                 }   
 
-            //Hook::exec('actionClassTranslate', ['iso' => $iso]);
+            //$this->_hook->exec('actionClassTranslate', ['iso' => $iso]);
 
                 if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
 
@@ -547,7 +547,7 @@ class Translate {
         }
 
         $extra = null;
-        $extra = Hook::exec('actionGenericFrontTranslation', ['langArray' => $langArray, 'key' => $key]);
+        $extra = $this->_hook->exec('actionGenericFrontTranslation', ['langArray' => $langArray, 'key' => $key]);
 
         if (!is_null($extra)) {
             $str = $extra;
@@ -601,7 +601,7 @@ class Translate {
 
             }
 
-            Hook::exec('actionPdfTranslate', ['iso' => $iso]);
+            $this->_hook->exec('actionPdfTranslate', ['iso' => $iso]);
 
             if (!isset($_LANGPDFS) || !is_array($_LANGPDFS)) {
                 return str_replace('"', '&quot;', $string);
@@ -641,7 +641,7 @@ class Translate {
             global $_LANGMAIL;
 
             $i18NFile = _EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php';
-            Hook::exec('actionMailsTranslate', ['iso' => $iso]);
+            $this->_hook->exec('actionMailsTranslate', ['iso' => $iso]);
 
             if (!include ($i18NFile)) {
                 $this->l(sprintf('Cannot include PDF translation language file : %s', $i18NFile));
@@ -731,7 +731,7 @@ class Translate {
                 include_once _EPH_TRANSLATIONS_DIR_ . $iso . '/front.php';
             }
 
-            Hook::exec('actionFrontTranslate', ['iso' => $iso]);
+            $this->_hook->exec('actionFrontTranslate', ['iso' => $iso]);
 
             if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
 

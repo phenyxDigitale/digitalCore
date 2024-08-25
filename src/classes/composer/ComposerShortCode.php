@@ -107,7 +107,7 @@ abstract class ComposerShortCode extends ComposerShortCodeAbstract {
            
 			return $this->html_template;
 		} else {
-            $override_template = Hook::exec('actionOverrideComposerTemplate', ['file_name' => $file_name]);
+            $override_template = $this->_hook->exec('actionOverrideComposerTemplate', ['file_name' => $file_name]);
             if(is_file($override_template)) {
                 
                 $result = $this->setTemplate($override_template);           

@@ -24,6 +24,8 @@ abstract class Plugin {
     const TYPE_SCRIPT = 9;
 
     const CACHE_FILE_TAB_PLUGINS_LIST = '/app/xml/tab_plugins_list.xml';
+    
+    public $_hook;
     // @codingStandardsIgnoreStart
     /** @var array used by AdminTab to determine which lang file to use (admin.php or plugin lang file) */
     public static $classInPlugin = [];
@@ -196,6 +198,8 @@ abstract class Plugin {
         if (strlen($this->eph_versions_compliancy['max']) == 3) {
             $this->eph_versions_compliancy['max'] .= '.999.999';
         }
+        
+        $this->_hook = new Hook();
         
         $this->main_plugin = self::getIdPluginByName('ph_manager');
         
@@ -1227,7 +1231,7 @@ abstract class Plugin {
 
     public function install() {
 
-        Hook::exec('actionPluginInstallBefore', ['object' => $this]);
+        $this->_hook->exec('actionPluginInstallBefore', ['object' => $this]);
         
         $position = self::getNewLastPosition($this->main_plugin);
 
@@ -1370,7 +1374,7 @@ abstract class Plugin {
         );
 
         Group::addRestrictionsForPlugin($this->id);
-        Hook::exec('actionPluginInstallAfter', ['object' => $this]);
+        $this->_hook->exec('actionPluginInstallAfter', ['object' => $this]);
 
         if (!defined('EPH_INSTALLATION_IN_PROGRESS') || !EPH_INSTALLATION_IN_PROGRESS) {
 
@@ -2573,13 +2577,13 @@ abstract class Plugin {
                 return false;
             }
 
-            if ($alias = Hook::getRetroHookName($hookName)) {
+            if ($alias = $this->_hook->getRetroHookName($hookName)) {
                 $hookName = $alias;
             }
 
-            Hook::exec('actionPluginRegisterHookBefore', ['object' => $this, 'hook_name' => $hookName]);
+            $this->_hook->exec('actionPluginRegisterHookBefore', ['object' => $this, 'hook_name' => $hookName]);
 
-            $idHook = Hook::getIdByName($hookName);
+            $idHook = $this->_hook->getIdByName($hookName);
 
             if (!$idHook) {
                 $newHook = new Hook();
@@ -2618,7 +2622,7 @@ abstract class Plugin {
             $hook = new Hook($idHook);
             $hook->getPlugins(true);
             $hook->getPossiblePluginList(true);
-            Hook::exec('actionPluginRegisterHookAfter', ['object' => $this, 'hook_name' => $hookName]);
+            $this->_hook->exec('actionPluginRegisterHookAfter', ['object' => $this, 'hook_name' => $hookName]);
         }
 
         return $return;
@@ -2914,7 +2918,7 @@ abstract class Plugin {
 
     protected static function _isTemplateOverloadedStatic($plugin_name, $template) {
         
-        $extraTemplate = Hook::exec('actionIsTemplateOverloaded', [], null, true);
+        $extraTemplate = $this->_hook->exec('actionIsTemplateOverloaded', [], null, true);
         if(is_array($extraTemplate) && count($extraTemplate)) {
             $returnPath = '';
             foreach($extraTemplate as $plugin => $path) {
@@ -3058,7 +3062,7 @@ abstract class Plugin {
 
     public function isHookableOn($hook_name) {
 
-        $retro_hook_name = Hook::getRetroHookName($hook_name);
+        $retro_hook_name = $this->_hook->getRetroHookName($hook_name);
 
         return (is_callable([$this, 'hook' . ucfirst($hook_name)]) || is_callable([$this, 'hook' . ucfirst($retro_hook_name)]));
     }
@@ -3154,12 +3158,12 @@ abstract class Plugin {
 
     public function getPossibleHooksList() {
 
-        $hooks_list = Hook::getHooks();
+        $hooks_list = $this->_hook->getHooks();
         $possible_hooks_list = [];
 
         foreach ($hooks_list as &$current_hook) {
             $hook_name = $current_hook['name'];
-            $retro_hook_name = Hook::getRetroHookName($hook_name);
+            $retro_hook_name = $this->_hook->getRetroHookName($hook_name);
 
             if (is_callable([$this, 'hook' . ucfirst($hook_name)]) || is_callable([$this, 'hook' . ucfirst($retro_hook_name)])) {
                 $possible_hooks_list[] = [

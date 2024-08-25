@@ -5,6 +5,7 @@ $output = $after_output = '';
 
 $atts = map_get_attributes( $this->getShortcode(), $atts );
 extract($atts);
+$_hook = new Hook();
 
 //Context::getContext()->controller->addJS(_EPH_JS_DIR_ . 'composer/composer_front.js');
 
@@ -108,7 +109,7 @@ if ( ! $parallax && $has_video_bg ) {
 
 $hook_args = array('atts'=>$atts, 'base' => $this->settings['base'], 'css_classes' => '');
 $css_class = implode( ' ', array_filter( $css_classes ));
-$css_class .= preg_replace( '/\s+/', ' ', Hook::exec('VcShortcodesCssClass', $hook_args)) ;
+$css_class .= preg_replace( '/\s+/', ' ', $_hook->exec('VcShortcodesCssClass', $hook_args)) ;
 $wrapper_attributes[] = 'class="' . Tools::htmlentitiesUTF8( trim( $css_class ) ) . '"';
 
 $output .= '<div '.implode( ' ', $wrapper_attributes ).'>';

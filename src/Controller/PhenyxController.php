@@ -8,6 +8,8 @@
 abstract class PhenyxController {
 
     protected static $_plugins = [];
+    
+    public $_hook;
 
     public static $_is_merge_lang = false;
 
@@ -387,7 +389,7 @@ abstract class PhenyxController {
 
     public function getExtraPhenyxVars() {
 
-        $extraVars = Hook::exec('actionPhenyxControllerGetExtraVars', ['controller_type' => $this->controller_type], null, true);
+        $extraVars = $this->_hook->exec('actionPhenyxControllerGetExtraVars', ['controller_type' => $this->controller_type], null, true);
 
         if (is_array($extraVars)) {
 
@@ -433,7 +435,7 @@ abstract class PhenyxController {
             $this->display_footer = true;
         }
         
-
+        $this->_hook = new Hook();
         $this->context = Context::getContext();      
         $this->context->getExtraContextVars();
         if(!isset($this->context->language)) {
@@ -799,7 +801,7 @@ abstract class PhenyxController {
 
     public function generateParaGridToolBar() {
 
-        $paramToolBarItems = Hook::exec('action' . $this->controller_name . 'generateParaGridToolBar', [], null, true);
+        $paramToolBarItems = $this->_hook->exec('action' . $this->controller_name . 'generateParaGridToolBar', [], null, true);
 
         if (is_array($paramToolBarItems)) {
 
@@ -828,7 +830,7 @@ abstract class PhenyxController {
         $menuItem = [];
         $contextMenu = new ParamContextMenu($this->className, $this->controller_name);
 
-        $contextMenuItems = Hook::exec('action' . $this->controller_name . 'generateParaGridContextMenu', ['class' => $this->className, 'contextMenuItems' => $this->contextMenuItems], null, true);
+        $contextMenuItems = $this->_hook->exec('action' . $this->controller_name . 'generateParaGridContextMenu', ['class' => $this->className, 'contextMenuItems' => $this->contextMenuItems], null, true);
 
         if (!empty($contextMenuItems)) {
 
@@ -838,9 +840,9 @@ abstract class PhenyxController {
                     $idPlugin = Plugin::getIdPluginByName($plugin);
 
                     if (count($menuItem) > 0) {
-                        $contextMenuPlugin = Hook::exec('action' . $this->controller_name . 'generateParaGridContextMenu', ['class' => $this->className, 'contextMenuItems' => $menuItem[$last_plugin]], $idPlugin, true);
+                        $contextMenuPlugin = $this->_hook->exec('action' . $this->controller_name . 'generateParaGridContextMenu', ['class' => $this->className, 'contextMenuItems' => $menuItem[$last_plugin]], $idPlugin, true);
                     } else {
-                        $contextMenuPlugin = Hook::exec('action' . $this->controller_name . 'generateParaGridContextMenu', ['class' => $this->className, 'contextMenuItems' => $this->contextMenuItems], $idPlugin, true);
+                        $contextMenuPlugin = $this->_hook->exec('action' . $this->controller_name . 'generateParaGridContextMenu', ['class' => $this->className, 'contextMenuItems' => $this->contextMenuItems], $idPlugin, true);
                     }
 
                     foreach ($contextMenuPlugin[$plugin] as $key => $item) {
@@ -1020,7 +1022,7 @@ abstract class PhenyxController {
         $paragrid->history = $this->paramhistory;
         $paragrid->autoRow = $this->paramAutoRow;
         $paragrid->beforeCellClick = $this->beforeCellClick;
-        $extraVars = Hook::exec('action' . $this->controller_name . 'ParaGridScript', ['controller_name' => $this->controller_name], null, true);
+        $extraVars = $this->_hook->exec('action' . $this->controller_name . 'ParaGridScript', ['controller_name' => $this->controller_name], null, true);
 
         if (is_array($extraVars)) {
 
@@ -1915,7 +1917,7 @@ abstract class PhenyxController {
         $this->paragridScript = $this->generateParaGridScript();
         $this->setAjaxMedia();
         $data = $this->createTemplate($this->table . '.tpl');
-        $extraVars = Hook::exec('action' . $this->controller_name . 'TargetGetExtraVars', ['controller_type' => $this->controller_type], null, true);
+        $extraVars = $this->_hook->exec('action' . $this->controller_name . 'TargetGetExtraVars', ['controller_type' => $this->controller_type], null, true);
 
         if (is_array($extraVars)) {
 
@@ -2167,8 +2169,8 @@ abstract class PhenyxController {
         $_GET['add' . $this->table] = "";
         $_GET['id_parent'] = Tools::getValue('idParent', '');
 
-        $scripHeader = Hook::exec('displayBackOfficeHeader', []);
-        $scriptFooter = Hook::exec('displayBackOfficeFooter', []);
+        $scripHeader = $this->_hook->exec('displayBackOfficeHeader', []);
+        $scriptFooter = $this->_hook->exec('displayBackOfficeFooter', []);
         $html = $this->renderForm();
 
         $this->ajax_li = '<li id="uperAdd' . $this->controller_name . '" data-controller="AdminDashboard"><a href="#contentAdd' . $this->controller_name . '">' . $this->editObject . '</a><button type="button" onClick="closeAddFormObject(\'' . $this->controller_name . '\')" class="close tabdetail" data-id="uperAdd' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
@@ -2732,7 +2734,7 @@ abstract class PhenyxController {
             $this->content .= $this->context->smarty->fetch('form_submit_ajax.tpl');
         }
 
-        $extraFields = Hook::exec('action' . $this->controller_name . 'FormModifier', [], null, true);
+        $extraFields = $this->_hook->exec('action' . $this->controller_name . 'FormModifier', [], null, true);
 
         if (is_array($extraFields) && count($extraFields)) {
 
@@ -3227,7 +3229,7 @@ abstract class PhenyxController {
 
     public function getRequest($identifier = null) {
 
-        $request = Hook::exec('action' . $this->controller_name . 'getRequestModifier', ['paramRequest' => $this->paramRequest], null, true);
+        $request = $this->_hook->exec('action' . $this->controller_name . 'getRequestModifier', ['paramRequest' => $this->paramRequest], null, true);
 
         if (is_array($request)) {
 
@@ -3255,8 +3257,8 @@ abstract class PhenyxController {
             $method = $bt[1]['function'];
         }
 
-        Hook::exec('actionBeforeAjaxDie', ['controller' => $controller, 'method' => $method, 'value' => $value]);
-        Hook::exec('actionBeforeAjaxDie' . $controller . $method, ['value' => $value]);
+        $this->_hook->exec('actionBeforeAjaxDie', ['controller' => $controller, 'method' => $method, 'value' => $value]);
+        $this->_hook->exec('actionBeforeAjaxDie' . $controller . $method, ['value' => $value]);
 
         die($value);
     }

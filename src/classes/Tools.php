@@ -1863,6 +1863,7 @@ class Tools {
     }
 
     public static function generateHtaccess($path = null, $rewrite_settings = null, $cache_control = null, $specific = '', $disable_multiviews = null, $medias = false, $disable_modsec = null) {
+        
 
         if (defined('EPH_INSTALLATION_IN_PROGRESS') && $rewrite_settings === null) {
             return true;
@@ -2074,7 +2075,7 @@ class Tools {
 
             // Redirections to dispatcher
 
-            $addrewrite_settings = Hook::exec('addRewriteSeetings', ['media_domains' => $media_domains, 'domain_rewrite_cond' => $domain_rewrite_cond, 'uri' => $uri, 'rewrite_settings' => $rewrite_settings], null, true, false);
+            $addrewrite_settings = Hook::getInstance()->exec('addRewriteSeetings', ['media_domains' => $media_domains, 'domain_rewrite_cond' => $domain_rewrite_cond, 'uri' => $uri, 'rewrite_settings' => $rewrite_settings], null, true, false);
 
             if (is_array($addrewrite_settings)) {
 
@@ -2175,7 +2176,7 @@ FileETag none
         fclose($write_fd);
 
         if (!defined('EPH_INSTALLATION_IN_PROGRESS')) {
-            Hook::exec('actionHtaccessCreate');
+            Hook::getInstance()->exec('actionHtaccessCreate');
         }
 
         return true;
@@ -2184,6 +2185,7 @@ FileETag none
     
     public static function generateCurrentJson() {
         
+                
         if(file_exists(_EPH_CONFIG_DIR_ . 'json/new_json.json')) {
             $md5List = file_get_contents(_EPH_CONFIG_DIR_ . 'json/new_json.json');
             unlink(_EPH_CONFIG_DIR_ . 'json/new_json.json');
@@ -2241,7 +2243,7 @@ FileETag none
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/'));
         
         $excludes = ['/phenyx-shop-default/css/', '/phenyx-shop-default/fonts/', '/phenyx-shop-default/font/', '/phenyx-shop-default/img/', '/phenyx-shop-default/js/', '/phenyx-shop-default/plugins/', '/phenyx-shop-default/pdf/'];
-        $extraExludes = Hook::exec('actionGetExludes', [], null, true);
+        $extraExludes = Hook::getInstance()->exec('actionGetExludes', [], null, true);
         if (is_array($extraExludes) && count($extraExludes)) {
             foreach ($extraExludes as $plugin => $exclude) {
                 $excludes = array_merge(
@@ -2956,7 +2958,7 @@ FileETag none
     }
 
     public static function cleanFrontCache() {
-
+        
         $context = Context::getContext();
         $recursive_directory = [
             'app/cache/smarty/cache',
@@ -2977,7 +2979,7 @@ FileETag none
         
         Media::clearAdminCache();
         Media::clearCache();
-        Hook::exec('clearFrontCache', []);
+        Hook::getInstance()->exec('clearFrontCache', []);
         
         
         
@@ -2985,7 +2987,7 @@ FileETag none
     
     
     public static function cleanThemeDirectory(Context $context = null) {
-
+       
         
         if(is_null($context)) {
             $context = Context::getContext();
@@ -3115,7 +3117,7 @@ FileETag none
             }
         }
         
-        Hook::exec('cleanThemeDirectory', ['plugintochecks' => $plugintochecks]);
+        Hook::getInstance()->exec('cleanThemeDirectory', ['plugintochecks' => $plugintochecks]);
 
     }
     
@@ -5473,7 +5475,7 @@ FileETag none
 
         }
 
-        $hooks = Hook::getPluginHook();
+        $hooks = Hook::getInstance()->getPluginHook();
 
         foreach ($hooks as $hook) {
             $plugins = Db::getInstance()->executeS(
@@ -5660,8 +5662,8 @@ FileETag none
     }
 
     public static function generateTabs(Context $context, $use_cache = true) {
-
-        $hookBars = Hook::exec('actionAdminTabs', [], null, true);
+        
+        $hookBars = Hook::getInstance()->exec('actionAdminTabs', [], null, true);
 
         if (is_array($hookBars)) {
 
@@ -5774,7 +5776,7 @@ FileETag none
             }
 
         }
-        $hookBars = Hook::exec('actionAfterAdminTabs', ['topbars' => $topbars], null, true);
+        $hookBars = Hook::getInstance()->exec('actionAfterAdminTabs', ['topbars' => $topbars], null, true);
         if (is_array($hookBars)) {
 
             foreach ($hookBars as $plugin => $hookBar) {

@@ -9,6 +9,8 @@ class DbAdminQuery {
     
     public $context;
     
+    public $_hook;
+    
     public $controller_name = null;
     
     public $extraSelects = [];
@@ -18,13 +20,13 @@ class DbAdminQuery {
     public $extraWheres = [];
     
     public function __construct() {
-
+        $this->_hook = new Hook();
 		$this->context = Context::getContext();
         if (isset($this->context->controller) && isset($this->context->controller->controller_name)) {
             $this->controller_name = $this->context->controller->controller_name;
-            Hook::exec('action' . $this->controller_name . 'GetExtraSelect', ['query' => $this]);
-            Hook::exec('action' . $this->controller_name . 'GetExtraJoin', ['query' => $this]);
-            Hook::exec('action' . $this->controller_name . 'GetExtraWhere', ['query' => $this]);
+            $this->_hook->exec('action' . $this->controller_name . 'GetExtraSelect', ['query' => $this]);
+            $this->_hook->exec('action' . $this->controller_name . 'GetExtraJoin', ['query' => $this]);
+            $this->_hook->exec('action' . $this->controller_name . 'GetExtraWhere', ['query' => $this]);
             
         }
 
