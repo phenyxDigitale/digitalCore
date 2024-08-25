@@ -169,6 +169,29 @@ class FileBased extends CacheApi implements CacheApiInterface {
 
 		return null;
     }
+    
+    public function getFilesValues() {
+        ini_set('memory_limit', '-1');
+        $result = [];
+        $iterator = new AppendIterator();
+        $iterator->append(new DirectoryIterator($this->cachedir));
+        foreach ($iterator as $file) {
+			
+            if (in_array($file->getFilename(), ['.', '..',  'index.php'])) {
+				continue;
+			}
+            
+            $fileKey = str_replace(["data_".$this->prefix, '.cache'], ['', ''], $file->getFilename());
+            $val = $this->getData($fileKey);
+            if(!is_null($val) && !is_object($val)) {
+                $result[$fileKey] = !is_array($val) ? Tools::jsonDecode($val, true): $val;
+            }
+
+        }
+        
+        ksort($result);
+        return $result;
+    }
 
 	/**
 	 * {@inheritDoc}
