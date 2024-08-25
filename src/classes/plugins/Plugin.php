@@ -198,22 +198,26 @@ abstract class Plugin {
         if (strlen($this->eph_versions_compliancy['max']) == 3) {
             $this->eph_versions_compliancy['max'] .= '.999.999';
         }
+        if(!isset($this->context)) {
+            $this->context = Context::getContext();
+        }
         
-        $this->context->_hook = Hook::getInstance();
+        if(!isset($this->context->_hook)) {
+            $this->context->_hook = Hook::getInstance();
+        }
         
         $this->main_plugin = self::getIdPluginByName('ph_manager');
         
         $this->google_api_key = Configuration::get('EPH_GOOGLE_TRANSLATE_API_KEY');
         $this->has_api_key = !empty($this->google_api_key) ? 1 : 0;  
         
-        $context = $context ? $context : Context::getContext();
-        $this->context = $context;
-        $this->_company = $context->company;
-        $this->_user = $context->user;
-        $this->_cookie = $context->cookie;
-        $this->_link = $context->link;
-        $this->_language = $context->language;
-        $this->_smarty = $context->smarty;
+        
+        $this->_company = $this->context->company;
+        $this->_user = $this->context->user;
+        $this->_cookie = $this->context->cookie;
+        $this->_link = $this->context->link;
+        $this->_language = $this->context->language;
+        $this->_smarty = $this->context->smarty;
         $this->context->cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
         $cache_type = !empty(Configuration::get('EPH_PAGE_CACHE_TYPE')) ? Configuration::get('EPH_PAGE_CACHE_TYPE') :null;
         $this->context->cache_api = $this->loadCacheAccelerator($cache_type);
