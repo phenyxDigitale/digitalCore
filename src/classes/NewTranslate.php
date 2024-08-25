@@ -15,7 +15,6 @@ class NewTranslate {
         
         static::$_language = Context::getContext()->language;
 
-        //static::$_adminTranslation =
 
     }
 
