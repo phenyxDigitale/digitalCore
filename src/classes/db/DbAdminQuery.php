@@ -24,9 +24,9 @@ class DbAdminQuery {
 		$this->context = Context::getContext();
         if (isset($this->context->controller) && isset($this->context->controller->controller_name)) {
             $this->controller_name = $this->context->controller->controller_name;
-            $this->_hook->exec('action' . $this->controller_name . 'GetExtraSelect', ['query' => $this]);
-            $this->_hook->exec('action' . $this->controller_name . 'GetExtraJoin', ['query' => $this]);
-            $this->_hook->exec('action' . $this->controller_name . 'GetExtraWhere', ['query' => $this]);
+            $this->context->_hook->exec('action' . $this->controller_name . 'GetExtraSelect', ['query' => $this]);
+            $this->context->_hook->exec('action' . $this->controller_name . 'GetExtraJoin', ['query' => $this]);
+            $this->context->_hook->exec('action' . $this->controller_name . 'GetExtraWhere', ['query' => $this]);
             
         }
 

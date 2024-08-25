@@ -424,7 +424,7 @@ class TopMenuElements extends PhenyxObjectModel {
             break;
         }
         
-        $hookname = $this->_hook->exec('displayTopMenuElementBackOutputNameValue', ['type' => $this->type, 'menu' => $this], null, true);
+        $hookname = $this->context->_hook->exec('displayTopMenuElementBackOutputNameValue', ['type' => $this->type, 'menu' => $this], null, true);
         if(is_array($hookname)) {
             $hookname = array_shift($hookname);
             if(!empty($hookname)) {

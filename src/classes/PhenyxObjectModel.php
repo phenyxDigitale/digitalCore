@@ -35,6 +35,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     
     protected static $instance;
     
+    protected static $hook_instance;
+    
     public $_hook;
 
     // @codingStandardsIgnoreStart
@@ -168,7 +170,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     public function getExtraVars($className) {
 
         $this->className = $this->className;
-        $this->extraVars = $this->_hook->exec('action' . $this->className . 'GetExtraVars', [], null, true);
+        $this->extraVars = $this->context->_hook->exec('action' . $this->className . 'GetExtraVars', [], null, true);
 
         if (is_array($this->extraVars) && count($this->extraVars)) {
 
@@ -219,7 +221,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     public function __construct($id = null, $idLang = null, $light = false) {       
 
         $this->className = get_class($this);
-        $this->_hook = new Hook();
+        $this->context->_hook = Hook::getInstance();
         $this->getExtraVars($this->className);
 
         if (!isset(PhenyxObjectModel::$loaded_classes[$this->className])) {
@@ -273,7 +275,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         }
 
         
-        $extraDef = $this->_hook->exec('action' . $this->className . 'ExtraDefinition', [], null, true);
+        $extraDef = $this->context->_hook->exec('action' . $this->className . 'ExtraDefinition', [], null, true);
 
         if (is_array($extraDef) && count($extraDef)) {
 
@@ -296,7 +298,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             $entityMapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");
             $entityMapper->load($id, $idLang, $this, $this->def, static::$cache_objects);
         }
-        $extraLoads = $this->_hook->exec('action' . $this->className . 'ObjectConstruct', ['id' => $id, 'object' => $this], null, true);
+        $extraLoads = $this->context->_hook->exec('action' . $this->className . 'ObjectConstruct', ['id' => $id, 'object' => $this], null, true);
         if (is_array($extraLoads)) {
 
             foreach ($extraLoads as $plugin => $defs) {
@@ -399,7 +401,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     public function getRequest() {
 
         $this->className = get_class($this);
-        $request = $this->_hook->exec('action' . $this->className . 'getRequestModifier', [], null, true);
+        $request = $this->context->_hook->exec('action' . $this->className . 'getRequestModifier', [], null, true);
 
         if (!empty($request)) {
             return array_shift($request);
@@ -412,7 +414,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $this->className = get_class($this);
         
-        $fields = $this->_hook->exec('action' . $this->className . 'getFieldsModifier', [], null, true);
+        $fields = $this->context->_hook->exec('action' . $this->className . 'getFieldsModifier', [], null, true);
 
         if (is_array($fields) && count($fields)) {
             foreach ($fields as $plugin => $values) {
@@ -657,8 +659,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             unset($this->id);
         }
 
-        $this->_hook->exec('actionObjectAddBefore', ['object' => $this]);
-        $addBefores = $this->_hook->exec('actionObject' . get_class($this) . 'AddBefore', ['object' => $this], null, true);
+        $this->context->_hook->exec('actionObjectAddBefore', ['object' => $this]);
+        $addBefores = $this->context->_hook->exec('actionObject' . get_class($this) . 'AddBefore', ['object' => $this], null, true);
         if (is_array($addBefores)) {
 
             foreach ($addBefores as $plugin => $defs) {
@@ -724,8 +726,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         }
 
-        $this->_hook->exec('actionObjectAddAfter', ['object' => $this]);
-        $this->_hook->exec('actionObject' . get_class($this) . 'AddAfter', ['object' => $this]);
+        $this->context->_hook->exec('actionObjectAddAfter', ['object' => $this]);
+        $this->context->_hook->exec('actionObject' . get_class($this) . 'AddAfter', ['object' => $this]);
         
         return $result;
     }
@@ -829,8 +831,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
     public function update($nullValues = false) {
 
-        $this->_hook->exec('actionObjectUpdateBefore', ['object' => $this]);
-        $updateBefores = $this->_hook->exec('actionObject' . get_class($this) . 'UpdateBefore', ['object' => $this], null, true);
+        $this->context->_hook->exec('actionObjectUpdateBefore', ['object' => $this]);
+        $updateBefores = $this->context->_hook->exec('actionObject' . get_class($this) . 'UpdateBefore', ['object' => $this], null, true);
         if (is_array($updateBefores)) {
             foreach ($updateBefores as $plugin => $defs) {
                 if (is_array($defs)) {
@@ -903,8 +905,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         }
 
-        $this->_hook->exec('actionObjectUpdateAfter', ['object' => $this]);
-        $this->_hook->exec('actionObject' . get_class($this) . 'UpdateAfter', ['object' => $this]);
+        $this->context->_hook->exec('actionObjectUpdateAfter', ['object' => $this]);
+        $this->context->_hook->exec('actionObject' . get_class($this) . 'UpdateAfter', ['object' => $this]);
         
 
         return $result;
@@ -912,8 +914,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
     public function delete() {
 
-        $this->_hook->exec('actionObjectDeleteBefore', ['object' => $this]);
-        $this->_hook->exec('actionObject' . get_class($this) . 'DeleteBefore', ['object' => $this]);
+        $this->context->_hook->exec('actionObjectDeleteBefore', ['object' => $this]);
+        $this->context->_hook->exec('actionObject' . get_class($this) . 'DeleteBefore', ['object' => $this]);
 
         $this->clearCache();
         $result = true;
@@ -929,8 +931,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             $result &= Db::getInstance()->delete($this->def['table'] . '_lang', '`' . bqSQL($this->def['primary']) . '` = ' . (int) $this->id);
         }
 
-        $this->_hook->exec('actionObjectDeleteAfter', ['object' => $this]);
-        $this->_hook->exec('actionObject' . get_class($this) . 'DeleteAfter', ['object' => $this]);
+        $this->context->_hook->exec('actionObjectDeleteAfter', ['object' => $this]);
+        $this->context->_hook->exec('actionObject' . get_class($this) . 'DeleteAfter', ['object' => $this]);
 
         return $result;
     }

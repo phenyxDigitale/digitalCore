@@ -418,7 +418,7 @@ abstract class ComposerShortCodeUniversalAdmin extends ComposerShortCode {
                
                 break;
             default:
-                $extraType = $this->_hook->exec('actionSingleParamEditForm', ['param' => $param, 'param_value' => $param_value], null, true);
+                $extraType = $this->context->_hook->exec('actionSingleParamEditForm', ['param' => $param, 'param_value' => $param_value], null, true);
                 if (is_array($extraType) && count($extraType)) {
                     foreach ($extraType as $plugin => $value) {
                         $param_line .= $value;
