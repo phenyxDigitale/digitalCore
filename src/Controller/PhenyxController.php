@@ -438,7 +438,10 @@ abstract class PhenyxController {
         }
         
         
-        $this->context = Context::getContext();      
+        $this->context = Context::getContext();   
+        if(!isset($this->context->_hook)) {
+            $this->context->_hook = Hook::getInstance();
+        }
         $this->context->getExtraContextVars();
         if(!isset($this->context->language)) {
             $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT')))); 

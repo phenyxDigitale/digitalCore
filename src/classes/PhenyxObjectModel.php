@@ -222,6 +222,9 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $this->className = get_class($this);
         $this->context = Context::getContext();
+        if(!isset($this->context->_hook)) {
+            $this->context->_hook = Hook::getInstance();
+        }
         $this->getExtraVars($this->className);
 
         if (!isset(PhenyxObjectModel::$loaded_classes[$this->className])) {
