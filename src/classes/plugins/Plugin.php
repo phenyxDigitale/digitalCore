@@ -2922,7 +2922,7 @@ abstract class Plugin {
 
     protected static function _isTemplateOverloadedStatic($plugin_name, $template) {
         
-        $extraTemplate = $this->context->_hook->exec('actionIsTemplateOverloaded', [], null, true);
+        $extraTemplate = Context::getContext()->_hook->exec('actionIsTemplateOverloaded', [], null, true);
         if(is_array($extraTemplate) && count($extraTemplate)) {
             $returnPath = '';
             foreach($extraTemplate as $plugin => $path) {
