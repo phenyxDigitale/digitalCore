@@ -437,7 +437,6 @@ abstract class PhenyxController {
             $this->display_footer = true;
         }
         
-        $this->context->_hook = Hook::getInstance();
         
         $this->context = Context::getContext();      
         $this->context->getExtraContextVars();
