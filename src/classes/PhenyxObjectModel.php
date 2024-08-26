@@ -377,7 +377,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
     public static function getInstance() {
 
-        $class_name = static::;
+        $class_name = static::class;
 
         if (!$class_name::$instance) {
             $class_name::$instance = new $class_name();
