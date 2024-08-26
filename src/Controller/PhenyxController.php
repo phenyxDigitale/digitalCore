@@ -8,9 +8,9 @@
 abstract class PhenyxController {
 
     protected static $_plugins = [];
-    
+
     protected static $hook_instance;
-    
+
     public $_hook;
 
     public static $_is_merge_lang = false;
@@ -20,7 +20,7 @@ abstract class PhenyxController {
     public $css_files = [];
 
     public $js_footers = [];
-    
+
     public $js_heads = [];
 
     public $js_files = [];
@@ -36,7 +36,7 @@ abstract class PhenyxController {
     public $push_css_files = [];
 
     public $extracss;
-    
+
     public $cacheId;
 
     public $mainControllers;
@@ -436,27 +436,29 @@ abstract class PhenyxController {
         if (is_null($this->display_footer)) {
             $this->display_footer = true;
         }
-        
-        
-        $this->context = Context::getContext();   
-        if(!isset($this->context->_hook)) {
+
+        $this->context = Context::getContext();
+
+        if (!isset($this->context->_hook)) {
             $this->context->_hook = new Hook();
         }
+
         $this->context->getExtraContextVars();
-        if(!isset($this->context->language)) {
-            $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT')))); 
+
+        if (!isset($this->context->language)) {
+            $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT'))));
         }
-        
+
         $this->context->smarty->assign([
-            'shopName'=> $this->context->company->company_name,
-            'css_dir'=> 'https://' . $this->context->company->domain_ssl . _THEME_CSS_DIR_,
-            'shop_url'=> 'https://' . $this->context->company->domain_ssl,
-            'shop_mail'=> $this->context->company->company_email,
-            'company'=> $this->context->company,
-            'today'=> date("Y-m-d"),
-            'smarty_now'=> date("Y-m-d H:m:s"),
-            'smarty_year'=> date("Y"),
-            'smarty_tag'=> date("i-s")
+            'shopName'    => $this->context->company->company_name,
+            'css_dir'     => 'https://' . $this->context->company->domain_ssl . _THEME_CSS_DIR_,
+            'shop_url'    => 'https://' . $this->context->company->domain_ssl,
+            'shop_mail'   => $this->context->company->company_email,
+            'company'     => $this->context->company,
+            'today'       => date("Y-m-d"),
+            'smarty_now'  => date("Y-m-d H:m:s"),
+            'smarty_year' => date("Y"),
+            'smarty_tag'  => date("i-s"),
         ]);
 
         $this->context->controller = $this;
@@ -487,7 +489,9 @@ abstract class PhenyxController {
         if (empty(static::$_plugins)) {
             static::$_plugins = $this->getPlugins();
         }
-        static::$_is_merge_lang = Configuration::get('CURENT_MERGE_LANG_'.$this->context->language->iso_code, null, false);
+
+        static::$_is_merge_lang = Configuration::get('CURENT_MERGE_LANG_' . $this->context->language->iso_code, null, false);
+
         if (!static::$_is_merge_lang) {
             $this->mergeLanguages($this->context->language->iso_code);
         }
@@ -495,11 +499,11 @@ abstract class PhenyxController {
         $this->paramCreate = 'function (evt, ui) {
             buildHeadingAction(\'' . 'grid_' . $this->controller_name . '\', \'' . $this->controller_name . '\');
         }';
-        
-        if(!isset($this->context->translations)) {
-           
+
+        if (!isset($this->context->translations)) {
+
             $this->context->translations = new Translate($this->context->language->iso_code);
-        } 
+        }
 
     }
 
@@ -507,30 +511,32 @@ abstract class PhenyxController {
 
         global $_LANGADM, $_LANGCLASS, $_LANGFRONT, $_LANGMAIL, $_LANGPDF;
         $_plugins = $this->getPlugins();
-        $fileTest = fopen("testmergeLanguages.txt","w");
-        
+        $fileTest = fopen("testmergeLanguages.txt", "w");
+
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
             @include _EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php';
-        }        
+        }
+
         $toInsert = [];
         $current_translation = $_LANGADM;
-       
+
         if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
-            
+
             @include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php';
-            
-            if(isset($_LANGOVADM) && is_array($_LANGOVADM)) {
+
+            if (isset($_LANGOVADM) && is_array($_LANGOVADM)) {
                 $_LANGADM = array_merge(
                     $_LANGADM,
                     $_LANGOVADM
                 );
             }
+
         }
-        
+
         foreach ($_plugins as $plugin) {
-            
+
             if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php')) {
-    
+
                 @include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php';
                 $complementary_language = $_LANGADM;
 
@@ -539,39 +545,43 @@ abstract class PhenyxController {
                         $_LANGADM,
                         $complementary_language
                     );
-                }                
+                }
 
-                
-                
             }
 
         }
-       
+
         $toInsert = $_LANGADM;
         ksort($toInsert);
         $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php', "w");
-        fwrite($file, "<?php\n\nglobal \$_LANGADM;\n\n");                
+        fwrite($file, "<?php\n\nglobal \$_LANGADM;\n\n");
         fwrite($file, "\$_LANGADM = [];\n");
+
         foreach ($toInsert as $key => $value) {
             $value = htmlspecialchars_decode($value, ENT_QUOTES);
             fwrite($file, '$_LANGADM[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
         }
+
         fwrite($file, "\n" . 'return $_LANGADM;' . "\n");
         fclose($file);
-        
+
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
             @include _EPH_TRANSLATIONS_DIR_ . $iso . '/class.php';
-        }   
+        }
+
         $toInsert = [];
+
         if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
 
             @include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php';
-            if(isset($_LANGOVCLASS) && is_array($_LANGOVCLASS)) {
+
+            if (isset($_LANGOVCLASS) && is_array($_LANGOVCLASS)) {
                 $_LANGCLASS = array_merge(
                     $_LANGCLASS,
                     $_LANGOVCLASS
                 );
             }
+
         }
 
         foreach ($_plugins as $plugin) {
@@ -586,10 +596,11 @@ abstract class PhenyxController {
                         $complementary_language
                     );
                 }
+
             }
 
         }
-        
+
         $toInsert = $_LANGCLASS;
         ksort($toInsert);
         $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php', "w");
@@ -600,22 +611,27 @@ abstract class PhenyxController {
             $value = htmlspecialchars_decode($value, ENT_QUOTES);
             fwrite($file, '$_LANGCLASS[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
         }
+
         fwrite($file, "\n" . 'return $_LANGCLASS;' . "\n");
         fclose($file);
-        
+
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
             @include _EPH_TRANSLATIONS_DIR_ . $iso . '/front.php';
-        }   
+        }
+
         $toInsert = [];
+
         if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
 
             @include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php';
-            if(isset($_LANGOVFRONT) && is_array($_LANGOVFRONT)) {
+
+            if (isset($_LANGOVFRONT) && is_array($_LANGOVFRONT)) {
                 $_LANGFRONT = array_merge(
                     $_LANGFRONT,
                     $_LANGOVFRONT
                 );
             }
+
         }
 
         foreach ($_plugins as $plugin) {
@@ -631,9 +647,11 @@ abstract class PhenyxController {
                         $complementary_language
                     );
                 }
+
             }
 
         }
+
         $toInsert = $_LANGFRONT;
         ksort($toInsert);
         $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php', "w");
@@ -644,13 +662,14 @@ abstract class PhenyxController {
             $value = htmlspecialchars_decode($value, ENT_QUOTES);
             fwrite($file, '$_LANGFRONT[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
         }
+
         fwrite($file, "\n" . 'return $_LANGFRONT;' . "\n");
         fclose($file);
-        
+
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php')) {
             @include _EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php';
-        }  
-        
+        }
+
         $toInsert = [];
 
         foreach ($_plugins as $plugin) {
@@ -658,7 +677,7 @@ abstract class PhenyxController {
             if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/mail.php')) {
 
                 @include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/mail.php';
-                $complementary_language = $_LANGMAIL;               
+                $complementary_language = $_LANGMAIL;
 
                 if (is_array($complementary_language)) {
                     $_LANGMAIL = array_merge(
@@ -667,26 +686,28 @@ abstract class PhenyxController {
                     );
                 }
 
-                
-                
             }
 
         }
+
         $toInsert = $_LANGMAIL;
         ksort($toInsert);
         $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php', "w");
         fwrite($file, "<?php\n\nglobal \$_LANGMAIL;\n\n");
         fwrite($file, "\$_LANGMAIL = [];\n");
+
         foreach ($toInsert as $key => $value) {
             $value = htmlspecialchars_decode($value, ENT_QUOTES);
             fwrite($file, '$_LANGMAIL[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
         }
+
         fwrite($file, "\n" . 'return $_LANGMAIL;' . "\n");
         fclose($file);
+
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php')) {
             @include _EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php';
-        }  
-       
+        }
+
         $toInsert = [];
 
         foreach ($_plugins as $plugin) {
@@ -695,16 +716,18 @@ abstract class PhenyxController {
 
                 @include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/pdf.php';
                 $complementary_language = $_LANGPDF;
+
                 if (is_array($complementary_language)) {
                     $_LANGPDF = array_merge(
                         $_LANGPDF,
                         $complementary_language
                     );
                 }
-                
+
             }
 
         }
+
         $toInsert = $_LANGPDF;
         ksort($toInsert);
         $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php', "w");
@@ -715,12 +738,12 @@ abstract class PhenyxController {
             $value = htmlspecialchars_decode($value, ENT_QUOTES);
             fwrite($file, '$_LANGPDF[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
         }
+
         fwrite($file, "\n" . 'return $_LANGPDF;' . "\n");
         fclose($file);
-        
+
         $this->context->translations = new Translate($iso);
-        Configuration::updateValue('CURENT_MERGE_LANG_'.$this->context->language->iso_code, 1);
-        
+        Configuration::updateValue('CURENT_MERGE_LANG_' . $this->context->language->iso_code, 1);
 
     }
 
@@ -730,10 +753,13 @@ abstract class PhenyxController {
         $plugins = Plugin::getPluginsDirOnDisk();
 
         foreach ($plugins as $plugin) {
+
             if (Plugin::isInstalled($plugin)) {
+
                 if (is_dir(_EPH_PLUGIN_DIR_ . $plugin . '/translations/' . $this->context->language->iso_code)) {
                     $plugs[] = $plugin;
                 }
+
             }
 
         }
@@ -1204,16 +1230,19 @@ abstract class PhenyxController {
     }
 
     public function init() {
-        
-        if($this->controller_type = 'admin' && $this->cachable && isset($this->context->employee)) {
-            $this->cacheId = 'pageAdminCache_'. $this->php_self.'_' . $this->context->employee->id_profile;
-        } else if($this->controller_type = 'front' && $this->cachable) {
-            if(isset($this->context->user->id)) {
+
+        if ($this->controller_type = 'admin' && $this->cachable && isset($this->context->employee)) {
+            $this->cacheId = 'pageAdminCache_' . $this->php_self . '_' . $this->context->employee->id_profile;
+        } else
+        if ($this->controller_type = 'front' && $this->cachable) {
+
+            if (isset($this->context->user->id)) {
                 $tag = str_replace(' ', '', $this->context->user->group);
             } else {
                 $tag = 'guest';
             }
-            $this->cacheId = 'pageCache_'. $this->php_self.'_' . $tag;
+
+            $this->cacheId = 'pageCache_' . $this->php_self . '_' . $tag;
         }
 
         if (_EPH_MODE_DEV_ && $this->controller_type == 'admin') {
@@ -1290,6 +1319,7 @@ abstract class PhenyxController {
         $jsTag = 'js_def';
         $this->context->smarty->assign($jsTag, $jsTag);
         $this->context->smarty->assign('load_time', round(microtime(true) - TIME_START, 3));
+
         if (is_array($content)) {
 
             foreach ($content as $tpl) {
@@ -1318,7 +1348,7 @@ abstract class PhenyxController {
                     $jsTag      => Media::getJsDef(),
                     'js_files'  => $defer ? array_unique($this->js_files) : [],
                     'js_inline' => ($defer && $domAvailable) ? Media::getInlineScript() : [],
-                    'js_heads'         => $this->js_heads,
+                    'js_heads'  => $this->js_heads,
                 ]
             );
             $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
@@ -1395,8 +1425,8 @@ abstract class PhenyxController {
                 'html'         => $templ,
             ];
         }
-        
-        if(!is_null($this->cacheId) && $this->cachable && $this->context->cache_enable) {
+
+        if (!is_null($this->cacheId) && $this->cachable && $this->context->cache_enable) {
             $temp = $return === null ? null : Tools::jsonEncode($return);
             $this->context->cache_api->putData($this->cacheId, $temp, 1864000);
         }
@@ -1554,8 +1584,8 @@ abstract class PhenyxController {
         }
 
     }
-    
-     public function addHeaderJS($jsUri, $checkPath = true) {
+
+    public function addHeaderJS($jsUri, $checkPath = true) {
 
         if (is_array($jsUri)) {
 
@@ -1588,7 +1618,6 @@ abstract class PhenyxController {
             if (isset($jsUri[1]) && $jsUri[1]) {
                 $version = $jsUri[1];
             }
-
 
             $jsPath = $jsUri = $jsUri[0];
 
@@ -1637,7 +1666,6 @@ abstract class PhenyxController {
             if (isset($jsUri[1]) && $jsUri[1]) {
                 $version = $jsUri[1];
             }
-
 
             $jsPath = $jsUri = $jsUri[0];
 
@@ -1777,7 +1805,6 @@ abstract class PhenyxController {
 
                 // $key = is_array($js_path) ? key($js_path) : $js_path;
 
-
                 if ($jsPath && !in_array($jsPath, $this->push_js_files)) {
                     $this->push_js_files[] = $jsPath . ($version ? '?' . $version : '');
                 }
@@ -1903,22 +1930,26 @@ abstract class PhenyxController {
     }
 
     public function ajaxProcessOpenTargetController() {
-        
+
         if ($this->cachable) {
+
             if ($this->context->cache_enable) {
+
                 if (is_object($this->context->cache_api)) {
                     $value = $this->context->cache_api->getData($this->cacheId);
                     $result = empty($value) ? null : Tools::jsonDecode($value, true);
+
                     if (!empty($temp)) {
                         die(Tools::jsonEncode($result));
 
                     }
 
                 }
+
             }
 
         }
-                
+
         $this->paragridScript = $this->generateParaGridScript();
         $this->setAjaxMedia();
         $data = $this->createTemplate($this->table . '.tpl');
@@ -1991,11 +2022,15 @@ abstract class PhenyxController {
         if ($layout) {
 
             $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
+
             if ($this->cachable) {
+
                 if ($this->context->cache_enable) {
+
                     if (is_object($this->context->cache_api)) {
                         $value = $this->context->cache_api->getData($this->cacheId);
                         $result = empty($value) ? null : Tools::jsonDecode($value, true);
+
                         if (!empty($temp)) {
                             die(Tools::jsonEncode($result));
 
@@ -2006,6 +2041,7 @@ abstract class PhenyxController {
                 }
 
             }
+
             $domAvailable = extension_loaded('dom') ? true : false;
 
             if ((Configuration::get('EPH_CSS_BACKOFFICE_CACHE') || Configuration::get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
@@ -2126,11 +2162,12 @@ abstract class PhenyxController {
                 $result['profiling_mode'] = true;
                 $result['profiling'] = $this->displayProfiling();
             } else {
-                
-                if(!is_null($this->cacheId) && $this->cachable && $this->context->cache_enable) {
+
+                if (!is_null($this->cacheId) && $this->cachable && $this->context->cache_enable) {
                     $temp = Tools::jsonEncode($result);
                     $this->context->cache_api->putData($this->cacheId, $temp, 1864000);
                 }
+
             }
 
             die(Tools::jsonEncode($result));
@@ -2286,7 +2323,7 @@ abstract class PhenyxController {
                     'js_def'    => $js_def,
                     'js_files'  => $js_files,
                     'js_inline' => $js_inline,
-                    'js_heads'         => $this->js_heads,
+                    'js_heads'  => $this->js_heads,
                 ]
             );
             $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');

@@ -32,11 +32,11 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
      */
     const HAS_ONE = 1;
     const HAS_MANY = 2;
-    
+
     protected static $instance;
-    
+
     public static $hook_instance;
-    
+
     // @codingStandardsIgnoreStart
     /** @var int Object ID */
     public $id;
@@ -46,21 +46,20 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
     public $is_archivable = false;
 
-    
     public $require_context = true;
 
     protected $context;
-    
+
     protected $_user;
-    
-    protected $_company;    
-    
+
+    protected $_company;
+
     protected $_cookie;
-    
+
     protected $_link;
-    
+
     protected $_language;
-    
+
     protected $_smarty;
 
     /** @var array|null Holds required fields for each PhenyxObjectModel class */
@@ -162,7 +161,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     public $className;
 
     public $extraVars;
-    
+
     public $excludes = [];
 
     public function getExtraVars($className) {
@@ -178,6 +177,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
                     foreach ($vars as $key => $value) {
                         $this->{$key}
+
                         = $value;
                     }
 
@@ -216,15 +216,16 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         ];
     }
 
-    public function __construct($id = null, $idLang = null, $light = false) {       
+    public function __construct($id = null, $idLang = null, $light = false) {
 
         $this->className = get_class($this);
         $this->context = Context::getContext();
+
         if (!PhenyxObjectModel::$hook_instance) {
             PhenyxObjectModel::$hook_instance = new Hook();
             $this->context->_hook = PhenyxObjectModel::$hook_instance;
         }
-        
+
         $this->getExtraVars($this->className);
 
         if (!isset(PhenyxObjectModel::$loaded_classes[$this->className])) {
@@ -277,7 +278,6 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             ];
         }
 
-        
         $extraDef = $this->context->_hook->exec('action' . $this->className . 'ExtraDefinition', [], null, true);
 
         if (is_array($extraDef) && count($extraDef)) {
@@ -295,13 +295,14 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             }
 
         }
-        
 
         if ($id) {
             $entityMapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");
             $entityMapper->load($id, $idLang, $this, $this->def, static::$cache_objects);
         }
+
         $extraLoads = $this->context->_hook->exec('action' . $this->className . 'ObjectConstruct', ['id' => $id, 'object' => $this], null, true);
+
         if (is_array($extraLoads)) {
 
             foreach ($extraLoads as $plugin => $defs) {
@@ -309,9 +310,12 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                 if (is_array($defs)) {
 
                     foreach ($defs as $key => $value) {
+
                         if (property_exists($this, $key)) {
-                            $this->{$key} = $value;
+                            $this->{$key}
+                            = $value;
                         }
+
                     }
 
                 }
@@ -319,57 +323,68 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             }
 
         }
-               
-        $this->excludes = ['is_archivable', 'tables', 'identifier', 'fieldsRequired', 'fieldsSize', 'fieldsValidate', 'fieldsRequiredLang', 'fieldsSizeLang', 'fieldsValidateLang', 'image_dir', 'image_format', 'update_fields', 'request_admin', 'extraVars', 'force_id','paramFields', '_languages', 'webserviceParameters'];
-        
-        if($light) {
-            foreach(Tools::jsonDecode(Tools::jsonEncode($this)) as $field => $value) {
+
+        $this->excludes = ['is_archivable', 'tables', 'identifier', 'fieldsRequired', 'fieldsSize', 'fieldsValidate', 'fieldsRequiredLang', 'fieldsSizeLang', 'fieldsValidateLang', 'image_dir', 'image_format', 'update_fields', 'request_admin', 'extraVars', 'force_id', 'paramFields', '_languages', 'webserviceParameters'];
+
+        if ($light) {
+
+            foreach (Tools::jsonDecode(Tools::jsonEncode($this)) as $field => $value) {
+
                 if (in_array($field, $this->excludes)) {
                     unset($this->$field);
-                }                
+                }
+
             }
+
             unset($this->excludes);
         }
 
     }
-    
+
     public static function construct($className, $id, $id_lang = null) {
-                
+
         $def = PhenyxObjectModel::getDefinition($className);
         $sql = new DbQuery();
         $sql->select('a.`' . bqSQL($def['primary']) . '` as `id`, a.*');
         $sql->from($def['table'], 'a');
         $sql->where('a.`' . bqSQL($def['primary']) . '` = ' . (int) $id);
+
         if ($id_lang && isset($def['multilang']) && $def['multilang']) {
             $sql->select('b.*');
             $sql->leftJoin($def['table'] . '_lang', 'b', 'a.`' . bqSQL($def['primary']) . '` = b.`' . bqSQL($def['primary']) . '` AND b.`id_lang` = ' . (int) $id_lang);
 
         }
+
         return Db::getInstance()->getRow($sql);
     }
-    
+
     public function constructLight() {
-       
+
         $return = [];
-        foreach(Tools::jsonDecode(Tools::jsonEncode($this)) as $field => $value) {
+
+        foreach (Tools::jsonDecode(Tools::jsonEncode($this)) as $field => $value) {
+
             if (in_array($field, $this->excludes)) {
                 unset($this->$field);
-            }                
+            }
+
         }
+
         unset($this->excludes);
         return Tools::jsonDecode(Tools::jsonEncode($this));
-        
+
     }
-    
+
     public static function getInstance() {
 
-        $class_name = static::class;
-		if (!$class_name::$instance) {
-			$class_name::$instance = new $class_name();
-		}
+        $class_name = static::;
 
-		return $class_name::$instance;
-	}
+        if (!$class_name::$instance) {
+            $class_name::$instance = new $class_name();
+        }
+
+        return $class_name::$instance;
+    }
 
     public function &__get($property) {
 
@@ -390,6 +405,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             $this->$snakeCaseProperty = $value;
         } else {
             $this->{$property}
+
             = $value;
         }
 
@@ -410,17 +426,19 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     public function getParamFields() {
 
         $this->className = get_class($this);
-        
+
         $fields = $this->context->_hook->exec('action' . $this->className . 'getFieldsModifier', [], null, true);
 
         if (is_array($fields) && count($fields)) {
+
             foreach ($fields as $plugin => $values) {
 
                 if (is_array($values)) {
-                    foreach($values as $value) {
+
+                    foreach ($values as $value) {
                         $this->paramFields[] = $value;
                     }
-                    
+
                 }
 
             }
@@ -658,6 +676,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $this->context->_hook->exec('actionObjectAddBefore', ['object' => $this]);
         $addBefores = $this->context->_hook->exec('actionObject' . get_class($this) . 'AddBefore', ['object' => $this], null, true);
+
         if (is_array($addBefores)) {
 
             foreach ($addBefores as $plugin => $defs) {
@@ -665,9 +684,12 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                 if (is_array($defs)) {
 
                     foreach ($defs as $key => $value) {
+
                         if (property_exists($this, $key)) {
-                            $this->{$key} = $value;
+                            $this->{$key}
+                            = $value;
                         }
+
                     }
 
                 }
@@ -725,32 +747,39 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $this->context->_hook->exec('actionObjectAddAfter', ['object' => $this]);
         $this->context->_hook->exec('actionObject' . get_class($this) . 'AddAfter', ['object' => $this]);
-        
+
         return $result;
     }
-    
+
     public static function addObject($object) {
-        
-        
+
         $object = Tools::jsonDecode(Tools::jsonEncode($object), true);
-       
+
         $classe = new $class_name();
-        foreach($object as $key => $value) {
-            if(is_array($value)) {
+
+        foreach ($object as $key => $value) {
+
+            if (is_array($value)) {
+
                 foreach (Language::getIDs(false) as $idLang) {
+
                     if (property_exists($classe, $key)) {
-				        $classe->{$key}[(int) $idLang] = $value[(int) $idLang];
-			         }
-                    
+                        $classe->{$key}
+                        [(int) $idLang] = $value[(int) $idLang];
+                    }
+
                 }
-            } else if (property_exists($classe, $key)) {
-				$classe->{$key} = $value;
-			}
-            
+
+            } else
+            if (property_exists($classe, $key)) {
+                $classe->{$key}
+                = $value;
+            }
+
         }
-        
+
         $result = $classe->add();
-        
+
         return $result;
     }
 
@@ -830,18 +859,27 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $this->context->_hook->exec('actionObjectUpdateBefore', ['object' => $this]);
         $updateBefores = $this->context->_hook->exec('actionObject' . get_class($this) . 'UpdateBefore', ['object' => $this], null, true);
-        if (is_array($updateBefores)) {
-            foreach ($updateBefores as $plugin => $defs) {
-                if (is_array($defs)) {
-                    foreach ($defs as $key => $value) {
-                        if (property_exists($this, $key)) {
-                            $this->{$key} = $value;
-                        }
-                    }
-                }
-            }
-        }
 
+        if (is_array($updateBefores)) {
+
+            foreach ($updateBefores as $plugin => $defs) {
+
+                if (is_array($defs)) {
+
+                    foreach ($defs as $key => $value) {
+
+                        if (property_exists($this, $key)) {
+                            $this->{$key}
+                            = $value;
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
 
         $this->clearCache();
 
@@ -904,7 +942,6 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $this->context->_hook->exec('actionObjectUpdateAfter', ['object' => $this]);
         $this->context->_hook->exec('actionObject' . get_class($this) . 'UpdateAfter', ['object' => $this]);
-        
 
         return $result;
     }
@@ -918,7 +955,6 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         $result = true;
 
         $result &= Db::getInstance()->delete($this->def['table'], '`' . bqSQL($this->def['primary']) . '` = ' . (int) $this->id);
-
 
         if (!$result) {
             return false;
@@ -950,7 +986,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         if (!property_exists($this, 'active')) {
             throw new PhenyxException('property "active" is missing in object ' . get_class($this));
-             PhenyxLogger::addLog(sprintf($this->l('property "active" is missing in object %s'), get_class($this)), 3, null, get_class($this));
+            PhenyxLogger::addLog(sprintf($this->l('property "active" is missing in object %s'), get_class($this)), 3, null, get_class($this));
         }
 
         $this->setFieldsToUpdate(['active' => true]);
@@ -993,7 +1029,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
             if (!Validate::isTableOrIdentifier($fieldName)) {
                 throw new PhenyxException('identifier is not table or identifier : ' . $fieldName);
-                PhenyxLogger::addLog(sprintf($this->l('identifier is not table or identifier : %s') , $fieldName), 3, null, get_class($this));
+                PhenyxLogger::addLog(sprintf($this->l('identifier is not table or identifier : %s'), $fieldName), 3, null, get_class($this));
             }
 
             if ((!$this->id_lang && isset($this->{$fieldName}
@@ -1122,7 +1158,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                     } else {
                         $message = 'Property ' . get_class($this) . '->' . $field . ' is empty';
                     }
-                     PhenyxLogger::addLog($message, 3, null, get_class($this));
+
+                    PhenyxLogger::addLog($message, 3, null, get_class($this));
                     $return = [
                         'success' => false,
                         'message' => $message,
@@ -1168,7 +1205,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                     } else {
                         $message = sprintf(Tools::displayError('The %1$s field is too long (%2$d chars max).'), $this->displayFieldName($field, get_class($this)), $size['max']);
                     }
-                     PhenyxLogger::addLog($message, 3, null, get_class($this));
+
+                    PhenyxLogger::addLog($message, 3, null, get_class($this));
                     $return = [
                         'success' => false,
                         'message' => $message,
@@ -1178,7 +1216,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
                 } else {
                     $message = 'Property ' . get_class($this) . '->' . $field . ' length (' . $length . ') must be between ' . $size['min'] . ' and ' . $size['max'];
-                     PhenyxLogger::addLog($message, 3, null, get_class($this));
+                    PhenyxLogger::addLog($message, 3, null, get_class($this));
                     $return = [
                         'success' => false,
                         'message' => $message,
@@ -1222,7 +1260,8 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                     } else {
                         $message = 'Property ' . get_class($this) . '->' . $field . ' is not valid';
                     }
-                     PhenyxLogger::addLog($message, 3, null, get_class($this));
+
+                    PhenyxLogger::addLog($message, 3, null, get_class($this));
                     $return = [
                         'success' => false,
                         'message' => $message,
@@ -1564,7 +1603,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         if (!class_exists($class)) {
             throw new PhenyxException("Class '$class' not found");
-             PhenyxLogger::addLog(sprintf('Class %s not found', $class), 3, null, $class);
+            PhenyxLogger::addLog(sprintf('Class %s not found', $class), 3, null, $class);
         }
 
         $collection = [];
@@ -1859,7 +1898,6 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         return $success;
     }
 
-
     public static function getDatabaseColumns($className = null) {
 
         if (empty($this->className)) {
@@ -2034,9 +2072,9 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         return $logo;
     }
-    
+
     public function loadCacheAccelerator($overrideCache = '') {
-        
+
         if (!($this->context->cache_enable)) {
             return false;
         }
@@ -2048,12 +2086,13 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         if (is_null($this->context->cache_api)) {
             $cache_api = false;
         }
+
         if (class_exists('CacheApi')) {
             // What accelerator we are going to try.
             $cache_class_name = !empty($overrideCache) ? $overrideCache : CacheApi::APIS_DEFAULT;
-        
+
             if (class_exists($cache_class_name)) {
-           
+
                 $cache_api = new $cache_class_name($this->context);
 
                 // There are rules you know...
@@ -2061,7 +2100,6 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                 if (!($cache_api instanceof CacheApiInterface) || !($cache_api instanceof CacheApi)) {
                     return false;
                 }
-
 
                 if (!$cache_api->isSupported()) {
                     return false;
@@ -2075,38 +2113,38 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
                 return $cache_api;
             }
+
             return false;
         }
 
         return false;
     }
-    
+
     public function cache_put_data($key, $value, $ttl = 120) {
-		
-        
-		if (empty($this->context->cache_enable)) {
-			return;
-		}
+
+        if (empty($this->context->cache_enable)) {
+            return;
+        }
+
         if (empty($this->context->cache_api)) {
             $this->context->cache_api = $this->loadCacheAccelerator();
-			return;
-		}
+            return;
+        }
 
-		$value = $value === null ? null : Tools::jsonEncode($value);
-		$this->context->cache_api->putData($key, $value, $ttl);
+        $value = $value === null ? null : Tools::jsonEncode($value);
+        $this->context->cache_api->putData($key, $value, $ttl);
 
+    }
 
-	}
+    public function cache_get_data($key, $ttl = 120) {
 
-	public function cache_get_data($key, $ttl = 120) {
+        if (empty($this->context->cache_enable) || empty($this->context->cache_api)) {
+            return null;
+        }
 
-		if (empty($this->context->cache_enable) || empty($this->context->cache_api)) {
-			return null;
-		}
+        $value = $this->context->cache_api->getData($key, $ttl);
 
-		$value = $this->context->cache_api->getData($key, $ttl);
-
-		return empty($value) ? null : Tools::jsonDecode($value, true);
-	}
+        return empty($value) ? null : Tools::jsonDecode($value, true);
+    }
 
 }
