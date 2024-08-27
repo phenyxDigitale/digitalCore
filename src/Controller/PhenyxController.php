@@ -1336,6 +1336,7 @@ abstract class PhenyxController {
 
             $domAvailable = extension_loaded('dom') ? true : false;
             $defer = (bool) Configuration::get('EPH_JS_DEFER');
+            $compress = (bool) Configuration::get('EPH_JS_HTML_BACKOFFICE_COMPRESSION');
 
             if ($defer && $domAvailable) {
                 $html = Media::deferInlineScripts($html);
@@ -1348,7 +1349,7 @@ abstract class PhenyxController {
                     $jsTag      => Media::getJsDef(),
                     'js_files'  => $defer ? array_unique($this->js_files) : [],
                     'js_inline' => ($defer && $domAvailable) ? Media::getInlineScript() : [],
-                    'js_heads'  => $this->js_heads,
+                    'js_heads' => ($compress && $defer) ? array_unique($this->js_heads) : []
                 ]
             );
             $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
@@ -2248,8 +2249,8 @@ abstract class PhenyxController {
                 [
                     'js_def'           => ($defer && $domAvailable) ? [] : $this->js_def,
                     'extracss'         => $this->extracss,
+                    'js_heads'         => [],
                     'js_files'         => $defer ? [] : $this->extraJs,
-                    'js_heads'         => $this->js_heads,
                     'favicon_dir'      => __EPH_BASE_URI__ . 'content/backoffice/img/',
                     'meta_title'       => $this->page_title,
                     'meta_description' => $this->page_description,
@@ -2323,7 +2324,7 @@ abstract class PhenyxController {
                     'js_def'    => $js_def,
                     'js_files'  => $js_files,
                     'js_inline' => $js_inline,
-                    'js_heads'  => $this->js_heads,
+                    'js_heads'  => [],
                 ]
             );
             $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
@@ -2970,6 +2971,7 @@ abstract class PhenyxController {
             break;
         case 'Supplier':
             die(Tools::jsonEncode(StdAccount::getAccountByidType(4)));
+
             break;
         case 'Customer':
             die(Tools::jsonEncode(StdAccount::getAccountByidType(5)));
@@ -3393,6 +3395,7 @@ abstract class PhenyxController {
 
     private function getLoadTimeColor($n, $kikoo = false) {
 
+
         if ($n > 1.6) {
             return '<span style="color:red">' . round($n * 1000) . '</span>' . ($kikoo ? $this->la('You‘d better run your shop on a toaster') : '');
         } else
@@ -3711,6 +3714,7 @@ abstract class PhenyxController {
 
         foreach ($this->profiler as $row) {
 
+
             if ($row['block'] == 'checkAccess' && $row['time'] == $last['time']) {
                 continue;
             }
@@ -3910,6 +3914,7 @@ abstract class PhenyxController {
 
         $this->content_ajax .= '</table>
         </div>';
+
     }
 
     protected function displayProfilingObjectModel() {
