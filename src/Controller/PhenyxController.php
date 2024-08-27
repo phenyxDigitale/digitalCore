@@ -1263,7 +1263,7 @@ abstract class PhenyxController {
 
         $this->addHeaderJS([
             _EPH_JS_DIR_ . 'jquery/jquery-' . _EPH_JQUERY_VERSION_ . '.min.js',
-            _EPH_JS_DIR_ . 'jquery/jquery-migrate-1.4.1.min.js',
+           // _EPH_JS_DIR_ . 'jquery/jquery-migrate-1.4.1.min.js',
             _EPH_JS_DIR_ . 'jquery-ui/jquery-ui.min.js',
 
         ]);
@@ -2062,8 +2062,8 @@ abstract class PhenyxController {
                 [
                     'js_def'           => ($defer && $domAvailable) ? [] : $this->js_def,
                     'extracss'         => $this->extracss,
+                    'js_heads'         => [],
                     'js_files'         => $defer ? [] : $this->push_js_files,
-                    'js_heads'         => $this->js_heads,
                     'favicon_dir'      => __EPH_BASE_URI__ . 'content/backoffice/img/',
                     'meta_title'       => $this->page_title,
                     'meta_description' => $this->page_description,
