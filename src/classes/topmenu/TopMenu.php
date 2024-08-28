@@ -434,7 +434,7 @@ class TopMenu extends PhenyxObjectModel {
             }
 
             if ($use_ajax) {
-                $return .= '<a href="javascript:void()" onClick="openAjaxCms(' . (int) $cms->id . ')" title="' . $name . '"  class="a-niveau1" data-type="cms" data-id="' . (int) $cms->id . '">';
+                $return .= '<a href="javascript:void()" rel="nofollow"  onClick="openAjaxCms(' . (int) $cms->id . ')" title="' . $name . '"  class="a-niveau1" data-type="cms" data-id="' . (int) $cms->id . '">';
             } else {
                 $return .= '<a href="' . $this->context->link->getCMSLink($cms) . '" title="' . $name . '"  class="a-niveau1" data-type="cms" data-id="' . (int) $cms->id . '">';
             }
@@ -493,7 +493,7 @@ class TopMenu extends PhenyxObjectModel {
             }
 
             if ($use_ajax) {
-                $return .= '<a href="javascript:void()" onClick="openAjaxFormulaire(' . (int) $pfg->id . ')" title="' . $name . '"  class="a-niveau1" data-type="pfg" data-id="' . (int) $pfg->id . '">';
+                $return .= '<a href="javascript:void()" rel="nofollow"  onClick="openAjaxFormulaire(' . (int) $pfg->id . ')" title="' . $name . '"  class="a-niveau1" data-type="pfg" data-id="' . (int) $pfg->id . '">';
             } else {
                 $return .= '<a href="' . $this->context->link->getPFGLink($pfg) . '" title="' . $name . '"  class="a-niveau1" data-type="pfg" data-id="' . (int) $pfg->id . '">';
             }

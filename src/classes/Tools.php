@@ -2867,9 +2867,9 @@ FileETag none
             $cms = new CMS($cms->id_parent, $context->language->id);
 
             if ($ajax_mode && $cms_ajax_mode) {
-                $fullPath[$i] = '<a href="javascript:void(0)" onClick="openAjaxCms(' . $cms->id . ')" data-gg="">' . htmlentities($cms->meta_title, ENT_NOQUOTES, 'UTF-8') . '</a><span class="navigation-pipe">' . $pipe . '</span>';
+                $fullPath[$i] = '<a href="javascript:void(0)" onClick="openAjaxCms(' . $cms->id . ')" title="' . $cms->meta_title . '" data-gg="">' . htmlentities($cms->meta_title, ENT_NOQUOTES, 'UTF-8') . '</a><span class="navigation-pipe">' . $pipe . '</span>';
             } else {
-                $fullPath[$i] = '<a href="' . $context->link->getCMSLink($cms->id) . '" data-gg="">' . htmlentities($cms->meta_title, ENT_NOQUOTES, 'UTF-8') . '</a><span class="navigation-pipe">' . $pipe . '</span>';
+                $fullPath[$i] = '<a href="' . $context->link->getCMSLink($cms->id) . '" title="' . $cms->meta_title . '" data-gg="">' . htmlentities($cms->meta_title, ENT_NOQUOTES, 'UTF-8') . '</a><span class="navigation-pipe">' . $pipe . '</span>';
             }
 
         }
