@@ -701,7 +701,9 @@ class PhenyxTools {
         return $filesPlugins;
     }
     
-    public function mergeLanguages($iso) {
+    public function mergeLanguages() {
+        
+        $iso = $this->context->language->id;
 
         global $_LANGADM, $_LANGCLASS, $_LANGFRONT, $_LANGMAIL, $_LANGPDF;
         $_plugins = $this->getPlugins();
