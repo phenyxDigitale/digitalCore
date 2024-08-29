@@ -283,7 +283,7 @@ class Hook extends PhenyxObjectModel {
         $query = new DbQuery();
         $query->select('h.*, hl.*');
         $query->from('hook', 'h');
-        $query->leftJoin('hook_lang', 'hl', 'hl.`id_hook` = h.`id_hook` AND hl.`id_lang` = ' . Context::getContext()->language->id);
+        $query->leftJoin('hook_lang', 'hl', 'hl.`id_hook` = h.`id_hook` AND hl.`id_lang` = ' . $ths->context->language->id);
 
         if ($position) {
             $query->where('h`position` = 1');
