@@ -1979,7 +1979,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             $class = substr($class, 0, -4);
         }
 
-        return Translate::getClassTranslation($string, $class);
+        return $this->context->translations->getClassTranslation($string, $class);
     }
 
     public function getStaticPrefix($piece_type) {

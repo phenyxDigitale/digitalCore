@@ -2570,7 +2570,7 @@ abstract class PhenyxController {
             $class = substr($class, 0, -10);
         }
 
-        return Translate::getAdminTranslation($string, $class, $addslashes, $htmlentities);
+        return $this->context->translations->getAdminTranslation($string, $class, $addslashes, $htmlentities);
     }
 
     protected function isCached($template, $cacheId = null, $compileId = null) {

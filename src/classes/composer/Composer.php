@@ -1650,7 +1650,7 @@ class Composer {
 
         $class = 'Composer';
 
-        return Translate::getClassTranslation($string, $class);
+        return $this->context->translations->getClassTranslation($string, $class);
     }
 
 }

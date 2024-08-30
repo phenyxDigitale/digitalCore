@@ -10,7 +10,7 @@ class RevSliderTooltips {
 			$class = substr($class, 0, -4);
 		}
 
-		return Translate::getClassTranslation($string, $class);
+		return Context::getContext()->translations->getClassTranslation($string, $class);
 	}
 
 	public function getTooltips() {

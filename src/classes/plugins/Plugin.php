@@ -205,6 +205,10 @@ abstract class Plugin {
         if(!isset($this->context->_hook)) {
             $this->context->_hook = Hook::getInstance();
         }
+        if (!isset($this->context->translations)) {
+
+            $this->context->translations = new Translate($this->context->language->iso_code);
+        }
         
         $this->main_plugin = self::getIdPluginByName('ph_manager');
         
@@ -701,7 +705,7 @@ abstract class Plugin {
 
         }
 
-        return Translate::getPluginTranslation((string) $xmlPlugin->name, Plugin::configXmlStringFormat($xmlPlugin->displayName), (string) $xmlPlugin->name);
+        return Context::getContext()->translations->getPluginTranslation((string) $xmlPlugin->name, Plugin::configXmlStringFormat($xmlPlugin->displayName), (string) $xmlPlugin->name);
     }
 
     public static function configXmlStringFormat($string) {
@@ -1185,7 +1189,7 @@ abstract class Plugin {
 
     public static function findTranslation($name, $string, $source) {
 
-        return Translate::getPluginTranslation($name, $string, $source);
+        return Context::getContext()->translations->getPluginTranslation($name, $string, $source);
     }
 
     public static function isEnabled($pluginName) {
@@ -2558,7 +2562,7 @@ abstract class Plugin {
             return $string;
         }
 
-        return Translate::getPluginTranslation($this, $string, ($specific) ? $specific : $this->name);
+        return Context::getContext()->translations->getPluginTranslation($this, $string, ($specific) ? $specific : $this->name);
     }
 
     public function registerHook($hookName, $companyList = null, $position = null) {

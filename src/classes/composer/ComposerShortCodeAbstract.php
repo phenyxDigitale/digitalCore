@@ -22,7 +22,7 @@ abstract class ComposerShortCodeAbstract {
 
         $class = 'ComposerShortCodeAbstract';
 
-        return Translate::getClassTranslation($string, $class);
+        return Context::getContext()->translations->getClassTranslation($string, $class);
     }
 
 	public function addAction($action, $method, $priority = 10) {
