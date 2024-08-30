@@ -2297,6 +2297,10 @@ FileETag none
                     }
                 }
 			}
+            
+            if (str_contains($filePath, 'custom_') && $ext == 'css') {
+                continue;
+            }
 			
            
            if (str_contains($filePath, '/uploads/')) {
