@@ -3168,12 +3168,18 @@ abstract class Plugin {
         foreach ($hooks_list as &$current_hook) {
             $hook_name = $current_hook['name'];
             $retro_hook_name = $this->context->_hook->getRetroHookName($hook_name);
+            $is_registered = false;
+            $hook = new Hook($current_hook['id_hook'], $this->context->language->id);
+            if ($this->isRegisteredInHook($hook->name)) {
+                $is_registered = 1;
+            }
 
             if (is_callable([$this, 'hook' . ucfirst($hook_name)]) || is_callable([$this, 'hook' . ucfirst($retro_hook_name)])) {
                 $possible_hooks_list[] = [
                     'id_hook' => $current_hook['id_hook'],
                     'name'    => $hook_name,
                     'title'   => $current_hook['title'],
+                    'is_registered' => $is_registered
                 ];
             }
 

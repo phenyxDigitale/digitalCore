@@ -65,14 +65,14 @@ class Hook extends PhenyxObjectModel {
     ];
 
     public function __construct($id = null, $idLang = null) {
-
+       
         $this->className = get_class($this);
         $this->context = Context::getContext();
-
+        
         if (!isset(PhenyxObjectModel::$loaded_classes[$this->className])) {
-            $this->def = PhenyxObjectModel::getDefinition($this->className);
+            $this->def = PhenyxObjectModel::getDefinition($this->className);            
 
-            if (!Validate::isTableOrIdentifier($this->def['primary']) || !Validate::isTableOrIdentifier($this->def['table'])) {
+            if (!Validate::isTableOrIdentifier('id_hook') || !Validate::isTableOrIdentifier('hook')) {
                 throw new PhenyxException('Identifier or table format not valid for class ' . $this->className);
                 PhenyxLogger::addLog(sprintf($this->l('Identifier or table format not valid for class %s'), $this->className), 3, null, get_class($this));
             }
@@ -91,13 +91,16 @@ class Hook extends PhenyxObjectModel {
         $this->id_lang = (Language::getLanguage($idLang) !== false) ? $idLang : Configuration::get(Configuration::LANG_DEFAULT);
         $this->context->_hook = $this;
 
-        if ($this->id) {
+        if ($id) {
+            $this->id = $id;
             $entityMapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");
-            $entityMapper->load($this->id, $idLang, $this, $this->def, static::$cache_objects);
+            $entityMapper->load($this->id, $idLang, $this, $this->def, false);
             $this->plugins = $this->getPlugins();
             $this->available_plugins = $this->getPossiblePluginList();
             $this->metas = Tools::jsonDecode($this->metas, true);
         }
+        
+        
 
     }
 
@@ -194,10 +197,10 @@ class Hook extends PhenyxObjectModel {
                         ->select('position')
                         ->from('hook_plugin')
                         ->where('`id_hook` =' . $this->id)
-                        ->where('`id_plugin` =' . $tmpInstance->id)
+                        ->where('`id_plugin` =' . $plugin['id_plugin'])
                 );
                 $collection[$tmpInstance->name] = [
-                    'id_plugin'   => $tmpInstance->id,
+                    'id_plugin'   => $plugin['id_plugin'],
                     'displayName' => $tmpInstance->displayName,
                     'id_hook'     => $this->id,
                     'position'    => $position,
@@ -283,7 +286,7 @@ class Hook extends PhenyxObjectModel {
         $query = new DbQuery();
         $query->select('h.*, hl.*');
         $query->from('hook', 'h');
-        $query->leftJoin('hook_lang', 'hl', 'hl.`id_hook` = h.`id_hook` AND hl.`id_lang` = ' . $ths->context->language->id);
+        $query->leftJoin('hook_lang', 'hl', 'hl.`id_hook` = h.`id_hook` AND hl.`id_lang` = ' . $this->context->language->id);
 
         if ($position) {
             $query->where('h`position` = 1');
