@@ -5688,7 +5688,7 @@ FileETag none
                     continue;
                 }
 
-                if ($tab['master'] && !$context->employee->master_admin) {
+                if (isset($tab['master']) && $tab['master'] && !$context->employee->master_admin) {
                     unset($topbars[$index]);
                     continue;
                 }
