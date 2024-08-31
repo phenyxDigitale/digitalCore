@@ -714,7 +714,7 @@ class PhenyxTools {
         }
 
         $toInsert = [];
-        $current_translation = $_LANGADM;
+        
 
         if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
 
@@ -728,6 +728,7 @@ class PhenyxTools {
             }
 
         }
+        $current_translation = is_array($_LANGADM) ? $_LANGADM : [];
 
         foreach ($_plugins as $plugin) {
 
@@ -738,7 +739,7 @@ class PhenyxTools {
 
                 if (is_array($complementary_language)) {
                     $_LANGADM = array_merge(
-                        $_LANGADM,
+                        $current_translation,
                         $complementary_language
                     );
                 }
@@ -779,6 +780,7 @@ class PhenyxTools {
             }
 
         }
+        $current_translation = is_array($_LANGCLASS) ? $_LANGCLASS : [];
 
         foreach ($_plugins as $plugin) {
 
@@ -788,7 +790,7 @@ class PhenyxTools {
 
                 if (is_array($complementary_language)) {
                     $_LANGCLASS = array_merge(
-                        $_LANGCLASS,
+                        $current_translation,
                         $complementary_language
                     );
                 }
@@ -829,6 +831,8 @@ class PhenyxTools {
             }
 
         }
+        $current_translation = is_array($_LANGFRONT) ? $_LANGFRONT : [];
+
 
         foreach ($_plugins as $plugin) {
 
@@ -839,7 +843,7 @@ class PhenyxTools {
 
                 if (is_array($complementary_language)) {
                     $_LANGFRONT = array_merge(
-                        $_LANGFRONT,
+                        $current_translation,
                         $complementary_language
                     );
                 }
@@ -867,6 +871,8 @@ class PhenyxTools {
         }
 
         $toInsert = [];
+        $current_translation = is_array($_LANGMAIL) ? $_LANGMAIL : [];
+
 
         foreach ($_plugins as $plugin) {
 
@@ -877,7 +883,7 @@ class PhenyxTools {
 
                 if (is_array($complementary_language)) {
                     $_LANGMAIL = array_merge(
-                        $_LANGMAIL,
+                        $current_translation,
                         $complementary_language
                     );
                 }
@@ -905,6 +911,7 @@ class PhenyxTools {
         }
 
         $toInsert = [];
+        $current_translation = is_array($_LANGPDF) ? $_LANGPDF : [];
 
         foreach ($_plugins as $plugin) {
 
@@ -915,7 +922,7 @@ class PhenyxTools {
 
                 if (is_array($complementary_language)) {
                     $_LANGPDF = array_merge(
-                        $_LANGPDF,
+                        $current_translation,
                         $complementary_language
                     );
                 }
