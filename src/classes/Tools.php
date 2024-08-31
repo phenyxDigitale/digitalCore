@@ -4533,7 +4533,7 @@ FileETag none
             $bckImg = !empty(Configuration::get('EPH_BCK_LOGO_MAIL')) ? 'https://' . $context->company->domain_ssl . '/content/img/' . Configuration::get('EPH_BCK_LOGO_MAIL') : false;
             $tpl->assign([
                 'title'        => $postfields['subject'],
-                'css_dir'      => 'https://' . $context->company->domain_ssl . _THEME_CSS_DIR_,
+                'css_dir'      => 'https://' . $context->company->domain_ssl . $context->context->theme->css_theme,
                 'shop_link'    => $context->link->getBaseFrontLink(),
                 'shop_name'    => $context->company->company_name,
                 'bckImg'       => $bckImg,

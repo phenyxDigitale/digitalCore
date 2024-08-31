@@ -451,7 +451,7 @@ abstract class PhenyxController {
 
         $this->context->smarty->assign([
             'shopName'    => $this->context->company->company_name,
-            'css_dir'     => 'https://' . $this->context->company->domain_ssl . _THEME_CSS_DIR_,
+            'css_dir'     => 'https://' . $this->context->company->domain_ssl . $this->context->theme->css_theme,
             'shop_url'    => 'https://' . $this->context->company->domain_ssl,
             'shop_mail'   => $this->context->company->company_email,
             'company'     => $this->context->company,

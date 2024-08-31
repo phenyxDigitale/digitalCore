@@ -726,7 +726,7 @@ class InstallerController extends PhenyxController {
 
             if (!$allowed) {
                 header('HTTP/1.1 503 temporarily overloaded');
-                $this->addCSS(_THEME_CSS_DIR_ . 'maintenance.css', 'all');
+                $this->addCSS($this->context->theme->css_theme . 'maintenance.css', 'all');
                 $this->setMedia();
                 $this->context->smarty->assign($this->initLogoAndFavicon());
                 $maintenance_text = $this->context->smarty->fetch('string:' . Configuration::get('EPH_MAINTENANCE_TEXT', (int) $this->context->language->id));
@@ -871,16 +871,16 @@ class InstallerController extends PhenyxController {
 
         parent::setMedia($isNewTheme);
 
-        $this->addCSS(_THEME_CSS_DIR_ . 'root.css', 'all');
-        $this->addCSS(_THEME_CSS_DIR_ . 'grid_ephenyxshop.css', 'all'); // retro compat themes 1.5.0.1
-        $this->addCSS(_THEME_CSS_DIR_ . 'global.css', 'all');
+        $this->addCSS($this->context->theme->css_theme . 'root.css', 'all');
+        $this->addCSS($this->context->theme->css_theme . 'grid_ephenyxshop.css', 'all'); // retro compat themes 1.5.0.1
+        $this->addCSS($this->context->theme->css_theme . 'global.css', 'all');
         $this->addCSS(_EPH_CSS_DIR_ . 'fontawesome/css/all.css');
 
         $this->addjQueryPlugin('sweetalert');
         $this->addJS(_EPH_JS_DIR_ . 'tools.js');
         $this->addJS(_EPH_JS_DIR_ . 'imageuploadify.min.js');
         $this->addJS(_EPH_JS_DIR_ . 'pdfuploadify.min.js');
-        $this->addJS(_THEME_JS_DIR_ . 'global.js');
+        $this->addJS($this->context->theme->js_theme . 'global.js');
         $this->addJS(_EPH_JS_DIR_ . 'composer/composer_front.js');
         $this->addJS(_EPH_JS_DIR_ . 'ace/ace.js');
 
@@ -894,8 +894,8 @@ class InstallerController extends PhenyxController {
             'ajaxFormLink'  => $this->context->link->getPageLink('pfg', true),
             'AjaxAuthLink'  => $this->context->link->getPageLink('authentication', true),
             'AjaxFrontLink' => $this->context->link->getPageLink('front', true),
-            'css_dir'       => _THEME_CSS_DIR_,
-            'js_dir'        => _THEME_JS_DIR_,
+            'css_dir'       => $this->context->theme->css_theme,
+            'js_dir'        => $this->context->theme->js_theme,
             'baseDir'       => Tools::getDomainSsl(true),
         ]);
 
@@ -934,7 +934,7 @@ class InstallerController extends PhenyxController {
 
         $this->addjqueryPlugin('fancybox');
 
-        $this->addCSS(_THEME_CSS_DIR_ . 'layout.css', 'all');
+        $this->addCSS($this->context->theme->css_theme . 'layout.css', 'all');
 
         if ($this->usePhenyxMenuTheme()) {
             $this->setPhenyxMenuMedia();
@@ -1112,8 +1112,8 @@ class InstallerController extends PhenyxController {
         );
 
         if ($this->context->language->is_rtl) {
-            $this->addCSS(_THEME_CSS_DIR_ . 'rtl.css');
-            $this->addCSS(_THEME_CSS_DIR_ . $this->context->language->iso_code . '.css');
+            $this->addCSS($this->context->theme->css_theme . 'rtl.css');
+            $this->addCSS($this->context->theme->css_theme . $this->context->language->iso_code . '.css');
         }
 
     }
@@ -1393,9 +1393,9 @@ class InstallerController extends PhenyxController {
         $assignArray = [
             'img_ps_dir'   => _EPH_IMG_,
             'img_lang_dir' => _THEME_LANG_DIR_,
-            'img_dir'      => _THEME_IMG_DIR_,
-            'css_dir'      => _THEME_CSS_DIR_,
-            'js_dir'       => _THEME_JS_DIR_,
+            'img_dir'      => $this->context->theme->img_theme,
+            'css_dir'      => $this->context->theme->css_theme,
+            'js_dir'       => $this->context->theme->js_theme,
         ];
 
         foreach ($assignArray as $assignKey => $assignValue) {
