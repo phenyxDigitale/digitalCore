@@ -5715,7 +5715,7 @@ FileETag none
                         continue;
                     }
 
-                    if ($subTab['master'] && !$context->employee->master_admin) {
+                    if (isset($subTab['master']) && $subTab['master'] && !$context->employee->master_admin) {
                         unset($subTabs[$index2]);
                         continue;
                     }
@@ -5747,7 +5747,7 @@ FileETag none
                             continue;
                         }
 
-                        if ($terTab['master'] && !$context->employee->master_admin) {
+                        if (isset($terTab['master']) && $terTab['master'] && !$context->employee->master_admin) {
                             unset($terTabs[$index3]);
                             continue;
                         }

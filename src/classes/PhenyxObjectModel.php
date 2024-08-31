@@ -225,6 +225,12 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             PhenyxObjectModel::$hook_instance = new Hook();
             $this->context->_hook = PhenyxObjectModel::$hook_instance;
         }
+       
+        
+        if (!isset($this->context->translations)) {
+
+            $this->context->translations = new Translate($this->context->language->iso_code);
+        }
 
         $this->getExtraVars($this->className);
 
@@ -1332,6 +1338,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             }
 
             if (!empty($value) || $value === '0' || ($field == 'postcode' && $value == '0')) {
+
                 $validationError = false;
 
                 if (isset($data['validate'])) {
