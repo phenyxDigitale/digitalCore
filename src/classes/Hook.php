@@ -90,6 +90,7 @@ class Hook extends PhenyxObjectModel {
 
         $this->id_lang = (Language::getLanguage($idLang) !== false) ? $idLang : Configuration::get(Configuration::LANG_DEFAULT);
         $this->context->_hook = $this;
+        $this->context->hook_args = $this->getArgs();
 
         if ($id) {
             $this->id = $id;
