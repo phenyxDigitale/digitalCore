@@ -443,9 +443,6 @@ abstract class PhenyxController {
             $this->context->_hook = new Hook();
         }
         
-        if(!isset($this->context->hook_args)) {
-            $this->context->hook_args = $this->context->_hook->getArgs();
-        }
         
         if (!isset($this->context->media)) {
             $this->context->media = new Media();
