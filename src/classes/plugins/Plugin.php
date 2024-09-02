@@ -206,9 +206,6 @@ abstract class Plugin {
             $this->context->_hook = new Hook();
         }
         
-        if(!isset($this->context->hook_args)) {
-            $this->context->hook_args = $this->context->_hook->getArgs();
-        }
         if (!isset($this->context->translations)) {
 
             $this->context->translations = new Translate($this->context->language->iso_code);
