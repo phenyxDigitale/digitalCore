@@ -42,40 +42,15 @@ class PhenyxTools {
 	}
     
     public static function addJsDef($jsDef) {
+        
+        return Context::getContext()->media->addJsDef($jsDef);
 
-        if (is_array($jsDef)) {
-
-            foreach ($jsDef as $key => $js) {
-                // @codingStandardsIgnoreStart
-                Media::$js_def[$key] = $js;
-                // @codingStandardsIgnoreEnd
-            }
-
-        } else
-        if ($jsDef) {
-            // @codingStandardsIgnoreStart
-            Media::$js_def[] = $jsDef;
-            // @codingStandardsIgnoreEnd
-        }
 
     }
 
     public static function addJsDefL($params, $content, $smarty = null, &$repeat = false) {
-
-        if (!$repeat && isset($params) && mb_strlen($content)) {
-
-            if (!is_array($params)) {
-                $params = (array) $params;
-            }
-
-            foreach ($params as $param) {
-                // @codingStandardsIgnoreStart
-                Media::$js_def[$param] = $content;
-                // @codingStandardsIgnoreEnd
-            }
-
-        }
-
+        
+        return Context::getContext()->media->addJsDefL($params, $content, $smarty, $repeat);
     }
 
 	public function checkLicense() {
