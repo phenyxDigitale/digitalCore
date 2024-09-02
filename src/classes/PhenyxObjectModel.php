@@ -225,6 +225,10 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             PhenyxObjectModel::$hook_instance = new Hook();
             $this->context->_hook = PhenyxObjectModel::$hook_instance;
         }
+        
+        if (!isset($this->context->language)) {
+            $this->context->language = new Language(Configuration::get('EPH_LANG_DEFAULT'));
+        }
        
         
         if (!isset($this->context->translations)) {
@@ -234,6 +238,14 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         
         if (!isset($this->context->media)) {
             $this->context->media = new Media();
+        }
+        
+        if(!isset($this->context->_hook)) {
+            $this->context->_hook = new Hook();;
+        }
+        
+        if(!isset($this->context->hook_args)) {
+            $this->context->hook_args = $this->context->_hook->getArgs();
         }
 
         $this->getExtraVars($this->className);
