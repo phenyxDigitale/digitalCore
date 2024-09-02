@@ -442,6 +442,10 @@ abstract class PhenyxController {
         if (!isset($this->context->_hook)) {
             $this->context->_hook = new Hook();
         }
+        
+        if (!isset($this->context->media)) {
+            $this->context->media = new Media();
+        }
 
         $this->context->getExtraContextVars();
 
@@ -1345,16 +1349,16 @@ abstract class PhenyxController {
             $compress = (bool) Configuration::get('EPH_JS_HTML_BACKOFFICE_COMPRESSION');
 
             if ($defer && $domAvailable) {
-                $html = Media::deferInlineScripts($html);
+                $html = $this->context->media->deferInlineScripts($html);
             }
 
             $html = trim(str_replace(['</body>', '</html>'], '', $html)) . "\n";
 
             $this->context->smarty->assign(
                 [
-                    $jsTag      => Media::getJsDef(),
+                    $jsTag      => $this->context->media->getJsDef(),
                     'js_files'  => $defer ? array_unique($this->js_files) : [],
-                    'js_inline' => ($defer && $domAvailable) ? Media::getInlineScript() : [],
+                    'js_inline' => ($defer && $domAvailable) ? $this->context->media->getInlineScript() : [],
                     'js_heads' => ($compress && $defer) ? array_unique($this->js_heads) : []
                 ]
             );
@@ -1403,11 +1407,11 @@ abstract class PhenyxController {
         $defer = (bool) Configuration::get('EPH_JS_DEFER');
 
         $html = trim(str_replace(['</body>', '</html>'], '', $html)) . "\n";
-        $this->ajax_head = str_replace(['<head>', '</head>'], '', Media::deferTagOutput('head', $html));
-        $page = Media::deferIdOutput('page', $html);
+        $this->ajax_head = str_replace(['<head>', '</head>'], '', $this->context->media->deferTagOutput('head', $html));
+        $page = $this->context->media->deferIdOutput('page', $html);
         $this->context->smarty->assign(
             [
-                $jsTag      => Media::getJsDef(),
+                $jsTag      => $this->context->media->getJsDef(),
                 'js_files'  => $defer ? array_unique($this->js_files) : [],
                 'js_inline' => [],
             ]
@@ -1478,7 +1482,7 @@ abstract class PhenyxController {
             if (is_string($cssFile) && strlen($cssFile) > 1) {
 
                 if ($checkPath) {
-                    $cssPath = Media::getCSSPath($cssFile, $media);
+                    $cssPath = $this->context->media->getCSSPath($cssFile, $media);
                 } else {
                     $cssPath = [$cssFile => $media];
                 }
@@ -1490,7 +1494,7 @@ abstract class PhenyxController {
                     if (file_exists($media)) {
                         $cssPath = '/' . ltrim(str_replace(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, _EPH_ROOT_DIR_), __EPH_BASE_URI__, $media), '/\\');
                     } else {
-                        $cssPath = Media::getCSSPath($media, $cssMediaType);
+                        $cssPath = $this->context->media->getCSSPath($media, $cssMediaType);
                     }
 
                 } else {
@@ -1515,7 +1519,7 @@ abstract class PhenyxController {
                 $jsPath = $jsFile;
 
                 if ($checkPath) {
-                    $jsPath = Media::getJSPath($jsFile);
+                    $jsPath = $this->context->media->getJSPath($jsFile);
                 }
 
                 if ($jsPath && in_array($jsPath, $this->js_files)) {
@@ -1528,7 +1532,7 @@ abstract class PhenyxController {
             $jsPath = $jsUri;
 
             if ($checkPath) {
-                $jsPath = Media::getJSPath($jsUri);
+                $jsPath = $this->context->media->getJSPath($jsUri);
             }
 
             if ($jsPath) {
@@ -1541,7 +1545,7 @@ abstract class PhenyxController {
 
     public function addJquery($version = null, $folder = null, $minifier = true) {
 
-        $this->addJS(Media::getJqueryPath($version, $folder, $minifier), false);
+        $this->addJS($this->context->media->getJqueryPath($version, $folder, $minifier), false);
     }
 
     public function addJS($jsUri, $checkPath = true) {
@@ -1559,7 +1563,7 @@ abstract class PhenyxController {
                 $jsPath = $jsFile = $jsFile[0];
 
                 if ($checkPath) {
-                    $jsPath = Media::getJSPath($jsFile);
+                    $jsPath = $this->context->media->getJSPath($jsFile);
                 }
 
                 // $key = is_array($js_path) ? key($js_path) : $js_path;
@@ -1581,7 +1585,7 @@ abstract class PhenyxController {
             $jsPath = $jsUri = $jsUri[0];
 
             if ($checkPath) {
-                $jsPath = Media::getJSPath($jsUri);
+                $jsPath = $this->context->media->getJSPath($jsUri);
             }
 
             if ($jsPath && !in_array($jsPath, $this->js_files)) {
@@ -1607,7 +1611,7 @@ abstract class PhenyxController {
                 $jsPath = $jsFile = $jsFile[0];
 
                 if ($checkPath) {
-                    $jsPath = Media::getJSPath($jsFile);
+                    $jsPath = $this->context->media->getJSPath($jsFile);
                 }
 
                 // $key = is_array($js_path) ? key($js_path) : $js_path;
@@ -1629,7 +1633,7 @@ abstract class PhenyxController {
             $jsPath = $jsUri = $jsUri[0];
 
             if ($checkPath) {
-                $jsPath = Media::getJSPath($jsUri);
+                $jsPath = $this->context->media->getJSPath($jsUri);
             }
 
             if ($jsPath && !in_array($jsPath, $this->js_heads)) {
@@ -1655,7 +1659,7 @@ abstract class PhenyxController {
                 $jsPath = $jsFile = $jsFile[0];
 
                 if ($checkPath) {
-                    $jsPath = Media::getJSPath($jsFile);
+                    $jsPath = $this->context->media->getJSPath($jsFile);
                 }
 
                 // $key = is_array($js_path) ? key($js_path) : $js_path;
@@ -1677,7 +1681,7 @@ abstract class PhenyxController {
             $jsPath = $jsUri = $jsUri[0];
 
             if ($checkPath) {
-                $jsPath = Media::getJSPath($jsUri);
+                $jsPath = $this->context->media->getJSPath($jsUri);
             }
 
             if ($jsPath && !in_array($jsPath, $this->js_footers)) {
@@ -1695,7 +1699,7 @@ abstract class PhenyxController {
         }
 
         foreach ($component as $ui) {
-            $uiPath = Media::getJqueryUIPath($ui, $theme, $checkDependencies);
+            $uiPath = $this->context->media->getJqueryUIPath($ui, $theme, $checkDependencies);
             $this->addCSS($uiPath['css'], 'all', false);
             $this->addJS($uiPath['js'], false);
         }
@@ -1713,7 +1717,7 @@ abstract class PhenyxController {
             if (is_string($cssFile) && strlen($cssFile) > 1) {
 
                 if ($checkPath) {
-                    $cssPath = Media::getCSSPath($cssFile, $media);
+                    $cssPath = $this->context->media->getCSSPath($cssFile, $media);
                 } else {
                     $cssPath = [$cssFile => $media];
                 }
@@ -1721,7 +1725,7 @@ abstract class PhenyxController {
             } else {
 
                 if ($checkPath) {
-                    $cssPath = Media::getCSSPath($media, $cssMediaType);
+                    $cssPath = $this->context->media->getCSSPath($media, $cssMediaType);
                 } else {
                     $cssPath = [$media => is_string($cssMediaType) ? $cssMediaType : 'all'];
                 }
@@ -1758,7 +1762,7 @@ abstract class PhenyxController {
             if (is_string($cssFile) && strlen($cssFile) > 1) {
 
                 if ($checkPath) {
-                    $cssPath = Media::getCSSPath($cssFile, $media);
+                    $cssPath = $this->context->media->getCSSPath($cssFile, $media);
                 } else {
                     $cssPath = [$cssFile => $media];
                 }
@@ -1766,7 +1770,7 @@ abstract class PhenyxController {
             } else {
 
                 if ($checkPath) {
-                    $cssPath = Media::getCSSPath($media, $cssMediaType);
+                    $cssPath = $this->context->media->getCSSPath($media, $cssMediaType);
                 } else {
 
                     $cssPath = [$media => is_string($cssMediaType) ? $cssMediaType : 'all'];
@@ -1807,7 +1811,7 @@ abstract class PhenyxController {
                 $jsPath = $jsFile = $jsFile[0];
 
                 if ($checkPath) {
-                    $jsPath = Media::getJSPath($jsFile);
+                    $jsPath = $this->context->media->getJSPath($jsFile);
                 }
 
                 // $key = is_array($js_path) ? key($js_path) : $js_path;
@@ -1829,7 +1833,7 @@ abstract class PhenyxController {
             $jsPath = $jsUri = $jsUri[0];
 
             if ($checkPath) {
-                $jsPath = Media::getJSPath($jsUri);
+                $jsPath = $this->context->media->getJSPath($jsUri);
             }
 
             if ($jsPath && !in_array($jsPath, $this->push_js_files)) {
@@ -1873,7 +1877,7 @@ abstract class PhenyxController {
         if (is_array($name)) {
 
             foreach ($name as $plugin) {
-                $pluginPath = Media::getJqueryPluginPath($plugin, $folder);
+                $pluginPath = $this->context->media->getJqueryPluginPath($plugin, $folder);
 
                 if (!empty($pluginPath['js'])) {
                     $this->addJS($pluginPath['js'], false);
@@ -2054,11 +2058,11 @@ abstract class PhenyxController {
             if ((Configuration::get('EPH_CSS_BACKOFFICE_CACHE') || Configuration::get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
 
                 if (Configuration::get('EPH_CSS_BACKOFFICE_CACHE')) {
-                    $this->extracss = Media::admincccCss($this->extracss);
+                    $this->extracss = $this->context->media->admincccCss($this->extracss);
                 }
 
                 if (Configuration::get('EPH_JS_BACKOFFICE_CACHE')) {
-                    $this->push_js_files = Media::admincccJS($this->push_js_files);
+                    $this->push_js_files = $this->context->media->admincccJS($this->push_js_files);
                 }
 
             }
@@ -2129,19 +2133,19 @@ abstract class PhenyxController {
             $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
 
             if ($defer && $domAvailable) {
-                $html = Media::deferInlineScripts($html);
+                $html = $this->context->media->deferInlineScripts($html);
             }
 
             $head = '<div id="content' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . "\n";
             $foot = '</div>';
-            $header = Media::deferTagOutput('ajax_head', $html) . '<content>';
+            $header = $this->context->media->deferTagOutput('ajax_head', $html) . '<content>';
             $html = trim(str_replace($header, '', $html)) . "\n";
 
-            $content = Media::deferIdOutput('content' . $this->controller_name, $html);
+            $content = $this->context->media->deferIdOutput('content' . $this->controller_name, $html);
 
             $js_def = ($defer && $domAvailable) ? $this->js_def : [];
             $js_files = $defer ? array_unique($this->push_js_files) : [];
-            $js_inline = ($defer && $domAvailable) ? Media::getInlineScript() : [];
+            $js_inline = ($defer && $domAvailable) ? $this->context->media->getInlineScript() : [];
 
             $this->context->smarty->assign(
                 [
@@ -2240,11 +2244,11 @@ abstract class PhenyxController {
             if ((Configuration::get('EPH_CSS_BACKOFFICE_CACHE') || Configuration::get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
 
                 if (Configuration::get('EPH_CSS_BACKOFFICE_CACHE')) {
-                    $this->extracss = Media::admincccCss($this->extracss);
+                    $this->extracss = $this->context->media->admincccCss($this->extracss);
                 }
 
                 if (Configuration::get('EPH_JS_BACKOFFICE_CACHE')) {
-                    $this->extraJs = Media::admincccJS($this->extraJs);
+                    $this->extraJs = $this->context->media->admincccJS($this->extraJs);
                 }
 
             }
@@ -2302,7 +2306,7 @@ abstract class PhenyxController {
             $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
 
             if ($defer && $domAvailable) {
-                $html = Media::deferInlineScripts($html);
+                $html = $this->context->media->deferInlineScripts($html);
             }
 
             if (isset($this->object->id) && $this->object->id > 0) {
@@ -2312,18 +2316,18 @@ abstract class PhenyxController {
             }
 
             $foot = '</div>';
-            $header = Media::deferTagOutput('ajax_head', $html) . '<content>';
+            $header = $this->context->media->deferTagOutput('ajax_head', $html) . '<content>';
             $html = trim(str_replace($header, '', $html)) . "\n";
 
             if (isset($this->object->id) && $this->object->id > 0) {
-                $content = Media::deferIdOutput('contentEdit' . $this->controller_name, $html);
+                $content = $this->context->media->deferIdOutput('contentEdit' . $this->controller_name, $html);
             } else {
-                $content = Media::deferIdOutput('contentAdd' . $this->controller_name, $html);
+                $content = $this->context->media->deferIdOutput('contentAdd' . $this->controller_name, $html);
             }
 
             $js_def = ($defer && $domAvailable) ? $this->js_def : [];
             $js_files = (!is_null($this->extraJs) && $defer) ? array_unique($this->extraJs) : [];
-            $js_inline = ($defer && $domAvailable) ? Media::getInlineScript() : [];
+            $js_inline = ($defer && $domAvailable) ? $this->context->media->getInlineScript() : [];
 
             $this->context->smarty->assign(
                 [

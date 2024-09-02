@@ -231,6 +231,10 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
             $this->context->translations = new Translate($this->context->language->iso_code);
         }
+        
+        if (!isset($this->context->media)) {
+            $this->context->media = new Media();
+        }
 
         $this->getExtraVars($this->className);
 

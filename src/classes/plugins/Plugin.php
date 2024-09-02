@@ -210,6 +210,10 @@ abstract class Plugin {
             $this->context->translations = new Translate($this->context->language->iso_code);
         }
         
+        if (!isset($this->context->media)) {
+            $this->context->media = new Media();
+        }
+        
         $this->main_plugin = self::getIdPluginByName('ph_manager');
         
         $this->google_api_key = Configuration::get('EPH_GOOGLE_TRANSLATE_API_KEY');

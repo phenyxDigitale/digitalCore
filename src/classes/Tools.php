@@ -2981,8 +2981,8 @@ FileETag none
         }
         
         
-        Media::clearAdminCache();
-        Media::clearCache();
+        Context::getContext()->media->clearAdminCache();
+        Context::getContext()->media->clearCache();
         Hook::getInstance()->exec('clearFrontCache', []);
         
         

@@ -170,7 +170,7 @@ class InstallerController extends PhenyxController {
                     /** @var DOMElement $link */
 
                     if ($favicon = Tools::parseFaviconSizeTag(urldecode($attribute->value))) {
-                        $attribute->value = Media::getMediaPath(_EPH_IMG_DIR_ . "favicon/favicon_{$this->context->company->id}_{$favicon['width']}_{$favicon['height']}.{$favicon['type']}");
+                        $attribute->value = $this->context->media->getMediaPath(_EPH_IMG_DIR_ . "favicon/favicon_{$this->context->company->id}_{$favicon['width']}_{$favicon['height']}.{$favicon['type']}");
                     }
 
                 }
@@ -182,8 +182,8 @@ class InstallerController extends PhenyxController {
                 $hookHeader .= $faviconHtml;
             }
 
-            $hookHeader .= '<meta name="msapplication-config" content="' . Media::getMediaPath(_EPH_IMG_DIR_ . "favicon/browserconfig_{$this->context->company->id}.xml") . '">';
-            $hookHeader .= '<link rel="manifest" href="' . Media::getMediaPath(_EPH_IMG_DIR_ . "favicon/manifest_{$this->context->company->id}.json") . '">';
+            $hookHeader .= '<meta name="msapplication-config" content="' . $this->context->media->getMediaPath(_EPH_IMG_DIR_ . "favicon/browserconfig_{$this->context->company->id}.xml") . '">';
+            $hookHeader .= '<link rel="manifest" href="' . $this->context->media->getMediaPath(_EPH_IMG_DIR_ . "favicon/manifest_{$this->context->company->id}.json") . '">';
         }
 
         if (isset($this->php_self)) {
@@ -331,13 +331,13 @@ class InstallerController extends PhenyxController {
             // CSS compressor management
 
             if (Configuration::get('EPH_CSS_THEME_CACHE')) {
-                $this->css_files = Media::cccCss($this->css_files);
+                $this->css_files = $this->context->media->cccCss($this->css_files);
             }
 
             //JS compressor management
 
             if (Configuration::get('EPH_JS_THEME_CACHE')) {
-                $this->js_files = Media::cccJs($this->js_files);
+                $this->js_files = $this->context->media->cccJs($this->js_files);
             }
 
         }
@@ -373,13 +373,13 @@ class InstallerController extends PhenyxController {
             // CSS compressor management
 
             if (Configuration::get('EPH_CSS_THEME_CACHE')) {
-                $this->css_files = Media::cccCss($this->css_files);
+                $this->css_files = $this->context->media->cccCss($this->css_files);
             }
 
             //JS compressor management
 
             if (Configuration::get('EPH_JS_THEME_CACHE')) {
-                $this->js_files = Media::cccJs($this->js_files);
+                $this->js_files = $this->context->media->cccJs($this->js_files);
             }
 
         }
@@ -470,11 +470,11 @@ class InstallerController extends PhenyxController {
         if ((Configuration::get('EPH_CSS_THEME_CACHE') || Configuration::get('EPH_JS_THEME_CACHE')) && is_writable(_EPH_THEME_DIR_ . 'cache')) {
 
             if (Configuration::get('EPH_CSS_THEME_CACHE')) {
-                $this->css_files = Media::cccCss($this->css_files);
+                $this->css_files = $this->context->media->cccCss($this->css_files);
             }
 
             if (Configuration::get('EPH_JS_THEME_CACHE')) {
-                $this->js_files = Media::cccJs($this->js_files);
+                $this->js_files = $this->context->media->cccJs($this->js_files);
             }
 
         }
@@ -560,7 +560,7 @@ class InstallerController extends PhenyxController {
     protected function smartyOutputContent($content) {
 
         $html = '';
-        $js_def = Media::getJsDef();
+        $js_def = $this->context->media->getJsDef();
 
         $jsTag = 'js_def';
         $this->context->smarty->assign($jsTag, $jsTag);
@@ -584,7 +584,7 @@ class InstallerController extends PhenyxController {
             $defer = (bool) Configuration::get('EPH_JS_DEFER');
 
             if ($defer && $domAvailable) {
-                $html = Media::deferInlineScripts($html);
+                $html = $this->context->media->deferInlineScripts($html);
             }
 
             if (count($this->js_footers)) {
@@ -596,7 +596,7 @@ class InstallerController extends PhenyxController {
             $this->context->smarty->assign([
                 'js_def'    => $js_def,
                 'js_files'  => $defer ? array_unique($this->js_files) : [],
-                'js_inline' => ($defer && $domAvailable) ? Media::getInlineScript() : [],
+                'js_inline' => ($defer && $domAvailable) ? $this->context->media->getInlineScript() : [],
             ]);
 
             $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
@@ -664,16 +664,16 @@ class InstallerController extends PhenyxController {
         $this->ajax_head = null;
 
         $html = trim(str_replace(['</body>', '</html>'], '', $html)) . "\n";
-        $deferTagOutput = Media::deferTagOutput('head', $html);
+        $deferTagOutput = $this->context->media->deferTagOutput('head', $html);
 
         if (!is_null($deferTagOutput)) {
-            $this->ajax_head = str_replace(['<head>', '</head>'], '', Media::deferTagOutput('head', $html));
+            $this->ajax_head = str_replace(['<head>', '</head>'], '', $this->context->media->deferTagOutput('head', $html));
         }
 
-        $page = Media::deferIdOutput('page', $html);
+        $page = $this->context->media->deferIdOutput('page', $html);
         $this->context->smarty->assign(
             [
-                $jsTag      => Media::getJsDef(),
+                $jsTag      => $this->context->media->getJsDef(),
                 'js_files'  => $defer ? array_unique($this->js_files) : [],
                 'js_inline' => [],
             ]
@@ -791,13 +791,13 @@ class InstallerController extends PhenyxController {
             // CSS compressor management
 
             if (Configuration::get('EPH_CSS_THEME_CACHE')) {
-                $this->css_files = Media::cccCss($this->css_files);
+                $this->css_files = $this->context->media->cccCss($this->css_files);
             }
 
             //JS compressor management
 
             if (Configuration::get('EPH_JS_THEME_CACHE')) {
-                $this->js_files = Media::cccJs($this->js_files);
+                $this->js_files = $this->context->media->cccJs($this->js_files);
             }
 
         }
@@ -885,7 +885,7 @@ class InstallerController extends PhenyxController {
         $this->addJS(_EPH_JS_DIR_ . 'ace/ace.js');
 
         // @since 1.0.4
-        Media::addJsDef([
+        $this->context->media->addJsDef([
             'useLazyLoad'   => Configuration::get('EPH_LAZY_LOAD') ? 1 : 0,
             'useWebp'       => (Configuration::get('EPH_USE_WEBP') && function_exists('imagewebp')) ? 1 : 0,
             'AjaxMemberId'  => $this->context->user->id ? $this->context->user->id : null,
@@ -899,13 +899,13 @@ class InstallerController extends PhenyxController {
             'baseDir'       => Tools::getDomainSsl(true),
         ]);
 
-        Media::addJsDefL('closeTag', $this->l('Back Home'));
-        Media::addJsDefL('uploadPdf', $this->l('Upload replacement PDF'));
+        $this->context->media->addJsDefL('closeTag', $this->l('Back Home'));
+        $this->context->media->addJsDefL('uploadPdf', $this->l('Upload replacement PDF'));
 
         if ($this->customer_is_admin) {
-            Media::addJsDef(['customer_is_admin' => 1]);
+            $this->context->media->addJsDef(['customer_is_admin' => 1]);
         } else {
-            Media::addJsDef(['customer_is_admin' => 0]);
+            $this->context->media->addJsDef(['customer_is_admin' => 0]);
         }
 
         if (@filemtime($this->getThemeDir() . 'js/autoload/')) {
@@ -946,7 +946,7 @@ class InstallerController extends PhenyxController {
         if (_EPH_DEBUG_PROFILING_) {
             $this->addCSS(_EPH_ADMIN_THEME_DIR_ . '/blacktie/css/profilling.css');
             $this->addJS(_EPH_JS_DIR_ . 'profilling.js');
-            Media::addJsDef(['profiling_title' => $this->l('Profilling report')]);
+            $this->context->media->addJsDef(['profiling_title' => $this->l('Profilling report')]);
         }
 
         $this->context->_hook->exec('actionFrontControllerSetMedia', []);
@@ -993,7 +993,7 @@ class InstallerController extends PhenyxController {
 
         $this->addCSS(_EPH_CSS_DIR_ . 'material-design-iconic-font.min.css', 'all');
 
-        Media::addJsDef([
+        $this->context->media->addJsDef([
             'ephtm_isToggleMode'   => Configuration::get('EPHTM_RESP_TOGGLE_ENABLED') ? (bool) Configuration::get('EPHTM_RESP_TOGGLE_ENABLED') : 0,
             'ephtm_stickyOnMobile' => 0,
         ]);
@@ -1100,7 +1100,7 @@ class InstallerController extends PhenyxController {
 
         if ((Configuration::get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
 
-            $this->js_footers = Media::admincccJS($this->js_footers);
+            $this->js_footers = $this->context->media->admincccJS($this->js_footers);
 
         }
 
@@ -1339,7 +1339,7 @@ class InstallerController extends PhenyxController {
             $metaLanguage[] = $lang['iso_code'];
         }
 
-        Media::addJsDef([
+        $this->context->media->addJsDef([
             'page_name' => $pageName,
             'is_mobile' => $this->isMobileDevice(),
         ]);
