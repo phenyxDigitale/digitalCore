@@ -203,7 +203,7 @@ abstract class Plugin {
         }
         
         if(!isset($this->context->_hook)) {
-            $this->context->_hook = new Hook();
+            $this->context->_hook = Hook::getInstance();
         }
         
         if (!isset($this->context->translations)) {

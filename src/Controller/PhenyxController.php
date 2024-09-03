@@ -443,7 +443,6 @@ abstract class PhenyxController {
             $this->context->_hook = new Hook();
         }
         
-        
         if (!isset($this->context->media)) {
             $this->context->media = new Media();
         }

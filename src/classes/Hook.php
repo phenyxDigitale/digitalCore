@@ -38,6 +38,8 @@ class Hook extends PhenyxObjectModel {
     public $tag_value;
 
     public $plugins = [];
+    
+    public $args;
 
     public $available_plugins = [];
     /**
@@ -90,7 +92,8 @@ class Hook extends PhenyxObjectModel {
 
         $this->id_lang = (Language::getLanguage($idLang) !== false) ? $idLang : Configuration::get(Configuration::LANG_DEFAULT);
         $this->context->_hook = $this;
-        $this->context->hook_args = $this->getArgs();
+        $this->args = Tools::jsonDecode(Configuration::get('_EPH_MAIN_ARG_VALUE_'), true);
+        //$this->context->hook_args = $this->getArgs();
 
         if ($id) {
             $this->id = $id;
@@ -400,9 +403,9 @@ class Hook extends PhenyxObjectModel {
             $hookArgs['cookie'] = $this->context->cookie;
         }
 
-        if (is_array($this->context->hook_args)) {
+        if (is_array($this->args)) {
 
-            foreach ($this->context->hook_args as $key => $value) {
+            foreach ($this->args as $key => $value) {
                 $hookArgs[$key] = $this->context->$key;
             }
 
