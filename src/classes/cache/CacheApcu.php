@@ -28,6 +28,29 @@ class CacheApcu extends CacheApi implements CacheApiInterface {
 
 		return true;
 	}
+    
+    protected function _set($key, $value, $ttl = 0) {
+
+        return $this->putData($key, $value, $ttl);
+    }
+    
+    protected function _get($key) {
+
+        return $this->redis->getData($key);
+    }
+    
+    protected function _exists($key) {
+
+        return (bool) $this->_get($key);
+    }
+    
+    protected function _writeKeys() {
+
+
+        $this->redis->_set($this->prefix, $this->keys);
+
+        return true;
+    }
 
 	/**
 	 * {@inheritDoc}
@@ -57,6 +80,11 @@ class CacheApcu extends CacheApi implements CacheApiInterface {
 		}
 
 	}
+    
+    protected function _delete($key) {
+
+        return apcu_delete($key . 'eph');
+    }
 
 	/**
 	 * {@inheritDoc}

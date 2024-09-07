@@ -298,7 +298,7 @@ class AwsRedis extends CacheApi implements CacheApiInterface {
             return false;
         }
 
-        $this->redis->set($this->prefix, $this->keys);
+        $this->redis->_set($this->prefix, $this->keys);
 
         return true;
     }
