@@ -67,7 +67,7 @@ class RevLoader {
             $is_ssl = true;
         }
 
-        if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443 || $is_ssl == true) {
+        if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) &&  $_SERVER['SERVER_PORT'] == 443) || $is_ssl == true) {
             return 'https:';
         }
 

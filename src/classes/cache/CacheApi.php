@@ -58,7 +58,7 @@ abstract class CacheApi {
 	 */
 	public function __construct() {
                
-        $this->boardurl = $_SERVER['SERVER_NAME'];
+        $this->boardurl = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
         $this->cachedir = _EPH_CACHE_DIR_.'cacheapi/';
         $this->boarddir = _EPH_ROOT_DIR_;
 		$this->setPrefix();
