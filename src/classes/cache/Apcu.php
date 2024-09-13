@@ -29,6 +29,16 @@ class Apcu extends CacheApi implements CacheApiInterface {
 
 		return true;
 	}
+    
+    protected function _exists($key) {
+
+        return (bool) $this->getData($key);
+    }
+    
+    protected function _get($key) {
+
+        return $this->getData($key);
+    }
 
 	/**
 	 * {@inheritDoc}
@@ -41,6 +51,28 @@ class Apcu extends CacheApi implements CacheApiInterface {
 
 		return !empty($value) ? $value : null;
 	}
+    
+    protected function _set($key, $value, $ttl = 0) {
+
+        return $this->putData($key, $value, $ttl);
+    }
+    
+    protected function _delete($key) {
+
+        return $this->putData($key, null);
+    }
+    
+    protected function _writeKeys() {
+
+        if (!$this->is_connected) {
+            return false;
+        }
+
+        $this->redis->_set($this->prefix, $this->keys);
+
+        return true;
+    }
+    
 
 	/**
 	 * {@inheritDoc}
@@ -58,6 +90,11 @@ class Apcu extends CacheApi implements CacheApiInterface {
 		}
 
 	}
+    
+    public function flush() {
+
+        return (bool) $this->cleanCache();
+    }
 
 	/**
 	 * {@inheritDoc}
