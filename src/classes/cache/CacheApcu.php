@@ -85,6 +85,11 @@ class CacheApcu extends CacheApi implements CacheApiInterface {
 
         return apcu_delete($key . 'eph');
     }
+    
+    public function flush() {
+
+        return (bool) $this->cleanCache();
+    }
 
 	/**
 	 * {@inheritDoc}
