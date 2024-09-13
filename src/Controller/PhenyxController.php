@@ -3215,7 +3215,7 @@ abstract class PhenyxController {
             if (array_key_exists('lang', $params) && $params['lang']) {
 
                 foreach (Language::getIDs(false) as $idLang) {
-
+                    $referent = '';
                     if (Tools::isSubmit($field . '_' . (int) $idLang)) {
 
                         if (!isset($object->{$field}) || !is_array($object->{$field})) {
@@ -3223,7 +3223,7 @@ abstract class PhenyxController {
 
                             = [];
                         }
-                        $referent = '';
+                        
 
                         if ($idLang == $this->context->language->id) {
                             $referent = Tools::getValue($field . '_' . (int) $idLang);
