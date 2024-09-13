@@ -8,9 +8,6 @@
  */
 class Apcu extends CacheApi implements CacheApiInterface {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function isSupported($test = false) {
 
 		$supported = function_exists('apcu_fetch') && function_exists('apcu_store');
@@ -22,9 +19,6 @@ class Apcu extends CacheApi implements CacheApiInterface {
 		return parent::isSupported() && $supported;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function connect() {
 
 		return true;
@@ -40,9 +34,6 @@ class Apcu extends CacheApi implements CacheApiInterface {
         return $this->getData($key);
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getData($key, $ttl = null) {
 
 		$key = $this->prefix . strtr($key, ':/', '-_');
