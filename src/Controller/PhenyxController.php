@@ -3223,6 +3223,7 @@ abstract class PhenyxController {
 
                             = [];
                         }
+                        $referent = '';
 
                         if ($idLang == $this->context->language->id) {
                             $referent = Tools::getValue($field . '_' . (int) $idLang);

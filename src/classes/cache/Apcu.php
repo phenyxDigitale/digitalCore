@@ -82,6 +82,13 @@ class Apcu extends CacheApi implements CacheApiInterface {
 
 	}
     
+    public function cleanByStartingKey($key) {
+        ini_set('memory_limit', '-1');
+        $result = $this->_delete($value.'*');
+        
+        return $result;
+    }
+    
     public function flush() {
 
         return (bool) $this->cleanCache();
