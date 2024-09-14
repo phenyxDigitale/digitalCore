@@ -388,6 +388,8 @@ abstract class PhenyxController {
     public $ajax_li;
 
     public $ajax_content;
+    
+    public $form_included = false;
 
     public function getExtraPhenyxVars() {
 
@@ -2837,6 +2839,7 @@ abstract class PhenyxController {
             $helper->js_def = $this->jsDef;
             $helper->fields_value = $fieldsValue;
             $helper->submit_action = $this->submit_action;
+            $helper->form_included = $this->form_included;
             $helper->tpl_vars = $this->getTemplateFormVars();
             $helper->ajax_submit = $this->ajax_submit;
             $helper->tagHeader = $this->editObject;
