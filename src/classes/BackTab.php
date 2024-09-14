@@ -127,7 +127,7 @@ class BackTab extends PhenyxObjectModel {
 
         $cacheId = 'getCurrentParentId_' . mb_strtolower(Tools::getValue('controller'));
 
-        if (!Cache::isStored($cacheId)) {
+        if (!CacheApi::isStored($cacheId)) {
             $value = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
                     ->select('`id_parent`')
@@ -139,12 +139,12 @@ class BackTab extends PhenyxObjectModel {
                 $value = -1;
             }
 
-            Cache::store($cacheId, $value);
+            CacheApi::store($cacheId, $value);
 
             return $value;
         }
 
-        return Cache::retrieve($cacheId);
+        return CacheApi::retrieve($cacheId);
     }
 
     public static function getIdFromClassName($className) {
@@ -501,7 +501,7 @@ class BackTab extends PhenyxObjectModel {
 
         $cacheId = 'BackTab::getTab_' . (int) $idLang . '-' . (int) $idTab;
 
-        if (!Cache::isStored($cacheId)) {
+        if (!CacheApi::isStored($cacheId)) {
             /* Tabs selection */
             $result = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getRow(
                 (new DbQuery())
@@ -510,12 +510,12 @@ class BackTab extends PhenyxObjectModel {
                     ->leftJoin('back_tab_lang', 'tl', 't.`id_back_tab` = tl.`id_back_tab` AND tl.`id_lang` = ' . (int) $idLang)
                     ->where('t.`id_back_tab` = ' . (int) $idTab)
             );
-            Cache::store($cacheId, $result);
+            CacheApi::store($cacheId, $result);
 
             return $result;
         }
 
-        return Cache::retrieve($cacheId);
+        return CacheApi::retrieve($cacheId);
     }
 
     public static function getTabByIdProfile($idParent, $idProfile) {

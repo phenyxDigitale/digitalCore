@@ -122,7 +122,7 @@ class Hook extends PhenyxObjectModel {
         $this->plugins = Tools::jsonEncode($this->plugins);
         $this->available_plugins = Tools::jsonEncode($this->available_plugins);
         $this->metas = Tools::jsonEncode($this->metas);
-        Cache::clean('hook_idsbyname');
+        CacheApi::clean('hook_idsbyname');
 
         return parent::add($autoDate, $nullValues);
     }

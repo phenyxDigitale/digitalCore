@@ -1713,7 +1713,7 @@ class Tools {
 
         $cache_id = 'Tools::simplexml_load_file' . $url;
 
-        if (!Cache::isStored($cache_id)) {
+        if (!CacheApi::isStored($cache_id)) {
             $guzzle = new \GuzzleHttp\Client([
                 'verify'  => DIGITAL_CORE_DIR . '/vendor/cacert.pem',
                 'timeout' => 20,
@@ -1724,12 +1724,12 @@ class Tools {
                 return null;
             }
 
-            Cache::store($cache_id, $result);
+            CacheApi::store($cache_id, $result);
 
             return $result;
         }
 
-        return Cache::retrieve($cache_id);
+        return CacheApi::retrieve($cache_id);
     }
 
     public static function copy($source, $destination, $streamContext = null) {

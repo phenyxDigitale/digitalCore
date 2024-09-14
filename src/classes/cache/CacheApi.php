@@ -281,6 +281,19 @@ abstract class CacheApi {
         return isset(CacheApi::$local[$key]) ? CacheApi::$local[$key] : null;
     }
     
+    public static function clean($key) {
+        if (strpos($key, '*') !== false) {
+            $regexp = str_replace('\\*', '.*', preg_quote($key, '#'));
+            foreach (array_keys(CacheApi::$local) as $key) {
+                if (preg_match('#^'.$regexp.'$#', $key)) {
+                    unset(CacheApi::$local[$key]);
+                }
+            }
+        } else {
+            unset(CacheApi::$local[$key]);
+        }
+    }
+    
 	/**
 	 * Run housekeeping of this cache
 	 * exp. clean up old data or do optimization

@@ -3558,7 +3558,7 @@ abstract class PhenyxController {
 
         arsort($this->global_var_size);
 
-        $cache = Cache::retrieveAll();
+        $cache = CacheApi::retrieveAll();
         $this->total_cache_size = $this->getVarSize($cache);
 
         // Retrieve plugin perfs

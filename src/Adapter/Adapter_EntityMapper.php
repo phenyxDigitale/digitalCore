@@ -31,7 +31,7 @@ class Adapter_EntityMapper {
         // Load object from database if object id is present
         $cacheId = 'objectmodel_' . $entityDefs['classname'] . '_' . (int) $id . '_' . (int) $idLang;
 
-        if (!$shouldCacheObjects || !Cache::isStored($cacheId)) {
+        if (!$shouldCacheObjects || !CacheApi::isStored($cacheId)) {
             $sql = new DbQuery();
             $sql->from($entityDefs['table'], 'a');
             $sql->where('a.`' . bqSQL($entityDefs['primary']) . '` = ' . (int) $id);
@@ -90,13 +90,13 @@ class Adapter_EntityMapper {
                 }
 
                 if ($shouldCacheObjects) {
-                    Cache::store($cacheId, $objectData);
+                    CacheApi::store($cacheId, $objectData);
                 }
 
             }
 
         } else {
-            $objectData = Cache::retrieve($cacheId);
+            $objectData = CacheApi::retrieve($cacheId);
 
             if ($objectData) {
                 $entity->id = (int) $id;

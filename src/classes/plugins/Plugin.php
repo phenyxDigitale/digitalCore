@@ -1199,7 +1199,7 @@ abstract class Plugin {
 
     public static function isEnabled($pluginName) {
 
-        if (!Cache::isStored('Plugin::isEnabled' . $pluginName)) {
+        if (!CacheApi::isStored('Plugin::isEnabled' . $pluginName)) {
             $active = false;
             $idPlugin = Plugin::getPluginIdByName($pluginName);
 
@@ -1213,12 +1213,12 @@ abstract class Plugin {
                 $active = true;
             }
 
-            Cache::store('Plugin::isEnabled' . $pluginName, (bool) $active);
+            CacheApi::store('Plugin::isEnabled' . $pluginName, (bool) $active);
 
             return (bool) $active;
         }
 
-        return Cache::retrieve('Plugin::isEnabled' . $pluginName);
+        return CacheApi::retrieve('Plugin::isEnabled' . $pluginName);
     }
 
     public static function getAuthorizedPlugins($groupId) {
@@ -1618,7 +1618,7 @@ abstract class Plugin {
 
         $cacheId = 'Plugin::getActivePluginIdByName_' . pSQL($name);
 
-        if (!Cache::isStored($cacheId)) {
+        if (!CacheApi::isStored($cacheId)) {
             $result = (int) Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
 
                 (new DbQuery())
@@ -1627,12 +1627,12 @@ abstract class Plugin {
                     ->where('`name` = \'' . pSQL($name) . '\'')
                     ->where('`active` = 1')
             );
-            Cache::store($cacheId, $result);
+            CacheApi::store($cacheId, $result);
 
             return $result;
         }
 
-        return Cache::retrieve($cacheId);
+        return CacheApi::retrieve($cacheId);
     }
 
     public function installOverrides() {
@@ -2157,7 +2157,7 @@ abstract class Plugin {
         Group::truncateRestrictionsByPlugin($this->id);
 
         if (Db::getInstance()->delete('plugin', '`id_plugin` = ' . (int) $this->id)) {
-            Cache::clean('Plugin::getPluginIdByName_' . pSQL($this->name));
+            CacheApi::clean('Plugin::getPluginIdByName_' . pSQL($this->name));
             $this->updateIoPlugins();
             return true;
         }
@@ -2804,7 +2804,7 @@ abstract class Plugin {
 
         $cache_id = 'exceptionsCache';
 
-        if (!Cache::isStored($cache_id)) {
+        if (!CacheApi::isStored($cache_id)) {
             $exceptions_cache = [];
             $dbSlave = Db::getInstance(_EPH_USE_SQL_SLAVE_);
             $result = $dbSlave->executeS(
@@ -2828,9 +2828,9 @@ abstract class Plugin {
                 $exceptions_cache[$key][] = $row['file_name'];
             }
 
-            Cache::store($cache_id, $exceptions_cache);
+            CacheApi::store($cache_id, $exceptions_cache);
         } else {
-            $exceptions_cache = Cache::retrieve($cache_id);
+            $exceptions_cache = CacheApi::retrieve($cache_id);
         }
 
         $key = $id_hook . '-' . $id_plugin;

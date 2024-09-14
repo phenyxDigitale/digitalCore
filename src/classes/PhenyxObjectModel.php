@@ -1474,11 +1474,11 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     public function clearCache($all = false) {
 
         if ($all) {
-            Cache::clean('PhenyxObjectModel_' . $this->def['classname'] . '_*');
+            CacheApi::clean('PhenyxObjectModel_' . $this->def['classname'] . '_*');
         } else
 
         if ($this->id) {
-            Cache::clean('PhenyxObjectModel_' . $this->def['classname'] . '_' . (int) $this->id . '_*');
+            CacheApi::clean('PhenyxObjectModel_' . $this->def['classname'] . '_' . (int) $this->id . '_*');
         }
 
     }
@@ -1678,7 +1678,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             $cacheId = 'PhenyxObjectModel_def_' . $class;
         }
 
-        if ($field !== null || !Cache::isStored($cacheId)) {
+        if ($field !== null || !CacheApi::isStored($cacheId)) {
             $reflection = new ReflectionClass($class);
 
             if (!$reflection->hasProperty('definition')) {
@@ -1701,12 +1701,12 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                 return isset($definition['fields'][$field]) ? $definition['fields'][$field] : null;
             }
 
-            Cache::store($cacheId, $definition);
+            CacheApi::store($cacheId, $definition);
 
             return $definition;
         }
 
-        return Cache::retrieve($cacheId);
+        return CacheApi::retrieve($cacheId);
     }
 
     public function getFieldByLang($fieldName, $idLang = null) {
