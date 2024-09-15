@@ -36,7 +36,7 @@ class CacheApcu extends CacheApi implements CacheApiInterface {
     
     protected function _get($key) {
 
-        return $this->redis->getData($key);
+        return $this->getData($key);
     }
     
     protected function _exists($key) {
@@ -47,9 +47,25 @@ class CacheApcu extends CacheApi implements CacheApiInterface {
     protected function _writeKeys() {
 
 
-        $this->redis->_set($this->prefix, $this->keys);
+        $this->_set($this->prefix, $this->keys);
 
         return true;
+    }
+    
+    public function getApcuValues() {
+        ini_set('memory_limit', '-1');
+        $result = [];
+        $values = $this->keys('*');
+        if(is_array($values)) {
+            foreach($values as $value) {
+                $val = $this->getData($value);
+                if(!is_null($val) && !is_object($val)) {
+                    $result[$value] = !is_array($val) ? Tools::jsonDecode($val, true): $val;
+                }
+            }
+        }
+        ksort($result);
+        return $result;
     }
 
 	/**
