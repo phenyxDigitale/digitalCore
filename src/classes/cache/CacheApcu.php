@@ -57,7 +57,7 @@ class CacheApcu extends CacheApi implements CacheApiInterface {
         ini_set('memory_limit', '-1');
         $result = [];
         foreach (new APCUIterator('/^\.*/') as $counter) {
-            $result[str_replace([$this->prefix, 'eph'], ['', ''], $counter['key'])] = !is_array($counter['value']) ? Tools::jsonDecode($counter['value'], true): $val;
+            $result[str_replace([$this->prefix, 'eph'], ['', ''], $counter['key'])] = Validate::isJSON($counter['value']) ? Tools::jsonDecode($counter['value'], true): $val;
         }
         
         ksort($result);
