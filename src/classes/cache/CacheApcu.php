@@ -106,6 +106,7 @@ class CacheApcu extends CacheApi implements CacheApiInterface {
 	}
     
     protected function _delete($key) {
+        $key = $this->prefix . strtr($key, ':/', '-_');
 
         return apcu_delete($key . 'eph');
     }
