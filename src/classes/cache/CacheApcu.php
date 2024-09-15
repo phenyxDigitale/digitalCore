@@ -85,11 +85,7 @@ class CacheApcu extends CacheApi implements CacheApiInterface {
 
 		// An extended key is needed to counteract a bug in APC.
 
-		if ($value === null) {
-			return apcu_delete($key . 'eph');
-		} else {
-			return apcu_store($key . 'eph', $value, $ttl !== null ? $ttl : $this->ttl);
-		}
+		return apcu_store($key . 'eph', $value, $ttl !== null ? $ttl : $this->ttl);
 
 	}
     
