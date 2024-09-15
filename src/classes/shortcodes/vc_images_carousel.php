@@ -108,7 +108,7 @@ if ($eventclick == 'link_image'): ?>
                                            href="<?php echo $p_img_large ?>" <?php echo ' rel="prettyPhoto[rel-' . $pretty_rand . ']"' ?> target="_self">
                                         <?php echo $thumbnail ?>
                                         </a>
-    <?php elseif ($eventclick == 'custom_link' && isset($custom_links[$i]) && $custom_links[$i] != ''): ?>
+    <?php elseif ($eventclick == 'custom_link' && (isset($custom_links[$i]) && $custom_links[$i] != '')): ?>
                                         <a
                                             href="<?php echo $custom_links[$i] ?>"<?php echo (!empty($custom_links_target) ? ' target="' . $custom_links_target . '"' : '') ?>>
                                         <?php echo $thumbnail ?>
