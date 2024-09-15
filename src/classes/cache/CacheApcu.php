@@ -53,17 +53,13 @@ class CacheApcu extends CacheApi implements CacheApiInterface {
     }
     
     public function getApcuValues() {
+        
         ini_set('memory_limit', '-1');
         $result = [];
-        $values = $this->keys('*');
-        if(is_array($values)) {
-            foreach($values as $value) {
-                $val = $this->getData($value);
-                if(!is_null($val) && !is_object($val)) {
-                    $result[$value] = !is_array($val) ? Tools::jsonDecode($val, true): $val;
-                }
-            }
+        foreach (new APCUIterator('/^\.*/') as $counter) {
+            $result[str_replace([$this->prefix, 'eph'], ['', ''], $counter['key'])] = !is_array($counter['value']) ? Tools::jsonDecode($counter['value'], true): $val;
         }
+        
         ksort($result);
         return $result;
     }
@@ -103,6 +99,11 @@ class CacheApcu extends CacheApi implements CacheApiInterface {
         
         return $result;
     }
+    
+    public function removeData($key) {
+
+		return $this->_delete($key);
+	}
     
     protected function _delete($key) {
 
