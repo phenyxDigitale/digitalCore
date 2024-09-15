@@ -1386,6 +1386,9 @@ class Validate {
         if(is_array($data)) {
             return false;
         }
+        if(is_null($data)) {
+            return false;
+        }
         json_decode($data);
 
         return (json_last_error() === JSON_ERROR_NONE);
