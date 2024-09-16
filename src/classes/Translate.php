@@ -352,16 +352,25 @@ class Translate {
                 _EPH_PLUGIN_DIR_ . $name . '/translations/' . $this->context->language->iso_code . '.php',
                 _EPH_SPECIFIC_PLUGIN_DIR_ . $name . '/translations/' . $this->context->language->iso_code . '.php',
             ];
+            $translations = [];
 
             foreach ($filesByPriority as $file) {
 
                 if (file_exists($file)) {
                     include_once $file;
+                    if(is_array($_PLUGIN)) {
+                        $translations = array_merge(
+                            $translations,
+                            $_PLUGIN
+                        
+                        );
+                    }
 
-                    $_PLUGINS = !empty($_PLUGINS) ? $_PLUGINS + $_PLUGIN : $_PLUGIN;
                 }
 
             }
+            
+            $_PLUGINS = $translations;
 
         }
 
@@ -556,6 +565,7 @@ class Translate {
 
     public function checkAndReplaceArgs($string, $args) {
 
+        if(!is_null($string)) {
         if (preg_match_all('#(?:%%|%(?:[0-9]+\$)?[+-]?(?:[ 0]|\'.)?-?[0-9]*(?:\.[0-9]+)?[bcdeufFosxX])#', $string, $matches) && !is_null($args)) {
 
             if (!is_array($args)) {
@@ -563,6 +573,7 @@ class Translate {
             }
 
             return vsprintf($string, $args);
+        }
         }
 
         return $string;

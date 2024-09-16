@@ -57,7 +57,7 @@ class CacheApcu extends CacheApi implements CacheApiInterface {
         ini_set('memory_limit', '-1');
         $result = [];
         foreach (new APCUIterator('/^\.*/') as $counter) {
-            $result[str_replace([$this->prefix, 'eph'], ['', ''], $counter['key'])] = Validate::isJSON($counter['value']) ? Tools::jsonDecode($counter['value'], true): $counter['value'];
+            $result[$counter['key']] = Validate::isJSON($counter['value']) ? Tools::jsonDecode($counter['value'], true): $counter['value'];
         }
         
         ksort($result);
@@ -69,9 +69,9 @@ class CacheApcu extends CacheApi implements CacheApiInterface {
 	 */
 	public function getData($key, $ttl = null) {
 
-		$key = $this->prefix . strtr($key, ':/', '-_');
+		
 
-		$value = apcu_fetch($key . 'eph');
+		$value = apcu_fetch($key );
 
 		return !empty($value) ? $value : null;
 	}
@@ -81,11 +81,7 @@ class CacheApcu extends CacheApi implements CacheApiInterface {
 	 */
 	public function putData($key, $value, $ttl = null) {
 
-		$key = $this->prefix . strtr($key, ':/', '-_');
-
-		// An extended key is needed to counteract a bug in APC.
-
-		return apcu_store($key . 'eph', $value, $ttl !== null ? $ttl : $this->ttl);
+		return apcu_store($key , $value, $ttl !== null ? $ttl : $this->ttl);
 
 	}
     
@@ -102,9 +98,8 @@ class CacheApcu extends CacheApi implements CacheApiInterface {
 	}
     
     protected function _delete($key) {
-        $key = $this->prefix . strtr($key, ':/', '-_');
-
-        return apcu_delete($key . 'eph');
+       
+        return apcu_delete($key );
     }
     
     public function flush() {
