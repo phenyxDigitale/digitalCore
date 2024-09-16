@@ -358,10 +358,10 @@ class Translate {
 
                 if (file_exists($file)) {
                     include_once $file;
-                    if(is_array($_PLUGIN)) {
+                    if(is_array($_PLUGINS)) {
                         $translations = array_merge(
                             $translations,
-                            $_PLUGIN
+                            $_PLUGINS
                         
                         );
                     }
