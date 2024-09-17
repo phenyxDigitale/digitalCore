@@ -1277,6 +1277,7 @@ abstract class PhenyxController {
         $this->addHeaderJS([
             _EPH_JS_DIR_ . 'jquery/jquery-' . _EPH_JQUERY_VERSION_ . '.min.js',
             _EPH_JS_DIR_ . 'jquery-ui/jquery-ui.min.js',
+            _EPH_JS_DIR_ . 'tools.js'
 
         ]);
         if($this->controller_type == 'front') {
