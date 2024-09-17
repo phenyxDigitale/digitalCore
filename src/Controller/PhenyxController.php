@@ -1279,6 +1279,9 @@ abstract class PhenyxController {
             _EPH_JS_DIR_ . 'jquery-ui/jquery-ui.min.js',
 
         ]);
+        if($this->controller_type == 'front') {
+            $this->addJS(_EPH_CSS_DIR_. 'front.css');
+        }
     }
 
     public function getUserIpAddr() {
