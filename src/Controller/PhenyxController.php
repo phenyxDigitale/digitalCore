@@ -1280,7 +1280,7 @@ abstract class PhenyxController {
 
         ]);
         if($this->controller_type == 'front') {
-            $this->addJS(_EPH_CSS_DIR_. 'front.css');
+            $this->addCSS(_EPH_CSS_DIR_. 'front.css');
         }
     }
 
