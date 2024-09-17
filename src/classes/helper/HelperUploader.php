@@ -312,14 +312,13 @@ class HelperUploader extends PhenyxUploader {
      */
     public function getTemplateFile($template) {
 
-        $file = fopen("testgetTemplateFile.txt","w");
+        
         if (preg_match_all('/((?:^|[A-Z])[a-z]+)/', get_class($this->getContext()->controller), $matches) !== false) {
             $controllerName = strtolower($matches[0][1]);
         }
 
         if ($this->getContext()->controller instanceof PluginAdminController) {
-            fwrite($file,"Yo Plugin!".PHP_EOL);
-            fwrite($file,$this->getContext()->controller->getTemplatePath($template). $this->getTemplateDirectory() . $template.PHP_EOL);
+           
             if(file_exists($this->_normalizeDirectory($this->getContext()->controller->getTemplatePath($template)) . $this->getTemplateDirectory() . $template)) {
             return $this->_normalizeDirectory($this->getContext()->controller->getTemplatePath($template)) . $this->getTemplateDirectory() . $template;
             }
