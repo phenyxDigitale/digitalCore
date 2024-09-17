@@ -1012,6 +1012,7 @@ abstract class PhenyxController {
 
         $paragrid->check = $this->paramCheck;
 
+
         $paragrid->groupModel = $this->groupModel;
 
         $paragrid->summaryTitle = $this->summaryTitle;
@@ -1243,10 +1244,10 @@ abstract class PhenyxController {
 
     public function init() {
 
-        if ($this->controller_type = 'admin' && $this->cachable && isset($this->context->employee)) {
+        if ($this->controller_type == 'admin' && $this->cachable && isset($this->context->employee)) {
             $this->cacheId = 'pageAdminCache_' . $this->php_self . '_' . $this->context->employee->id_profile;
         } else
-        if ($this->controller_type = 'front' && $this->cachable) {
+        if ($this->controller_type == 'front' && $this->cachable) {
 
             if (isset($this->context->user->id)) {
                 $tag = str_replace(' ', '', $this->context->user->group);
@@ -1272,10 +1273,9 @@ abstract class PhenyxController {
     }
 
     public function setMedia($isNewTheme = false) {
-
+       
         $this->addHeaderJS([
             _EPH_JS_DIR_ . 'jquery/jquery-' . _EPH_JQUERY_VERSION_ . '.min.js',
-           // _EPH_JS_DIR_ . 'jquery/jquery-migrate-1.4.1.min.js',
             _EPH_JS_DIR_ . 'jquery-ui/jquery-ui.min.js',
 
         ]);
@@ -4006,6 +4006,7 @@ abstract class PhenyxController {
         $this->displayProfilingStopwatch();
         $this->displayProfilingDoubles();
         $this->displayProfilingTableStress();
+
 
         if (isset(PhenyxObjectModel::$debug_list)) {
             $this->displayProfilingObjectModel();
