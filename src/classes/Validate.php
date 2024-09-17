@@ -1606,5 +1606,24 @@ class Validate {
 
         return (preg_match('/^(?:' . Configuration::get('EPH_INVOICE_PREFIX', Context::getContext()->language->id) . ')\s*([0-9]+)$/i', $id));
     }
+    
+    public static function isBase64Image($base64) {
+        
+        $img = imagecreatefromstring(base64_decode($base64));
+        if (!$img) {
+            return false;
+        }
+
+        imagepng($img, 'tmp.png');
+        $info = getimagesize('tmp.png');
+
+        unlink('tmp.png');
+
+        if ($info[0] > 0 && $info[1] > 0 && $info['mime']) {
+            return true;
+        }
+
+        return false;
+    }
 
 }
