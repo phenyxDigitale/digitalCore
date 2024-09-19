@@ -38,6 +38,7 @@ class DbPDO extends Db {
         if (preg_match('/^(.*):([0-9]+)$/', $host, $matches)) {
             $dsn .= 'host=' . $matches[1] . ';port=' . $matches[2];
         } else
+
         if (preg_match('#^.*:(/.*)$#', $host, $matches)) {
             $dsn .= 'unix_socket=' . $matches[1];
         } else {
@@ -132,7 +133,16 @@ class DbPDO extends Db {
      */
     protected function _query($sql) {
 
-        return isset($this->link) ? $this->link->query($sql) : null;
+        try {
+            return isset($this->link) ? $this->link->query($sql) : null;
+        } catch (Exception $e) {
+            $return = [
+                'success' => false,
+                'message' => 'Exception on query in database for the request : "' . $sql . '" with error : ' . $e->getMessage(),
+            ];
+            die(Tools::jsonEncode($return));
+        }
+
     }
 
     /**
@@ -272,23 +282,24 @@ class DbPDO extends Db {
 
         return $this->getValue('SELECT VERSION()');
     }
-    
-    public function escape_by_ref(&$string)  {
-        
+
+    public function escape_by_ref(&$string) {
+
         if (!is_float($string)) {
             $string = $this->_real_escape($string);
         }
-            
+
     }
-    
+
     public function _real_escape($string) {
-         
+
         if (is_int($string) || is_float($string)) {
             return $string;
         }
+
         $string = str_replace("'", "''", $string);
         return addcslashes($string, "\000\n\r\\\032");
-         
+
     }
 
     /**
@@ -311,7 +322,7 @@ class DbPDO extends Db {
         }
 
     }
-    
+
     public function _translate_escape($str) {
 
         if (!is_null($str) && !is_array($str) && !is_object($str)) {
