@@ -773,13 +773,7 @@ class BackTab extends PhenyxObjectModel {
     }
 
     public function update($nullValues = true, $init = true) {
-
-        $oldMenu = new BackTab($this->id);
-
-        if ($this->position != $oldMenu->position) {
-            $this->adjustPosition($this->position);
-        }
-
+        
         static::$_cache_back_tab = [];
 
         if (parent::update($nullValues)) {
