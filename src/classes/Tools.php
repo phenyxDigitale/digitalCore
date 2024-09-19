@@ -5688,7 +5688,7 @@ FileETag none
                     continue;
                 }
 
-                if (isset($tab['master']) && $tab['master'] && !$context->employee->master_admin) {
+                if (isset($tab['master']) && $tab['master'] && !$context->employee->phenyx_admin) {
                     unset($topbars[$index]);
                     continue;
                 }
@@ -5715,7 +5715,7 @@ FileETag none
                         continue;
                     }
 
-                    if (isset($subTab['master']) && $subTab['master'] && !$context->employee->master_admin) {
+                    if (isset($subTab['master']) && $subTab['master'] && !$context->employee->phenyx_admin) {
                         unset($subTabs[$index2]);
                         continue;
                     }
@@ -5747,7 +5747,7 @@ FileETag none
                             continue;
                         }
 
-                        if (isset($terTab['master']) && $terTab['master'] && !$context->employee->master_admin) {
+                        if (isset($terTab['master']) && $terTab['master'] && !$context->employee->phenyx_admin) {
                             unset($terTabs[$index3]);
                             continue;
                         }
