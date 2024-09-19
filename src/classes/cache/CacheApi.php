@@ -41,7 +41,7 @@ abstract class CacheApi {
 	/**
 	 * @var int The default TTL.
 	 */
-	protected $ttl = 7200;
+	protected $ttl = 1864000;
     
     public $boardurl;
     
