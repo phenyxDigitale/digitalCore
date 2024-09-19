@@ -1,12 +1,10 @@
 <?php
 
-
 abstract class CacheApi {
 
-	
 	const APIS_DEFAULT = 'FileBased';
 
-    protected static $instance;
+	protected static $instance;
 	/**
 	 * @var string The maximum SMF version that this will work with.
 	 */
@@ -16,22 +14,22 @@ abstract class CacheApi {
 	 * @var string The minimum SMF version that this will work with.
 	 */
 	protected $min_eph_version = _EPH_VERSION_;
-    
-    abstract protected function _set($key, $value, $ttl = 0);
-    
-    abstract protected function _get($key);
-    
-    abstract protected function _exists($key);
-    
-    abstract protected function _writeKeys();
-    
-    abstract protected function _delete($key);
-    
-    abstract public function flush();
-    
-    protected $keys = [];
-    
-    protected static $local = [];
+
+	abstract protected function _set($key, $value, $ttl = 0);
+
+	abstract protected function _get($key);
+
+	abstract protected function _exists($key);
+
+	abstract protected function _writeKeys();
+
+	abstract protected function _delete($key);
+
+	abstract public function flush();
+
+	protected $keys = [];
+
+	protected static $local = [];
 
 	/**
 	 * @var string The prefix for all keys.
@@ -42,14 +40,14 @@ abstract class CacheApi {
 	 * @var int The default TTL.
 	 */
 	protected $ttl = 1864000;
-    
-    public $boardurl;
-    
-    public $cachedir;
-    
-    public $boarddir;
-    
-    public $context;
+
+	public $boardurl;
+
+	public $cachedir;
+
+	public $boarddir;
+
+	public $context;
 
 	/**
 	 * Does basic setup of a cache method when we create the object but before we call connect.
@@ -57,46 +55,46 @@ abstract class CacheApi {
 	 * @access public
 	 */
 	public function __construct() {
-               
-        $this->boardurl = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
-        $this->cachedir = _EPH_CACHE_DIR_.'cacheapi/';
-        $this->boarddir = _EPH_ROOT_DIR_;
+
+		$this->boardurl = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
+		$this->cachedir = _EPH_CACHE_DIR_ . 'cacheapi/';
+		$this->boarddir = _EPH_ROOT_DIR_;
 		$this->setPrefix();
 	}
-    
-    public static function getInstance() {
 
-        if (!static::$instance) {
-            $sql = new DbQuery();
-            $sql->select('`value`');
-            $sql->from('configuration');
-            $sql->where('`name` = \'EPH_PAGE_CACHE_TYPE\'');
-            $cachingSystem = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue($sql, false);
+	public static function getInstance() {
 
-            if ($cachingSystem) {
-                static::$instance = new $cachingSystem();
-            } else {
-                static::$instance = new FileBased();
-            }
+		if (!static::$instance) {
+			$sql = new DbQuery();
+			$sql->select('`value`');
+			$sql->from('configuration');
+			$sql->where('`name` = \'EPH_PAGE_CACHE_TYPE\'');
+			$cachingSystem = Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue($sql, false);
 
-        }
+			if ($cachingSystem) {
+				static::$instance = new $cachingSystem();
+			} else {
+				static::$instance = new FileBased();
+			}
 
-        return static::$instance;
-    }
-    
-    public static function isEnabled() {
-        return (bool)Configuration::get('EPH_CACHE_ENABLED');
-    }
-    
-    public function get($key) {
+		}
 
-        if (!isset($this->keys[$key])) {
-            return false;
-        }
+		return static::$instance;
+	}
 
-        return $this->_get($key);
-    }
+	public static function isEnabled() {
 
+		return (bool) Configuration::get('EPH_CACHE_ENABLED');
+	}
+
+	public function get($key) {
+
+		if (!isset($this->keys[$key])) {
+			return false;
+		}
+
+		return $this->_get($key);
+	}
 
 	/**
 	 * Checks whether we can use the cache method performed by this API.
@@ -138,23 +136,8 @@ abstract class CacheApi {
 			return true;
 		}
 
-		// Ideally the prefix should reflect the last time the cache was reset.
-
-		if (file_exists($this->cachedir . 'index.php')) {
-			$mtime = filemtime($this->cachedir . 'index.php');
-		}
-
-		// Fall back to the last time that Settings.php was updated.
-		else if (file_exists(_EPH_CONFIG_DIR_ . 'settings.inc.php')) {
-			$mtime = filemtime(_EPH_CONFIG_DIR_ . 'settings.inc.php');
-		}
-
-		// This should never happen, but just in case...
-		else {
-			$mtime = filemtime(realpath($_SERVER['SCRIPT_FILENAME']));
-		}
-
-		$this->prefix = md5($this->boardurl . $mtime) . '-EPH-';
+		$mtime = filemtime(_EPH_CONFIG_DIR_ . 'settings.inc.php');
+		$this->prefix = md5($this->boardurl . $mtime) . '-';
 
 		return true;
 	}
@@ -260,44 +243,49 @@ abstract class CacheApi {
 
 		return $this->min_eph_version;
 	}
-    
-    
-    public static function isStored($key) {
-        
-        return isset(CacheApi::$local[$key]);
-    }
-    
-    public static function store($key, $value) {
 
-        // PHP is not efficient at storing array
-        // Better delete the whole cache if there are
-        // more than 1000 elements in the array
+	public static function isStored($key) {
 
-        if (count(CacheApi::$local) > 1000) {
-            CacheApi::$local = [];
-        }
+		return isset(CacheApi::$local[$key]);
+	}
 
-        CacheApi::$local[$key] = $value;
-    }
-    
-    public static function retrieve($key) {
+	public static function store($key, $value) {
 
-        return isset(CacheApi::$local[$key]) ? CacheApi::$local[$key] : null;
-    }
-    
-    public static function clean($key) {
-        if (strpos($key, '*') !== false) {
-            $regexp = str_replace('\\*', '.*', preg_quote($key, '#'));
-            foreach (array_keys(CacheApi::$local) as $key) {
-                if (preg_match('#^'.$regexp.'$#', $key)) {
-                    unset(CacheApi::$local[$key]);
-                }
-            }
-        } else {
-            unset(CacheApi::$local[$key]);
-        }
-    }
-    
+		// PHP is not efficient at storing array
+		// Better delete the whole cache if there are
+		// more than 1000 elements in the array
+
+		if (count(CacheApi::$local) > 1000) {
+			CacheApi::$local = [];
+		}
+
+		CacheApi::$local[$key] = $value;
+	}
+
+	public static function retrieve($key) {
+
+		return isset(CacheApi::$local[$key]) ? CacheApi::$local[$key] : null;
+	}
+
+	public static function clean($key) {
+
+		if (strpos($key, '*') !== false) {
+			$regexp = str_replace('\\*', '.*', preg_quote($key, '#'));
+
+			foreach (array_keys(CacheApi::$local) as $key) {
+
+				if (preg_match('#^' . $regexp . '$#', $key)) {
+					unset(CacheApi::$local[$key]);
+				}
+
+			}
+
+		} else {
+			unset(CacheApi::$local[$key]);
+		}
+
+	}
+
 	/**
 	 * Run housekeeping of this cache
 	 * exp. clean up old data or do optimization
