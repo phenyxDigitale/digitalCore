@@ -857,8 +857,10 @@ class Composer {
                     $value = ['id' => $value, 'name' => $value];
                 }
 
-                Composer::add_shortcode('vc_' . $value['id'], [$this, 'vcallmodcode']);
-                $this->vcmaps_init('vc_' . $value['id'], $value['name'], $vccaw);
+                if(is_string($value['id'])) {
+                    Composer::add_shortcode('vc_' . $value['id'], [$this, 'vcallmodcode']);
+                    $this->vcmaps_init('vc_' . $value['id'], $value['name'], $vccaw);
+                }
 
             }
 
