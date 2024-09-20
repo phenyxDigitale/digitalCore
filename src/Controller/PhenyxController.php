@@ -3537,12 +3537,6 @@ abstract class PhenyxController {
         return (string) $var;
     }
     
-    public function getCmsList(CMS $cms, $objet) {
-
-		return Tools::buildIncrementSelect($cms, $this->context->language->id, 'meta_title', 'Root', $objet->id_cms);
-
-	}
-
     protected function processProfilingData() {
 
         global $start_time;
