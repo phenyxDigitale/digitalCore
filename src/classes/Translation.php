@@ -40,7 +40,7 @@ class Translation extends PhenyxObjectModel {
         if (isset($translates)) {
             $this->translations = $translates;
         } else {
-            $translates = $this->getGlobalTranslations();
+            $this->translations = $translates = $this->getGlobalTranslations();
         }       
 
         parent::__construct($id, $idLang);
