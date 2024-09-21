@@ -30,8 +30,18 @@ class Translation extends PhenyxObjectModel {
     public $origin;
     public $translation;
     public $date_upd;
+    
+    public $translations = [];
 
     public function __construct($id = null, $full = true, $idLang = null) {
+        
+        global $translates;
+        
+        if (isset($translates)) {
+            $this->translations = $translates;
+        } else {
+            $translates = $this->getGlobalTranslations();
+        }       
 
         parent::__construct($id, $idLang);
 
@@ -39,6 +49,24 @@ class Translation extends PhenyxObjectModel {
             $this->dbParams = $this->getdBParam();
         }
 
+    }
+    
+    public function getGlobalTranslations() {
+        
+        $translations = [];
+        
+        foreach (Language::getLanguages(true) as $lang) {   
+            
+            $translations[$lang['iso_code']] = Db::getInstance()->executeS(
+                (new DbQuery())
+                ->select('*')
+                ->from('translation')
+                ->where('`iso_code` = \'' . trim($lang['iso_code']) . '\'')
+            );
+            
+        }
+        
+        return $translations;
     }
 
     public static function getInstance() {
