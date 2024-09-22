@@ -2473,7 +2473,7 @@ FileETag none
 			$filePath = $file->getPathname();
 			$filePath = str_replace(_EPH_ROOT_DIR_, '', $filePath);
 
-			if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'settings.inc.php', '.user.ini', '.php-ini', '.php-version'])) {
+			if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'composer.lock', 'settings.inc.php', '.user.ini', '.php-ini', '.php-version'])) {
 				continue;
 			}
             
