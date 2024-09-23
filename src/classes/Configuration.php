@@ -443,13 +443,15 @@ class Configuration extends PhenyxObjectModel {
                 }
             }
         }
+        $sql = new DbQuery();
+        $sql->select('c.`id_configuration`');
+        $sql->from('configuration', 'c');
+        if(!is_null($idLang)) {
+            $sql->leftJoin('configuration_lang', 'cl', 'cl.id_configuration = c.id_configuration AND cl.id_lang = '.$idLang);
+        }
+        $sql->where('c.`name` = \''.$key.'\'');
 
-        $result = (bool) Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue(
-            (new DbQuery())
-                ->select('`id_configuration`')
-                ->from('configuration')
-                ->where('`name` = \''.$key.'\'')
-        );
+        $result = (bool) Db::getInstance(_EPH_USE_SQL_SLAVE_)->getValue($sql);
         if(class_exists('Context') && $context->cache_enable && is_object($context->cache_api)) {
             $temp = $result === null ? null : $result;
             $cache->putData('hasKey_'.$key, $temp);

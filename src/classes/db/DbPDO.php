@@ -133,15 +133,7 @@ class DbPDO extends Db {
      */
     protected function _query($sql) {
 
-        try {
-            return isset($this->link) ? $this->link->query($sql) : null;
-        } catch (Exception $e) {
-            $return = [
-                'success' => false,
-                'message' => 'Exception on query in database for the request : "' . $sql . '" with error : ' . $e->getMessage(),
-            ];
-            die(Tools::jsonEncode($return));
-        }
+        return isset($this->link) ? $this->link->query($sql) : null;
 
     }
 
