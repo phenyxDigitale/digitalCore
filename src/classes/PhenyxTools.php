@@ -16,6 +16,8 @@ class PhenyxTools {
 	protected $_crypto_key;
 
 	public $context;
+    
+    public $plugins = [];
 
 	public $license;
 
@@ -29,6 +31,13 @@ class PhenyxTools {
 
 		$this->license = $this->checkLicense();
 		$this->context->license = $this->license;
+        
+        $installed_plugins = Plugin::getPluginsDirOnDisk();
+        foreach ($installed_plugins as $plugin) {
+            if(Plugin::isInstalled($plugin, false)) {
+                $this->plugins[] = $plugin;
+            }
+        }
 
 	}
 
@@ -40,6 +49,118 @@ class PhenyxTools {
 
 		return PhenyxTools::$instance;
 	}
+    
+    public function generateCurrentJson() {
+            
+		$recursive_directory = [
+            'app/xml',
+            'content/backoffice',
+            'content/css',
+            'content/fonts',
+            'content/js',
+            'content/localization',
+            'content/img/pdfWorker',
+            'content/mails',
+            'content/mp3',
+            'content/pdf',
+            'content/themes/phenyx-theme-default',
+			'includes/classes',
+			'includes/controllers',
+			'vendor/phenyxdigitale',
+            'webephenyx',
+		];
+        $iso_langs = [];
+        $languages = Language::getLanguages(false);
+        foreach ($languages as $language) {
+            $recursive_directory[] = 'content/translations/'.$language['iso_code'];
+            $iso_langs[] = $language['iso_code'];
+        }
+        foreach($this->plugins as $plugin) {
+            if(is_dir(_EPH_PLUGIN_DIR_ .$plugin)) {
+                $recursive_directory[] = 'includes/plugins/'.$plugin;
+            } 
+        }      
+		
+        $iterator = new AppendIterator();
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/themes/'));
+        foreach ($recursive_directory as $key => $directory) {
+			if(is_dir(_EPH_ROOT_DIR_ . '/' . $directory )) {
+				$iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory . '/')));
+			}
+        }
+		
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/app/'));
+        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/'));
+        
+        $excludes = ['/'.$this->context->theme->directory.'/css/', '/'.$this->context->theme->directory.'/fonts/', '/'.$this->context->theme->directory.'/font/', '/'.$this->context->theme->directory.'/img/', '/'.$this->context->theme->directory.'/js/', '/'.$this->context->theme->directory.'/plugins/', '/'.$this->context->theme->directory.'/pdf/'];
+        
+
+        foreach ($iterator as $file) {
+            $filePath = $file->getPathname();
+            $filePath = str_replace(_EPH_ROOT_DIR_, '', $filePath);
+			
+            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'composer.lock', 'settings.inc.php',  '.php-ini', '.php-version'])) {
+                continue;
+            }
+            $inExclude = false;
+            foreach($excludes as $exclude) {              
+                if (str_contains($filePath, $exclude)) {
+                    $inExclude = true;
+			        continue;
+                }
+            }    
+            if($inExclude) {
+                continue;
+            }
+			
+            if (is_dir($file->getPathname())) {
+								
+                continue;
+            }
+
+            $ext = pathinfo($file->getFilename(), PATHINFO_EXTENSION);
+
+            if ($ext == 'txt') {
+                continue;
+            }
+			if ($ext == 'zip') {
+				continue;
+			}
+            if (str_contains($filePath, '/plugins/') && str_contains($filePath, '/translations/')) {
+                
+                foreach($this->plugins as $plugin) {
+                    if (str_contains($filePath, '/plugins/'.$plugin.'/translations/')) {
+                        $test = str_replace('/includes/plugins/'.$plugin.'/translations/', '', $filePath);
+                        $test = str_replace('.php', '', $test);
+                        if(!in_array($test,$iso_langs)) {
+                            continue;
+
+                        }
+                    }
+                }
+			}
+            
+            if (str_contains($filePath, 'custom_') && $ext == 'css') {
+                continue;
+            }			
+           
+           if (str_contains($filePath, '/uploads/')) {
+				continue;
+			}
+             if (str_contains($filePath, '/cache/')) {
+				continue;
+			}   
+            if (str_contains($filePath, '/views/docs/')) {
+				continue;
+			} 
+             
+
+            $md5List[$filePath] = md5_file($file->getPathname());
+        }
+
+        return $md5List;
+
+    }
     
     public static function addJsDef($jsDef) {
         
