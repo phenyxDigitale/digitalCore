@@ -32,12 +32,8 @@ class PhenyxTools {
 		$this->license = $this->checkLicense();
 		$this->context->license = $this->license;
         
-        $installed_plugins = Plugin::getPluginsDirOnDisk();
-        foreach ($installed_plugins as $plugin) {
-            if(Plugin::isInstalled($plugin, false)) {
-                $this->plugins[] = $plugin;
-            }
-        }
+        $this->plugins = Plugin::getInstalledPluginsDirOnDisk();
+        
 
 	}
 

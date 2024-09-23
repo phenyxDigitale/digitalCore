@@ -1047,6 +1047,61 @@ abstract class Plugin {
 
         return $pluginList;
     }
+    
+    public static function getInstalledPluginsDirOnDisk() {
+
+        $cacheId = 'getInstalledPluginsDirOnDisk';
+        if (!CacheApi::isStored($cacheId)) {
+            $plugins = [];
+            $pluginList = [];
+            $plugins = scandir(_EPH_PLUGIN_DIR_);
+
+            foreach ($plugins as $name) {
+
+            if (is_file(_EPH_PLUGIN_DIR_ . $name)) {
+                continue;
+            } else
+
+            if (is_dir(_EPH_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR) && file_exists(_EPH_PLUGIN_DIR_ . $name . '/' . $name . '.php')) {
+
+                if (!Validate::isPluginName($name)) {
+                    throw new PhenyxException(sprintf('Plugin %s is not a valid plugin name', $name));
+                }
+
+                $pluginList[] = $name;
+            }
+
+        }
+
+            $plugins = scandir(_EPH_SPECIFIC_PLUGIN_DIR_);
+
+            foreach ($plugins as $name) {
+
+                if (is_file(_EPH_SPECIFIC_PLUGIN_DIR_ . $name)) {
+                    continue;
+                } else
+
+                if (is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR) && file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $name . '/' . $name . '.php')) {
+
+                    if (!Validate::isPluginName($name)) {
+                        throw new PhenyxException(sprintf('Plugin %s is not a valid plugin name', $name));
+                    }
+
+                    $pluginList[] = $name;
+                }
+
+            }
+        
+            foreach ($pluginList as $plugin) {
+                if(Plugin::isInstalled($plugin, false)) {
+                    $plugins[] = $plugin;
+                }
+            }
+            CacheApi::store($cacheId, $plugins);
+        }
+
+        return CacheApi::retrieve($cacheId);
+    }
 
     protected static function useTooMuchMemory() {
 
