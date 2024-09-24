@@ -32,7 +32,7 @@ class PhenyxTools {
 		$this->license = $this->checkLicense();
 		$this->context->license = $this->license;
         
-        $this->getInstalledPluginsDirOnDisk();
+        $this->plugins = $this->getInstalledPluginsDirOnDisk();
         
 
 	}
@@ -98,7 +98,7 @@ class PhenyxTools {
                     continue;
                 }
                 if(Plugin::isInstalled($plugin)) {
-                    $this->plugins[$plugin] = true;
+                    $plugins[$plugin] = true;
                 } 
             }
             
@@ -108,6 +108,8 @@ class PhenyxTools {
             $temp = $plugins === null ? null : Tools::jsonEncode($plugins);
             $this->context->cache_api->putData($cacheId, $temp, 3600);
         }
+        
+        return $plugins;
 
         
     }
