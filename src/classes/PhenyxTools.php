@@ -25,7 +25,7 @@ class PhenyxTools {
 
 		$this->context = Context::getContext();
 
-		$this->_url = 'https://ephenyx.io/api';
+		$this->_url = _EPH_PHENYX_API_;
 		$string = Configuration::get('_EPHENYX_LICENSE_KEY_', null, false) . '/' . $this->context->company->company_url;
 		$this->_crypto_key = Tools::encrypt_decrypt('encrypt', $string, _PHP_ENCRYPTION_KEY_, _COOKIE_KEY_);
 
@@ -38,10 +38,10 @@ class PhenyxTools {
 	}
     
     public function getInstalledPluginsDirOnDisk() {
-
+       
         $cacheId = 'getInstalledPluginsDirOnDisk';
         if ($this->context->cache_enable && is_object($this->context->cache_api)) {
-            $value = $this->context->cache_api->getData($cacheId, 3600);
+            $value = $this->context->cache_api->getData($cacheId);
             $temp = empty($value) ? null : Tools::jsonDecode($value, true);
 
             if (!empty($temp)) {
@@ -52,10 +52,13 @@ class PhenyxTools {
         
         $plugins = [];
         $pluginList = [];
-        $plugins = scandir(_EPH_PLUGIN_DIR_);
+        $plugs = scandir(_EPH_PLUGIN_DIR_);
 
-        foreach ($plugins as $name) {
-
+        foreach ($plugs as $name) {
+            if (in_array($name, ['.', '..'])) {
+                continue;
+            }
+            
             if (is_file(_EPH_PLUGIN_DIR_ . $name)) {
                 continue;
             } else if (is_dir(_EPH_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR) && file_exists(_EPH_PLUGIN_DIR_ . $name . '/' . $name . '.php')) {
@@ -69,10 +72,12 @@ class PhenyxTools {
 
         
 
-            $plugins = scandir(_EPH_SPECIFIC_PLUGIN_DIR_);
+            $plugs = scandir(_EPH_SPECIFIC_PLUGIN_DIR_);
 
-            foreach ($plugins as $name) {
-
+            foreach ($plugs as $name) {
+                if (in_array($name, ['.', '..'])) {
+                    continue;
+                }                
                 if (is_file(_EPH_SPECIFIC_PLUGIN_DIR_ . $name)) {
                     continue;
                 } else
@@ -90,18 +95,18 @@ class PhenyxTools {
         
             foreach ($pluginList as $plugin) {
                 if (in_array($plugin, ['.', '..'])) {
-                continue;
-            }
-                if(Plugin::isInstalled($plugin)) {
-                    $plugins[] = $plugin;
+                    continue;
                 }
+                if(Plugin::isInstalled($plugin)) {
+                    $plugins[$plugin] = true;
+                } 
             }
             
         }
         
         if ($this->context->cache_enable && is_object($this->context->cache_api)) {
             $temp = $plugins === null ? null : Tools::jsonEncode($plugins);
-            $this->context->cache_api->putData($cacheId, $temp);
+            $this->context->cache_api->putData($cacheId, $temp, 3600);
         }
 
         return $plugins;
