@@ -24,6 +24,8 @@ class PhenyxTools {
 	public function __construct() {
 
 		$this->context = Context::getContext();
+        $this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
+        $this->context->theme = new Theme((int) $this->context->company->id_theme);
 
 		$this->_url = _EPH_PHENYX_API_;
 		$string = Configuration::get('_EPHENYX_LICENSE_KEY_', null, false) . '/' . $this->context->company->company_url;
