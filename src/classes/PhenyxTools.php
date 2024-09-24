@@ -125,7 +125,7 @@ class PhenyxTools {
 	}
     
     public function generateCurrentJson() {
-            
+                
 		$recursive_directory = [
             'app/xml',
             'content/backoffice',
@@ -149,7 +149,7 @@ class PhenyxTools {
             $recursive_directory[] = 'content/translations/'.$language['iso_code'];
             $iso_langs[] = $language['iso_code'];
         }
-        foreach($this->plugins as $plugin) {
+        foreach($this->plugins as $plugin => $installed) {
             if(is_dir(_EPH_PLUGIN_DIR_ .$plugin)) {
                 $recursive_directory[] = 'includes/plugins/'.$plugin;
             } 
