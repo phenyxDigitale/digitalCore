@@ -38,8 +38,6 @@ class Hook extends PhenyxObjectModel {
     public $tag_value;
 
     public $plugins = [];
-    
-    public $args;
 
     public $available_plugins = [];
     /**
@@ -92,8 +90,7 @@ class Hook extends PhenyxObjectModel {
 
         $this->id_lang = (Language::getLanguage($idLang) !== false) ? $idLang : Configuration::get(Configuration::LANG_DEFAULT);
         $this->context->_hook = $this;
-        $this->args = Tools::jsonDecode(Configuration::get('_EPH_MAIN_ARG_VALUE_'), true);
-        //$this->context->hook_args = $this->getArgs();
+        $this->context->hook_args = $this->getHookArgs();
 
         if ($id) {
             $this->id = $id;
@@ -136,6 +133,40 @@ class Hook extends PhenyxObjectModel {
 
         return $return;
     }
+    
+    public function getHookArgs() {
+
+        $args = ['cookie'=> 'construct cookie'];
+
+        $args_conf_id = $this->getIdByName('actionHookExtraArgs');
+
+        if ($args_conf_id > 0) {
+            
+            $plugins = $this->getPluginsFromHook($args_conf_id, null, $force);
+
+            foreach ($plugins as $plugin) {
+                $pluginInstance = Plugin::getInstanceByName($plugin['name']);
+                $hookCallable = is_callable([$pluginInstance, 'hook' . $plugin['title']]);
+
+                if (($hookCallable) && Plugin::preCall($pluginInstance->name)) {
+                    $display = $this->coreCallHook($pluginInstance, 'hook' . $plugin['title'], []);
+
+                    foreach ($display as $key => $value) {
+
+                        $args[$key] = $value;
+
+                    }
+
+                }
+
+            }
+
+            
+        }
+
+        return $args;
+    }
+
 
     public function getArgs($force = false) {
 
@@ -403,9 +434,9 @@ class Hook extends PhenyxObjectModel {
             $hookArgs['cookie'] = $this->context->cookie;
         }
 
-        if (is_array($this->args)) {
+        if (is_array($this->context->hook_args)) {
 
-            foreach ($this->args as $key => $value) {
+            foreach ($this->context->hook_args as $key => $value) {
                 $hookArgs[$key] = $this->context->$key;
             }
 
