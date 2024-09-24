@@ -89,7 +89,10 @@ class PhenyxTools {
             }
         
             foreach ($pluginList as $plugin) {
-                if(Plugin::isInstalled($plugin, false)) {
+                if (in_array($plugin, ['.', '..'])) {
+                continue;
+            }
+                if(Plugin::isInstalled($plugin)) {
                     $plugins[] = $plugin;
                 }
             }
