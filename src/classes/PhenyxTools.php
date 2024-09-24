@@ -127,6 +127,8 @@ class PhenyxTools {
 	}
     
     public function generateCurrentJson() {
+        
+        $directories = Theme::getThemeDirectories();
                 
 		$recursive_directory = [
             'app/xml',
@@ -167,8 +169,17 @@ class PhenyxTools {
 		
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/app/'));
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/'));
+        $excludes = [];
+        foreach($directories as $directory) {
+            $excludes[]  = '/'.$directory.'/css/';
+            $excludes[]  = '/'.$directory.'/fonts/';
+            $excludes[]  = '/'.$directory.'/font/';
+            $excludes[]  = '/'.$directory.'/img/';
+            $excludes[]  = '/'.$directory.'/js/';
+            $excludes[]  = '/'.$directory.'/plugins/';
+            $excludes[]  = '/'.$directory.'/pdf/';
+        }
         
-        $excludes = ['/'.$this->context->theme->directory.'/css/', '/'.$this->context->theme->directory.'/fonts/', '/'.$this->context->theme->directory.'/font/', '/'.$this->context->theme->directory.'/img/', '/'.$this->context->theme->directory.'/js/', '/'.$this->context->theme->directory.'/plugins/', '/'.$this->context->theme->directory.'/pdf/'];
         
 
         foreach ($iterator as $file) {
