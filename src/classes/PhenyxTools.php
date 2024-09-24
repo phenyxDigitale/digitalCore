@@ -128,7 +128,7 @@ class PhenyxTools {
     
     public function generateCurrentJson() {
         
-        $directories = Theme::getThemeDirectories();
+        $directories = Theme::getInstalledThemeDirectories();
                 
 		$recursive_directory = [
             'app/xml',
