@@ -32,7 +32,7 @@ class PhenyxTools {
 		$this->license = $this->checkLicense();
 		$this->context->license = $this->license;
         
-        $this->plugins = $this->getInstalledPluginsDirOnDisk();
+        $this->getInstalledPluginsDirOnDisk();
         
 
 	}
@@ -82,7 +82,7 @@ class PhenyxTools {
                     continue;
                 } else
 
-                if (is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR) && file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $name . '/' . $name . '.php')) {
+                if (is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR) && file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR . $name . '.php')) {
 
                     if (!Validate::isPluginName($name)) {
                         throw new PhenyxException(sprintf('Plugin %s is not a valid plugin name', $name));
@@ -98,7 +98,7 @@ class PhenyxTools {
                     continue;
                 }
                 if(Plugin::isInstalled($plugin)) {
-                    $plugins[$plugin] = true;
+                    $this->plugins[$plugin] = true;
                 } 
             }
             
@@ -109,7 +109,7 @@ class PhenyxTools {
             $this->context->cache_api->putData($cacheId, $temp, 3600);
         }
 
-        return $plugins;
+        
     }
 
 
