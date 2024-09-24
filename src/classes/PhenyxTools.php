@@ -178,6 +178,7 @@ class PhenyxTools {
             $excludes[]  = '/'.$directory.'/js/';
             $excludes[]  = '/'.$directory.'/plugins/';
             $excludes[]  = '/'.$directory.'/pdf/';
+            $excludes[]  = '/'.$directory.'/docs/';
         }
         
         
