@@ -74,6 +74,8 @@ class Context {
         
     public $cart;
     
+    public $currency;
+    
     public $studentEducation;
     
     public $cart_education;
