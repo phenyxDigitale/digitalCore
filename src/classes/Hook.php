@@ -142,7 +142,7 @@ class Hook extends PhenyxObjectModel {
 
         if ($args_conf_id > 0) {
             
-            $plugins = $this->getPluginsFromHook($args_conf_id, null, $force);
+            $plugins = $this->getPluginsFromHook($args_conf_id, null);
 
             foreach ($plugins as $plugin) {
                 $pluginInstance = Plugin::getInstanceByName($plugin['name']);
@@ -180,7 +180,7 @@ class Hook extends PhenyxObjectModel {
 
         if ($args_conf_id > 0) {
             Configuration::updateValue('_EPH_MAIN_ARG_ID_', $args_conf_id);
-            $plugins = $this->getPluginsFromHook($args_conf_id, null, $force);
+            $plugins = $this->getPluginsFromHook($args_conf_id, null);
 
             foreach ($plugins as $plugin) {
                 $pluginInstance = Plugin::getInstanceByName($plugin['name']);
