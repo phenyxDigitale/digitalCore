@@ -71,6 +71,14 @@ class Context {
     public $translations;
     
     public $media;
+        
+    public $cart;
+    
+    public $studentEducation;
+    
+    public $cart_education;
+    
+    public $agent;
 	/**
 	 * Mobile device of the customer
 	 *
@@ -83,25 +91,6 @@ class Context {
 	protected $is_tablet = null;
 	// @codingStandardsIgnoreEnd
     
-        
-    
-    public function getExtraContextVars() {
-        
-        $extraVars = Hook::getInstance()->exec('actionContextGetExtraVars', [], null, true);
-        if(is_array($extraVars)) {
-            foreach($extraVars as $plugin =>$extraVar) {
-                if(is_array($extraVar)) {
-                    foreach($extraVar as $key => $value) {
-                        $this->{$key};
-                    }
-                }
-            }
-            
-        }     
-    }
-
-
-
 	/**
 	 * @param Context $testInstance Unit testing purpose only
 	 *

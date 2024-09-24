@@ -453,8 +453,6 @@ abstract class PhenyxController {
             $this->context->media = new Media();
         }
 
-        $this->context->getExtraContextVars();
-
         if (!isset($this->context->language)) {
             $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT'))));
         }
