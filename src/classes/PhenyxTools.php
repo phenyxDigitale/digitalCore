@@ -126,9 +126,9 @@ class PhenyxTools {
 		return PhenyxTools::$instance;
 	}
     
-    public function generateCurrentJson() {
+    public function generateCurrentJson($use_cache = true) {
         
-        if(file_exists(_EPH_CONFIG_DIR_ . 'json/new_json.json')) {
+        if($use_cache && file_exists(_EPH_CONFIG_DIR_ . 'json/new_json.json')) {
             $md5List = file_get_contents(_EPH_CONFIG_DIR_ . 'json/new_json.json');
             unlink(_EPH_CONFIG_DIR_ . 'json/new_json.json');
 		    return Tools::jsonDecode($md5List, true);
@@ -258,7 +258,7 @@ class PhenyxTools {
     
     public function generateOwnCurrentJson() {
         
-        $md5List = $this->generateCurrentJson();
+        $md5List = $this->generateCurrentJson(false);
         if (is_array($md5List)) {
 			file_put_contents(
 				_EPH_CONFIG_DIR_ . 'json/new_json.json',
