@@ -1,5 +1,9 @@
 <?php
+
+use Detection\Exception\MobileDetectException;
+use Detection\MobileDetect;
 #[AllowDynamicProperties]
+
 /**
  * Class ContextCore
  *
@@ -219,7 +223,7 @@ class Context {
 	public function getMobileDetect() {
 
 		if ($this->mobile_detect === null) {
-			$this->mobile_detect = new Mobile_Detect();
+			$this->mobile_detect = new MobileDetect();
 		}
 
 		return $this->mobile_detect;
