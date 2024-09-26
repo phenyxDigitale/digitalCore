@@ -75,10 +75,14 @@ class Translate {
     public function getAdminTranslation($string, $class = 'Phenyx', $addslashes = false, $htmlentities = true, $sprintf = null) {
 
         $file = fopen("testgetAdminTranslation.txt", "w");
-        $string = str_replace('"', '`', $string);
-
+       
         $iso = $this->context->language->iso_code;
-        $string = preg_replace("/\\\*'/", "\'", $string);
+        if (str_contains($string, "\'")) {
+            $string = str_replace("\'", "'", $string);
+        }
+        if (str_contains($string, "\‘")) {
+            $string = str_replace("\‘", "'", $string);
+        }
 
         $key = md5($string);
 
@@ -178,7 +182,12 @@ class Translate {
         
         $string = str_replace('"', '`', $string);
         $iso = $this->context->language->iso_code;
-        $string = preg_replace("/\\\*'/", "\'", $string);
+        if (str_contains($string, "\'")) {
+            $string = str_replace("\'", "'", $string);
+        }
+        if (str_contains($string, "\‘")) {
+            $string = str_replace("\‘", "'", $string);
+        }
         $key = md5($string);
 
 
@@ -248,8 +257,12 @@ class Translate {
         }
 
         
-        $string = str_replace('"', '`', $string);
-        $string = preg_replace("/\\\*'/", "\'", $string);
+        if (str_contains($string, "\'")) {
+            $string = str_replace("\'", "'", $string);
+        }
+        if (str_contains($string, "\‘")) {
+            $string = str_replace("\‘", "'", $string);
+        }
         $key = md5($string);
         $iso = $this->context->language->iso_code;
         if (!isset($this->context->translations)) {
@@ -321,7 +334,12 @@ class Translate {
 
     public function getPluginTranslation($plugin, $string, $source, $sprintf = null, $js = false, $context = null) {
 
-        $string = str_replace('"', '`', $string);
+        if (str_contains($string, "\'")) {
+            $string = str_replace("\'", "'", $string);
+        }
+        if (str_contains($string, "\‘")) {
+            $string = str_replace("\‘", "'", $string);
+        }
         global $_PLUGINS, $_PLUGIN, $_LANGADM;
 
         if (empty($string)) {
@@ -472,8 +490,12 @@ class Translate {
     public function getPdfTranslation($string, $file, $sprintf = null, $context = null) {
 
         
-        $string = str_replace('"', '`', $string);
-        $string = preg_replace("/\\\*'/", "\'", $string);
+        if (str_contains($string, "\'")) {
+            $string = str_replace("\'", "'", $string);
+        }
+        if (str_contains($string, "\‘")) {
+            $string = str_replace("\‘", "'", $string);
+        }
         $key = md5($string);
         $iso = $this->context->language->iso_code;
 
@@ -525,8 +547,12 @@ class Translate {
 
     public function getMailsTranslation($string, $file, $sprintf = null, $context = null) {
         
-        $string = str_replace('"', '`', $string);
-        $string = preg_replace("/\\\*'/", "\'", $string);
+        if (str_contains($string, "\'")) {
+            $string = str_replace("\'", "'", $string);
+        }
+        if (str_contains($string, "\‘")) {
+            $string = str_replace("\‘", "'", $string);
+        }
         $key = md5($string);
         $iso = $this->context->language->iso_code;
 
@@ -607,7 +633,12 @@ class Translate {
 
     public function getGenericFrontTranslation($string, &$langArray, $key = null) {
 
-        $string = preg_replace("/\\\*'/", "\'", $string);
+        if (str_contains($string, "\'")) {
+            $string = str_replace("\'", "'", $string);
+        }
+        if (str_contains($string, "\‘")) {
+            $string = str_replace("\‘", "'", $string);
+        }
 
         if (is_null($key)) {
             $key = md5($string);
@@ -669,6 +700,13 @@ class Translate {
     }
 
     public function getInstallerTranslation($string, $class, $addslashes = false, $htmlentities = true, $sprintf = null) {
+        
+        if (str_contains($string, "\'")) {
+            $string = str_replace("\'", "'", $string);
+        }
+        if (str_contains($string, "\‘")) {
+            $string = str_replace("\‘", "'", $string);
+        }
 
         global $_LANGINSTALL;
 

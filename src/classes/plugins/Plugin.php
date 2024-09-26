@@ -128,6 +128,8 @@ abstract class Plugin {
     public $is_eu_compatible;
 
     public $is_ondisk;
+    
+    public $is_corporate = false;
     /**
      * @var bool $bootstrap
      *
