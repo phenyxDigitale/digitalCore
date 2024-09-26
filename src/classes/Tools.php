@@ -2321,16 +2321,7 @@ FileETag none
 
     }
     
-    public static function generateOwnCurrentJson() {
-        
-        $md5List = self::generateCurrentJson();
-        if (is_array($md5List)) {
-			file_put_contents(
-				_EPH_CONFIG_DIR_ . 'json/new_json.json',
-				json_encode($md5List, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-			);
-		}
-    }
+    
     
        
     

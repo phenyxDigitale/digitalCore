@@ -128,6 +128,12 @@ class PhenyxTools {
     
     public function generateCurrentJson() {
         
+        if(file_exists(_EPH_CONFIG_DIR_ . 'json/new_json.json')) {
+            $md5List = file_get_contents(_EPH_CONFIG_DIR_ . 'json/new_json.json');
+            unlink(_EPH_CONFIG_DIR_ . 'json/new_json.json');
+		    return Tools::jsonDecode($md5List, true);
+        }
+        
         $directories = Theme::getInstalledThemeDirectories();
                 
 		$recursive_directory = [
@@ -248,6 +254,17 @@ class PhenyxTools {
 
         return $md5List;
 
+    }
+    
+    public function generateOwnCurrentJson() {
+        
+        $md5List = $this->generateCurrentJson();
+        if (is_array($md5List)) {
+			file_put_contents(
+				_EPH_CONFIG_DIR_ . 'json/new_json.json',
+				json_encode($md5List, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+			);
+		}
     }
     
     public static function addJsDef($jsDef) {
