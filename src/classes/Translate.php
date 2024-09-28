@@ -24,15 +24,29 @@ class Translate {
     public $langmail;
 
     public $langpdf;
+    
+    public $frontlang;
 
-    public function __construct($iso = null) {
+    public function __construct($iso = null, Company $company = null) {
         
         $this->context = Context::getContext();
+        
+        if(!isset($this->context->company)) {
+            if(is_null($company)) {
+                $this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
+            } else {
+                $this->context->company = $company;
+            }
+        }
+        if(!isset($this->context->theme)) {
+            $this->context->theme = new Theme((int) $this->context->company->id_theme);
+        }
+        
         if(is_null($iso)) {
             $iso = $this->context->language->iso_code;
         }
 
-        global $_LANGADM, $_LANGCLASS, $_LANGFRONT, $_LANGMAIL, $_LANGPDF;
+        global $_LANGADM, $_LANGCLASS, $_LANGFRONT, $_LANG, $_LANGMAIL, $_LANGPDF;
 
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
             require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php';
@@ -53,6 +67,8 @@ class Translate {
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php')) {
             require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php';
         }
+        
+        $this->frontlang = $this->fileExists();
 
         $this->langadmin = $_LANGADM;
         $this->langclass = $_LANGCLASS;
@@ -63,14 +79,27 @@ class Translate {
 
     }
     
-    public static function getInstance() {
+    
+    public function fileExists() {
 
-        if (!static::$instance) {
-            static::$instance = new Translate();
-        }
+		$var = '_LANG';
+		$dir = $this->context->theme->path . 'lang/';
+		$file = $this->context->language->iso_code . '.php';
 
-        return static::$instance;
-    }
+		$$var = [];
+
+		if (!file_exists($dir)) {
+
+			if (!mkdir($dir, 0700)) {
+				throw new PhenyxException('Directory ' . $dir . ' cannot be created.');
+			}
+
+		}
+		
+		include $dir .  $file;
+
+		return $$var;
+	}
 
     public function getAdminTranslation($string, $class = 'Phenyx', $addslashes = false, $htmlentities = true, $sprintf = null) {
 
@@ -266,7 +295,7 @@ class Translate {
         $key = md5($string);
         $iso = $this->context->language->iso_code;
         if (!isset($this->context->translations)) {
-            $this->context->translations = new Translate($iso);
+            $this->context->translations = new Translate($iso, $this->context->company);
         }
 
         if (isset($this->context->translations->langclass)) {
@@ -500,7 +529,7 @@ class Translate {
         $iso = $this->context->language->iso_code;
 
         if (!isset($this->context->translations)) {
-            $this->context->translations = new Translate($iso);
+             $this->context->translations = new Translate($iso, $this->context->company);
         }
 
         if (isset($this->context->translations->langpdf)) {
@@ -557,7 +586,7 @@ class Translate {
         $iso = $this->context->language->iso_code;
 
         if (!isset($this->context->translations)) {
-            $this->context->translations = new Translate($iso);
+            $this->context->translations = new Translate($iso, $this->context->company);
         }
 
         if (isset($this->context->translations->langmail)) {

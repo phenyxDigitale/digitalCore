@@ -440,6 +440,8 @@ abstract class PhenyxController {
         }
 
         $this->context = Context::getContext();
+        
+        $this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
 
         if (!isset($this->context->_hook)) {
             $this->context->_hook = new Hook();
@@ -455,6 +457,10 @@ abstract class PhenyxController {
 
         if (!isset($this->context->language)) {
             $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT'))));
+        }
+        
+        if (!isset($this->context->translations)) {
+            $this->context->translations = new Translate($this->context->language->iso_code, $this->context->company);
         }
 
         $this->context->smarty->assign([
@@ -508,10 +514,6 @@ abstract class PhenyxController {
             buildHeadingAction(\'' . 'grid_' . $this->controller_name . '\', \'' . $this->controller_name . '\');
         }';
 
-        if (!isset($this->context->translations)) {
-
-            $this->context->translations = new Translate($this->context->language->iso_code);
-        }
 
     }
 
@@ -756,7 +758,7 @@ abstract class PhenyxController {
         fwrite($file, "\n" . 'return $_LANGPDF;' . "\n");
         fclose($file);
 
-        $this->context->translations = new Translate($iso);
+        $this->context->translations = new Translate($iso, $this->context->company);
         Configuration::updateValue('CURENT_MERGE_LANG_' . $this->context->language->iso_code, 1);
 
     }

@@ -207,10 +207,13 @@ abstract class Plugin {
         if(!isset($this->context->_hook)) {
             $this->context->_hook = Hook::getInstance();
         }
-        
+        if (!isset($this->context->company)) {
+
+            $this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
+        }
         if (!isset($this->context->translations)) {
 
-            $this->context->translations = new Translate($this->context->language->iso_code);
+            $this->context->translations = new Translate($this->context->language->iso_code, $this->context->company);
         }
         
         if (!isset($this->context->media)) {

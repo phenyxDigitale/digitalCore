@@ -226,11 +226,16 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             $this->context->_hook = PhenyxObjectModel::$hook_instance;
             $this->context->hook_args = $this->context->_hook->getHookArgs();
         }
-       
+        
+        if (!isset($this->context->company)) {
+            $this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
+            
+        }
+           
         
         if (!isset($this->context->translations)) {
 
-            $this->context->translations = new Translate($this->context->language->iso_code);
+            $this->context->translations = new Translate($this->context->language->iso_code, $this->context->company);
         }
         
         if (!isset($this->context->media)) {
@@ -1990,8 +1995,12 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         if (strtolower(substr($class, -4)) == 'core') {
             $class = substr($class, 0, -4);
         }
+        if(isset($this->context->translations)) {
+            return $this->context->translations->getClassTranslation($string, $class);
+        }
+        return $string;
 
-        return $this->context->translations->getClassTranslation($string, $class);
+        
     }
 
     public function getStaticPrefix($piece_type) {
