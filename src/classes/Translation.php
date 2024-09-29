@@ -35,7 +35,11 @@ class Translation extends PhenyxObjectModel {
     public function __construct($id = null, $isos = null)  {
         
         $this->className = get_class($this);
-                
+        $this->context = Context::getContext();
+        if (!PhenyxObjectModel::$hook_instance) {
+            PhenyxObjectModel::$hook_instance = new Hook();
+            $this->context->_hook = PhenyxObjectModel::$hook_instance;
+        }
         if (!isset(PhenyxObjectModel::$loaded_classes[$this->className])) {
             $this->def = PhenyxObjectModel::getDefinition($this->className);            
             PhenyxObjectModel::$loaded_classes[$this->className] = get_object_vars($this);
@@ -122,6 +126,15 @@ class Translation extends PhenyxObjectModel {
         return $result;
 
     }
+    
+    public function update($nullValues = false) {
+        
+        $result = parent::update($nullValues);
+
+		$this->translations = $this->getGlobalTranslations();
+        
+        return $result;
+	}
 
     public function getExistingTranslation($iso_code, $origin) {
 
@@ -144,7 +157,7 @@ class Translation extends PhenyxObjectModel {
             ->where('`origin` = \'' . bqSQL(trim($origin)) . '\'')
         );
         
-        if(Validate::isTableOrIdentifier($id_translation)) {
+        if(Validate::isUnsignedId($id_translation)) {
             return $id_translation;
         }
         
