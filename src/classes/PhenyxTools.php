@@ -17,6 +17,8 @@ class PhenyxTools {
 
 	public $context;
     
+    public $default_theme;
+    
     public $plugins = [];
 
 	public $license;
@@ -26,6 +28,7 @@ class PhenyxTools {
 		$this->context = Context::getContext();
         $this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
         $this->context->theme = new Theme((int) $this->context->company->id_theme);
+        $this->default_theme = $this->context->theme->directory;
 
 		$this->_url = _EPH_PHENYX_API_;
 		$string = Configuration::get('_EPHENYX_LICENSE_KEY_', null, false) . '/' . $this->context->company->company_url;
@@ -175,8 +178,11 @@ class PhenyxTools {
 		
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/app/'));
         $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/'));
-        $excludes = ['/phenyx-theme-default/css/', '/phenyx-theme-default/fonts/', '/phenyx-theme-default/font/', '/phenyx-theme-default/img/', '/phenyx-theme-default/js/', '/phenyx-theme-default/plugins/', '/phenyx-theme-default/pdf/'];
+       
         foreach($directories as $directory) {
+            if($directory == 'phenyx-theme-default') {
+                continue;
+            }
             $excludes[]  = '/'.$directory.'/css/';
             $excludes[]  = '/'.$directory.'/fonts/';
             $excludes[]  = '/'.$directory.'/font/';
