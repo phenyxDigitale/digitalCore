@@ -32,25 +32,41 @@ class Translation extends PhenyxObjectModel {
     
     public $translations = [];
 
-    public function __construct($id = null, $full = true, $idLang = null) {
+    public function __construct($id = null, $isos = null)  {
         
-        global $translates;
-        
-        if (isset($translates)) {
-            $this->translations = $translates;
+        $this->className = get_class($this);
+                
+        if (!isset(PhenyxObjectModel::$loaded_classes[$this->className])) {
+            $this->def = PhenyxObjectModel::getDefinition($this->className);            
+            PhenyxObjectModel::$loaded_classes[$this->className] = get_object_vars($this);
+            
         } else {
-            $this->translations = $translates = $this->getGlobalTranslations();
-        }       
+            foreach (PhenyxObjectModel::$loaded_classes[$this->className] as $key => $value) {
+                $this->{$key}  = $value;
+            }
 
-        parent::__construct($id, $idLang);
+        }
+        
+        $this->translations = $this->getGlobalTranslations($isos);   
+
+        if ($id) {
+            $this->id = $id;
+            $entityMapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");
+            $entityMapper->load($this->id, null, $this, $this->def, false);           
+		}
 
     }
     
-    public function getGlobalTranslations() {
+    public function getGlobalTranslations($isos = null) {
         
         $translations = [];
+        if(is_null($isos)) {
+            $isos = Language::getLanguages(true);
+        } else {
+            $isos = Language::getLanguagesByIsos($isos);
+        }
         
-        foreach (Language::getLanguages(true) as $lang) {   
+        foreach ($isos as $lang) {   
             
             $translations[$lang['iso_code']] = Db::getInstance()->executeS(
                 (new DbQuery())
@@ -98,8 +114,12 @@ class Translation extends PhenyxObjectModel {
     }
 
     public function add($autoDate = false, $nullValues = false) {
-
-        return parent::add($autoDate, $nullValues);
+        
+        $result = parent::add($autoDate, $nullValues);
+        
+        $this->translations = $this->getGlobalTranslations();
+        
+        return $result;
 
     }
 
@@ -148,7 +168,6 @@ class Translation extends PhenyxObjectModel {
 
         return $javareturn;
     }
-
 
     public static function addTranslation($object) {
 
