@@ -121,7 +121,7 @@ class Translation extends PhenyxObjectModel {
         
         $result = parent::add($autoDate, $nullValues);
         
-        $this->translations = $this->getGlobalTranslations();
+        $this->context->translations = $this->getGlobalTranslations();
         
         return $result;
 
@@ -131,7 +131,7 @@ class Translation extends PhenyxObjectModel {
         
         $result = parent::update($nullValues);
 
-		$this->translations = $this->getGlobalTranslations();
+		$this->context->translations = $this->getGlobalTranslations();
         
         return $result;
 	}
