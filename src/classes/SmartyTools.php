@@ -92,6 +92,15 @@ class SmartyTools {
         
     }
     
+    public static function initGet($string) {
+        
+        if(is_string($string)) {
+            return ini_get($option);
+        }
+        return false;
+        
+    }
+    
     public static function strReplace($field, $replace, $string) {
         
         if(is_string($string)) {
