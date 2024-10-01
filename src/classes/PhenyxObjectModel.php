@@ -231,6 +231,9 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             $this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
             
         }
+        if (!isset($this->context->language)) {
+            $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT')))); 
+        }
            
         
         if (!isset($this->context->translations)) {

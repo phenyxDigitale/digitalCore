@@ -2255,7 +2255,7 @@ abstract class PhenyxController {
             );
 
             $content = $this->context->smarty->fetch($layout);
-            $this->showContent($content);
+            return $this->showContent($content);
         } else {
 
         }
