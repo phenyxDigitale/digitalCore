@@ -35,8 +35,6 @@ class BackTab extends PhenyxObjectModel {
 
     public $is_global;
 
-    public $specific_config;
-
     public $accesses;
 
     protected static $instance;
@@ -56,7 +54,6 @@ class BackTab extends PhenyxObjectModel {
             'plugin'          => ['type' => self::TYPE_STRING],
             'has_divider'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
             'is_global'       => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'specific_config' => ['type' => self::TYPE_STRING],
             'active'          => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
             'master'          => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
 

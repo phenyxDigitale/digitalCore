@@ -29,6 +29,7 @@ class PhenyxTools {
         $this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
         $this->context->theme = new Theme((int) $this->context->company->id_theme);
         $this->default_theme = $this->context->theme->directory;
+        $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT')))); 
 
 		$this->_url = _EPH_PHENYX_API_;
 		$string = Configuration::get('_EPHENYX_LICENSE_KEY_', null, false) . '/' . $this->context->company->company_url;
@@ -245,6 +246,9 @@ class PhenyxTools {
             }			
            
            if (str_contains($filePath, '/uploads/')) {
+				continue;
+			}
+            if (str_contains($filePath, 'sitemap.xml')) {
 				continue;
 			}
              if (str_contains($filePath, '/cache/')) {
@@ -483,9 +487,9 @@ class PhenyxTools {
 		foreach ($metaLangs as $metaLang) {
 			$parent = Db::getInstance()->getValue(
 				(new DbQuery())
-					->select('`id_meta`')
-					->from('meta')
-					->where('`id_meta` = ' . (int) $metaLang['id_meta'])
+				->select('`id_meta`')
+				->from('meta')
+				->where('`id_meta` = ' . (int) $metaLang['id_meta'])
 			);
 
 			if (!$parent) {

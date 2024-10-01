@@ -1952,6 +1952,73 @@ abstract class PhenyxController {
 
         return $return;
     }
+    
+    public function ajaxProcessRefreshTargetController() {
+
+        $args = Tools::getValue('args');
+        $this->paragridScript = $this->generateParaGridScript();
+        $this->setAjaxMedia();
+        $data = $this->createTemplate($this->table . '.tpl');
+        $extraVars = $this->context->_hook->exec('action' . $this->controller_name . 'TargetGetExtraVars', ['controller_type' => $this->controller_type], null, true);
+
+        if (is_array($extraVars)) {
+
+            foreach ($extraVars as $plugin => $vars) {
+
+                if (is_array($vars)) {
+
+                    foreach ($vars as $key => $value) {
+                        $data->assign($key, $value);
+                    }
+
+                }
+
+            }
+
+        }
+
+        if (is_array($this->extra_vars)) {
+
+            foreach ($this->extra_vars as $key => $value) {
+                $data->assign($key, $value);
+            }
+
+        }
+
+        if (method_exists($this, 'get' . $this->className . 'Fields')) {
+            $this->addJsDef([
+                'AjaxLink' . $this->controller_name => $this->context->link->getAdminLink($this->controller_name),
+                'paragridFields'                    => is_array($this->configurationField) ? $this->configurationField : $this->{'get' . $this->className . 'Fields'}
+
+                (),
+
+            ]);
+
+        } else {
+            $this->addJsDef([
+                'AjaxLink' . $this->controller_name => $this->context->link->getAdminLink($this->controller_name),
+            ]);
+        }
+
+        $data->assign([
+            'paragridScript'     => $this->paragridScript,
+            'manageHeaderFields' => $this->manageHeaderFields,
+            'customHeaderFields' => $this->manageFieldsVisibility($this->configurationField),
+            'controller'         => $this->controller_name,
+            'tableName'          => $this->table,
+            'className'          => $this->className,
+            'link'               => $this->context->link,
+            'id_lang_default'    => $this->default_language,
+            'languages'          => Language::getLanguages(false),
+            'tabs'               => $this->ajaxOptions,
+            'bo_imgdir'          => __EPH_BASE_URI__ . 'content/backoffice/' . $this->bo_theme . '/img/',
+        ]);
+        $this->ajax_li = '';
+        $this->ajax_content =  $data->fetch();
+
+        $this->ajaxDisplay();
+
+    }
 
     public function ajaxProcessOpenTargetController() {
 
