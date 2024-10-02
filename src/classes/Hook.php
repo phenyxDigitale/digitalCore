@@ -278,7 +278,7 @@ class Hook extends PhenyxObjectModel {
 
             $tmpInstance = Plugin::getInstanceById($plugin->id);
 
-            if (is_callable([$tmpInstance, 'hook' . ucfirst($this->name)])) {
+            if ($tmpInstance->active && is_callable([$tmpInstance, 'hook' . ucfirst($this->name)])) {
                 $collection[$tmpInstance->name] = [
                     'id_plugin' => $tmpInstance->id,
                     'name'      => $tmpInstance->name,
