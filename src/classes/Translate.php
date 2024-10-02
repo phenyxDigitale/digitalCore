@@ -27,7 +27,7 @@ class Translate {
     
     public $frontlang;
 
-    public function __construct($iso = null, Company $company = null) {
+    public function __construct($iso = null, Company $company = null, $affectContext = true) {
         
         $this->context = Context::getContext();
         
@@ -75,7 +75,9 @@ class Translate {
         $this->langfront = $_LANGFRONT;
         $this->langmail = $_LANGMAIL;
         $this->langpdf = $_LANGPDF;
-        $this->context->translations = $this;
+        if($affectContext) {
+            $this->context->translations = $this;
+        }
 
     }
     
