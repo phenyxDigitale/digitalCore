@@ -55,9 +55,9 @@ class Translate {
 
             include_once _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php';
         }
-        if(is_array($_LANGADMS) && is_array($_LANGOVADM)) {
-            $_LANGADMS = array_merge(
-                $_LANGADMS,
+        if(is_array($_LANGADM) && is_array($_LANGOVADM)) {
+            $_LANGADM = array_merge(
+                $_LANGADM,
                 $_LANGOVADM
             );
         }
