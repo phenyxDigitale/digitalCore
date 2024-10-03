@@ -46,10 +46,20 @@ class Translate {
             $iso = $this->context->language->iso_code;
         }
 
-        global $_LANGADM, $_LANGCLASS, $_LANGFRONT, $_LANG, $_LANGMAIL, $_LANGPDF;
+        global $_LANGADM, $_LANGOVADM, $_LANGCLASS, $_LANGFRONT, $_LANG, $_LANGMAIL, $_LANGPDF;
 
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
             require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php';
+        }
+        if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
+
+            include_once _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php';
+        }
+        if(is_array($_LANGADMS) && is_array($_LANGOVADM)) {
+            $_LANGADMS = array_merge(
+                $_LANGADMS,
+                $_LANGOVADM
+            );
         }
 
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
