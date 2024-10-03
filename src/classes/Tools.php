@@ -1078,7 +1078,7 @@ class Tools {
 
     public static function safeOutput($string, $html = false) {
 
-        if (!$html) {
+        if (!$html && !is_null($string)) {
             $string = strip_tags($string);
         }
 
