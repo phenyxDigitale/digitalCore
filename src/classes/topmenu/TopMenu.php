@@ -436,7 +436,7 @@ class TopMenu extends PhenyxObjectModel {
             if ($use_ajax) {
                 $return .= '<a href="javascript:void()" rel="nofollow"  onClick="openAjaxCms(' . (int) $cms->id . ')" title="' . $name . '"  class="a-niveau1 '.$this->custom_class.'" data-type="cms" data-id="' . (int) $cms->id . '">';
             } else {
-                $return .= '<a href="' . $this->context->link->getCMSLink($cms) . '" title="' . $name . '"  class="a-niveau1" data-type="cms" data-id="' . (int) $cms->id . '">';
+                $return .= '<a href="' . $this->context->link->getCMSLink($cms) . '" title="' . $name . '"  class="a-niveau1 '.$this->custom_class.'" data-type="cms" data-id="' . (int) $cms->id . '">';
             }
 
             $return .= '<span class="phtm_menu_span phtm_menu_span_' . (int) $this->id . ' ">';
