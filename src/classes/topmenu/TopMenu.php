@@ -439,7 +439,7 @@ class TopMenu extends PhenyxObjectModel {
                 $return .= '<a href="' . $this->context->link->getCMSLink($cms) . '" title="' . $name . '"  class="a-niveau1" data-type="cms" data-id="' . (int) $cms->id . '">';
             }
 
-            $return .= '<span class="phtm_menu_span phtm_menu_span_' . (int) $this->id . '">';
+            $return .= '<span class="phtm_menu_span phtm_menu_span_' . (int) $this->id . ' '.$this->custom_class.'">';
 
             if ($this->have_image) {
                 $legend = $name;
