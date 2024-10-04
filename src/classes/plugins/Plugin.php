@@ -1468,7 +1468,7 @@ abstract class Plugin {
         foreach (Language::getLanguages(true) as $lang) {    
             $iso= $lang['iso_code'];
             if (file_exists(_EPH_PLUGIN_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'translations/' . $lang['iso_code'] . '/admin.php')) {
-				
+				$langAdmin = [];
 				require_once _EPH_TRANSLATIONS_DIR_ . $lang['iso_code'] . '/admin.php';
                 $current_translation = $_LANGADM;
                 require_once _EPH_PLUGIN_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'translations/' . $lang['iso_code'] . '/admin.php';

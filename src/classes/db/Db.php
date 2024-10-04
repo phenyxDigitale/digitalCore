@@ -281,14 +281,14 @@ abstract class Db {
         return static::$instance[$idServer];
     }
 
-    public static function getCrmInstance($dbUser, $dbPasswd, $dbName, $master = true) {
+    public static function getCrmInstance($dbUser, $dbPasswd, $dbName, $dServer = _DB_SERVER_, $master = true) {
 
         static $id = 0;
 
         // This MUST not be declared with the class members because some defines (like _DB_SERVER_) may not exist yet (the constructor can be called directly with params)
 
         static::$_crm_servers = [
-            ['server' => _DB_SERVER_, 'user' => $dbUser, 'password' => $dbPasswd, 'database' => $dbName], /* MySQL Master server */
+            ['server' => $dServer, 'user' => $dbUser, 'password' => $dbPasswd, 'database' => $dbName], /* MySQL Master server */
         ];
 
         if (!$master) {
