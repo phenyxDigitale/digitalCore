@@ -509,7 +509,7 @@ class Translate {
                 $ret = $this->checkAndReplaceArgs($ret, $sprintf);
             }
 
-            if ($js) {
+            if ($js && !is_null($ret)) {
                 $ret = addslashes($ret);
             } else
 
