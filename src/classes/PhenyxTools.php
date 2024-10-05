@@ -268,13 +268,15 @@ class PhenyxTools {
     
     public function generateOwnCurrentJson() {
         
-        $md5List = $this->generateCurrentJson(false);
-        if (is_array($md5List)) {
-			file_put_contents(
-				_EPH_CONFIG_DIR_ . 'json/new_json.json',
-				json_encode($md5List, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-			);
-		}
+        if(!file_exists(_EPH_CONFIG_DIR_ . 'json/new_json.json')) {
+            $md5List = $this->generateCurrentJson(false);
+            if (is_array($md5List)) {
+                file_put_contents(
+                    _EPH_CONFIG_DIR_ . 'json/new_json.json',
+				    json_encode($md5List, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+                );
+            }
+        }
     }
     
     public static function addJsDef($jsDef) {
