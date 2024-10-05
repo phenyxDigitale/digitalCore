@@ -6,6 +6,15 @@
  * @since 1.9.1.0
  */
 class DbQuery {
+    
+    
+    public $dbprefix;
+    
+    public function __construct($dbprefix = _DB_PREFIX_) {
+                
+        $this->dbprefix = $dbprefix;
+
+	}
 
     /**
      * List of data to build the query
@@ -132,8 +141,8 @@ class DbQuery {
 
         if (!empty($table)) {
 
-            if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-                $table = _DB_PREFIX_ . $table;
+            if (strncmp($this->dbprefix, $table, strlen($this->dbprefix)) !== 0) {
+                $table = $this->dbprefix . $table;
             }
 
             if (empty($this->query['from'])) {
@@ -142,8 +151,8 @@ class DbQuery {
 
             if (!empty($table2)) {
 
-                if (strncmp(_DB_PREFIX_, $table2, strlen(_DB_PREFIX_)) !== 0) {
-                    $table2 = _DB_PREFIX_ . $table2;
+                if (strncmp($this->dbprefix, $table2, strlen($this->dbprefix)) !== 0) {
+                    $table2 = $this->dbprefix . $table2;
                 }
 
             }
@@ -152,8 +161,8 @@ class DbQuery {
 
             if (!empty($table2)) {
 
-                if (strncmp(_DB_PREFIX_, $table2, strlen(_DB_PREFIX_)) !== 0) {
-                    $table2 = _DB_PREFIX_ . $table2;
+                if (strncmp($this->dbprefix, $table2, strlen($this->dbprefix)) !== 0) {
+                    $table2 = $this->dbprefix . $table2;
                 }
 
                 $this->query['from'][] .= ' `' . bqSQL($table2) . '`' . ($alias2 ? ' ' . $alias2 : '');
@@ -166,7 +175,7 @@ class DbQuery {
 
     /**
      * Adds JOIN clause
-     * E.g. $this->join('RIGHT JOIN '._DB_PREFIX_.'product p ON ...');
+     * E.g. $this->join('RIGHT JOIN '.$this->dbprefix.'product p ON ...');
      *
      * @param string $join Complete string
      *
@@ -198,8 +207,8 @@ class DbQuery {
      */
     public function leftJoin($table, $alias = null, $on = null) {
 
-        if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-            $table = _DB_PREFIX_ . $table;
+        if (strncmp($this->dbprefix, $table, strlen($this->dbprefix)) !== 0) {
+            $table = $this->dbprefix . $table;
         }
 
         return $this->join('LEFT JOIN `' . bqSQL($table) . '`' . ($alias ? ' `' . pSQL($alias) . '`' : '') . ($on ? ' ON ' . $on : ''));
@@ -220,8 +229,8 @@ class DbQuery {
      */
     public function innerJoin($table, $alias = null, $on = null) {
 
-        if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-            $table = _DB_PREFIX_ . $table;
+        if (strncmp($this->dbprefix, $table, strlen($this->dbprefix)) !== 0) {
+            $table = $this->dbprefix . $table;
         }
 
         return $this->join('INNER JOIN `' . bqSQL($table) . '`' . ($alias ? ' ' . pSQL($alias) : '') . ($on ? ' ON ' . $on : ''));
@@ -241,8 +250,8 @@ class DbQuery {
      */
     public function leftOuterJoin($table, $alias = null, $on = null) {
 
-        if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-            $table = _DB_PREFIX_ . $table;
+        if (strncmp($this->dbprefix, $table, strlen($this->dbprefix)) !== 0) {
+            $table = $this->dbprefix . $table;
         }
 
         return $this->join('LEFT OUTER JOIN `' . bqSQL($table) . '`' . ($alias ? ' ' . pSQL($alias) : '') . ($on ? ' ON ' . $on : ''));
@@ -261,8 +270,8 @@ class DbQuery {
      */
     public function naturalJoin($table, $alias = null) {
 
-        if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-            $table = _DB_PREFIX_ . $table;
+        if (strncmp($this->dbprefix, $table, strlen($this->dbprefix)) !== 0) {
+            $table = $this->dbprefix . $table;
         }
 
         return $this->join('NATURAL JOIN `' . bqSQL($table) . '`' . ($alias ? ' ' . pSQL($alias) : ''));
@@ -282,8 +291,8 @@ class DbQuery {
      */
     public function rightJoin($table, $alias = null, $on = null) {
 
-        if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-            $table = _DB_PREFIX_ . $table;
+        if (strncmp($this->dbprefix, $table, strlen($this->dbprefix)) !== 0) {
+            $table = $this->dbprefix . $table;
         }
 
         return $this->join('RIGHT JOIN `' . bqSQL($table) . '`' . ($alias ? ' `' . pSQL($alias) . '`' : '') . ($on ? ' ON ' . $on : ''));
@@ -291,8 +300,8 @@ class DbQuery {
 
     public function straightJoin($table, $alias = null, $on = null) {
 
-        if (strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
-            $table = _DB_PREFIX_ . $table;
+        if (strncmp($this->dbprefix, $table, strlen($this->dbprefix)) !== 0) {
+            $table = $this->dbprefix . $table;
         }
 
         return $this->join('STRAIGHT_JOIN `' . bqSQL($table) . '`' . ($alias ? ' `' . pSQL($alias) . '`' : '') . ($on ? ' ON ' . $on : ''));
