@@ -78,7 +78,8 @@ class Translate {
             require_once _EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php';
         }
         
-        $this->frontlang = $this->fileExists();
+        $this->fileExists();
+        $this->frontlang = $_LANG;
 
         $this->langadmin = $_LANGADM;
         $this->langclass = $_LANGCLASS;
@@ -108,7 +109,7 @@ class Translate {
 
 		}
 		
-		include $dir .  $file;
+		@include $dir .  $file;
 
 		return $$var;
 	}
