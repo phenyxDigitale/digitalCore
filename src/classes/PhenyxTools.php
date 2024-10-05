@@ -971,42 +971,38 @@ class PhenyxTools {
         
         $iso = $this->context->language->id;
 
-        global $_LANGADM, $_LANGCLASS, $_LANGFRONT, $_LANGMAIL, $_LANGPDF;
         $_plugins = $this->getPlugins();
-        $fileTest = fopen("testmergeLanguages.txt", "w");
-
+       
+        $_LANGAD = [];
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
             @include _EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php';
+            $_LANGAD = $_LANGADM;
         }
 
         $toInsert = [];
-        
-
+   
         if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
 
             @include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php';
 
             if (isset($_LANGOVADM) && is_array($_LANGOVADM)) {
-                $_LANGADM = array_merge(
-                    $_LANGADM,
+                $_LANGAD = array_merge(
+                    $_LANGAD,
                     $_LANGOVADM
                 );
             }
 
         }
-        $current_translation = is_array($_LANGADM) ? $_LANGADM : [];
-
+        
         foreach ($_plugins as $plugin) {
-
             if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php')) {
-
+                
                 @include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php';
-                $complementary_language = $_LANGADM;
-
-                if (is_array($complementary_language)) {
-                    $_LANGADM = array_merge(
-                        $current_translation,
-                        $complementary_language
+                
+                if (is_array($_LANGADM)) {
+                    $_LANGAD = array_merge(
+                        $_LANGAD,
+                        $_LANGADM
                     );
                 }
 
@@ -1014,7 +1010,7 @@ class PhenyxTools {
 
         }
 
-        $toInsert = $_LANGADM;
+        $toInsert = $_LANGAD;
         ksort($toInsert);
         $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php', "w");
         fwrite($file, "<?php\n\nglobal \$_LANGADM;\n\n");
@@ -1027,9 +1023,10 @@ class PhenyxTools {
 
         fwrite($file, "\n" . 'return $_LANGADM;' . "\n");
         fclose($file);
-
+        $_LANGCLAS = [];
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
             @include _EPH_TRANSLATIONS_DIR_ . $iso . '/class.php';
+            $_LANGCLAS = $_LANGCLASS;
         }
 
         $toInsert = [];
@@ -1039,25 +1036,24 @@ class PhenyxTools {
             @include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php';
 
             if (isset($_LANGOVCLASS) && is_array($_LANGOVCLASS)) {
-                $_LANGCLASS = array_merge(
-                    $_LANGCLASS,
+                $_LANGCLAS = array_merge(
+                    $_LANGCLAS,
                     $_LANGOVCLASS
                 );
             }
 
         }
-        $current_translation = is_array($_LANGCLASS) ? $_LANGCLASS : [];
-
+       
         foreach ($_plugins as $plugin) {
 
             if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php')) {
                 require_once _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php';
-                $complementary_language = $_LANGCLASS;
+                
 
-                if (is_array($complementary_language)) {
-                    $_LANGCLASS = array_merge(
-                        $current_translation,
-                        $complementary_language
+                if (is_array($_LANGCLASS)) {
+                    $_LANGCLAS = array_merge(
+                        $_LANGCLAS,
+                        $_LANGCLASS
                     );
                 }
 
@@ -1065,7 +1061,7 @@ class PhenyxTools {
 
         }
 
-        $toInsert = $_LANGCLASS;
+        $toInsert = $_LANGCLAS;
         ksort($toInsert);
         $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php', "w");
         fwrite($file, "<?php\n\nglobal \$_LANGCLASS;\n\n");
@@ -1079,8 +1075,10 @@ class PhenyxTools {
         fwrite($file, "\n" . 'return $_LANGCLASS;' . "\n");
         fclose($file);
 
+        $_LANGFRON = [];
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
             @include _EPH_TRANSLATIONS_DIR_ . $iso . '/front.php';
+            $_LANGFRON = $_LANGFRONT;
         }
 
         $toInsert = [];
@@ -1090,27 +1088,26 @@ class PhenyxTools {
             @include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php';
 
             if (isset($_LANGOVFRONT) && is_array($_LANGOVFRONT)) {
-                $_LANGFRONT = array_merge(
-                    $_LANGFRONT,
+                $_LANGFRON = array_merge(
+                    $_LANGFRON,
                     $_LANGOVFRONT
                 );
             }
 
         }
-        $current_translation = is_array($_LANGFRONT) ? $_LANGFRONT : [];
-
+        
 
         foreach ($_plugins as $plugin) {
 
             if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php')) {
 
                 require_once _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php';
-                $complementary_language = $_LANGFRONT;
+                
 
                 if (is_array($complementary_language)) {
-                    $_LANGFRONT = array_merge(
-                        $current_translation,
-                        $complementary_language
+                    $_LANGFRON = array_merge(
+                        $_LANGFRON,
+                        $_LANGFRONT
                     );
                 }
 
@@ -1118,7 +1115,7 @@ class PhenyxTools {
 
         }
 
-        $toInsert = $_LANGFRONT;
+        $toInsert = $_LANGFRON;
         ksort($toInsert);
         $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php', "w");
         fwrite($file, "<?php\n\nglobal \$_LANGFRONT;\n\n");
@@ -1132,25 +1129,25 @@ class PhenyxTools {
         fwrite($file, "\n" . 'return $_LANGFRONT;' . "\n");
         fclose($file);
 
+        $_LANGMAI = [];
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php')) {
             @include _EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php';
+            $_LANGMAI = $_LANGMAIL;
         }
 
         $toInsert = [];
-        $current_translation = is_array($_LANGMAIL) ? $_LANGMAIL : [];
-
-
+        
         foreach ($_plugins as $plugin) {
 
             if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/mail.php')) {
 
                 @include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/mail.php';
-                $complementary_language = $_LANGMAIL;
+               
 
-                if (is_array($complementary_language)) {
-                    $_LANGMAIL = array_merge(
-                        $current_translation,
-                        $complementary_language
+                if (is_array($_LANGMAIL)) {
+                    $_LANGMAI = array_merge(
+                        $_LANGMAI,
+                        $_LANGMAIL
                     );
                 }
 
@@ -1158,7 +1155,7 @@ class PhenyxTools {
 
         }
 
-        $toInsert = $_LANGMAIL;
+        $toInsert = $_LANGMAI;
         ksort($toInsert);
         $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php', "w");
         fwrite($file, "<?php\n\nglobal \$_LANGMAIL;\n\n");
@@ -1172,12 +1169,14 @@ class PhenyxTools {
         fwrite($file, "\n" . 'return $_LANGMAIL;' . "\n");
         fclose($file);
 
+        $_LANGPD = [];
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php')) {
             @include _EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php';
+            $_LANGPD = $_LANGPDF; 
         }
 
         $toInsert = [];
-        $current_translation = is_array($_LANGPDF) ? $_LANGPDF : [];
+        
 
         foreach ($_plugins as $plugin) {
 
@@ -1186,10 +1185,10 @@ class PhenyxTools {
                 @include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/pdf.php';
                 $complementary_language = $_LANGPDF;
 
-                if (is_array($complementary_language)) {
-                    $_LANGPDF = array_merge(
-                        $current_translation,
-                        $complementary_language
+                if (is_array($_LANGPDF)) {
+                    $_LANGPD = array_merge(
+                        $_LANGPD,
+                        $_LANGPDF
                     );
                 }
 
@@ -1197,7 +1196,7 @@ class PhenyxTools {
 
         }
 
-        $toInsert = $_LANGPDF;
+        $toInsert = $_LANGPD;
         ksort($toInsert);
         $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php', "w");
         fwrite($file, "<?php\n\nglobal \$_LANGPDF;\n\n");
@@ -1211,8 +1210,9 @@ class PhenyxTools {
         fwrite($file, "\n" . 'return $_LANGPDF;' . "\n");
         fclose($file);
 
-        $this->context->translations = new Translate($iso);
+        $this->context->translations = new Translate($iso, $this->context->company);
         Configuration::updateValue('CURENT_MERGE_LANG_' . $this->context->language->iso_code, 1);
+        return true;
 
     }
     
