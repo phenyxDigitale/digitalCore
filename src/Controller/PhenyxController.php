@@ -2361,8 +2361,12 @@ abstract class PhenyxController {
             if ($defer && $domAvailable) {
                 $html = $this->context->media->deferInlineScripts($html);
             }
-
-            $head = '<div id="content' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . "\n";
+            if($this->display == 'view') {
+                $head = '<div id="view' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . "\n";
+            } else {
+                $head = '<div id="content' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . "\n";
+            }
+            
             $foot = '</div>';
             $header = $this->context->media->deferTagOutput('ajax_head', $html) . '<content>';
             $html = trim(str_replace($header, '', $html)) . "\n";
@@ -3005,6 +3009,7 @@ abstract class PhenyxController {
 
     public function renderView() {
 
+        $this->display == 'view';
         if (!$this->default_form_language) {
             $this->getLanguages();
         }
