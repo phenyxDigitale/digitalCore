@@ -503,9 +503,9 @@ class TopMenuColumn extends PhenyxObjectModel {
             if (!$this->have_image) {
 
                 if (!empty($this->name)) {
-                    $return .= htmlentities($this->name, ENT_COMPAT, 'UTF-8');
+                    $name = htmlentities($this->name, ENT_COMPAT, 'UTF-8');
                 } else {
-                    $return .= $this->l('Custom Link');
+                    $name = $this->l('Custom Link');
                 }
 
             }
