@@ -88,6 +88,8 @@ abstract class PhenyxController {
 
     /** @var string */
     protected $display;
+    
+    protected $ajax_display;
 
     protected $display_header;
 
@@ -2030,6 +2032,7 @@ abstract class PhenyxController {
 
     public function ajaxProcessViewTargetController() {
 
+        $this->ajax_display = 'view';
         $this->ajax_li = '<li id="view' . $this->controller_name . '" data-self="' . $this->link_rewrite . '" data-name="' . $this->page_title . '" data-controller="AdminDashboard"><a href="#view' . $this->controller_name . '">' . $this->publicName . '</a><button type="button" class="close tabdetail" onClick="closeViewObject(\'' . $this->controller_name . '\');" data-id="uper' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
         $this->ajax_content = '<div id="view' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . $this->renderView() . '</div>';
 
@@ -2195,11 +2198,11 @@ abstract class PhenyxController {
 
             $content = $this->context->smarty->fetch($layout);
             $this->ajaxShowContent($content);
-        } else {
-
-        }
+        } 
 
     }
+    
+  
 
     public function refeshDisplay() {
 
@@ -2344,7 +2347,7 @@ abstract class PhenyxController {
     }
 
     protected function ajaxShowContent($content) {
-
+       
         $this->context->cookie->write();
         $html = '';
         $jsTag = 'js_def';
@@ -2352,8 +2355,9 @@ abstract class PhenyxController {
         $html = $content;
 
         $html = trim($html);
-
+        
         if (!empty($html)) {
+            
             $javascript = "";
             $domAvailable = extension_loaded('dom') ? true : false;
             $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
@@ -2361,7 +2365,7 @@ abstract class PhenyxController {
             if ($defer && $domAvailable) {
                 $html = $this->context->media->deferInlineScripts($html);
             }
-            if($this->display == 'view') {
+            if($this->ajax_display == 'view') {
                 $head = '<div id="view' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . "\n";
             } else {
                 $head = '<div id="content' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . "\n";
@@ -2370,9 +2374,12 @@ abstract class PhenyxController {
             $foot = '</div>';
             $header = $this->context->media->deferTagOutput('ajax_head', $html) . '<content>';
             $html = trim(str_replace($header, '', $html)) . "\n";
-
-            $content = $this->context->media->deferIdOutput('content' . $this->controller_name, $html);
-
+            if($this->ajax_display == 'view') {
+                $content = $this->context->media->deferIdOutput('view' . $this->controller_name, $html);
+            } else {
+                $content = $this->context->media->deferIdOutput('content' . $this->controller_name, $html);
+            }
+            
             $js_def = ($defer && $domAvailable) ? $this->js_def : [];
             $js_files = $defer ? array_unique($this->push_js_files) : [];
             $js_inline = ($defer && $domAvailable) ? $this->context->media->getInlineScript() : [];
@@ -2414,6 +2421,82 @@ abstract class PhenyxController {
             die(Tools::jsonEncode($result));
 
         }
+       
+
+    }
+    
+    protected function ajaxShowViewContent($content) {
+
+        $file = fopen("testajaxShowViewContent.txt","w");
+        fwrite($file,$this->ajax_display.PHP_EOL);
+        $this->context->cookie->write();
+        $html = '';
+        $jsTag = 'js_def';
+        $this->context->smarty->assign($jsTag, $jsTag);
+        $html = $content;
+
+        $html = trim($html);
+        
+        if (!empty($html)) {            
+            $javascript = "";
+            $domAvailable = extension_loaded('dom') ? true : false;
+            $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
+
+            if ($defer && $domAvailable) {
+                $html = $this->context->media->deferInlineScripts($html);
+            }
+            $head = '<div id="view' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . "\n";
+            
+            $foot = '</div>';
+            $header = $this->context->media->deferTagOutput('ajax_head', $html) . '<content>';
+            $html = trim(str_replace($header, '', $html)) . "\n";
+            $content = $this->context->media->deferIdOutput('view' . $this->controller_name, $html);
+            
+            
+
+            $js_def = ($defer && $domAvailable) ? $this->js_def : [];
+            $js_files = $defer ? array_unique($this->push_js_files) : [];
+            $js_inline = ($defer && $domAvailable) ? $this->context->media->getInlineScript() : [];
+
+            $this->context->smarty->assign(
+                [
+                    'js_def'    => $js_def,
+                    'js_files'  => $js_files,
+                    'js_inline' => $js_inline,
+                ]
+            );
+            $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
+
+            if ($defer) {
+                $javascript = $javascript . '</content>';
+            }
+
+            $content = $head . $header . $content . $javascript . $foot;
+            fwrite($file,$this->ajax_li.PHP_EOL);
+            fwrite($file,$content.PHP_EOL);
+            $result = [
+                'li'         => $this->ajax_li,
+                'html'       => $content,
+                'page_title' => $this->page_title,
+                'load_time'  => sprintf($this->la('Load time %s seconds'), round(microtime(true) - TIME_START, 3)),
+            ];
+
+            if (_EPH_ADMIN_DEBUG_PROFILING_) {
+                $result['profiling_mode'] = true;
+                $result['profiling'] = $this->displayProfiling();
+            } else {
+
+                if (!is_null($this->cacheId) && $this->cachable && $this->context->cache_enable) {
+                    $temp = Tools::jsonEncode($result);
+                    $this->context->cache_api->putData($this->cacheId, $temp, 1864000);
+                }
+
+            }
+
+            die(Tools::jsonEncode($result));
+
+        }
+        fwrite($file,'empty html'.PHP_EOL);
 
     }
 
