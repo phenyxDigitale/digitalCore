@@ -130,7 +130,7 @@ abstract class PhenyxController {
     public $content_ajax = '';
 
     public $controller_name;
-
+    
     protected $paragridScript;
 
     public $contextMenuItems = [];
@@ -368,6 +368,8 @@ abstract class PhenyxController {
     protected $fields_form;
 
     public $fields_value = [];
+    
+    public $tpl_form_vars = [];
 
     protected $toolbar_btn = null;
     /** @var bool Scrolling toolbar */
@@ -379,7 +381,9 @@ abstract class PhenyxController {
 
     protected $submit_action;
 
-    public $base_tpl_form = null;
+    public $base_tpl_form = null;    
+    
+    public $base_tpl_view = null;
 
     public $page_title;
 
@@ -3018,6 +3022,11 @@ abstract class PhenyxController {
         $view = $helper->generateView();
 
         return $view;
+    }
+    
+    public function getTemplateViewVars() {
+
+        return $this->tpl_view_vars;
     }
 
     public function renderForm() {
