@@ -388,7 +388,7 @@ abstract class PhenyxController {
     public $ajax_li;
 
     public $ajax_content;
-    
+
     public $form_included = false;
 
     public function getExtraPhenyxVars() {
@@ -440,17 +440,17 @@ abstract class PhenyxController {
         }
 
         $this->context = Context::getContext();
-        
+
         $this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
 
         if (!isset($this->context->_hook)) {
             $this->context->_hook = new Hook();
         }
-        
+
         if (!isset($this->context->hook_args)) {
             $this->context->hook_args = $this->context->_hook->getHookArgs();
         }
-        
+
         if (!isset($this->context->media)) {
             $this->context->media = new Media();
         }
@@ -458,7 +458,7 @@ abstract class PhenyxController {
         if (!isset($this->context->language)) {
             $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT'))));
         }
-        
+
         if (!isset($this->context->translations)) {
             $this->context->translations = new Translate($this->context->language->iso_code, $this->context->company);
         }
@@ -514,23 +514,22 @@ abstract class PhenyxController {
             buildHeadingAction(\'' . 'grid_' . $this->controller_name . '\', \'' . $this->controller_name . '\');
         }';
 
-
     }
 
     public function mergeLanguages($iso) {
 
-       
         global $_LANGADM, $_LANGCLASS, $_LANGFRONT, $_LANGMAIL, $_LANGPDF;
         $_plugins = $this->getPlugins();
-       
+
         $_LANGAD = [];
+
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
             @include _EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php';
             $_LANGAD = $_LANGADM;
         }
 
         $toInsert = [];
-   
+
         if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
 
             @include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php';
@@ -543,12 +542,13 @@ abstract class PhenyxController {
             }
 
         }
-        
+
         foreach ($_plugins as $plugin) {
+
             if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php')) {
-                
+
                 @include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php';
-                
+
                 if (is_array($_LANGADM)) {
                     $_LANGAD = array_merge(
                         $_LANGAD,
@@ -574,6 +574,7 @@ abstract class PhenyxController {
         fwrite($file, "\n" . 'return $_LANGADM;' . "\n");
         fclose($file);
         $_LANGCLAS = [];
+
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
             @include _EPH_TRANSLATIONS_DIR_ . $iso . '/class.php';
             $_LANGCLAS = $_LANGCLASS;
@@ -593,12 +594,11 @@ abstract class PhenyxController {
             }
 
         }
-       
+
         foreach ($_plugins as $plugin) {
 
             if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php')) {
                 require_once _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php';
-                
 
                 if (is_array($_LANGCLASS)) {
                     $_LANGCLAS = array_merge(
@@ -626,6 +626,7 @@ abstract class PhenyxController {
         fclose($file);
 
         $_LANGFRON = [];
+
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
             @include _EPH_TRANSLATIONS_DIR_ . $iso . '/front.php';
             $_LANGFRON = $_LANGFRONT;
@@ -645,14 +646,12 @@ abstract class PhenyxController {
             }
 
         }
-        
 
         foreach ($_plugins as $plugin) {
 
             if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php')) {
 
                 require_once _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php';
-                
 
                 if (is_array($complementary_language)) {
                     $_LANGFRON = array_merge(
@@ -680,19 +679,19 @@ abstract class PhenyxController {
         fclose($file);
 
         $_LANGMAI = [];
+
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php')) {
             @include _EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php';
             $_LANGMAI = $_LANGMAIL;
         }
 
         $toInsert = [];
-        
+
         foreach ($_plugins as $plugin) {
 
             if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/mail.php')) {
 
                 @include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/mail.php';
-               
 
                 if (is_array($_LANGMAIL)) {
                     $_LANGMAI = array_merge(
@@ -720,13 +719,13 @@ abstract class PhenyxController {
         fclose($file);
 
         $_LANGPD = [];
+
         if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php')) {
             @include _EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php';
-            $_LANGPD = $_LANGPDF; 
+            $_LANGPD = $_LANGPDF;
         }
 
         $toInsert = [];
-        
 
         foreach ($_plugins as $plugin) {
 
@@ -765,7 +764,7 @@ abstract class PhenyxController {
         return true;
 
     }
-    
+
     public function getPlugins() {
 
         $plugs = [];
@@ -1019,7 +1018,6 @@ abstract class PhenyxController {
 
         $paragrid->check = $this->paramCheck;
 
-
         $paragrid->groupModel = $this->groupModel;
 
         $paragrid->summaryTitle = $this->summaryTitle;
@@ -1254,6 +1252,7 @@ abstract class PhenyxController {
         if ($this->controller_type == 'admin' && $this->cachable && isset($this->context->employee)) {
             $this->cacheId = 'pageAdminCache_' . $this->php_self . '_' . $this->context->employee->id_profile;
         } else
+
         if ($this->controller_type == 'front' && $this->cachable) {
 
             if (isset($this->context->user->id)) {
@@ -1280,19 +1279,21 @@ abstract class PhenyxController {
     }
 
     public function setMedia($isNewTheme = false) {
-       
+
         $this->addHeaderJS([
             _EPH_JS_DIR_ . 'jquery/jquery-' . _EPH_JQUERY_VERSION_ . '.min.js',
             _EPH_JS_DIR_ . 'jquery-ui/jquery-ui.min.js',
-            _EPH_JS_DIR_ . 'tools.js'
+            _EPH_JS_DIR_ . 'tools.js',
 
         ]);
-        if($this->controller_type == 'front') {
+
+        if ($this->controller_type == 'front') {
             $this->addCSS([
-                _EPH_CSS_DIR_. 'front.css' => 'all',
+                _EPH_CSS_DIR_ . 'front.css'                                => 'all',
                 _EPH_JS_DIR_ . 'jquery/ui/themes/base/jquery.ui.theme.css' => 'all',
             ]);
         }
+
     }
 
     public function getUserIpAddr() {
@@ -1375,7 +1376,7 @@ abstract class PhenyxController {
                     $jsTag      => $this->context->media->getJsDef(),
                     'js_files'  => $defer ? array_unique($this->js_files) : [],
                     'js_inline' => ($defer && $domAvailable) ? $this->context->media->getInlineScript() : [],
-                    'js_heads' => ($compress && $defer) ? array_unique($this->js_heads) : []
+                    'js_heads'  => ($compress && $defer) ? array_unique($this->js_heads) : [],
                 ]
             );
             $javascript = $this->context->smarty->fetch(_EPH_ALL_THEMES_DIR_ . 'javascript.tpl');
@@ -1955,7 +1956,7 @@ abstract class PhenyxController {
 
         return $return;
     }
-    
+
     public function ajaxProcessRefreshTargetController() {
 
         $args = Tools::getValue('args');
@@ -2016,10 +2017,19 @@ abstract class PhenyxController {
             'tabs'               => $this->ajaxOptions,
             'bo_imgdir'          => __EPH_BASE_URI__ . 'content/backoffice/' . $this->bo_theme . '/img/',
         ]);
-        
-        $this->ajax_content =  $data->fetch();
+
+        $this->ajax_content = $data->fetch();
 
         $this->refeshDisplay();
+
+    }
+
+    public function ajaxProcessViewTargetController() {
+
+        $this->ajax_li = '<li id="view' . $this->controller_name . '" data-self="' . $this->link_rewrite . '" data-name="' . $this->page_title . '" data-controller="AdminDashboard"><a href="#view' . $this->controller_name . '">' . $this->publicName . '</a><button type="button" class="close tabdetail" onClick="closeViewObject(\'' . $this->controller_name . '\');" data-id="uper' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
+        $this->ajax_content = '<div id="view' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . $this->renderView() . '</div>';
+
+        $this->ajaxDisplay();
 
     }
 
@@ -2186,7 +2196,7 @@ abstract class PhenyxController {
         }
 
     }
-    
+
     public function refeshDisplay() {
 
         $layout = $this->getAjaxLayout();
@@ -2264,7 +2274,7 @@ abstract class PhenyxController {
         }
 
     }
-    
+
     protected function showContent($content) {
 
         $this->context->cookie->write();
@@ -2309,7 +2319,7 @@ abstract class PhenyxController {
             }
 
             $content = $head . $header . $content . $javascript . $foot;
-            
+
             return $content;
 
         }
@@ -2989,6 +2999,27 @@ abstract class PhenyxController {
         return Tools::getValue($key . ($idLang ? '_' . $idLang : ''), $defaultValue);
     }
 
+    public function renderView() {
+
+        if (!$this->default_form_language) {
+            $this->getLanguages();
+        }
+
+        $helper = new HelperView($this);
+        $helper->view_extraCss = $this->extracss;
+        $helper->view_extraJs = $this->extraJs;
+        $this->setHelperDisplay($helper);
+        $helper->tpl_vars = $this->getTemplateViewVars();
+
+        if (!is_null($this->base_tpl_view)) {
+            $helper->base_tpl = $this->base_tpl_view;
+        }
+
+        $view = $helper->generateView();
+
+        return $view;
+    }
+
     public function renderForm() {
 
         if (!$this->default_form_language) {
@@ -3429,6 +3460,7 @@ abstract class PhenyxController {
 
                 foreach (Language::getIDs(false) as $idLang) {
                     $referent = '';
+
                     if (Tools::isSubmit($field . '_' . (int) $idLang)) {
 
                         if (!isset($object->{$field}) || !is_array($object->{$field})) {
@@ -3436,7 +3468,6 @@ abstract class PhenyxController {
 
                             = [];
                         }
-                        
 
                         if ($idLang == $this->context->language->id) {
                             $referent = Tools::getValue($field . '_' . (int) $idLang);
@@ -3619,7 +3650,6 @@ abstract class PhenyxController {
 
     private function getLoadTimeColor($n, $kikoo = false) {
 
-
         if ($n > 1.6) {
             return '<span style="color:red">' . round($n * 1000) . '</span>' . ($kikoo ? $this->la('You‘d better run your shop on a toaster') : '');
         } else
@@ -3739,7 +3769,7 @@ abstract class PhenyxController {
 
         return (string) $var;
     }
-    
+
     protected function processProfilingData() {
 
         global $start_time;
@@ -3937,7 +3967,6 @@ abstract class PhenyxController {
         $last = ['time' => $start_time, 'memory_usage' => 0];
 
         foreach ($this->profiler as $row) {
-
 
             if ($row['block'] == 'checkAccess' && $row['time'] == $last['time']) {
                 continue;
@@ -4213,7 +4242,6 @@ abstract class PhenyxController {
         $this->displayProfilingStopwatch();
         $this->displayProfilingDoubles();
         $this->displayProfilingTableStress();
-
 
         if (isset(PhenyxObjectModel::$debug_list)) {
             $this->displayProfilingObjectModel();
