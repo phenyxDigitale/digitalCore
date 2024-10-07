@@ -383,7 +383,7 @@ class Translate {
             $string = str_replace("\‘", "'", $string);
         }
         $_PLUGIN = [];
-        global $_PLUGINS, $_PLUGIN, $_LANGADM;
+        global $_PLUGINS, $_LANGADM;
 
         if (empty($string)) {
             return $string;
