@@ -2035,8 +2035,8 @@ abstract class PhenyxController {
     public function ajaxProcessViewTargetController() {
 
         $this->ajax_display = 'view';
-        $this->ajax_li = '<li id="view' . $this->controller_name . '" data-self="' . $this->link_rewrite . '" data-name="' . $this->page_title . '" data-controller="AdminDashboard"><a href="#view' . $this->controller_name . '">' . $this->viewName . '</a><button type="button" class="close tabdetail" onClick="closeViewObject(\'' . $this->controller_name . '\');" data-id="view' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
-        $this->ajax_content = '<div id="view' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . $this->renderView() . '</div>';
+        $this->ajax_li = '<li id="view' . $this->controller_name . '" data-self="' . $this->link_rewrite . '" data-name="' . $this->page_title . '" data-controller="AdminDashboard"><a href="#contentview' . $this->controller_name . '">' . $this->viewName . '</a><button type="button" class="close tabdetail" onClick="closeViewObject(\'' . $this->controller_name . '\');" data-id="view' . $this->controller_name . '"><i class="fa-duotone fa-circle-xmark"></i></button></li>';
+        $this->ajax_content = '<div id="contentview' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . $this->renderView() . '</div>';
 
         $this->ajaxDisplay();
 
@@ -2347,7 +2347,7 @@ abstract class PhenyxController {
     }
 
     protected function ajaxShowContent($content) {
-       
+              
         $this->context->cookie->write();
         $html = '';
         $jsTag = 'js_def';
@@ -2366,7 +2366,7 @@ abstract class PhenyxController {
                 $html = $this->context->media->deferInlineScripts($html);
             }
             if($this->ajax_display == 'view') {
-                $head = '<div id="view' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . "\n";
+                $head = '<div id="contentview' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . "\n";
             } else {
                 $head = '<div id="content' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . "\n";
             }
@@ -2375,7 +2375,7 @@ abstract class PhenyxController {
             $header = $this->context->media->deferTagOutput('ajax_head', $html) . '<content>';
             $html = trim(str_replace($header, '', $html)) . "\n";
             if($this->ajax_display == 'view') {
-                $content = $this->context->media->deferIdOutput('view' . $this->controller_name, $html);
+                $content = $this->context->media->deferIdOutput('contentview' . $this->controller_name, $html);
             } else {
                 $content = $this->context->media->deferIdOutput('content' . $this->controller_name, $html);
             }
@@ -2398,7 +2398,6 @@ abstract class PhenyxController {
             }
 
             $content = $head . $header . $content . $javascript . $foot;
-
             $result = [
                 'li'         => $this->ajax_li,
                 'html'       => $content,
