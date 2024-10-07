@@ -88,7 +88,7 @@ abstract class PhenyxController {
 
     /** @var string */
     protected $display;
-    
+
     protected $ajax_display;
 
     protected $display_header;
@@ -132,7 +132,7 @@ abstract class PhenyxController {
     public $content_ajax = '';
 
     public $controller_name;
-    
+
     protected $paragridScript;
 
     public $contextMenuItems = [];
@@ -349,7 +349,7 @@ abstract class PhenyxController {
     public $ajaxOptions;
 
     protected $publicName;
-    
+
     protected $viewName;
 
     protected $action;
@@ -372,7 +372,7 @@ abstract class PhenyxController {
     protected $fields_form;
 
     public $fields_value = [];
-    
+
     public $tpl_form_vars = [];
 
     protected $toolbar_btn = null;
@@ -385,8 +385,8 @@ abstract class PhenyxController {
 
     protected $submit_action;
 
-    public $base_tpl_form = null;    
-    
+    public $base_tpl_form = null;
+
     public $base_tpl_view = null;
 
     public $page_title;
@@ -568,6 +568,23 @@ abstract class PhenyxController {
 
         }
 
+        foreach ($_plugins as $plugin) {
+
+            if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php')) {
+
+                @include _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php';
+
+                if (is_array($_LANGADM)) {
+                    $_LANGAD = array_merge(
+                        $_LANGAD,
+                        $_LANGADM
+                    );
+                }
+
+            }
+
+        }
+
         $toInsert = $_LANGAD;
         ksort($toInsert);
         $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php', "w");
@@ -607,6 +624,22 @@ abstract class PhenyxController {
 
             if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php')) {
                 require_once _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php';
+
+                if (is_array($_LANGCLASS)) {
+                    $_LANGCLAS = array_merge(
+                        $_LANGCLAS,
+                        $_LANGCLASS
+                    );
+                }
+
+            }
+
+        }
+
+        foreach ($_plugins as $plugin) {
+
+            if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php')) {
+                require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php';
 
                 if (is_array($_LANGCLASS)) {
                     $_LANGCLAS = array_merge(
@@ -660,6 +693,23 @@ abstract class PhenyxController {
             if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php')) {
 
                 require_once _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php';
+
+                if (is_array($complementary_language)) {
+                    $_LANGFRON = array_merge(
+                        $_LANGFRON,
+                        $_LANGFRONT
+                    );
+                }
+
+            }
+
+        }
+
+        foreach ($_plugins as $plugin) {
+
+            if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php')) {
+
+                require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php';
 
                 if (is_array($complementary_language)) {
                     $_LANGFRON = array_merge(
@@ -2200,10 +2250,10 @@ abstract class PhenyxController {
 
             $content = $this->context->smarty->fetch($layout);
             $this->ajaxShowContent($content);
-        } 
+        }
 
     }
-  
+
     public function refeshDisplay() {
 
         $layout = $this->getAjaxLayout();
@@ -2347,7 +2397,7 @@ abstract class PhenyxController {
     }
 
     protected function ajaxShowContent($content) {
-              
+
         $this->context->cookie->write();
         $html = '';
         $jsTag = 'js_def';
@@ -2355,9 +2405,9 @@ abstract class PhenyxController {
         $html = $content;
 
         $html = trim($html);
-        
+
         if (!empty($html)) {
-            
+
             $javascript = "";
             $domAvailable = extension_loaded('dom') ? true : false;
             $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
@@ -2365,21 +2415,23 @@ abstract class PhenyxController {
             if ($defer && $domAvailable) {
                 $html = $this->context->media->deferInlineScripts($html);
             }
-            if($this->ajax_display == 'view') {
+
+            if ($this->ajax_display == 'view') {
                 $head = '<div id="contentview' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . "\n";
             } else {
                 $head = '<div id="content' . $this->controller_name . '" class="panel wpb_text_column wpb_content_element  wpb_slideInUp slideInUp wpb_start_animation animated col-lg-12" style="display: content;">' . "\n";
             }
-            
+
             $foot = '</div>';
             $header = $this->context->media->deferTagOutput('ajax_head', $html) . '<content>';
             $html = trim(str_replace($header, '', $html)) . "\n";
-            if($this->ajax_display == 'view') {
+
+            if ($this->ajax_display == 'view') {
                 $content = $this->context->media->deferIdOutput('contentview' . $this->controller_name, $html);
             } else {
                 $content = $this->context->media->deferIdOutput('content' . $this->controller_name, $html);
             }
-            
+
             $js_def = ($defer && $domAvailable) ? $this->js_def : [];
             $js_files = $defer ? array_unique($this->push_js_files) : [];
             $js_inline = ($defer && $domAvailable) ? $this->context->media->getInlineScript() : [];
@@ -2420,7 +2472,6 @@ abstract class PhenyxController {
             die(Tools::jsonEncode($result));
 
         }
-       
 
     }
 
@@ -3017,6 +3068,7 @@ abstract class PhenyxController {
     public function renderView() {
 
         $this->display == 'view';
+
         if (!$this->default_form_language) {
             $this->getLanguages();
         }
@@ -3035,7 +3087,7 @@ abstract class PhenyxController {
 
         return $view;
     }
-    
+
     public function getTemplateViewVars() {
 
         return $this->tpl_view_vars;

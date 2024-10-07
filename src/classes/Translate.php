@@ -382,6 +382,7 @@ class Translate {
         if (str_contains($string, "\‘")) {
             $string = str_replace("\‘", "'", $string);
         }
+        $_PLUGIN = [];
         global $_PLUGINS, $_PLUGIN, $_LANGADM;
 
         if (empty($string)) {
@@ -412,15 +413,14 @@ class Translate {
                 _EPH_PLUGIN_DIR_ . $name . '/translations/' . $this->context->language->iso_code . '.php',
                 _EPH_SPECIFIC_PLUGIN_DIR_ . $name . '/translations/' . $this->context->language->iso_code . '.php',
             ];
-            $translations = [];
-
+            
             foreach ($filesByPriority as $file) {
 
                 if (file_exists($file)) {
                     include_once $file;
                     if(is_array($_PLUGINS)) {
-                        $translations = array_merge(
-                            $translations,
+                        $_PLUGIN = array_merge(
+                            $_PLUGIN,
                             $_PLUGINS
                         
                         );
@@ -430,7 +430,7 @@ class Translate {
 
             }
             
-            $_PLUGINS = $translations;
+            $_PLUGINS = $_PLUGIN;
 
         }
 

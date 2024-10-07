@@ -16,20 +16,20 @@ class PhenyxTools {
 	protected $_crypto_key;
 
 	public $context;
-    
-    public $default_theme;
-    
-    public $plugins = [];
+
+	public $default_theme;
+
+	public $plugins = [];
 
 	public $license;
 
 	public function __construct() {
 
 		$this->context = Context::getContext();
-        $this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
-        $this->context->theme = new Theme((int) $this->context->company->id_theme);
-        $this->default_theme = $this->context->theme->directory;
-        $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT')))); 
+		$this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
+		$this->context->theme = new Theme((int) $this->context->company->id_theme);
+		$this->default_theme = $this->context->theme->directory;
+		$this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT'))));
 
 		$this->_url = _EPH_PHENYX_API_;
 		$string = Configuration::get('_EPHENYX_LICENSE_KEY_', null, false) . '/' . $this->context->company->company_url;
@@ -37,89 +37,92 @@ class PhenyxTools {
 
 		$this->license = $this->checkLicense();
 		$this->context->license = $this->license;
-        
-        $this->plugins = $this->getInstalledPluginsDirOnDisk();
-        
+
+		$this->plugins = $this->getInstalledPluginsDirOnDisk();
 
 	}
-    
-    public function getInstalledPluginsDirOnDisk() {
-       
-        $cacheId = 'getInstalledPluginsDirOnDisk';
-        if ($this->context->cache_enable && is_object($this->context->cache_api)) {
-            $value = $this->context->cache_api->getData($cacheId);
-            $temp = empty($value) ? null : Tools::jsonDecode($value, true);
 
-            if (!empty($temp)) {
-                return $temp;
-            }
+	public function getInstalledPluginsDirOnDisk() {
 
-        }
-        
-        $plugins = [];
-        $pluginList = [];
-        $plugs = scandir(_EPH_PLUGIN_DIR_);
+		$cacheId = 'getInstalledPluginsDirOnDisk';
 
-        foreach ($plugs as $name) {
-            if (in_array($name, ['.', '..'])) {
-                continue;
-            }
-            
-            if (is_file(_EPH_PLUGIN_DIR_ . $name)) {
-                continue;
-            } else if (is_dir(_EPH_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR) && file_exists(_EPH_PLUGIN_DIR_ . $name . '/' . $name . '.php')) {
+		if ($this->context->cache_enable && is_object($this->context->cache_api)) {
+			$value = $this->context->cache_api->getData($cacheId);
+			$temp = empty($value) ? null : Tools::jsonDecode($value, true);
 
-                if (!Validate::isPluginName($name)) {
-                    throw new PhenyxException(sprintf('Plugin %s is not a valid plugin name', $name));
-                }
+			if (!empty($temp)) {
+				return $temp;
+			}
 
-                $pluginList[] = $name;
-            }
+		}
 
-        
+		$plugins = [];
+		$pluginList = [];
+		$plugs = scandir(_EPH_PLUGIN_DIR_);
 
-            $plugs = scandir(_EPH_SPECIFIC_PLUGIN_DIR_);
+		foreach ($plugs as $name) {
 
-            foreach ($plugs as $name) {
-                if (in_array($name, ['.', '..'])) {
-                    continue;
-                }                
-                if (is_file(_EPH_SPECIFIC_PLUGIN_DIR_ . $name)) {
-                    continue;
-                } else
+			if (in_array($name, ['.', '..'])) {
+				continue;
+			}
 
-                if (is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR) && file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR . $name . '.php')) {
+			if (is_file(_EPH_PLUGIN_DIR_ . $name)) {
+				continue;
+			} else
+			if (is_dir(_EPH_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR) && file_exists(_EPH_PLUGIN_DIR_ . $name . '/' . $name . '.php')) {
 
-                    if (!Validate::isPluginName($name)) {
-                        throw new PhenyxException(sprintf('Plugin %s is not a valid plugin name', $name));
-                    }
+				if (!Validate::isPluginName($name)) {
+					throw new PhenyxException(sprintf('Plugin %s is not a valid plugin name', $name));
+				}
 
-                    $pluginList[] = $name;
-                }
+				$pluginList[] = $name;
+			}
 
-            }
-        
-            foreach ($pluginList as $plugin) {
-                if (in_array($plugin, ['.', '..'])) {
-                    continue;
-                }
-                if(Plugin::isInstalled($plugin)) {
-                    $plugins[$plugin] = true;
-                } 
-            }
-            
-        }
-        
-        if ($this->context->cache_enable && is_object($this->context->cache_api)) {
-            $temp = $plugins === null ? null : Tools::jsonEncode($plugins);
-            $this->context->cache_api->putData($cacheId, $temp, 3600);
-        }
-        
-        return $plugins;
+			$plugs = scandir(_EPH_SPECIFIC_PLUGIN_DIR_);
 
-        
-    }
+			foreach ($plugs as $name) {
 
+				if (in_array($name, ['.', '..'])) {
+					continue;
+				}
+
+				if (is_file(_EPH_SPECIFIC_PLUGIN_DIR_ . $name)) {
+					continue;
+				} else
+
+				if (is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR) && file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $name . DIRECTORY_SEPARATOR . $name . '.php')) {
+
+					if (!Validate::isPluginName($name)) {
+						throw new PhenyxException(sprintf('Plugin %s is not a valid plugin name', $name));
+					}
+
+					$pluginList[] = $name;
+				}
+
+			}
+
+			foreach ($pluginList as $plugin) {
+
+				if (in_array($plugin, ['.', '..'])) {
+					continue;
+				}
+
+				if (Plugin::isInstalled($plugin)) {
+					$plugins[$plugin] = true;
+				}
+
+			}
+
+		}
+
+		if ($this->context->cache_enable && is_object($this->context->cache_api)) {
+			$temp = $plugins === null ? null : Tools::jsonEncode($plugins);
+			$this->context->cache_api->putData($cacheId, $temp, 3600);
+		}
+
+		return $plugins;
+
+	}
 
 	public static function getInstance() {
 
@@ -129,167 +132,190 @@ class PhenyxTools {
 
 		return PhenyxTools::$instance;
 	}
-    
-    public function generateCurrentJson($use_cache = true) {
-        
-        if($use_cache && file_exists(_EPH_CONFIG_DIR_ . 'json/new_json.json')) {
-            $md5List = file_get_contents(_EPH_CONFIG_DIR_ . 'json/new_json.json');
-            unlink(_EPH_CONFIG_DIR_ . 'json/new_json.json');
-		    return Tools::jsonDecode($md5List, true);
-        }
-        
-        $directories = Theme::getInstalledThemeDirectories();
-                
+
+	public function generateCurrentJson($use_cache = true) {
+
+		if ($use_cache && file_exists(_EPH_CONFIG_DIR_ . 'json/new_json.json')) {
+			$md5List = file_get_contents(_EPH_CONFIG_DIR_ . 'json/new_json.json');
+			unlink(_EPH_CONFIG_DIR_ . 'json/new_json.json');
+			return Tools::jsonDecode($md5List, true);
+		}
+
+		$directories = Theme::getInstalledThemeDirectories();
+
 		$recursive_directory = [
-            'app/xml',
-            'content/backoffice',
-            'content/css',
-            'content/fonts',
-            'content/js',
-            'content/localization',
-            'content/img/pdfWorker',
-            'content/mails',
-            'content/mp3',
-            'content/pdf',
-            'content/themes/phenyx-theme-default',
+			'app/xml',
+			'content/backoffice',
+			'content/css',
+			'content/fonts',
+			'content/js',
+			'content/localization',
+			'content/img/pdfWorker',
+			'content/mails',
+			'content/mp3',
+			'content/pdf',
+			'content/themes/phenyx-theme-default',
 			'includes/classes',
 			'includes/controllers',
 			'vendor/phenyxdigitale',
-            'webephenyx',
+			'webephenyx',
 		];
-        $iso_langs = [];
-        $languages = Language::getLanguages(false);
-        foreach ($languages as $language) {
-            $recursive_directory[] = 'content/translations/'.$language['iso_code'];
-            $iso_langs[] = $language['iso_code'];
-        }
-        foreach($this->plugins as $plugin => $installed) {
-            if(is_dir(_EPH_PLUGIN_DIR_ .$plugin)) {
-                $recursive_directory[] = 'includes/plugins/'.$plugin;
-            } 
-        }      
-		
-        $iterator = new AppendIterator();
-        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/themes/'));
-        foreach ($recursive_directory as $key => $directory) {
-			if(is_dir(_EPH_ROOT_DIR_ . '/' . $directory )) {
+		$iso_langs = [];
+		$languages = Language::getLanguages(false);
+
+		foreach ($languages as $language) {
+			$recursive_directory[] = 'content/translations/' . $language['iso_code'];
+			$iso_langs[] = $language['iso_code'];
+		}
+
+		foreach ($this->plugins as $plugin => $installed) {
+
+			if (is_dir(_EPH_PLUGIN_DIR_ . $plugin)) {
+				$recursive_directory[] = 'includes/plugins/' . $plugin;
+			}
+
+		}
+
+		$iterator = new AppendIterator();
+		$iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/content/themes/'));
+
+		foreach ($recursive_directory as $key => $directory) {
+
+			if (is_dir(_EPH_ROOT_DIR_ . '/' . $directory)) {
 				$iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_EPH_ROOT_DIR_ . '/' . $directory . '/')));
 			}
-        }
-		
-        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/app/'));
-        $iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/'));
-       
-        foreach($directories as $directory) {
-            if($directory == 'phenyx-theme-default') {
-                continue;
-            }
-            $excludes[]  = '/'.$directory.'/css/';
-            $excludes[]  = '/'.$directory.'/fonts/';
-            $excludes[]  = '/'.$directory.'/font/';
-            $excludes[]  = '/'.$directory.'/img/';
-            $excludes[]  = '/'.$directory.'/js/';
-            $excludes[]  = '/'.$directory.'/plugins/';
-            $excludes[]  = '/'.$directory.'/pdf/';
-            $excludes[]  = '/'.$directory.'/docs/';
-        }
-        
-        
 
-        foreach ($iterator as $file) {
-            $filePath = $file->getPathname();
-            $filePath = str_replace(_EPH_ROOT_DIR_, '', $filePath);
-			
-            if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'composer.lock', 'settings.inc.php',  '.php-ini', '.php-version'])) {
-                continue;
-            }
-            $inExclude = false;
-            foreach($excludes as $exclude) {              
-                if (str_contains($filePath, $exclude)) {
-                    $inExclude = true;
-			        continue;
-                }
-            }    
-            if($inExclude) {
-                continue;
-            }
-			
-            if (is_dir($file->getPathname())) {
-								
-                continue;
-            }
+		}
 
-            $ext = pathinfo($file->getFilename(), PATHINFO_EXTENSION);
+		$iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/app/'));
+		$iterator->append(new DirectoryIterator(_EPH_ROOT_DIR_ . '/'));
 
-            if ($ext == 'txt') {
-                continue;
-            }
+		foreach ($directories as $directory) {
+
+			if ($directory == 'phenyx-theme-default') {
+				continue;
+			}
+
+			$excludes[] = '/' . $directory . '/css/';
+			$excludes[] = '/' . $directory . '/fonts/';
+			$excludes[] = '/' . $directory . '/font/';
+			$excludes[] = '/' . $directory . '/img/';
+			$excludes[] = '/' . $directory . '/js/';
+			$excludes[] = '/' . $directory . '/plugins/';
+			$excludes[] = '/' . $directory . '/pdf/';
+			$excludes[] = '/' . $directory . '/docs/';
+		}
+
+		foreach ($iterator as $file) {
+			$filePath = $file->getPathname();
+			$filePath = str_replace(_EPH_ROOT_DIR_, '', $filePath);
+
+			if (in_array($file->getFilename(), ['.', '..', '.htaccess', 'composer.lock', 'settings.inc.php', '.php-ini', '.php-version'])) {
+				continue;
+			}
+
+			$inExclude = false;
+
+			foreach ($excludes as $exclude) {
+
+				if (str_contains($filePath, $exclude)) {
+					$inExclude = true;
+					continue;
+				}
+
+			}
+
+			if ($inExclude) {
+				continue;
+			}
+
+			if (is_dir($file->getPathname())) {
+
+				continue;
+			}
+
+			$ext = pathinfo($file->getFilename(), PATHINFO_EXTENSION);
+
+			if ($ext == 'txt') {
+				continue;
+			}
+
 			if ($ext == 'zip') {
 				continue;
 			}
-            if (str_contains($filePath, '/plugins/') && str_contains($filePath, '/translations/')) {
-                
-                foreach($this->plugins as $plugin) {
-                    if (str_contains($filePath, '/plugins/'.$plugin.'/translations/')) {
-                        $test = str_replace('/includes/plugins/'.$plugin.'/translations/', '', $filePath);
-                        $test = str_replace('.php', '', $test);
-                        if(!in_array($test,$iso_langs)) {
-                            continue;
 
-                        }
-                    }
-                }
+			if (str_contains($filePath, '/plugins/') && str_contains($filePath, '/translations/')) {
+
+				foreach ($this->plugins as $plugin) {
+
+					if (str_contains($filePath, '/plugins/' . $plugin . '/translations/')) {
+						$test = str_replace('/includes/plugins/' . $plugin . '/translations/', '', $filePath);
+						$test = str_replace('.php', '', $test);
+
+						if (!in_array($test, $iso_langs)) {
+							continue;
+
+						}
+
+					}
+
+				}
+
 			}
-            
-            if (str_contains($filePath, 'custom_') && $ext == 'css') {
-                continue;
-            }			
-           
-           if (str_contains($filePath, '/uploads/')) {
+
+			if (str_contains($filePath, 'custom_') && $ext == 'css') {
 				continue;
 			}
-            if (str_contains($filePath, 'sitemap.xml')) {
+
+			if (str_contains($filePath, '/uploads/')) {
 				continue;
 			}
-             if (str_contains($filePath, '/cache/')) {
+
+			if (str_contains($filePath, 'sitemap.xml')) {
 				continue;
-			}   
-            if (str_contains($filePath, '/views/docs/')) {
+			}
+
+			if (str_contains($filePath, '/cache/')) {
 				continue;
-			} 
-             
+			}
 
-            $md5List[$filePath] = md5_file($file->getPathname());
-        }
+			if (str_contains($filePath, '/views/docs/')) {
+				continue;
+			}
 
-        return $md5List;
+			$md5List[$filePath] = md5_file($file->getPathname());
+		}
 
-    }
-    
-    public function generateOwnCurrentJson() {
-        
-        if(!file_exists(_EPH_CONFIG_DIR_ . 'json/new_json.json')) {
-            $md5List = $this->generateCurrentJson(false);
-            if (is_array($md5List)) {
-                file_put_contents(
-                    _EPH_CONFIG_DIR_ . 'json/new_json.json',
-				    json_encode($md5List, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-                );
-            }
-        }
-    }
-    
-    public static function addJsDef($jsDef) {
-        
-        return Context::getContext()->media->addJsDef($jsDef);
+		return $md5List;
 
+	}
 
-    }
+	public function generateOwnCurrentJson() {
 
-    public static function addJsDefL($params, $content, $smarty = null, &$repeat = false) {
-        
-        return Context::getContext()->media->addJsDefL($params, $content, $smarty, $repeat);
-    }
+		if (!file_exists(_EPH_CONFIG_DIR_ . 'json/new_json.json')) {
+			$md5List = $this->generateCurrentJson(false);
+
+			if (is_array($md5List)) {
+				file_put_contents(
+					_EPH_CONFIG_DIR_ . 'json/new_json.json',
+					json_encode($md5List, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+				);
+			}
+
+		}
+
+	}
+
+	public static function addJsDef($jsDef) {
+
+		return Context::getContext()->media->addJsDef($jsDef);
+
+	}
+
+	public static function addJsDefL($params, $content, $smarty = null, &$repeat = false) {
+
+		return Context::getContext()->media->addJsDefL($params, $content, $smarty, $repeat);
+	}
 
 	public function checkLicense() {
 
@@ -386,22 +412,23 @@ class PhenyxTools {
 
 		return true;
 	}
-    
-    public static function alterSqlTable($table, $column, $type, $after) {
-                
-        $query = 'SELECT `COLUMN_NAME`
+
+	public static function alterSqlTable($table, $column, $type, $after) {
+
+		$query = 'SELECT `COLUMN_NAME`
             FROM `INFORMATION_SCHEMA`.`COLUMNS`
-            WHERE `TABLE_SCHEMA`="'._DB_NAME_.'"
-            AND `TABLE_NAME`= "'._DB_PREFIX_.$table.'"
-            AND `COLUMN_NAME`= "'.$column.'"';
-        
-        $result = Db::getInstance()->getValue(trim($query));
-        if($result != $column) {           
-            $sql = 'ALTER TABLE `'._DB_PREFIX_.$table.'` ADD `'.$column.'` '.$type.' AFTER `'.$after.'`';
-            Db::getInstance()->execute(trim($sql));
-        }
-        
-    }
+            WHERE `TABLE_SCHEMA`="' . _DB_NAME_ . '"
+            AND `TABLE_NAME`= "' . _DB_PREFIX_ . $table . '"
+            AND `COLUMN_NAME`= "' . $column . '"';
+
+		$result = Db::getInstance()->getValue(trim($query));
+
+		if ($result != $column) {
+			$sql = 'ALTER TABLE `' . _DB_PREFIX_ . $table . '` ADD `' . $column . '` ' . $type . ' AFTER `' . $after . '`';
+			Db::getInstance()->execute(trim($sql));
+		}
+
+	}
 
 	public static function checkString($string) {
 
@@ -489,9 +516,9 @@ class PhenyxTools {
 		foreach ($metaLangs as $metaLang) {
 			$parent = Db::getInstance()->getValue(
 				(new DbQuery())
-				->select('`id_meta`')
-				->from('meta')
-				->where('`id_meta` = ' . (int) $metaLang['id_meta'])
+					->select('`id_meta`')
+					->from('meta')
+					->where('`id_meta` = ' . (int) $metaLang['id_meta'])
 			);
 
 			if (!$parent) {
@@ -696,7 +723,7 @@ class PhenyxTools {
 			if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin['name'] . '/' . $plugin['name'] . '.php')) {
 				continue;
 			}
-			
+
 			$sql = 'DELETE FROM `' . _DB_PREFIX_ . 'plugin` WHERE id_plugin = ' . $plugin['id_plugin'];
 			Db::getInstance()->execute($sql);
 			$sql = 'DELETE FROM `' . _DB_PREFIX_ . 'plugins_perfs` WHERE plugin = \'' . $plugin['name'] . '\'';
@@ -844,16 +871,16 @@ class PhenyxTools {
 		}
 
 		Hook::getInstance()->getArgs(true);
-        self::resetPlugin();
+		self::resetPlugin();
 
 	}
-    
-    public static function resetPlugin() {
-        
-        $query = 'SELECT *  FROM `' . _DB_PREFIX_ . 'plugin` ORDER BY id_plugin ASC';
+
+	public static function resetPlugin() {
+
+		$query = 'SELECT *  FROM `' . _DB_PREFIX_ . 'plugin` ORDER BY id_plugin ASC';
 		$plugins = Db::getInstance()->executeS($query);
-        
-        foreach ($plugins as $plugin) {
+
+		foreach ($plugins as $plugin) {
 
 			if (file_exists(_EPH_PLUGIN_DIR_ . $plugin['name'] . '/' . $plugin['name'] . '.php')) {
 				require_once _EPH_PLUGIN_DIR_ . $plugin['name'] . '/' . $plugin['name'] . '.php';
@@ -862,22 +889,24 @@ class PhenyxTools {
 			if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin['name'] . '/' . $plugin['name'] . '.php')) {
 				require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin['name'] . '/' . $plugin['name'] . '.php';
 			}
-            
-            if (class_exists($plugin['name'], false)) {
 
-                $tmpPlugin = Adapter_ServiceLocator::get($plugin['name']);
-                
-                if (method_exists($tmpPlugin, 'reset')) {
-                    $plugin = Plugin::getInstanceByName($plugin['name']);
-                    $plugin->reset();
-                    
-                }
-                
-            }
-        }
-    }
-    
-    public function exportLang($iso, $theme, $plugins) {
+			if (class_exists($plugin['name'], false)) {
+
+				$tmpPlugin = Adapter_ServiceLocator::get($plugin['name']);
+
+				if (method_exists($tmpPlugin, 'reset')) {
+					$plugin = Plugin::getInstanceByName($plugin['name']);
+					$plugin->reset();
+
+				}
+
+			}
+
+		}
+
+	}
+
+	public function exportLang($iso, $theme, $plugins) {
 
 		$file = fopen("testProcessSubmitExportLan.txt", "w");
 
@@ -890,7 +919,7 @@ class PhenyxTools {
 			$gz->createModify($items, null, _SHOP_ROOT_DIR_);
 			$gz->addModify($plugins, null, _EPH_ROOT_DIR_ . '/includes');
 
-			$pathFile = _EPH_ROOT_DIR_ . '/packs/' . _EPH_VERSION_ . '/' . $iso. '/' . $iso . '.gzip';
+			$pathFile = _EPH_ROOT_DIR_ . '/packs/' . _EPH_VERSION_ . '/' . $iso . '/' . $iso . '.gzip';
 			copy($fileName, $pathFile);
 
 		} else {
@@ -913,330 +942,386 @@ class PhenyxTools {
 
 		die(Tools::jsonEncode($result));
 	}
-    
-    public function getPluginFilesList($isoFrom, $themeFrom, $plugins) {
-
-        $filesPlugins = [];
-        
-        foreach ($plugins as $mod) {
-            if(is_dir(_EPH_PLUGIN_DIR_ .$mod)) {
-                $modDir = _EPH_PLUGIN_DIR_ . $mod;
-            } else if(is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ .$mod)) {
-                $modDir = _EPH_SPECIFIC_PLUGIN_DIR_ . $mod;
-            }
-                    // Lang file
-
-            if (file_exists($modDir . '/translations/' . (string) $isoFrom . '.php')) {
-                $filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '.php'] = ++$number;
-            } elseif (file_exists($modDir . '/translations/' . (string) $isoFrom . '/admin.php')) {
-                $filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '/admin.php'] = ++$number;
-            } elseif (file_exists($modDir . '/translations/' . (string) $isoFrom . '/class.php')) {
-                $filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '/class.php'] = ++$number;
-            } elseif (file_exists($modDir . '/translations/' . (string) $isoFrom . '/front.php')) {
-                $filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '/front.php'] = ++$number;
-            } 
-
-                    // Mails files
-            $modMailDirFrom = $modDir . '/mails/' . (string) $isoFrom;
-
-            if (file_exists($modMailDirFrom)) {
-                $dirFiles = scandir($modMailDirFrom);
-
-                foreach ($dirFiles as $file) {
-
-                    if (file_exists($modMailDirFrom . '/' . $file) && $file != '.' && $file != '..' && $file != '.svn') {
-                        $filesPlugins[$modMailDirFrom . '/' . $file] = ++$number;
-                    }
-                }
-            }
-            
-            $modPdfDirFrom = $modDir . '/pdf/' . (string) $isoFrom;
-
-            if (file_exists($modPdfDirFrom)) {
-                $dirFiles = scandir($modPdfDirFrom);
-
-                foreach ($dirFiles as $file) {
-
-                    if (file_exists($modPdfDirFrom . '/' . $file) && $file != '.' && $file != '..' && $file != '.svn') {
-                        $filesPlugins[$modPdfDirFrom . '/' . $file] = ++$number;
-                    }
-                }
-            }
-        }
-        
-        return $filesPlugins;
-    }
-    
-    public function mergeLanguages() {
-        
-        $iso = $this->context->language->id;
-
-        $_plugins = $this->getPlugins();
-       
-        $_LANGAD = [];
-        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
-            @include _EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php';
-            $_LANGAD = $_LANGADM;
-        }
-
-        $toInsert = [];
-   
-        if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
-
-            @include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php';
-
-            if (isset($_LANGOVADM) && is_array($_LANGOVADM)) {
-                $_LANGAD = array_merge(
-                    $_LANGAD,
-                    $_LANGOVADM
-                );
-            }
-
-        }
-        
-        foreach ($_plugins as $plugin) {
-            if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php')) {
-                
-                @include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php';
-                
-                if (is_array($_LANGADM)) {
-                    $_LANGAD = array_merge(
-                        $_LANGAD,
-                        $_LANGADM
-                    );
-                }
-
-            }
-
-        }
-
-        $toInsert = $_LANGAD;
-        ksort($toInsert);
-        $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php', "w");
-        fwrite($file, "<?php\n\nglobal \$_LANGADM;\n\n");
-        fwrite($file, "\$_LANGADM = [];\n");
 
-        foreach ($toInsert as $key => $value) {
-            $value = htmlspecialchars_decode($value, ENT_QUOTES);
-            fwrite($file, '$_LANGADM[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
-        }
+	public function getPluginFilesList($isoFrom, $themeFrom, $plugins) {
 
-        fwrite($file, "\n" . 'return $_LANGADM;' . "\n");
-        fclose($file);
-        $_LANGCLAS = [];
-        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
-            @include _EPH_TRANSLATIONS_DIR_ . $iso . '/class.php';
-            $_LANGCLAS = $_LANGCLASS;
-        }
+		$filesPlugins = [];
 
-        $toInsert = [];
+		foreach ($plugins as $mod) {
 
-        if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
+			if (is_dir(_EPH_PLUGIN_DIR_ . $mod)) {
+				$modDir = _EPH_PLUGIN_DIR_ . $mod;
+			} else
+			if (is_dir(_EPH_SPECIFIC_PLUGIN_DIR_ . $mod)) {
+				$modDir = _EPH_SPECIFIC_PLUGIN_DIR_ . $mod;
+			}
 
-            @include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php';
-
-            if (isset($_LANGOVCLASS) && is_array($_LANGOVCLASS)) {
-                $_LANGCLAS = array_merge(
-                    $_LANGCLAS,
-                    $_LANGOVCLASS
-                );
-            }
+			// Lang file
 
-        }
-       
-        foreach ($_plugins as $plugin) {
+			if (file_exists($modDir . '/translations/' . (string) $isoFrom . '.php')) {
+				$filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '.php'] = ++$number;
+			} else if (file_exists($modDir . '/translations/' . (string) $isoFrom . '/admin.php')) {
+				$filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '/admin.php'] = ++$number;
+			} else if (file_exists($modDir . '/translations/' . (string) $isoFrom . '/class.php')) {
+				$filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '/class.php'] = ++$number;
+			} else if (file_exists($modDir . '/translations/' . (string) $isoFrom . '/front.php')) {
+				$filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '/front.php'] = ++$number;
+			}
 
-            if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php')) {
-                require_once _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php';
-                
+			// Mails files
+			$modMailDirFrom = $modDir . '/mails/' . (string) $isoFrom;
 
-                if (is_array($_LANGCLASS)) {
-                    $_LANGCLAS = array_merge(
-                        $_LANGCLAS,
-                        $_LANGCLASS
-                    );
-                }
+			if (file_exists($modMailDirFrom)) {
+				$dirFiles = scandir($modMailDirFrom);
 
-            }
+				foreach ($dirFiles as $file) {
 
-        }
+					if (file_exists($modMailDirFrom . '/' . $file) && $file != '.' && $file != '..' && $file != '.svn') {
+						$filesPlugins[$modMailDirFrom . '/' . $file] = ++$number;
+					}
 
-        $toInsert = $_LANGCLAS;
-        ksort($toInsert);
-        $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php', "w");
-        fwrite($file, "<?php\n\nglobal \$_LANGCLASS;\n\n");
-        fwrite($file, "\$_LANGCLASS = [];\n");
+				}
 
-        foreach ($toInsert as $key => $value) {
-            $value = htmlspecialchars_decode($value, ENT_QUOTES);
-            fwrite($file, '$_LANGCLASS[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
-        }
+			}
 
-        fwrite($file, "\n" . 'return $_LANGCLASS;' . "\n");
-        fclose($file);
-
-        $_LANGFRON = [];
-        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
-            @include _EPH_TRANSLATIONS_DIR_ . $iso . '/front.php';
-            $_LANGFRON = $_LANGFRONT;
-        }
+			$modPdfDirFrom = $modDir . '/pdf/' . (string) $isoFrom;
 
-        $toInsert = [];
+			if (file_exists($modPdfDirFrom)) {
+				$dirFiles = scandir($modPdfDirFrom);
 
-        if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
+				foreach ($dirFiles as $file) {
 
-            @include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php';
+					if (file_exists($modPdfDirFrom . '/' . $file) && $file != '.' && $file != '..' && $file != '.svn') {
+						$filesPlugins[$modPdfDirFrom . '/' . $file] = ++$number;
+					}
 
-            if (isset($_LANGOVFRONT) && is_array($_LANGOVFRONT)) {
-                $_LANGFRON = array_merge(
-                    $_LANGFRON,
-                    $_LANGOVFRONT
-                );
-            }
+				}
 
-        }
-        
+			}
 
-        foreach ($_plugins as $plugin) {
+		}
 
-            if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php')) {
+		return $filesPlugins;
+	}
 
-                require_once _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php';
-                
+	public function mergeLanguages() {
 
-                if (is_array($complementary_language)) {
-                    $_LANGFRON = array_merge(
-                        $_LANGFRON,
-                        $_LANGFRONT
-                    );
-                }
+		$iso = $this->context->language->id;
 
-            }
+		$_plugins = $this->getPlugins();
 
-        }
+		$_LANGAD = [];
 
-        $toInsert = $_LANGFRON;
-        ksort($toInsert);
-        $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php', "w");
-        fwrite($file, "<?php\n\nglobal \$_LANGFRONT;\n\n");
-        fwrite($file, "\$_LANGFRONT = [];\n");
+		if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
+			@include _EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php';
+			$_LANGAD = $_LANGADM;
+		}
 
-        foreach ($toInsert as $key => $value) {
-            $value = htmlspecialchars_decode($value, ENT_QUOTES);
-            fwrite($file, '$_LANGFRONT[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
-        }
+		$toInsert = [];
 
-        fwrite($file, "\n" . 'return $_LANGFRONT;' . "\n");
-        fclose($file);
+		if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
 
-        $_LANGMAI = [];
-        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php')) {
-            @include _EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php';
-            $_LANGMAI = $_LANGMAIL;
-        }
+			@include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php';
 
-        $toInsert = [];
-        
-        foreach ($_plugins as $plugin) {
+			if (isset($_LANGOVADM) && is_array($_LANGOVADM)) {
+				$_LANGAD = array_merge(
+					$_LANGAD,
+					$_LANGOVADM
+				);
+			}
 
-            if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/mail.php')) {
+		}
 
-                @include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/mail.php';
-               
+		foreach ($_plugins as $plugin) {
 
-                if (is_array($_LANGMAIL)) {
-                    $_LANGMAI = array_merge(
-                        $_LANGMAI,
-                        $_LANGMAIL
-                    );
-                }
+			if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php')) {
 
-            }
+				@include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php';
 
-        }
+				if (is_array($_LANGADM)) {
+					$_LANGAD = array_merge(
+						$_LANGAD,
+						$_LANGADM
+					);
+				}
 
-        $toInsert = $_LANGMAI;
-        ksort($toInsert);
-        $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php', "w");
-        fwrite($file, "<?php\n\nglobal \$_LANGMAIL;\n\n");
-        fwrite($file, "\$_LANGMAIL = [];\n");
+			}
 
-        foreach ($toInsert as $key => $value) {
-            $value = htmlspecialchars_decode($value, ENT_QUOTES);
-            fwrite($file, '$_LANGMAIL[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
-        }
+		}
 
-        fwrite($file, "\n" . 'return $_LANGMAIL;' . "\n");
-        fclose($file);
+		foreach ($_plugins as $plugin) {
 
-        $_LANGPD = [];
-        if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php')) {
-            @include _EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php';
-            $_LANGPD = $_LANGPDF; 
-        }
+			if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php')) {
 
-        $toInsert = [];
-        
+				@include _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php';
 
-        foreach ($_plugins as $plugin) {
+				if (is_array($_LANGADM)) {
+					$_LANGAD = array_merge(
+						$_LANGAD,
+						$_LANGADM
+					);
+				}
 
-            if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/pdf.php')) {
+			}
 
-                @include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/pdf.php';
-                $complementary_language = $_LANGPDF;
+		}
 
-                if (is_array($_LANGPDF)) {
-                    $_LANGPD = array_merge(
-                        $_LANGPD,
-                        $_LANGPDF
-                    );
-                }
+		$toInsert = $_LANGAD;
+		ksort($toInsert);
+		$file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php', "w");
+		fwrite($file, "<?php\n\nglobal \$_LANGADM;\n\n");
+		fwrite($file, "\$_LANGADM = [];\n");
 
-            }
+		foreach ($toInsert as $key => $value) {
+			$value = htmlspecialchars_decode($value, ENT_QUOTES);
+			fwrite($file, '$_LANGADM[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
+		}
 
-        }
+		fwrite($file, "\n" . 'return $_LANGADM;' . "\n");
+		fclose($file);
+		$_LANGCLAS = [];
 
-        $toInsert = $_LANGPD;
-        ksort($toInsert);
-        $file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php', "w");
-        fwrite($file, "<?php\n\nglobal \$_LANGPDF;\n\n");
-        fwrite($file, "\$_LANGPDF = [];\n");
+		if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
+			@include _EPH_TRANSLATIONS_DIR_ . $iso . '/class.php';
+			$_LANGCLAS = $_LANGCLASS;
+		}
 
-        foreach ($toInsert as $key => $value) {
-            $value = htmlspecialchars_decode($value, ENT_QUOTES);
-            fwrite($file, '$_LANGPDF[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
-        }
+		$toInsert = [];
 
-        fwrite($file, "\n" . 'return $_LANGPDF;' . "\n");
-        fclose($file);
+		if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
 
-        $this->context->translations = new Translate($iso, $this->context->company);
-        Configuration::updateValue('CURENT_MERGE_LANG_' . $this->context->language->iso_code, 1);
-        return true;
+			@include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php';
 
-    }
-    
-    public function getPlugins() {
+			if (isset($_LANGOVCLASS) && is_array($_LANGOVCLASS)) {
+				$_LANGCLAS = array_merge(
+					$_LANGCLAS,
+					$_LANGOVCLASS
+				);
+			}
 
-        $plugs = [];
-        $plugins = Plugin::getPluginsDirOnDisk();
+		}
 
-        foreach ($plugins as $plugin) {
+		foreach ($_plugins as $plugin) {
 
-            if (Plugin::isInstalled($plugin)) {
+			if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php')) {
+				require_once _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php';
 
-                if (is_dir(_EPH_PLUGIN_DIR_ . $plugin . '/translations/' . $this->context->language->iso_code)) {
-                    $plugs[] = $plugin;
-                }
+				if (is_array($_LANGCLASS)) {
+					$_LANGCLAS = array_merge(
+						$_LANGCLAS,
+						$_LANGCLASS
+					);
+				}
 
-            }
+			}
 
-        }
+		}
 
-        return $plugs;
-    }
+		foreach ($_plugins as $plugin) {
 
+			if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php')) {
+				require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php';
 
+				if (is_array($_LANGCLASS)) {
+					$_LANGCLAS = array_merge(
+						$_LANGCLAS,
+						$_LANGCLASS
+					);
+				}
 
+			}
+
+		}
+
+		$toInsert = $_LANGCLAS;
+		ksort($toInsert);
+		$file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php', "w");
+		fwrite($file, "<?php\n\nglobal \$_LANGCLASS;\n\n");
+		fwrite($file, "\$_LANGCLASS = [];\n");
+
+		foreach ($toInsert as $key => $value) {
+			$value = htmlspecialchars_decode($value, ENT_QUOTES);
+			fwrite($file, '$_LANGCLASS[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
+		}
+
+		fwrite($file, "\n" . 'return $_LANGCLASS;' . "\n");
+		fclose($file);
+
+		$_LANGFRON = [];
+
+		if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
+			@include _EPH_TRANSLATIONS_DIR_ . $iso . '/front.php';
+			$_LANGFRON = $_LANGFRONT;
+		}
+
+		$toInsert = [];
+
+		if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
+
+			@include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php';
+
+			if (isset($_LANGOVFRONT) && is_array($_LANGOVFRONT)) {
+				$_LANGFRON = array_merge(
+					$_LANGFRON,
+					$_LANGOVFRONT
+				);
+			}
+
+		}
+
+		foreach ($_plugins as $plugin) {
+
+			if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php')) {
+
+				require_once _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php';
+
+				if (is_array($complementary_language)) {
+					$_LANGFRON = array_merge(
+						$_LANGFRON,
+						$_LANGFRONT
+					);
+				}
+
+			}
+
+		}
+
+		foreach ($_plugins as $plugin) {
+
+			if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php')) {
+
+				require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php';
+
+				if (is_array($complementary_language)) {
+					$_LANGFRON = array_merge(
+						$_LANGFRON,
+						$_LANGFRONT
+					);
+				}
+
+			}
+
+		}
+
+		$toInsert = $_LANGFRON;
+		ksort($toInsert);
+		$file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php', "w");
+		fwrite($file, "<?php\n\nglobal \$_LANGFRONT;\n\n");
+		fwrite($file, "\$_LANGFRONT = [];\n");
+
+		foreach ($toInsert as $key => $value) {
+			$value = htmlspecialchars_decode($value, ENT_QUOTES);
+			fwrite($file, '$_LANGFRONT[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
+		}
+
+		fwrite($file, "\n" . 'return $_LANGFRONT;' . "\n");
+		fclose($file);
+
+		$_LANGMAI = [];
+
+		if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php')) {
+			@include _EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php';
+			$_LANGMAI = $_LANGMAIL;
+		}
+
+		$toInsert = [];
+
+		foreach ($_plugins as $plugin) {
+
+			if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/mail.php')) {
+
+				@include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/mail.php';
+
+				if (is_array($_LANGMAIL)) {
+					$_LANGMAI = array_merge(
+						$_LANGMAI,
+						$_LANGMAIL
+					);
+				}
+
+			}
+
+		}
+
+		$toInsert = $_LANGMAI;
+		ksort($toInsert);
+		$file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php', "w");
+		fwrite($file, "<?php\n\nglobal \$_LANGMAIL;\n\n");
+		fwrite($file, "\$_LANGMAIL = [];\n");
+
+		foreach ($toInsert as $key => $value) {
+			$value = htmlspecialchars_decode($value, ENT_QUOTES);
+			fwrite($file, '$_LANGMAIL[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
+		}
+
+		fwrite($file, "\n" . 'return $_LANGMAIL;' . "\n");
+		fclose($file);
+
+		$_LANGPD = [];
+
+		if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php')) {
+			@include _EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php';
+			$_LANGPD = $_LANGPDF;
+		}
+
+		$toInsert = [];
+
+		foreach ($_plugins as $plugin) {
+
+			if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/pdf.php')) {
+
+				@include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/pdf.php';
+				$complementary_language = $_LANGPDF;
+
+				if (is_array($_LANGPDF)) {
+					$_LANGPD = array_merge(
+						$_LANGPD,
+						$_LANGPDF
+					);
+				}
+
+			}
+
+		}
+
+		$toInsert = $_LANGPD;
+		ksort($toInsert);
+		$file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php', "w");
+		fwrite($file, "<?php\n\nglobal \$_LANGPDF;\n\n");
+		fwrite($file, "\$_LANGPDF = [];\n");
+
+		foreach ($toInsert as $key => $value) {
+			$value = htmlspecialchars_decode($value, ENT_QUOTES);
+			fwrite($file, '$_LANGPDF[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
+		}
+
+		fwrite($file, "\n" . 'return $_LANGPDF;' . "\n");
+		fclose($file);
+
+		$this->context->translations = new Translate($iso, $this->context->company);
+		Configuration::updateValue('CURENT_MERGE_LANG_' . $this->context->language->iso_code, 1);
+		return true;
+
+	}
+
+	public function getPlugins() {
+
+		$plugs = [];
+		$plugins = Plugin::getPluginsDirOnDisk();
+
+		foreach ($plugins as $plugin) {
+
+			if (Plugin::isInstalled($plugin)) {
+
+				if (is_dir(_EPH_PLUGIN_DIR_ . $plugin . '/translations/' . $this->context->language->iso_code)) {
+					$plugs[] = $plugin;
+				}
+
+			}
+
+		}
+
+		return $plugs;
+	}
 
 }
