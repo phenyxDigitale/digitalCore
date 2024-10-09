@@ -72,6 +72,8 @@ class Context {
     
     public $cache_api;
     
+    public $phenyxtool;
+    
     public $translations;
     
     public $media;

@@ -300,6 +300,7 @@ class PhenyxTools {
 					_EPH_CONFIG_DIR_ . 'json/new_json.json',
 					json_encode($md5List, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
 				);
+                chmod(_EPH_CONFIG_DIR_ . 'json/new_json.json', 0777);
 			}
 
 		}
@@ -352,6 +353,7 @@ class PhenyxTools {
 				_EPH_CONFIG_DIR_ . 'json/plugin_sources.json',
 				json_encode($plugins, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
 			);
+            chmod(_EPH_CONFIG_DIR_ . 'json/plugin_sources.json', 0777);
 			return true;
 		}
 
@@ -359,7 +361,7 @@ class PhenyxTools {
 
 	}
 
-	public static function writeNewSettings($version) {
+	public function writeNewSettings($version) {
 
 		$seeting_files = _EPH_CONFIG_DIR_ . 'settings.inc.php';
 
@@ -407,13 +409,13 @@ class PhenyxTools {
 		}
 
 		foreach ($datas as $data) {
-			fwrite($confFile, 'define(\'' . $data[0] . '\', \'' . self::checkString($data[1]) . '\');' . PHP_EOL);
+			fwrite($confFile, 'define(\'' . $data[0] . '\', \'' . $this->checkString($data[1]) . '\');' . PHP_EOL);
 		}
 
 		return true;
 	}
 
-	public static function alterSqlTable($table, $column, $type, $after) {
+	public function alterSqlTable($table, $column, $type, $after) {
 
 		$query = 'SELECT `COLUMN_NAME`
             FROM `INFORMATION_SCHEMA`.`COLUMNS`
@@ -430,7 +432,7 @@ class PhenyxTools {
 
 	}
 
-	public static function checkString($string) {
+	public function checkString($string) {
 
 		if (!is_numeric($string)) {
 			$string = addslashes($string);
