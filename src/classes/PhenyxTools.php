@@ -27,17 +27,15 @@ class PhenyxTools {
 
 		$this->context = Context::getContext();
 		$this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
+        $this->_url = _EPH_PHENYX_API_;
+        $string = Configuration::get('_EPHENYX_LICENSE_KEY_', null, false) . '/' . $this->context->company->company_url;
+        $this->_crypto_key = Tools::encrypt_decrypt('encrypt', $string, _PHP_ENCRYPTION_KEY_, _COOKIE_KEY_);
+        
 		$this->context->theme = new Theme((int) $this->context->company->id_theme);
 		$this->default_theme = $this->context->theme->directory;
 		$this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT'))));
-        if (!defined('_IS_MASTER_')) {
-		  $this->_url = _EPH_PHENYX_API_;
-		  $string = Configuration::get('_EPHENYX_LICENSE_KEY_', null, false) . '/' . $this->context->company->company_url;
-		  $this->_crypto_key = Tools::encrypt_decrypt('encrypt', $string, _PHP_ENCRYPTION_KEY_, _COOKIE_KEY_);
-
-		  $this->license = $this->checkLicense();
-		  $this->context->license = $this->license;
-        }
+        
+        
 
 		$this->plugins = $this->getInstalledPluginsDirOnDisk();
 
