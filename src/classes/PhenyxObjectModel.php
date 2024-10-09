@@ -220,7 +220,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $this->className = get_class($this);
         $this->context = Context::getContext();
-        $this->context->phenyxtool = new PhenyxTools();
+        $this->context->phenyxtool = new PhenyxTools(false);
 
         if (!PhenyxObjectModel::$hook_instance) {
             PhenyxObjectModel::$hook_instance = new Hook();

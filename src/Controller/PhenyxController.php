@@ -451,7 +451,7 @@ abstract class PhenyxController {
 
         $this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
         
-        $this->context->phenyxtool = new PhenyxTools();
+        $this->context->phenyxtool = new PhenyxTools(false);
 
         if (!isset($this->context->_hook)) {
             $this->context->_hook = new Hook();
