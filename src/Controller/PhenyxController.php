@@ -471,6 +471,8 @@ abstract class PhenyxController {
         if (!isset($this->context->translations)) {
             $this->context->translations = new Translate($this->context->language->iso_code, $this->context->company);
         }
+        
+        $this->context->phenyxgrid = new ParamGrid();
 
         $this->context->smarty->assign([
             'shopName'    => $this->context->company->company_name,

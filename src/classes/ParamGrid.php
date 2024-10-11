@@ -237,12 +237,12 @@ class ParamGrid {
     
     public $showBottom = true;
 
-	public function __construct($paramClass, $paramController, $paramTable, $paramIdentifier) {
+	public function __construct($class = null, $controller = null, $table = null, $identifier = null) {
 
-		$this->paramClass = $paramClass;
-		$this->paramController = $paramController;
-		$this->paramTable = $paramTable;
-		$this->paramIdentifier = $paramIdentifier;
+		$this->paramClass = $class;
+		$this->paramController = $controller;
+		$this->paramTable = $table;
+		$this->paramIdentifier = $identifier;
 
 	}
 

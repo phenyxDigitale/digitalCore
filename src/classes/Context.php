@@ -74,6 +74,8 @@ class Context {
     
     public $phenyxtool;
     
+    public $phenyxgrid;
+    
     public $translations;
     
     public $media;
