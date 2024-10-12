@@ -51,7 +51,7 @@ class ParamGrid {
 
 	public $colModel;
 
-	public $showNumberCell = 1;
+	public $showNumberCell = 0;
 
 	public $numberCell = [];
 
