@@ -985,153 +985,12 @@ abstract class PhenyxController {
             }
 
         }
+        $this->context->phenyxgrid->paramClass = $this->className;
+        $this->context->phenyxgrid->paramController = $this->controller_name;
+        $this->context->phenyxgrid->paramTable = $this->table;
+        $this->context->phenyxgrid->paramIdentifier = $this->identifier;
 
-        $paragrid = new ParamGrid(
-            (!empty($this->paramClassName) ? $this->paramClassName : $this->className),
-            (!empty($this->paramController_name) ? $this->paramController_name : $this->controller_name),
-            (!empty($this->paramTable) ? $this->paramTable : $this->table),
-            (!empty($this->paramIdentifier) ? $this->paramIdentifier : $this->identifier)
-        );
-        $paragrid->paramTable = (!empty($this->paramTable) ? $this->paramTable : $this->table);
-        $paragrid->paramController = (!empty($this->paramController_name) ? $this->paramController_name : $this->controller_name);
 
-        $paragrid->uppervar = $this->uppervar;
-
-        $paragrid->dataModel = $this->paramDataModel;
-        $paragrid->colModel = $this->paramColModel;
-
-        $paragrid->requestModel = $this->requestModel;
-        $paragrid->requestField = $this->requestField;
-        $paragrid->requestCustomModel = $this->requestCustomModel;
-        $paragrid->requestComplementaryModel = $this->requestComplementaryModel;
-        $paragrid->width = $this->paramWidth;
-        $paragrid->height = $this->paramHeight;
-        $paragrid->heightModel = $this->heightModel;
-        $paragrid->showNumberCell = $this->showNumberCell;
-        $paragrid->pageModel = $this->paramPageModel;
-        $paragrid->showTop = $this->showTop;
-
-        $paragrid->create = $this->paramCreate;
-
-        $paragrid->refresh = $this->refresh;
-
-        $paragrid->complete = $this->paramComplete;
-        $paragrid->selectionModelType = $this->paramSelectModelType;
-
-        $paragrid->toolbar = $this->paramToolbar;
-
-        $paragrid->columnBorders = $this->columnBorders;
-        $paragrid->rowBorders = $this->rowBorders;
-
-        $paragrid->filterModel = $this->filterModel;
-
-        $paragrid->editorBegin = $this->editorBegin;
-
-        $paragrid->editorBlur = $this->editorBlur;
-
-        $paragrid->editorEnd = $this->editorEnd;
-
-        $paragrid->editorFocus = $this->editorFocus;
-
-        $paragrid->rowInit = $this->rowInit;
-        $paragrid->rowSelect = $this->rowSelect;
-        $paragrid->selectEnd = $this->selectEnd;
-        $paragrid->rowDblClick = $this->rowDblClick;
-        $paragrid->cellSave = $this->paramCellSave;
-        $paragrid->rowClick = $this->rowClick;
-        $paragrid->cellDblClick = $this->cellDblClick;
-        $paragrid->cellClick = $this->cellClick;
-        $paragrid->change = $this->paramChange;
-        $paragrid->showTitle = $this->showTitle;
-        $paragrid->title = $this->paramTitle;
-        $paragrid->fillHandle = '\'all\'';
-        $paragrid->summaryData = $this->summaryData;
-        $paragrid->editModel = $this->editModel;
-
-        $paragrid->showBottom = $this->showBottom;
-
-        $paragrid->load = $this->paramLoad;
-
-        $paragrid->sort = $this->paramSort;
-
-        $paragrid->sortModel = $this->sortModel;
-        $paragrid->beforeSort = $this->beforeSort;
-        $paragrid->beforeFilter = $this->beforeFilter;
-        $paragrid->beforeTableView = $this->beforeTableView;
-        $paragrid->stripeRows = $this->stripeRows;
-
-        $paragrid->dropOn = $this->dropOn;
-
-        $paragrid->dragOn = $this->dragOn;
-
-        $paragrid->dragdiHelper = $this->dragdiHelper;
-
-        $paragrid->dragclsHandle = $this->dragclsHandle;
-
-        $paragrid->dragModel = $this->dragModel;
-
-        $paragrid->dropModel = $this->dropModel;
-        $paragrid->moveNode = $this->moveNode;
-
-        $paragrid->treeModel = $this->treeModel;
-
-        $paragrid->treeExpand = $this->treeExpand;
-
-        $paragrid->check = $this->paramCheck;
-
-        $paragrid->groupModel = $this->groupModel;
-
-        $paragrid->summaryTitle = $this->summaryTitle;
-        $paragrid->wrap = $this->paramWrap;
-
-        $paragrid->postRenderInterval = $this->postRenderInterval;
-
-        $paragrid->contextMenu = $this->paramContextMenu;
-        $paragrid->functionContextMenu = $this->functionContextMenu;
-
-        $paragrid->gridExtraFunction = $this->paramExtraFontcion;
-
-        $paragrid->gridAfterLoadFunction = $this->gridAfterLoadFunction;
-
-        $paragrid->gridFunction = $this->gridFunction;
-
-        $paragrid->is_subModel = $this->is_subModel;
-
-        $paragrid->onlyObject = $this->onlyObject;
-
-        $paragrid->needRequestModel = $this->needRequestModel;
-        $paragrid->needColModel = $this->needColModel;
-
-        $paragrid->detailModel = $this->detailModel;
-
-        $paragrid->subDetailModel = $this->subDetailModel;
-
-        $paragrid->detailContextMenu = $this->detailContextMenu;
-
-        $paragrid->showHeader = $this->showHeader;
-
-        $paragrid->maxHeight = $this->maxHeight;
-
-        $paragrid->minWidth = $this->paramMinWidth;
-
-        $paragrid->showToolbar = $this->showToolbar;
-
-        $paragrid->animModel = $this->animModel;
-
-        $paragrid->formulas = $this->formulas;
-
-        $paragrid->editable = $this->paramEditable;
-
-        $paragrid->editorKeyUp = $this->editorKeyUp;
-
-        $paragrid->autoAddRow = $this->autoAddRow;
-        $paragrid->autoAddCol = $this->autoAddCol;
-        $paragrid->columnTemplate = $this->columnTemplate;
-        $paragrid->tabModel = $this->tabModel;
-        $paragrid->editor = $this->paramEditor;
-        $paragrid->history = $this->paramhistory;
-        $paragrid->autoRow = $this->paramAutoRow;
-        $paragrid->beforeCellClick = $this->beforeCellClick;
         $extraVars = $this->context->_hook->exec('action' . $this->controller_name . 'ParaGridScript', ['controller_name' => $this->controller_name], null, true);
 
         if (is_array($extraVars)) {
@@ -1156,10 +1015,9 @@ abstract class PhenyxController {
 
         }
 
-        $option = $paragrid->generateParaGridOption();
+        $option = $this->context->phenyxgrid->generateParaGridOption();
 
-        $script = $paragrid->generateParagridScript();
-
+        $script = $this->context->phenyxgrid->generateParagridScript();
         $this->paragridScript = $script;
 
         if ($this->is_subModel) {
