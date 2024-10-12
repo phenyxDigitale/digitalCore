@@ -197,6 +197,14 @@ abstract class PhenyxController {
     public $ajax_content;
 
     public $form_included = false;
+    
+    public $paramClassName;
+
+    public $paramController_name;
+
+    public $paramTable;
+
+    public $paramIdentifier;
 
     public function getExtraPhenyxVars() {
 
@@ -784,10 +792,10 @@ abstract class PhenyxController {
             }
 
         }
-        $this->context->phenyxgrid->paramClass = $this->className;
-        $this->context->phenyxgrid->paramController = $this->controller_name;
-        $this->context->phenyxgrid->paramTable = $this->table;
-        $this->context->phenyxgrid->paramIdentifier = $this->identifier;
+        $this->context->phenyxgrid->paramClass = !empty($this->paramClassName) ? $this->paramClassName : $this->className;
+        $this->context->phenyxgrid->paramController = !empty($this->paramController_name) ? $this->paramController_name : $this->controller_name;
+        $this->context->phenyxgrid->paramTable = !empty($this->paramTable) ? $this->paramTable : $this->table;
+        $this->context->phenyxgrid->paramIdentifier = !empty($this->paramIdentifier) ? $this->paramIdentifier : $this->identifier;
 
 
         $extraVars = $this->context->_hook->exec('action' . $this->controller_name . 'ParaGridScript', ['controller_name' => $this->controller_name], null, true);

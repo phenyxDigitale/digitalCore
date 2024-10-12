@@ -71,7 +71,7 @@ class ParamGrid {
 
 	public $cellKeyDown;
 
-	public $showTitle = true;
+	public $showTitle = 1;
 
 	public $showTop = 1;
 
