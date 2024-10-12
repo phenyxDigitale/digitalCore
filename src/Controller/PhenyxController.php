@@ -798,29 +798,8 @@ abstract class PhenyxController {
         $this->context->phenyxgrid->paramIdentifier = !empty($this->paramIdentifier) ? $this->paramIdentifier : $this->identifier;
 
 
-        $extraVars = $this->context->_hook->exec('action' . $this->controller_name . 'ParaGridScript', ['controller_name' => $this->controller_name], null, true);
+        $extraVars = $this->context->_hook->exec('action' . $this->controller_name . 'ParaGridScript', ['controller_name' => $this->controller_name]);
 
-        if (is_array($extraVars)) {
-
-            foreach ($extraVars as $plugin => $values) {
-
-                if (is_array($values)) {
-
-                    foreach ($values as $key => $value) {
-
-                        if (isset($value)) {
-                            $paragrid->{$key}
-
-                            = [$value];
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
 
         $option = $this->context->phenyxgrid->generateParaGridOption();
 
