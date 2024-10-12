@@ -328,7 +328,7 @@ abstract class PhenyxController {
             $this->mergeLanguages($this->context->language->iso_code);
         }
 
-        $this->paramCreate = 'function (evt, ui) {
+        $this->context->phenyxgrid->create = 'function (evt, ui) {
             buildHeadingAction(\'' . 'grid_' . $this->controller_name . '\', \'' . $this->controller_name . '\');
         }';
 

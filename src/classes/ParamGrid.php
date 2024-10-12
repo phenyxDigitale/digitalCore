@@ -55,7 +55,12 @@ class ParamGrid {
 
 	public $numberCell = [];
 
-	public $pageModel = [];
+	public $pageModel = [
+        'type'       => '\'local\'',
+        'rPP'        => 100,
+        'rPPOptions' => [10, 20, 40, 50, 100, 200, 500],
+    ];
+
 
 	public $create;
 
@@ -86,7 +91,7 @@ class ParamGrid {
 	public $rowBorders = 1;
 	public $columnBorders = 0;
 	public $stripeRows = 1;
-	public $selectionModelType;
+	public $selectionModelType = 'row';
 	public $selectionModel = [];
 
 	public $paragrid_option = [];
@@ -121,7 +126,7 @@ class ParamGrid {
 
 	public $filterModel;
 
-	public $fillHandle;
+	public $fillHandle = '\'all\'';
 
 	public $beforeRowExpand;
 
