@@ -124,7 +124,23 @@ class ParamGrid {
 
 	public $groupModel;
 
-	public $filterModel;
+	public $filterModel = [
+        'on'          => true,
+        'mode'        => '\'AND\'',
+        'header'      => true,
+        'type'        => '\'local\'',
+        'menuIcon'    => 0,
+        'gridOptions' => [
+            'numberCell' => [
+                'show' => 0,
+            ],
+            'width'      => '\'flex\'',
+            'flex'       => [
+                'one' => true,
+            ],
+        ],
+    ];
+
 
 	public $fillHandle = '\'all\'';
 
