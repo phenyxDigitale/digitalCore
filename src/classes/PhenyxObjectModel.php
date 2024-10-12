@@ -248,6 +248,10 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         if(!isset($this->context->link)) {
             $this->context->link = new Link();
         }
+        
+        if (!isset($this->context->phenyxgrid)) {
+            $this->context->phenyxgrid = new ParamGrid();
+        }
 
         $this->getExtraVars($this->className);
 

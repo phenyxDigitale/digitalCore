@@ -215,6 +215,9 @@ abstract class Plugin {
 
             $this->context->translations = new Translate($this->context->language->iso_code, $this->context->company);
         }
+        if (!isset($this->context->phenyxgrid)) {
+            $this->context->phenyxgrid = new ParamGrid();
+        }
         
         if (!isset($this->context->media)) {
             $this->context->media = new Media();
