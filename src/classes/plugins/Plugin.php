@@ -318,8 +318,7 @@ abstract class Plugin {
                
         if ($this->ajax) {
             $action = Tools::getValue('action');
-            if (!empty($action) && method_exists($this, 'ajaxProcess' . Tools::toCamelCase($action))) {     
-                require_once _EPH_CONFIG_DIR_ . 'smarty.config.inc.php';
+            if (!empty($action) && method_exists($this, 'ajaxProcess' . Tools::toCamelCase($action))) {   
                 return $this->{'ajaxProcess' . Tools::toCamelCase($action)}();
             } 
         } 
