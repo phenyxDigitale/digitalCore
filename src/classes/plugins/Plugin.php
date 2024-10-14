@@ -317,8 +317,8 @@ abstract class Plugin {
     public function postProcess() {
                
         if ($this->ajax) {
-            $this->action = Tools::getValue('action');
-            if (!empty($this->action) && method_exists($this, 'ajaxProcess' . Tools::toCamelCase($this->action))) {     return $this->{'ajaxProcess' . Tools::toCamelCase($this->action)}();
+            $action = Tools::getValue('action');
+            if (!empty($action) && method_exists($this, 'ajaxProcess' . Tools::toCamelCase($action))) {     return $this->{'ajaxProcess' . Tools::toCamelCase($action)}();
             } 
         } 
     }
