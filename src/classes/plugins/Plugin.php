@@ -308,6 +308,8 @@ abstract class Plugin {
 
         }
         
+        $this->ajax = Tools::getValue('ajax') || Tools::isSubmit('ajax');
+        
         $this->postProcess();
 
     }
