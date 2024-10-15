@@ -310,20 +310,8 @@ abstract class Plugin {
         
         $this->ajax = Tools::getValue('ajax') || Tools::isSubmit('ajax');
         
-        $this->postProcess();
-
     }
-    
-    public function postProcess() {
-               
-        if ($this->ajax) {
-            $action = Tools::getValue('action');
-            if (!empty($action) && method_exists($this, 'ajaxProcess' . Tools::toCamelCase($action))) {   
-                return $this->{'ajaxProcess' . Tools::toCamelCase($action)}();
-            } 
-        } 
-    }
-    
+        
     public static function getIdPluginByName($plugin) {
         
         $context = Context::getContext();
