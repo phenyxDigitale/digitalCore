@@ -14,6 +14,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
     const TYPE_BOOL = 2;
     const TYPE_STRING = 3;
     const TYPE_FLOAT = 4;
+    
     const TYPE_DATE = 5;
     const TYPE_HTML = 6;
     const TYPE_NOTHING = 7;
@@ -168,25 +169,15 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $this->className = $this->className;
         $this->extraVars = $this->context->_hook->exec('action' . $this->className . 'GetExtraVars', [], null, true);
-
         if (is_array($this->extraVars) && count($this->extraVars)) {
-
             foreach ($this->extraVars as $plugin => $vars) {
-
                 if (is_array($vars) && count($vars)) {
-
                     foreach ($vars as $key => $value) {
-                        $this->{$key}
-
-                        = $value;
+                        $this->{$key} = $value;
                     }
-
                 }
-
             }
-
         }
-
     }
 
     /**
@@ -220,11 +211,21 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $this->className = get_class($this);
         $this->context = Context::getContext();
-
         if (!PhenyxObjectModel::$hook_instance) {
             PhenyxObjectModel::$hook_instance = new Hook();
             $this->context->_hook = PhenyxObjectModel::$hook_instance;
             $this->context->hook_args = $this->context->_hook->getHookArgs();
+        }
+        $this->getExtraVars($this->className);
+        $extraDef = $this->context->_hook->exec('action' . $this->className . 'ExtraDefinition', [], null, true);
+        if (is_array($extraDef) && count($extraDef)) {
+            foreach ($extraDef as $plugin => $defs) {
+                if (is_array($defs) && count($defs)) {
+                    foreach ($defs as $key => $value) {
+                       self::$definition['fields'][$key] = $value;
+                    }
+                }
+            }
         }
         
         if (!isset($this->context->company)) {
@@ -252,8 +253,6 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         if (!isset($this->context->phenyxgrid)) {
             $this->context->phenyxgrid = new ParamGrid();
         }
-
-        $this->getExtraVars($this->className);
 
         if (!isset(PhenyxObjectModel::$loaded_classes[$this->className])) {
             $this->def = PhenyxObjectModel::getDefinition($this->className);
@@ -305,23 +304,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             ];
         }
 
-        $extraDef = $this->context->_hook->exec('action' . $this->className . 'ExtraDefinition', [], null, true);
-
-        if (is_array($extraDef) && count($extraDef)) {
-
-            foreach ($extraDef as $plugin => $defs) {
-
-                if (is_array($defs) && count($defs)) {
-
-                    foreach ($defs as $key => $value) {
-                        $this->def['fields'][$key] = $value;
-                    }
-
-                }
-
-            }
-
-        }
+        
 
         if ($id) {
             $entityMapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");
