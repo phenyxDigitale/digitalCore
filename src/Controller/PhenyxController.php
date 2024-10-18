@@ -810,7 +810,7 @@ abstract class PhenyxController {
             return $this->paragridScript;
         }
 
-        $result = '<script type="text/javascript">' . PHP_EOL . $this->paragridScript . PHP_EOL . '</script>';
+        $result = '<script type="text/javascript" data-defer="headJs">' . PHP_EOL . $this->paragridScript . PHP_EOL . '</script>';
 
         if ($use_cache && $this->context->cache_enable) {
             $this->cache_put_data('grid_' . $this->className . '_' . $idObjet, $result);
