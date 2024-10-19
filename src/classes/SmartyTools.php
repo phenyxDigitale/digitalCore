@@ -246,6 +246,13 @@ class SmartyTools {
         
     }
     
+    public static function implodeArray($array, $args) {
+        
+        if(is_array($array)) {
+            return implode($args, $array);
+        }
+    }
+    
     public static function sizeOf($array) {
         if(is_array($array)) {
             return sizeof($array);
