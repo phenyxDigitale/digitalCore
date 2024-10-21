@@ -965,12 +965,15 @@ class PhenyxTools {
 			if (file_exists($modDir . '/translations/' . (string) $isoFrom . '.php')) {
 				$filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '.php'] = ++$number;
 			} else
+
 			if (file_exists($modDir . '/translations/' . (string) $isoFrom . '/admin.php')) {
 				$filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '/admin.php'] = ++$number;
 			} else
+
 			if (file_exists($modDir . '/translations/' . (string) $isoFrom . '/class.php')) {
 				$filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '/class.php'] = ++$number;
 			} else
+
 			if (file_exists($modDir . '/translations/' . (string) $isoFrom . '/front.php')) {
 				$filesPlugins[$modDir . '/translations/' . (string) $isoFrom . '/front.php'] = ++$number;
 			}
@@ -1013,306 +1016,300 @@ class PhenyxTools {
 
 	public function mergeLanguages() {
 
+		$iso = $this->context->language->iso_code;
 		$_plugins = $this->getPlugins();
 
-		foreach (Language::getLanguages(true) as $lang) {
-			$iso = $lang['iso_code'];
+		$_LANGAD = [];
 
-			$_LANGAD = [];
+		if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
+			@include _EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php';
+			$_LANGAD = $_LANGADM;
+		}
 
-			if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
-				@include _EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php';
-				$_LANGAD = $_LANGADM;
+		$toInsert = [];
+
+		if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
+
+			@include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php';
+
+			if (isset($_LANGOVADM) && is_array($_LANGOVADM)) {
+				$_LANGAD = array_merge(
+					$_LANGAD,
+					$_LANGOVADM
+				);
 			}
 
-			$toInsert = [];
+		}
 
-			if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php')) {
+		foreach ($_plugins as $plugin) {
 
-				@include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/admin.php';
+			if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php')) {
 
-				if (isset($_LANGOVADM) && is_array($_LANGOVADM)) {
+				@include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php';
+
+				if (is_array($_LANGADM)) {
 					$_LANGAD = array_merge(
 						$_LANGAD,
-						$_LANGOVADM
+						$_LANGADM
 					);
 				}
 
 			}
 
-			foreach ($_plugins as $plugin) {
+		}
 
-				if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php')) {
+		foreach ($_plugins as $plugin) {
 
-					@include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php';
+			if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php')) {
 
-					if (is_array($_LANGADM)) {
-						$_LANGAD = array_merge(
-							$_LANGAD,
-							$_LANGADM
-						);
-					}
+				@include _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php';
 
+				if (is_array($_LANGADM)) {
+					$_LANGAD = array_merge(
+						$_LANGAD,
+						$_LANGADM
+					);
 				}
 
 			}
 
-			foreach ($_plugins as $plugin) {
+		}
 
-				if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php')) {
+		$toInsert = $_LANGAD;
+		ksort($toInsert);
+		$file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php', "w");
+		fwrite($file, "<?php\n\nglobal \$_LANGADM;\n\n");
+		fwrite($file, "\$_LANGADM = [];\n");
 
-					@include _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/admin.php';
+		foreach ($toInsert as $key => $value) {
+			$value = htmlspecialchars_decode($value, ENT_QUOTES);
+			fwrite($file, '$_LANGADM[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
+		}
 
-					if (is_array($_LANGADM)) {
-						$_LANGAD = array_merge(
-							$_LANGAD,
-							$_LANGADM
-						);
-					}
+		fwrite($file, "\n" . 'return $_LANGADM;' . "\n");
+		fclose($file);
+		$_LANGCLAS = [];
 
-				}
+		if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
+			@include _EPH_TRANSLATIONS_DIR_ . $iso . '/class.php';
+			$_LANGCLAS = $_LANGCLASS;
+		}
 
+		$toInsert = [];
+
+		if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
+
+			@include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php';
+
+			if (isset($_LANGOVCLASS) && is_array($_LANGOVCLASS)) {
+				$_LANGCLAS = array_merge(
+					$_LANGCLAS,
+					$_LANGOVCLASS
+				);
 			}
 
-			$toInsert = $_LANGAD;
-			ksort($toInsert);
-			$file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/admin.php', "w");
-			fwrite($file, "<?php\n\nglobal \$_LANGADM;\n\n");
-			fwrite($file, "\$_LANGADM = [];\n");
+		}
 
-			foreach ($toInsert as $key => $value) {
-				$value = htmlspecialchars_decode($value, ENT_QUOTES);
-				fwrite($file, '$_LANGADM[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
-			}
+		foreach ($_plugins as $plugin) {
 
-			fwrite($file, "\n" . 'return $_LANGADM;' . "\n");
-			fclose($file);
-			$_LANGCLAS = [];
+			if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php')) {
+				require_once _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php';
 
-			if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
-				@include _EPH_TRANSLATIONS_DIR_ . $iso . '/class.php';
-				$_LANGCLAS = $_LANGCLASS;
-			}
-
-			$toInsert = [];
-
-			if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php')) {
-
-				@include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/class.php';
-
-				if (isset($_LANGOVCLASS) && is_array($_LANGOVCLASS)) {
+				if (is_array($_LANGCLASS)) {
 					$_LANGCLAS = array_merge(
 						$_LANGCLAS,
-						$_LANGOVCLASS
+						$_LANGCLASS
 					);
 				}
 
 			}
 
-			foreach ($_plugins as $plugin) {
+		}
 
-				if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php')) {
-					require_once _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php';
+		foreach ($_plugins as $plugin) {
 
-					if (is_array($_LANGCLASS)) {
-						$_LANGCLAS = array_merge(
-							$_LANGCLAS,
-							$_LANGCLASS
-						);
-					}
+			if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php')) {
+				require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php';
 
+				if (is_array($_LANGCLASS)) {
+					$_LANGCLAS = array_merge(
+						$_LANGCLAS,
+						$_LANGCLASS
+					);
 				}
 
 			}
 
-			foreach ($_plugins as $plugin) {
+		}
 
-				if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php')) {
-					require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/class.php';
+		$toInsert = $_LANGCLAS;
+		ksort($toInsert);
+		$file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php', "w");
+		fwrite($file, "<?php\n\nglobal \$_LANGCLASS;\n\n");
+		fwrite($file, "\$_LANGCLASS = [];\n");
 
-					if (is_array($_LANGCLASS)) {
-						$_LANGCLAS = array_merge(
-							$_LANGCLAS,
-							$_LANGCLASS
-						);
-					}
+		foreach ($toInsert as $key => $value) {
+			$value = htmlspecialchars_decode($value, ENT_QUOTES);
+			fwrite($file, '$_LANGCLASS[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
+		}
 
-				}
+		fwrite($file, "\n" . 'return $_LANGCLASS;' . "\n");
+		fclose($file);
 
+		$_LANGFRON = [];
+
+		if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
+			@include _EPH_TRANSLATIONS_DIR_ . $iso . '/front.php';
+			$_LANGFRON = $_LANGFRONT;
+		}
+
+		$toInsert = [];
+
+		if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
+
+			@include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php';
+
+			if (isset($_LANGOVFRONT) && is_array($_LANGOVFRONT)) {
+				$_LANGFRON = array_merge(
+					$_LANGFRON,
+					$_LANGOVFRONT
+				);
 			}
 
-			$toInsert = $_LANGCLAS;
-			ksort($toInsert);
-			$file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/class.php', "w");
-			fwrite($file, "<?php\n\nglobal \$_LANGCLASS;\n\n");
-			fwrite($file, "\$_LANGCLASS = [];\n");
+		}
 
-			foreach ($toInsert as $key => $value) {
-				$value = htmlspecialchars_decode($value, ENT_QUOTES);
-				fwrite($file, '$_LANGCLASS[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
-			}
+		foreach ($_plugins as $plugin) {
 
-			fwrite($file, "\n" . 'return $_LANGCLASS;' . "\n");
-			fclose($file);
+			if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php')) {
 
-			$_LANGFRON = [];
+				require_once _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php';
 
-			if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
-				@include _EPH_TRANSLATIONS_DIR_ . $iso . '/front.php';
-				$_LANGFRON = $_LANGFRONT;
-			}
-
-			$toInsert = [];
-
-			if (file_exists(_EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php')) {
-
-				@include _EPH_OVERRIDE_TRANSLATIONS_DIR_ . $iso . '/front.php';
-
-				if (isset($_LANGOVFRONT) && is_array($_LANGOVFRONT)) {
+				if (is_array($complementary_language)) {
 					$_LANGFRON = array_merge(
 						$_LANGFRON,
-						$_LANGOVFRONT
+						$_LANGFRONT
 					);
 				}
 
 			}
 
-			foreach ($_plugins as $plugin) {
-
-				if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php')) {
-
-					require_once _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php';
-
-					if (is_array($complementary_language)) {
-						$_LANGFRON = array_merge(
-							$_LANGFRON,
-							$_LANGFRONT
-						);
-					}
-
-				}
-
-			}
-
-			foreach ($_plugins as $plugin) {
-
-				if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php')) {
-
-					require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php';
-
-					if (is_array($complementary_language)) {
-						$_LANGFRON = array_merge(
-							$_LANGFRON,
-							$_LANGFRONT
-						);
-					}
-
-				}
-
-			}
-
-			$toInsert = $_LANGFRON;
-			ksort($toInsert);
-			$file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php', "w");
-			fwrite($file, "<?php\n\nglobal \$_LANGFRONT;\n\n");
-			fwrite($file, "\$_LANGFRONT = [];\n");
-
-			foreach ($toInsert as $key => $value) {
-				$value = htmlspecialchars_decode($value, ENT_QUOTES);
-				fwrite($file, '$_LANGFRONT[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
-			}
-
-			fwrite($file, "\n" . 'return $_LANGFRONT;' . "\n");
-			fclose($file);
-
-			$_LANGMAI = [];
-
-			if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php')) {
-				@include _EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php';
-				$_LANGMAI = $_LANGMAIL;
-			}
-
-			$toInsert = [];
-
-			foreach ($_plugins as $plugin) {
-
-				if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/mail.php')) {
-
-					@include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/mail.php';
-
-					if (is_array($_LANGMAIL)) {
-						$_LANGMAI = array_merge(
-							$_LANGMAI,
-							$_LANGMAIL
-						);
-					}
-
-				}
-
-			}
-
-			$toInsert = $_LANGMAI;
-			ksort($toInsert);
-			$file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php', "w");
-			fwrite($file, "<?php\n\nglobal \$_LANGMAIL;\n\n");
-			fwrite($file, "\$_LANGMAIL = [];\n");
-
-			foreach ($toInsert as $key => $value) {
-				$value = htmlspecialchars_decode($value, ENT_QUOTES);
-				fwrite($file, '$_LANGMAIL[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
-			}
-
-			fwrite($file, "\n" . 'return $_LANGMAIL;' . "\n");
-			fclose($file);
-
-			$_LANGPD = [];
-
-			if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php')) {
-				@include _EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php';
-				$_LANGPD = $_LANGPDF;
-			}
-
-			$toInsert = [];
-
-			foreach ($_plugins as $plugin) {
-
-				if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/pdf.php')) {
-
-					@include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/pdf.php';
-					$complementary_language = $_LANGPDF;
-
-					if (is_array($_LANGPDF)) {
-						$_LANGPD = array_merge(
-							$_LANGPD,
-							$_LANGPDF
-						);
-					}
-
-				}
-
-			}
-
-			$toInsert = $_LANGPD;
-			ksort($toInsert);
-			$file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php', "w");
-			fwrite($file, "<?php\n\nglobal \$_LANGPDF;\n\n");
-			fwrite($file, "\$_LANGPDF = [];\n");
-
-			foreach ($toInsert as $key => $value) {
-				$value = htmlspecialchars_decode($value, ENT_QUOTES);
-				fwrite($file, '$_LANGPDF[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
-			}
-
-			fwrite($file, "\n" . 'return $_LANGPDF;' . "\n");
-			fclose($file);
 		}
-        
-        if(isset($this->context->language->id)) {
-            $this->context->translations = new Translate($iso, $this->context->company);
-            Configuration::updateValue('CURENT_MERGE_LANG_' . $this->context->language->iso_code, 1);            
-        }
 
-		
+		foreach ($_plugins as $plugin) {
+
+			if (file_exists(_EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php')) {
+
+				require_once _EPH_SPECIFIC_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/front.php';
+
+				if (is_array($complementary_language)) {
+					$_LANGFRON = array_merge(
+						$_LANGFRON,
+						$_LANGFRONT
+					);
+				}
+
+			}
+
+		}
+
+		$toInsert = $_LANGFRON;
+		ksort($toInsert);
+		$file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/front.php', "w");
+		fwrite($file, "<?php\n\nglobal \$_LANGFRONT;\n\n");
+		fwrite($file, "\$_LANGFRONT = [];\n");
+
+		foreach ($toInsert as $key => $value) {
+			$value = htmlspecialchars_decode($value, ENT_QUOTES);
+			fwrite($file, '$_LANGFRONT[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
+		}
+
+		fwrite($file, "\n" . 'return $_LANGFRONT;' . "\n");
+		fclose($file);
+
+		$_LANGMAI = [];
+
+		if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php')) {
+			@include _EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php';
+			$_LANGMAI = $_LANGMAIL;
+		}
+
+		$toInsert = [];
+
+		foreach ($_plugins as $plugin) {
+
+			if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/mail.php')) {
+
+				@include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/mail.php';
+
+				if (is_array($_LANGMAIL)) {
+					$_LANGMAI = array_merge(
+						$_LANGMAI,
+						$_LANGMAIL
+					);
+				}
+
+			}
+
+		}
+
+		$toInsert = $_LANGMAI;
+		ksort($toInsert);
+		$file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/mail.php', "w");
+		fwrite($file, "<?php\n\nglobal \$_LANGMAIL;\n\n");
+		fwrite($file, "\$_LANGMAIL = [];\n");
+
+		foreach ($toInsert as $key => $value) {
+			$value = htmlspecialchars_decode($value, ENT_QUOTES);
+			fwrite($file, '$_LANGMAIL[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
+		}
+
+		fwrite($file, "\n" . 'return $_LANGMAIL;' . "\n");
+		fclose($file);
+
+		$_LANGPD = [];
+
+		if (file_exists(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php')) {
+			@include _EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php';
+			$_LANGPD = $_LANGPDF;
+		}
+
+		$toInsert = [];
+
+		foreach ($_plugins as $plugin) {
+
+			if (file_exists(_EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/pdf.php')) {
+
+				@include _EPH_PLUGIN_DIR_ . $plugin . DIRECTORY_SEPARATOR . 'translations/' . $iso . '/pdf.php';
+				$complementary_language = $_LANGPDF;
+
+				if (is_array($_LANGPDF)) {
+					$_LANGPD = array_merge(
+						$_LANGPD,
+						$_LANGPDF
+					);
+				}
+
+			}
+
+		}
+
+		$toInsert = $_LANGPD;
+		ksort($toInsert);
+		$file = fopen(_EPH_TRANSLATIONS_DIR_ . $iso . '/pdf.php', "w");
+		fwrite($file, "<?php\n\nglobal \$_LANGPDF;\n\n");
+		fwrite($file, "\$_LANGPDF = [];\n");
+
+		foreach ($toInsert as $key => $value) {
+			$value = htmlspecialchars_decode($value, ENT_QUOTES);
+			fwrite($file, '$_LANGPDF[\'' . translateSQL($key, true) . '\'] = \'' . translateSQL($value, true) . '\';' . "\n");
+		}
+
+		fwrite($file, "\n" . 'return $_LANGPDF;' . "\n");
+		fclose($file);
+
+		$this->context->translations = new Translate($iso, $this->context->company);
+		Configuration::updateValue('CURENT_MERGE_LANG_' . $this->context->language->iso_code, 1);
+
 		return true;
 
 	}
