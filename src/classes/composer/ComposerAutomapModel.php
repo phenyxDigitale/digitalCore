@@ -44,7 +44,7 @@ class ComposerAutomapModel {
 	final protected static function loadOptionData() {
 
 		if (is_null(self::$option_data)) {
-			self::$option_data = Configuration::get(self::$option_name);
+			self::$option_data = $this->context->phenyxConfig->get(self::$option_name);
 		}
 
 		if (!self::$option_data) {
@@ -111,13 +111,13 @@ class ComposerAutomapModel {
 	protected function saveOption() {
 
 		self::$option_data[$this->id] = $this->data;
-		return Configuration::updateValue(self::$option_name, self::$option_data);
+		return $this->context->phenyxConfig->updateValue(self::$option_name, self::$option_data);
 	}
 
 	protected function deleteOption() {
 
 		unset(self::$option_data[$this->id]);
-		return Configuration::updateValue(self::$option_name, self::$option_data);
+		return $this->context->phenyxConfig->updateValue(self::$option_name, self::$option_data);
 	}
 
 }

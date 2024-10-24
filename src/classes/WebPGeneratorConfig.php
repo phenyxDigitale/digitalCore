@@ -43,7 +43,7 @@ class WebPGeneratorConfig {
      */
     public static function saveValue($key, $value) {
 
-        return Configuration::updateValue($key, $value);
+        return $this->context->phenyxConfig->updateValue($key, $value);
     }
 
     /**
@@ -64,7 +64,7 @@ class WebPGeneratorConfig {
                     if (in_array($constant, static::$multiLang, true)) {
                         static::getMultilangConfigValues($constant, $values);
                     } else {
-                        $values[$constant] = Configuration::get($constant);
+                        $values[$constant] = $this->context->phenyxConfig->get($constant);
                     }
 
                 }
@@ -90,7 +90,7 @@ class WebPGeneratorConfig {
         $values[$key] = [];
 
         foreach ($languages as $language) {
-            $values[$key][$language['id_lang']] = Configuration::get($key, $language['id_lang']);
+            $values[$key][$language['id_lang']] = $this->context->phenyxConfig->get($key, $language['id_lang']);
         }
 
     }
@@ -119,7 +119,7 @@ class WebPGeneratorConfig {
      */
     public static function getConverterSettings() {
 
-        $config = Configuration::getMultiple([
+        $config = $this->context->phenyxConfig->getMultiple([
             static::CONFIG_COMMON_QUALITY,
             static::CONFIG_COMMON_META_DATA,
             static::CONFIG_COMMON_METHOD,
@@ -146,29 +146,29 @@ class WebPGeneratorConfig {
     public static function getEwwwSettings() {
 
         return [
-            'key' => Configuration::get('WEBP_CONVERTER_EWWW_API_KEY'),
+            'key' => $this->context->phenyxConfig->get('WEBP_CONVERTER_EWWW_API_KEY'),
         ];
     }
 
     public static function getCWebpSettings() {
 
         return [
-            'use-nice'                   => (bool) Configuration::get(static::CONVERTER_CWEBP_USE_NICE),
-            'try-common-system-paths'    => (bool) Configuration::get(static::CONVERTER_CWEBP_TRY_COMMON_SYSTEM_PATHS),
-            'try-supplied-binary-for-os' => (bool) Configuration::get(static::CONVERTER_CWEBP_TRY_SUPPLIED_BINARY),
-            'autofilter'                 => (bool) Configuration::get(static::CONVERTER_CWEBP_AUTO_FILTER),
-            'command-line-options'       => Configuration::get(static::CONVERTER_CWEBP_CMD_OPTIONS),
+            'use-nice'                   => (bool) $this->context->phenyxConfig->get(static::CONVERTER_CWEBP_USE_NICE),
+            'try-common-system-paths'    => (bool) $this->context->phenyxConfig->get(static::CONVERTER_CWEBP_TRY_COMMON_SYSTEM_PATHS),
+            'try-supplied-binary-for-os' => (bool) $this->context->phenyxConfig->get(static::CONVERTER_CWEBP_TRY_SUPPLIED_BINARY),
+            'autofilter'                 => (bool) $this->context->phenyxConfig->get(static::CONVERTER_CWEBP_AUTO_FILTER),
+            'command-line-options'       => $this->context->phenyxConfig->get(static::CONVERTER_CWEBP_CMD_OPTIONS),
         ];
     }
 
     public static function updateRegenerationProgress($entityType, $index) {
 
-        Configuration::updateValue("PC_WEBP_REGENERATE_$entityType", (int) $index);
+        $this->context->phenyxConfig->updateValue("PC_WEBP_REGENERATE_$entityType", (int) $index);
     }
 
     public static function getRegenerationProgress($entityType) {
 
-        return (int) Configuration::get("PC_WEBP_REGENERATE_$entityType", null, null, null, 0);
+        return (int) $this->context->phenyxConfig->get("PC_WEBP_REGENERATE_$entityType", null, null, null, 0);
     }
 
 }

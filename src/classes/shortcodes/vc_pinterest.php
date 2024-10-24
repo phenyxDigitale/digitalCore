@@ -60,7 +60,7 @@ $params .= ($type != '') ? ' size="' . $type . '" ' : '';
 $params .= ($annotation != '') ? ' annotation="' . $annotation . '"' : '';
 
 $url = rawurlencode($page_link);
-$ssl_enable = Configuration::get('EPH_SSL_ENABLED');
+$ssl_enable = $this->context->phenyxConfig->get('EPH_SSL_ENABLED');
 $base = ($ssl_enable == 1) ? 'https://' : 'http://';
 $url = str_replace("http", $base, $url);
 

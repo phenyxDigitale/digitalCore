@@ -26,12 +26,12 @@ $el_class = $this->getExtraClass($el_class);
 if ($type == 'nivo') {
 	$type = ' wpb_slider_nivo theme-default';
 
-	if (Configuration::get('vc_load_nivo_js') != 'no') {
+	if ($this->context->phenyxConfig->get('vc_load_nivo_js') != 'no') {
 		$vc_manager->front_js[] = _EPH_ADMIN_THEME_DIR_ . '/composer/nivoslider/jquery.nivo.slider.pack.js';
 		Context::getContext()->controller->addJS(_EPH_ADMIN_THEME_DIR_ . '/composer/nivoslider/jquery.nivo.slider.pack.js');
 	}
 
-	if (Configuration::get('vc_load_nivo_css') != 'no') {
+	if ($this->context->phenyxConfig->get('vc_load_nivo_css') != 'no') {
 		$vc_manager->front_css[] = _EPH_ADMIN_THEME_DIR_ . '/composer/nivoslider/nivo-slider.css';
 		Context::getContext()->controller->addCSS(_EPH_ADMIN_THEME_DIR_ . '/composer/nivoslider/nivo-slider.css');
 	}
@@ -48,12 +48,12 @@ if ($type == 'flexslider' || $type == 'flexslider_fade' || $type == 'flexslider_
 	$slides_wrap_start = '<ul class="slides">';
 	$slides_wrap_end = '</ul>';
 
-	if (Configuration::get('vc_load_flex_css') != 'no') {
+	if ($this->context->phenyxConfig->get('vc_load_flex_css') != 'no') {
 		$vc_manager->front_css[] = _EPH_ADMIN_THEME_DIR_ . '/composer/flexslider/flexslider.css';
 		Context::getContext()->controller->addCSS(_EPH_ADMIN_THEME_DIR_ . '/composer/flexslider/flexslider.css');
 	}
 
-	if (Configuration::get('vc_load_flex_js') != 'no') {
+	if ($this->context->phenyxConfig->get('vc_load_flex_js') != 'no') {
 		$vc_manager->front_js[] = _EPH_ADMIN_THEME_DIR_ . '/composer/flexslider/jquery.flexslider-min.js';
 		Context::getContext()->controller->addJS(_EPH_ADMIN_THEME_DIR_ . '/composer/flexslider/jquery.flexslider-min.js');
 	}

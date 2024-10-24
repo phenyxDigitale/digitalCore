@@ -205,13 +205,17 @@ abstract class Plugin {
         if(!isset($this->context)) {
             $this->context = Context::getContext();
         }
+        if (!isset($this->context->phenyxConfig)) {
+            $this->context->phenyxConfig = new Configuration();
+            
+        }
         
         if(!isset($this->context->_hook)) {
             $this->context->_hook = Hook::getInstance();
         }
         if (!isset($this->context->company)) {
 
-            $this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
+            $this->context->company = new Company($this->context->phenyxConfig->get('EPH_COMPANY_ID'));
         }
         if (!isset($this->context->translations)) {
 
@@ -227,7 +231,7 @@ abstract class Plugin {
         
         $this->main_plugin = self::getIdPluginByName('ph_manager');
         
-        $this->google_api_key = Configuration::get('EPH_GOOGLE_TRANSLATE_API_KEY');
+        $this->google_api_key = $this->context->phenyxConfig->get('EPH_GOOGLE_TRANSLATE_API_KEY');
         $this->has_api_key = !empty($this->google_api_key) ? 1 : 0;  
         
         
@@ -237,8 +241,8 @@ abstract class Plugin {
         $this->_link = $this->context->link;
         $this->_language = $this->context->language;
         $this->_smarty = $this->context->smarty;
-        $this->context->cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
-        $cache_type = !empty(Configuration::get('EPH_PAGE_CACHE_TYPE')) ? Configuration::get('EPH_PAGE_CACHE_TYPE') :null;
+        $this->context->cache_enable = $this->context->phenyxConfig->get('EPH_PAGE_CACHE_ENABLED');
+        $cache_type = !empty($this->context->phenyxConfig->get('EPH_PAGE_CACHE_TYPE')) ? $this->context->phenyxConfig->get('EPH_PAGE_CACHE_TYPE') :null;
         $this->context->cache_api = $this->loadCacheAccelerator($cache_type);
 
 
@@ -518,7 +522,7 @@ abstract class Plugin {
     protected static function coreLoadPlugin($pluginName, $full) {
 
         if (Plugin::$_log_plugins_perfs === null) {
-            $modulo = _EPH_DEBUG_PROFILING_ ? 1 : Configuration::get('EPH_log_plugins_perfs_MODULO');
+            $modulo = _EPH_DEBUG_PROFILING_ ? 1 : Context::getContext()->phenyxConfig->get('EPH_log_plugins_perfs_MODULO');
             Plugin::$_log_plugins_perfs = ($modulo && mt_rand(0, $modulo - 1) == 0);
 
             if (Plugin::$_log_plugins_perfs) {
@@ -1218,7 +1222,7 @@ abstract class Plugin {
             $groups = $context->user->getGroups();
 
             if (!count($groups)) {
-                $groups = [Configuration::get('EPH_UNIDENTIFIED_GROUP')];
+                $groups = [$this->context->phenyxConfig->get('EPH_UNIDENTIFIED_GROUP')];
             }
 
         }
@@ -1227,7 +1231,7 @@ abstract class Plugin {
         $groups = $context->user->getGroups();
 
         if (!count($groups)) {
-            $groups = [Configuration::get('EPH_UNIDENTIFIED_GROUP')];
+            $groups = [$this->context->phenyxConfig->get('EPH_UNIDENTIFIED_GROUP')];
         }
 
         $hookPayment = 'Payment';
@@ -1614,12 +1618,12 @@ abstract class Plugin {
         }
 
         $url = 'https://ephenyx.io/veille';
-        $string = Configuration::get('_EPHENYX_LICENSE_KEY_') . '/' . $context->company->company_url;
+        $string = $this->context->phenyxConfig->get('_EPHENYX_LICENSE_KEY_') . '/' . $context->company->company_url;
         $crypto_key = Tools::encrypt_decrypt('encrypt', $string, _PHP_ENCRYPTION_KEY_, _COOKIE_KEY_);
 
         $data_array = [
             'action'      => 'updatePlugins',
-            'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_'),
+            'license_key' => $this->context->phenyxConfig->get('_EPHENYX_LICENSE_KEY_'),
             'crypto_key'  => $crypto_key,
             'plugins'     => $plugins,
         ];
@@ -3269,7 +3273,7 @@ abstract class Plugin {
         $cache_array = [];
         $cache_array[] = $name !== null ? $name : $this->name;
 
-        if (Configuration::get(Configuration::SSL_ENABLED)) {
+        if ($this->context->phenyxConfig->get('EPH_SSL_ENABLED')) {
             $cache_array[] = (int) Tools::usingSecureMode();
         }
 
@@ -3304,7 +3308,7 @@ abstract class Plugin {
         static $ps_smarty_clear_cache = null;
 
         if ($ps_smarty_clear_cache === null) {
-            $ps_smarty_clear_cache = Configuration::get('EPH_SMARTY_CLEAR_CACHE');
+            $ps_smarty_clear_cache = $this->context->phenyxConfig->get('EPH_SMARTY_CLEAR_CACHE');
         }
 
         if (static::$_batch_mode) {

@@ -41,7 +41,7 @@ class PluginGraphEngine extends Plugin {
             return false;
         }
 
-        return Configuration::updateValue('EPH_STATS_RENDER', $this->name);
+        return $this->context->phenyxConfig->updateValue('EPH_STATS_RENDER', $this->name);
     }
 
     /**

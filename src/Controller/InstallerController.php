@@ -28,7 +28,7 @@ class InstallerController extends PhenyxController {
 
         parent::__construct();
 
-        if (Configuration::get(Configuration::SSL_ENABLED) && Configuration::get('EPH_SSL_ENABLED_EVERYWHERE')) {
+        if ($this->context->phenyxConfig->get('EPH_SSL_ENABLED') && $this->context->phenyxConfig->get('EPH_SSL_ENABLED_EVERYWHERE')) {
             $this->ssl = true;
         }
 
@@ -93,7 +93,7 @@ class InstallerController extends PhenyxController {
 
         $idLang = Tools::getValue('id_lang');
         $cookieIdLang = $this->context->cookie->id_lang;
-        $configurationIdLang = Configuration::get(Configuration::LANG_DEFAULT);
+        $configurationIdLang = $this->context->phenyxConfig->get('EPH_LANG_DEFAULT');
 
         $this->context->cookie->id_lang = $idLang;
         $language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', (int) $idLang)));
@@ -140,14 +140,14 @@ class InstallerController extends PhenyxController {
 
         foreach ($font_types as $font_type) {
 
-            $font[] = Configuration::get($font_type . '_family');
+            $font[] = $this->context->phenyxConfig->get($font_type . '_family');
         }
 
         $font = array_unique($font);
 
         $hookHeader = $this->context->_hook->exec('displayHeader');
 
-        $faviconTemplate = !empty(Configuration::get('EPH_SOURCE_FAVICON_CODE')) ? preg_replace('/\<br(\s*)?\/?\>/i', "\n", Configuration::get('EPH_SOURCE_FAVICON_CODE')) : null;
+        $faviconTemplate = !empty($this->context->phenyxConfig->get('EPH_SOURCE_FAVICON_CODE')) ? preg_replace('/\<br(\s*)?\/?\>/i', "\n", $this->context->phenyxConfig->get('EPH_SOURCE_FAVICON_CODE')) : null;
 
         if (!empty($faviconTemplate)) {
             $dom = new DOMDocument();
@@ -192,13 +192,13 @@ class InstallerController extends PhenyxController {
         }
 
         // To be removed: append extra css and metas to the header hook
-        $extraCode = Configuration::getMultiple([Configuration::CUSTOMCODE_METAS, Configuration::CUSTOMCODE_CSS]);
+        $extraCode = $this->context->phenyxConfig->getMultiple([Configuration::CUSTOMCODE_METAS, Configuration::CUSTOMCODE_CSS]);
         $extraCss = $extraCode[Configuration::CUSTOMCODE_CSS] ? '<style>' . $extraCode[Configuration::CUSTOMCODE_CSS] . '</style>' : '';
         $hookHeader .= $extraCode[Configuration::CUSTOMCODE_METAS] . $extraCss;
 
         $xprt = [];
 
-        $expertFields = Tools::jsonDecode(Configuration::get('EPH_EXPERT_THEME_FIELDS'), true);
+        $expertFields = Tools::jsonDecode($this->context->phenyxConfig->get('EPH_EXPERT_THEME_FIELDS'), true);
 
         if (is_array($expertFields) && count($expertFields)) {
 
@@ -218,14 +218,14 @@ class InstallerController extends PhenyxController {
                 'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? $this->context->_hook->exec('displayRightColumn') : ''),
                 'usePhenyxMenu'     => $this->usePhenyxMenu,
                 'menuvars'          => $this->menuVars,
-                'showSlider'        => Configuration::get('EPH_HOME_SLIDER_ACTIVE'),
-                'showVideo'         => Configuration::get('EPH_HOME_VIDEO_ACTIVE'),
-                'videoLink'         => Configuration::get('EPH_HOME_VIDEO_LINK'),
-                'showParallax'      => Configuration::get('EPH_HOME_PARALLAX_ACTIVE'),
-                'imgParallax'       => Configuration::get('EPH_HOME_PARALLAX_FILE'),
+                'showSlider'        => $this->context->phenyxConfig->get('EPH_HOME_SLIDER_ACTIVE'),
+                'showVideo'         => $this->context->phenyxConfig->get('EPH_HOME_VIDEO_ACTIVE'),
+                'videoLink'         => $this->context->phenyxConfig->get('EPH_HOME_VIDEO_LINK'),
+                'showParallax'      => $this->context->phenyxConfig->get('EPH_HOME_PARALLAX_ACTIVE'),
+                'imgParallax'       => $this->context->phenyxConfig->get('EPH_HOME_PARALLAX_FILE'),
                 'baseUrl'           => $this->context->link->getBaseLink(),
-                'oggPic'            => Configuration::get('EPH_OGGPIC'),
-                'ajax_mode'         => Configuration::get('EPH_FRONT_AJAX') ? 1 : 0,
+                'oggPic'            => $this->context->phenyxConfig->get('EPH_OGGPIC'),
+                'ajax_mode'         => $this->context->phenyxConfig->get('EPH_FRONT_AJAX') ? 1 : 0,
                 'fonts'             => $font,
                 'load_time'         => round(microtime(true) - TIME_START, 3),
             ]
@@ -248,14 +248,14 @@ class InstallerController extends PhenyxController {
 
     protected function usePhenyxMenuTheme() {
 
-        return Configuration::get('EPH_USE_PHENYXMENU');
+        return $this->context->phenyxConfig->get('EPH_USE_PHENYXMENU');
     }
 
     public function getSeoFields() {
 
         $content = '';
         $languages = Language::getLanguages();
-        $defaultLang = Configuration::get(Configuration::LANG_DEFAULT);
+        $defaultLang = $this->context->phenyxConfig->get('EPH_LANG_DEFAULT');
 
         switch ($this->php_self) {
 
@@ -327,16 +327,16 @@ class InstallerController extends PhenyxController {
         $this->initHeader();
         $hookHeader = $this->context->_hook->exec('displayHeader');
 
-        if ((Configuration::get('EPH_CSS_THEME_CACHE') || Configuration::get('EPH_JS_THEME_CACHE')) && is_writable(_EPH_THEME_DIR_ . 'cache')) {
+        if (($this->context->phenyxConfig->get('EPH_CSS_THEME_CACHE') || $this->context->phenyxConfig->get('EPH_JS_THEME_CACHE')) && is_writable(_EPH_THEME_DIR_ . 'cache')) {
             // CSS compressor management
 
-            if (Configuration::get('EPH_CSS_THEME_CACHE')) {
+            if ($this->context->phenyxConfig->get('EPH_CSS_THEME_CACHE')) {
                 $this->css_files = $this->context->media->cccCss($this->css_files);
             }
 
             //JS compressor management
 
-            if (Configuration::get('EPH_JS_THEME_CACHE')) {
+            if ($this->context->phenyxConfig->get('EPH_JS_THEME_CACHE')) {
                 $this->js_files = $this->context->media->cccJs($this->js_files);
             }
 
@@ -356,7 +356,7 @@ class InstallerController extends PhenyxController {
         $this->context->smarty->assign(
             [
                 'css_files' => $this->css_files,
-                'js_files'  => ($this->getLayout() && (bool) Configuration::get('EPH_JS_DEFER')) ? [] : $this->js_files,
+                'js_files'  => ($this->getLayout() && (bool) $this->context->phenyxConfig->get('EPH_JS_DEFER')) ? [] : $this->js_files,
             ]
         );
 
@@ -369,16 +369,16 @@ class InstallerController extends PhenyxController {
         $this->initHeader();
         $hookHeader = $this->context->_hook->exec('displayHeader');
 
-        if ((Configuration::get('EPH_CSS_THEME_CACHE') || Configuration::get('EPH_JS_THEME_CACHE')) && is_writable(_EPH_THEME_DIR_ . 'cache')) {
+        if (($this->context->phenyxConfig->get('EPH_CSS_THEME_CACHE') || $this->context->phenyxConfig->get('EPH_JS_THEME_CACHE')) && is_writable(_EPH_THEME_DIR_ . 'cache')) {
             // CSS compressor management
 
-            if (Configuration::get('EPH_CSS_THEME_CACHE')) {
+            if ($this->context->phenyxConfig->get('EPH_CSS_THEME_CACHE')) {
                 $this->css_files = $this->context->media->cccCss($this->css_files);
             }
 
             //JS compressor management
 
-            if (Configuration::get('EPH_JS_THEME_CACHE')) {
+            if ($this->context->phenyxConfig->get('EPH_JS_THEME_CACHE')) {
                 $this->js_files = $this->context->media->cccJs($this->js_files);
             }
 
@@ -394,7 +394,7 @@ class InstallerController extends PhenyxController {
         $this->context->smarty->assign(
             [
                 'css_files' => $this->css_files,
-                'js_files'  => ($this->getLayout() && (bool) Configuration::get('EPH_JS_DEFER')) ? [] : $this->js_files,
+                'js_files'  => ($this->getLayout() && (bool) $this->context->phenyxConfig->get('EPH_JS_DEFER')) ? [] : $this->js_files,
                 'js_def'    => $js_def,
             ]
         );
@@ -407,7 +407,7 @@ class InstallerController extends PhenyxController {
         $this->context->smarty->assign(
             [
                 'HOOK_FOOTER' => $this->context->_hook->exec('displayFooter'),
-                'js_footers'  => ($this->getLayout() && (bool) Configuration::get('EPH_JS_DEFER')) ? [] : $this->js_footers,
+                'js_footers'  => ($this->getLayout() && (bool) $this->context->phenyxConfig->get('EPH_JS_DEFER')) ? [] : $this->js_footers,
             ]
         );
         return $this->context->smarty->fetch(_EPH_THEME_DIR_ . 'footer_ajax.tpl');
@@ -433,13 +433,13 @@ class InstallerController extends PhenyxController {
         $this->context->smarty->assign(
             [
                 'time'                  => time(),
-                'img_update_time'       => Configuration::get('EPH_IMG_UPDATE_TIME'),
+                'img_update_time'       => $this->context->phenyxConfig->get('EPH_IMG_UPDATE_TIME'),
                 'static_token'          => Tools::getToken(false),
                 'token'                 => Tools::getToken(),
                 'priceDisplayPrecision' => _EPH_PRICE_DISPLAY_PRECISION_,
                 'content_only'          => (int) Tools::getValue('content_only'),
                 'customer_is_admin'     => $this->customer_is_admin,
-                'head_script'           => Configuration::get('EPH_HEAD_SCRIPT'),
+                'head_script'           => $this->context->phenyxConfig->get('EPH_HEAD_SCRIPT'),
 
             ]
         );
@@ -451,29 +451,29 @@ class InstallerController extends PhenyxController {
 
         $mobileDevice = $this->isMobileDevice();
 
-        if ($mobileDevice && Configuration::get('EPH_LOGO_MOBILE')) {
-            $logo = $this->context->link->getMediaLink(_EPH_IMG_ . Configuration::get('EPH_LOGO_MOBILE') . '?' . Configuration::get('EPH_IMG_UPDATE_TIME'));
+        if ($mobileDevice && $this->context->phenyxConfig->get('EPH_LOGO_MOBILE')) {
+            $logo = $this->context->link->getMediaLink(_EPH_IMG_ . $this->context->phenyxConfig->get('EPH_LOGO_MOBILE') . '?' . $this->context->phenyxConfig->get('EPH_IMG_UPDATE_TIME'));
         } else {
-            $logo = $this->context->link->getMediaLink(_EPH_IMG_ . Configuration::get('EPH_LOGO'));
+            $logo = $this->context->link->getMediaLink(_EPH_IMG_ . $this->context->phenyxConfig->get('EPH_LOGO'));
         }
 
         return [
-            'favicon_url'       => _EPH_IMG_ . Configuration::get('EPH_FAVICON'),
-            'logo_image_width'  => ($mobileDevice == false ? Configuration::get('SHOP_LOGO_WIDTH') : Configuration::get('SHOP_LOGO_MOBILE_WIDTH')),
-            'logo_image_height' => ($mobileDevice == false ? Configuration::get('SHOP_LOGO_HEIGHT') : Configuration::get('SHOP_LOGO_MOBILE_HEIGHT')),
+            'favicon_url'       => _EPH_IMG_ . $this->context->phenyxConfig->get('EPH_FAVICON'),
+            'logo_image_width'  => ($mobileDevice == false ? $this->context->phenyxConfig->get('SHOP_LOGO_WIDTH') : $this->context->phenyxConfig->get('SHOP_LOGO_MOBILE_WIDTH')),
+            'logo_image_height' => ($mobileDevice == false ? $this->context->phenyxConfig->get('SHOP_LOGO_HEIGHT') : $this->context->phenyxConfig->get('SHOP_LOGO_MOBILE_HEIGHT')),
             'logo_url'          => $logo,
         ];
     }
 
     public function displayAjax() {
 
-        if ((Configuration::get('EPH_CSS_THEME_CACHE') || Configuration::get('EPH_JS_THEME_CACHE')) && is_writable(_EPH_THEME_DIR_ . 'cache')) {
+        if (($this->context->phenyxConfig->get('EPH_CSS_THEME_CACHE') || $this->context->phenyxConfig->get('EPH_JS_THEME_CACHE')) && is_writable(_EPH_THEME_DIR_ . 'cache')) {
 
-            if (Configuration::get('EPH_CSS_THEME_CACHE')) {
+            if ($this->context->phenyxConfig->get('EPH_CSS_THEME_CACHE')) {
                 $this->css_files = $this->context->media->cccCss($this->css_files);
             }
 
-            if (Configuration::get('EPH_JS_THEME_CACHE')) {
+            if ($this->context->phenyxConfig->get('EPH_JS_THEME_CACHE')) {
                 $this->js_files = $this->context->media->cccJs($this->js_files);
             }
 
@@ -482,9 +482,9 @@ class InstallerController extends PhenyxController {
         $this->context->smarty->assign(
             [
                 'css_files'      => $this->css_files,
-                'js_files'       => ($this->getLayout() && (bool) Configuration::get('EPH_JS_DEFER')) ? [] : $this->js_files,
-                'js_defer'       => (bool) Configuration::get('EPH_JS_DEFER'),
-                'js_footers'     => ($this->getLayout() && (bool) Configuration::get('EPH_JS_DEFER')) ? [] : $this->js_footers,
+                'js_files'       => ($this->getLayout() && (bool) $this->context->phenyxConfig->get('EPH_JS_DEFER')) ? [] : $this->js_files,
+                'js_defer'       => (bool) $this->context->phenyxConfig->get('EPH_JS_DEFER'),
+                'js_footers'     => ($this->getLayout() && (bool) $this->context->phenyxConfig->get('EPH_JS_DEFER')) ? [] : $this->js_footers,
                 'display_header' => true,
                 'display_footer' => true,
 
@@ -581,7 +581,7 @@ class InstallerController extends PhenyxController {
         if (!empty($html) && $this->getLayout()) {
             $javasFooter = '';
             $domAvailable = extension_loaded('dom') ? true : false;
-            $defer = (bool) Configuration::get('EPH_JS_DEFER');
+            $defer = (bool) $this->context->phenyxConfig->get('EPH_JS_DEFER');
 
             if ($defer && $domAvailable) {
                 $html = $this->context->media->deferInlineScripts($html);
@@ -660,7 +660,7 @@ class InstallerController extends PhenyxController {
         $html = trim($html);
 
         $domAvailable = extension_loaded('dom') ? true : false;
-        $defer = (bool) Configuration::get('EPH_JS_DEFER');
+        $defer = (bool) $this->context->phenyxConfig->get('EPH_JS_DEFER');
         $this->ajax_head = null;
 
         $html = trim(str_replace(['</body>', '</html>'], '', $html)) . "\n";
@@ -716,12 +716,12 @@ class InstallerController extends PhenyxController {
 
     protected function displayMaintenancePage() {
 
-        if ($this->maintenance == true || !(int) Configuration::get('EPH_SHOP_ENABLE')) {
+        if ($this->maintenance == true || !(int) $this->context->phenyxConfig->get('EPH_SHOP_ENABLE')) {
             $this->maintenance = true;
             $allowed = false;
 
-            if (!empty(Configuration::get('EPH_MAINTENANCE_IP'))) {
-                $allowed = in_array(Tools::getRemoteAddr(), explode(',', Configuration::get('EPH_MAINTENANCE_IP')));
+            if (!empty($this->context->phenyxConfig->get('EPH_MAINTENANCE_IP'))) {
+                $allowed = in_array(Tools::getRemoteAddr(), explode(',', $this->context->phenyxConfig->get('EPH_MAINTENANCE_IP')));
             }
 
             if (!$allowed) {
@@ -729,7 +729,7 @@ class InstallerController extends PhenyxController {
                 $this->addCSS($this->context->theme->css_theme . 'maintenance.css', 'all');
                 $this->setMedia();
                 $this->context->smarty->assign($this->initLogoAndFavicon());
-                $maintenance_text = $this->context->smarty->fetch('string:' . Configuration::get('EPH_MAINTENANCE_TEXT', (int) $this->context->language->id));
+                $maintenance_text = $this->context->smarty->fetch('string:' . $this->context->phenyxConfig->get('EPH_MAINTENANCE_TEXT', (int) $this->context->language->id));
                 $this->context->smarty->assign(
                     [
                         'HOOK_HEADER'      => $this->context->_hook->exec('displayHeader'),
@@ -787,16 +787,16 @@ class InstallerController extends PhenyxController {
 
         // assign css_files and js_files at the very last time
 
-        if ((Configuration::get('EPH_CSS_THEME_CACHE') || Configuration::get('EPH_JS_THEME_CACHE')) && is_writable(_EPH_THEME_DIR_ . 'cache')) {
+        if (($this->context->phenyxConfig->get('EPH_CSS_THEME_CACHE') || $this->context->phenyxConfig->get('EPH_JS_THEME_CACHE')) && is_writable(_EPH_THEME_DIR_ . 'cache')) {
             // CSS compressor management
 
-            if (Configuration::get('EPH_CSS_THEME_CACHE')) {
+            if ($this->context->phenyxConfig->get('EPH_CSS_THEME_CACHE')) {
                 $this->css_files = $this->context->media->cccCss($this->css_files);
             }
 
             //JS compressor management
 
-            if (Configuration::get('EPH_JS_THEME_CACHE')) {
+            if ($this->context->phenyxConfig->get('EPH_JS_THEME_CACHE')) {
                 $this->js_files = $this->context->media->cccJs($this->js_files);
             }
 
@@ -805,8 +805,8 @@ class InstallerController extends PhenyxController {
         $this->context->smarty->assign(
             [
                 'css_files'      => $this->css_files,
-                'js_files'       => ($this->getLayout() && (bool) Configuration::get('EPH_JS_DEFER')) ? [] : $this->js_files,
-                'js_defer'       => (bool) Configuration::get('EPH_JS_DEFER'),
+                'js_files'       => ($this->getLayout() && (bool) $this->context->phenyxConfig->get('EPH_JS_DEFER')) ? [] : $this->js_files,
+                'js_defer'       => (bool) $this->context->phenyxConfig->get('EPH_JS_DEFER'),
                 'js_footers'     => $this->js_footers,
                 'errors'         => $this->errors,
                 'display_header' => $this->display_header,
@@ -886,8 +886,8 @@ class InstallerController extends PhenyxController {
 
         // @since 1.0.4
         $this->context->media->addJsDef([
-            'useLazyLoad'   => Configuration::get('EPH_LAZY_LOAD') ? 1 : 0,
-            'useWebp'       => (Configuration::get('EPH_USE_WEBP') && function_exists('imagewebp')) ? 1 : 0,
+            'useLazyLoad'   => $this->context->phenyxConfig->get('EPH_LAZY_LOAD') ? 1 : 0,
+            'useWebp'       => ($this->context->phenyxConfig->get('EPH_USE_WEBP') && function_exists('imagewebp')) ? 1 : 0,
             'AjaxMemberId'  => $this->context->user->id ? $this->context->user->id : null,
             'AjaxLinkIndex' => $this->context->link->getPageLink('index', true),
             'ajaxCmsLink'   => $this->context->link->getPageLink('cms', true),
@@ -964,7 +964,7 @@ class InstallerController extends PhenyxController {
         $this->context->smarty->assign(
             [
                 'base_dir_ssl' => 'https://' . Tools::getDomainSsl() . __EPH_BASE_URI__,
-                'shop_name'    => Configuration::get('EPH_SHOP_NAME'),
+                'shop_name'    => $this->context->phenyxConfig->get('EPH_SHOP_NAME'),
             ]
         );
         $this->context->smarty->assign($this->initLogoAndFavicon());
@@ -981,7 +981,7 @@ class InstallerController extends PhenyxController {
 
     public function setPhenyxMenuMedia() {
 
-        $advtmIsSticky = (Configuration::get('EPHTM_MENU_CONT_POSITION') == 'sticky');
+        $advtmIsSticky = ($this->context->phenyxConfig->get('EPHTM_MENU_CONT_POSITION') == 'sticky');
 
         $this->addCSS(_SHOP_ROOT_DIR_ . '/css/ephtopmenu_product.css', 'all');
 
@@ -994,7 +994,7 @@ class InstallerController extends PhenyxController {
         $this->addCSS(_EPH_CSS_DIR_ . 'material-design-iconic-font.min.css', 'all');
 
         $this->context->media->addJsDef([
-            'ephtm_isToggleMode'   => Configuration::get('EPHTM_RESP_TOGGLE_ENABLED') ? (bool) Configuration::get('EPHTM_RESP_TOGGLE_ENABLED') : 0,
+            'ephtm_isToggleMode'   => $this->context->phenyxConfig->get('EPHTM_RESP_TOGGLE_ENABLED') ? (bool) $this->context->phenyxConfig->get('EPHTM_RESP_TOGGLE_ENABLED') : 0,
             'ephtm_stickyOnMobile' => 0,
         ]);
 
@@ -1098,7 +1098,7 @@ class InstallerController extends PhenyxController {
 
         $hookFooter = $this->context->_hook->exec('displayFooter');
 
-        if ((Configuration::get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
+        if (($this->context->phenyxConfig->get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
 
             $this->js_footers = $this->context->media->admincccJS($this->js_footers);
 
@@ -1107,7 +1107,7 @@ class InstallerController extends PhenyxController {
         $this->context->smarty->assign(
             [
                 'HOOK_FOOTER' => $hookFooter,
-                'js_footers'  => ($this->getLayout() && (bool) Configuration::get('EPH_JS_DEFER')) ? [] : $this->js_footers,
+                'js_footers'  => ($this->getLayout() && (bool) $this->context->phenyxConfig->get('EPH_JS_DEFER')) ? [] : $this->js_footers,
             ]
         );
 
@@ -1240,8 +1240,8 @@ class InstallerController extends PhenyxController {
         // @TODO This method must be moved into switchLanguage
         Tools::setCookieLanguage($this->context->cookie);
 
-        $protocolLink = (Configuration::get(Configuration::SSL_ENABLED) || Tools::usingSecureMode()) ? 'https://' : 'http://';
-        $useSSL = ((isset($this->ssl) && $this->ssl && Configuration::get(Configuration::SSL_ENABLED)) || Tools::usingSecureMode()) ? true : false;
+        $protocolLink = ($this->context->phenyxConfig->get('EPH_SSL_ENABLED') || Tools::usingSecureMode()) ? 'https://' : 'http://';
+        $useSSL = ((isset($this->ssl) && $this->ssl && $this->context->phenyxConfig->get('EPH_SSL_ENABLED')) || Tools::usingSecureMode()) ? true : false;
         $protocolContent = ($useSSL) ? 'https://' : 'http://';
         $link = new Link($protocolLink, $protocolContent);
         $this->context->link = $link;
@@ -1256,7 +1256,7 @@ class InstallerController extends PhenyxController {
             throw new PhenyxException((sprintf($this->l('Current theme unavailable "%s". Please check your theme directory name and permissions.'), basename(rtrim(_EPH_THEME_DIR_, '/\\')))));
         }
 
-        if (Configuration::get('EPH_GEOLOCATION_ENABLED')) {
+        if ($this->context->phenyxConfig->get('EPH_GEOLOCATION_ENABLED')) {
 
             if (($newDefault = $this->geolocationManagement($this->context->country)) && Validate::isLoadedObject($newDefault)) {
                 $this->context->country = $newDefault;
@@ -1264,7 +1264,7 @@ class InstallerController extends PhenyxController {
 
         } else
 
-        if (Configuration::get('EPH_DETECT_COUNTRY')) {
+        if ($this->context->phenyxConfig->get('EPH_DETECT_COUNTRY')) {
 
             $hasCountry = isset($this->context->cookie->iso_code_country) && $this->context->cookie->iso_code_country;
 
@@ -1323,7 +1323,7 @@ class InstallerController extends PhenyxController {
         $this->context->smarty->assign('request_uri', Tools::safeOutput(urldecode($_SERVER['REQUEST_URI'])));
 
         /* Breadcrumb */
-        $navigationPipe = (Configuration::get('EPH_NAVIGATION_PIPE') ? Configuration::get('EPH_NAVIGATION_PIPE') : '>');
+        $navigationPipe = ($this->context->phenyxConfig->get('EPH_NAVIGATION_PIPE') ? $this->context->phenyxConfig->get('EPH_NAVIGATION_PIPE') : '>');
         $this->context->smarty->assign('navigationPipe', $navigationPipe);
 
         // Automatically redirect to the canonical URL if needed
@@ -1357,9 +1357,9 @@ class InstallerController extends PhenyxController {
                 'hide_right_column' => !$this->display_column_right,
                 'base_dir'          => _EPH_BASE_URL_ . __EPH_BASE_URI__,
                 'base_dir_ssl'      => $protocolLink . Tools::getDomainSsl() . __EPH_BASE_URI__,
-                'force_ssl'         => Configuration::get(Configuration::SSL_ENABLED) && Configuration::get('EPH_SSL_ENABLED_EVERYWHERE'),
+                'force_ssl'         => $this->context->phenyxConfig->get('EPH_SSL_ENABLED') && $this->context->phenyxConfig->get('EPH_SSL_ENABLED_EVERYWHERE'),
                 'content_dir'       => $protocolContent . Tools::getHttpHost() . __EPH_BASE_URI__,
-                'base_uri'          => $protocolContent . Tools::getHttpHost() . __EPH_BASE_URI__ . (!Configuration::get(Configuration::REWRITING_SETTINGS) ? 'index.php' : ''),
+                'base_uri'          => $protocolContent . Tools::getHttpHost() . __EPH_BASE_URI__ . (!$this->context->phenyxConfig->get('EPH_REWRITING_SETTINGS') ? 'index.php' : ''),
                 'tpl_dir'           => _EPH_THEME_DIR_,
                 'tpl_uri'           => _THEME_DIR_,
                 'plugins_dir'       => _PLUGIN_DIR_,
@@ -1372,12 +1372,12 @@ class InstallerController extends PhenyxController {
                 'languages'         => $languages,
                 'meta_language'     => implode(',', $metaLanguage),
                 'is_logged'         => (bool) $this->_user->isLogged(),
-                'add_prod_display'  => (int) Configuration::get('EPH_ATTRIBUTE_CATEGORY_DISPLAY'),
-                'shop_name'         => Configuration::get('EPH_SHOP_NAME'),
-                'shop_phone'        => Configuration::get('EPH_SHOP_PHONE'),
-                'high_dpi'          => (bool) Configuration::get('EPH_HIGHT_DPI'),
-                'lazy_load'         => (bool) Configuration::get('EPH_LAZY_LOAD'),
-                'webp'              => (bool) Configuration::get('EPH_USE_WEBP') && function_exists('imagewebp'),
+                'add_prod_display'  => (int) $this->context->phenyxConfig->get('EPH_ATTRIBUTE_CATEGORY_DISPLAY'),
+                'shop_name'         => $this->context->phenyxConfig->get('EPH_SHOP_NAME'),
+                'shop_phone'        => $this->context->phenyxConfig->get('EPH_SHOP_PHONE'),
+                'high_dpi'          => (bool) $this->context->phenyxConfig->get('EPH_HIGHT_DPI'),
+                'lazy_load'         => (bool) $this->context->phenyxConfig->get('EPH_LAZY_LOAD'),
+                'webp'              => (bool) $this->context->phenyxConfig->get('EPH_USE_WEBP') && function_exists('imagewebp'),
             ]
         );
 
@@ -1435,14 +1435,14 @@ class InstallerController extends PhenyxController {
     public function outputMenuContent() {
 
         $menus = TopMenu::getMenus($this->context->cookie->id_lang, true, false, true);
-        $advtmThemeCompatibility = (bool) Configuration::get('EPHTM_THEME_COMPATIBILITY_MODE') && ((bool) Configuration::get('EPHTM_MENU_CONT_HOOK') == 'top');
-        $advtmResponsiveMode = ((bool) Configuration::get('EPHTM_RESPONSIVE_MODE') && (int) Configuration::get('EPHTM_RESPONSIVE_THRESHOLD') > 0);
-        $advtmResponsiveToggleText = (Configuration::get('EPHTM_RESP_TOGGLE_TEXT', $this->context->cookie->id_lang) !== false && Configuration::get('EPHTM_RESP_TOGGLE_TEXT', $this->context->cookie->id_lang) != '' ? Configuration::get('EPHTM_RESP_TOGGLE_TEXT', $this->context->cookie->id_lang) : $this->l('Menu'));
-        $advtmResponsiveContainerClasses = Configuration::get('EPHTM_RESP_CONT_CLASSES');
-        $advtmContainerClasses = Configuration::get('EPHTM_CONT_CLASSES');
-        $advtmInnerClasses = Configuration::get('EPHTM_INNER_CLASSES');
-        $advtmIsSticky = (Configuration::get('EPHTM_MENU_CONT_POSITION') == 'sticky');
-        $advtmOpenMethod = (int) Configuration::get('EPHTM_SUBMENU_OPEN_METHOD');
+        $advtmThemeCompatibility = (bool) $this->context->phenyxConfig->get('EPHTM_THEME_COMPATIBILITY_MODE') && ((bool) $this->context->phenyxConfig->get('EPHTM_MENU_CONT_HOOK') == 'top');
+        $advtmResponsiveMode = ((bool) $this->context->phenyxConfig->get('EPHTM_RESPONSIVE_MODE') && (int) $this->context->phenyxConfig->get('EPHTM_RESPONSIVE_THRESHOLD') > 0);
+        $advtmResponsiveToggleText = ($this->context->phenyxConfig->get('EPHTM_RESP_TOGGLE_TEXT', $this->context->cookie->id_lang) !== false && $this->context->phenyxConfig->get('EPHTM_RESP_TOGGLE_TEXT', $this->context->cookie->id_lang) != '' ? $this->context->phenyxConfig->get('EPHTM_RESP_TOGGLE_TEXT', $this->context->cookie->id_lang) : $this->l('Menu'));
+        $advtmResponsiveContainerClasses = $this->context->phenyxConfig->get('EPHTM_RESP_CONT_CLASSES');
+        $advtmContainerClasses = $this->context->phenyxConfig->get('EPHTM_CONT_CLASSES');
+        $advtmInnerClasses = $this->context->phenyxConfig->get('EPHTM_INNER_CLASSES');
+        $advtmIsSticky = ($this->context->phenyxConfig->get('EPHTM_MENU_CONT_POSITION') == 'sticky');
+        $advtmOpenMethod = (int) $this->context->phenyxConfig->get('EPHTM_SUBMENU_OPEN_METHOD');
 
         if ($advtmOpenMethod == 2) {
             $advtmInnerClasses .= ' phtm_open_on_click';
@@ -1472,7 +1472,7 @@ class InstallerController extends PhenyxController {
 
         // If we call a SSL controller without SSL or a non SSL controller with SSL, we redirect with the right protocol
 
-        if (Configuration::get(Configuration::SSL_ENABLED) && (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] != 'POST') && $this->ssl != Tools::usingSecureMode()) {
+        if ($this->context->phenyxConfig->get('EPH_SSL_ENABLED') && (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] != 'POST') && $this->ssl != Tools::usingSecureMode()) {
             $this->context->cookie->disallowWriting();
             header('HTTP/1.1 301 Moved Permanently');
             header('Cache-Control: no-cache');
@@ -1495,19 +1495,19 @@ class InstallerController extends PhenyxController {
 
             if (@filemtime(_EPH_GEOIP_DIR_ . _EPH_GEOIP_CITY_FILE_)) {
 
-                if (!isset($this->context->cookie->iso_code_country) || (isset($this->context->cookie->iso_code_country) && !in_array(strtoupper($this->context->cookie->iso_code_country), explode(';', Configuration::get('EPH_ALLOWED_COUNTRIES'))))) {
+                if (!isset($this->context->cookie->iso_code_country) || (isset($this->context->cookie->iso_code_country) && !in_array(strtoupper($this->context->cookie->iso_code_country), explode(';', $this->context->phenyxConfig->get('EPH_ALLOWED_COUNTRIES'))))) {
                     $gi = geoip_open(realpath(_EPH_GEOIP_DIR_ . _EPH_GEOIP_CITY_FILE_), GEOIP_STANDARD);
                     $record = geoip_record_by_addr($gi, Tools::getRemoteAddr());
 
                     if (is_object($record)) {
 
-                        if (!in_array(strtoupper($record->country_code), explode(';', Configuration::get('EPH_ALLOWED_COUNTRIES'))) && !FrontController::isInWhitelistForGeolocation()) {
+                        if (!in_array(strtoupper($record->country_code), explode(';', $this->context->phenyxConfig->get('EPH_ALLOWED_COUNTRIES'))) && !FrontController::isInWhitelistForGeolocation()) {
 
-                            if (Configuration::get('EPH_GEOLOCATION_BEHAVIOR') == _EPH_GEOLOCATION_NO_CATALOG_) {
+                            if ($this->context->phenyxConfig->get('EPH_GEOLOCATION_BEHAVIOR') == _EPH_GEOLOCATION_NO_CATALOG_) {
                                 $this->restrictedCountry = true;
                             } else
 
-                            if (Configuration::get('EPH_GEOLOCATION_BEHAVIOR') == _EPH_GEOLOCATION_NO_ORDER_) {
+                            if ($this->context->phenyxConfig->get('EPH_GEOLOCATION_BEHAVIOR') == _EPH_GEOLOCATION_NO_ORDER_) {
                                 $this->context->smarty->assign(
                                     [
                                         'restricted_country_mode' => true,
@@ -1526,7 +1526,7 @@ class InstallerController extends PhenyxController {
                 }
 
                 if (isset($this->context->cookie->iso_code_country) && $this->context->cookie->iso_code_country && !Validate::isLanguageIsoCode($this->context->cookie->iso_code_country)) {
-                    $this->context->cookie->iso_code_country = Country::getIsoById(Configuration::get('EPH_COUNTRY_DEFAULT'));
+                    $this->context->cookie->iso_code_country = Country::getIsoById($this->context->phenyxConfig->get('EPH_COUNTRY_DEFAULT'));
                 }
 
                 if (isset($this->context->cookie->iso_code_country) && ($idCountry = (int) Country::getByIso(strtoupper($this->context->cookie->iso_code_country)))) {
@@ -1537,17 +1537,17 @@ class InstallerController extends PhenyxController {
                     }
 
                     if (isset($hasBeenSet) && $hasBeenSet) {
-                        $this->context->cookie->id_currency = (int) ($defaultCountry->id_currency ? (int) $defaultCountry->id_currency : (int) Configuration::get('EPH_CURRENCY_DEFAULT'));
+                        $this->context->cookie->id_currency = (int) ($defaultCountry->id_currency ? (int) $defaultCountry->id_currency : (int) $this->context->phenyxConfig->get('EPH_CURRENCY_DEFAULT'));
                     }
 
                     return $defaultCountry;
                 } else
 
-                if (Configuration::get('EPH_GEOLOCATION_NA_BEHAVIOR') == _EPH_GEOLOCATION_NO_CATALOG_ && !FrontController::isInWhitelistForGeolocation()) {
+                if ($this->context->phenyxConfig->get('EPH_GEOLOCATION_NA_BEHAVIOR') == _EPH_GEOLOCATION_NO_CATALOG_ && !FrontController::isInWhitelistForGeolocation()) {
                     $this->restrictedCountry = true;
                 } else
 
-                if (Configuration::get('EPH_GEOLOCATION_NA_BEHAVIOR') == _EPH_GEOLOCATION_NO_ORDER_ && !FrontController::isInWhitelistForGeolocation()) {
+                if ($this->context->phenyxConfig->get('EPH_GEOLOCATION_NA_BEHAVIOR') == _EPH_GEOLOCATION_NO_ORDER_ && !FrontController::isInWhitelistForGeolocation()) {
                     $this->context->smarty->assign(
                         [
                             'restricted_country_mode' => true,
@@ -1576,7 +1576,7 @@ class InstallerController extends PhenyxController {
         $ips = [];
 
         // retrocompatibility
-        $ipsOld = explode(';', Configuration::get('EPH_GEOLOCATION_WHITELIST'));
+        $ipsOld = explode(';', $this->context->phenyxConfig->get('EPH_GEOLOCATION_WHITELIST'));
 
         if (is_array($ipsOld) && count($ipsOld)) {
 
@@ -1605,7 +1605,7 @@ class InstallerController extends PhenyxController {
 
     protected function canonicalRedirection($canonicalUrl = '') {
 
-        if (!$canonicalUrl || !Configuration::get('EPH_CANONICAL_REDIRECT') || strtoupper($_SERVER['REQUEST_METHOD']) != 'GET' || Tools::getValue('live_edit')) {
+        if (!$canonicalUrl || !$this->context->phenyxConfig->get('EPH_CANONICAL_REDIRECT') || strtoupper($_SERVER['REQUEST_METHOD']) != 'GET' || Tools::getValue('live_edit')) {
             return;
         }
 
@@ -1658,7 +1658,7 @@ class InstallerController extends PhenyxController {
                 die('[Debug] This page has moved<br />Please use the following URL instead: <a href="' . $finalUrl . '">' . $finalUrl . '</a>');
             }
 
-            $redirectType = Configuration::get('EPH_CANONICAL_REDIRECT') == 2 ? '301' : '302';
+            $redirectType = $this->context->phenyxConfig->get('EPH_CANONICAL_REDIRECT') == 2 ? '301' : '302';
             header('HTTP/1.0 ' . $redirectType . ' Moved');
             header('Cache-Control: no-cache');
             Tools::redirectLink($finalUrl);
@@ -1672,8 +1672,8 @@ class InstallerController extends PhenyxController {
         $this->context->smarty->assign(
             [
                 'shop_name'   => $this->context->company->name,
-                'favicon_url' => _EPH_IMG_ . Configuration::get('EPH_FAVICON'),
-                'logo_url'    => $this->context->link->getMediaLink(_EPH_IMG_ . Configuration::get('EPH_LOGO')),
+                'favicon_url' => _EPH_IMG_ . $this->context->phenyxConfig->get('EPH_FAVICON'),
+                'logo_url'    => $this->context->link->getMediaLink(_EPH_IMG_ . $this->context->phenyxConfig->get('EPH_LOGO')),
             ]
         );
         $this->smartyOutputContent($this->getTemplatePath($this->getThemeDir() . 'restricted-country.tpl'));
@@ -1682,7 +1682,7 @@ class InstallerController extends PhenyxController {
 
     public function isTokenValid() {
 
-        if (!Configuration::get('EPH_TOKEN_ENABLE')) {
+        if (!$this->context->phenyxConfig->get('EPH_TOKEN_ENABLE')) {
             return true;
         }
 
@@ -1708,7 +1708,7 @@ class InstallerController extends PhenyxController {
 
         $this->context->smarty->assign(
             [
-                'EPH_SHOP_NAME' => Configuration::get('EPH_SHOP_NAME'),
+                'EPH_SHOP_NAME' => $this->context->phenyxConfig->get('EPH_SHOP_NAME'),
             ]
         );
 
@@ -1736,12 +1736,12 @@ class InstallerController extends PhenyxController {
         $context = Context::getContext();
         $idCompany = (int) $context->company->id;
 
-        if (Configuration::get('EPH_LOGO_INVOICE', null, null, $idCompany) != false && file_exists(_EPH_IMG_DIR_ . Configuration::get('EPH_LOGO_INVOICE', null, null, $idCompany))) {
-            $logo = _EPH_IMG_DIR_ . Configuration::get('EPH_LOGO_INVOICE', null, null, $idCompany);
+        if ($this->context->phenyxConfig->get('EPH_LOGO_INVOICE', null, null, $idCompany) != false && file_exists(_EPH_IMG_DIR_ . $this->context->phenyxConfig->get('EPH_LOGO_INVOICE', null, null, $idCompany))) {
+            $logo = _EPH_IMG_DIR_ . $this->context->phenyxConfig->get('EPH_LOGO_INVOICE', null, null, $idCompany);
         } else
 
-        if (Configuration::get('EPH_LOGO', null, null, $idCompany) != false && file_exists(_EPH_IMG_DIR_ . Configuration::get('EPH_LOGO', null, null, $idCompany))) {
-            $logo = _EPH_IMG_DIR_ . Configuration::get('EPH_LOGO', null, null, $idCompany);
+        if ($this->context->phenyxConfig->get('EPH_LOGO', null, null, $idCompany) != false && file_exists(_EPH_IMG_DIR_ . $this->context->phenyxConfig->get('EPH_LOGO', null, null, $idCompany))) {
+            $logo = _EPH_IMG_DIR_ . $this->context->phenyxConfig->get('EPH_LOGO', null, null, $idCompany);
         }
 
         return $logo;

@@ -38,7 +38,7 @@ class Tools {
 
         $context = Context::getContext();
 
-        $key = Configuration::get(Configuration::EPHENYX_LICENSE_KEY);
+        $key = $context->phenyxConfig->get('_EPHENYX_LICENSE_KEY_');
 
         if ($key == $purchaseKey && $context->company->domain_ssl == $website) {
             return true;
@@ -184,7 +184,7 @@ class Tools {
             if (strpos($url, 'index.php?controller=') !== false && strpos($url, 'index.php/') == 0) {
                 $url = substr($url, strlen('index.php?controller='));
 
-                if (Configuration::get(Configuration::REWRITING_SETTINGS)) {
+                if (Context::getContext()->phenyxConfig->get('EPH_REWRITING_SETTINGS')) {
                     $url = Tools::strReplaceFirst('&', '?', $url);
                 }
 
@@ -459,7 +459,7 @@ class Tools {
 
     public static function getProtocol() {
 
-        $protocol = (Configuration::get(Configuration::SSL_ENABLED) || (!empty($_SERVER['HTTPS'])
+        $protocol = (Context::getContext()->phenyxConfig->get('EPH_SSL_ENABLED') || (!empty($_SERVER['HTTPS'])
             && mb_strtolower($_SERVER['HTTPS']) != 'off')) ? 'https://' : 'http://';
 
         return $protocol;
@@ -602,7 +602,7 @@ class Tools {
 
         }
 
-        if (!Configuration::get('EPH_DETECT_LANG')) {
+        if (!Context::getContext()->phenyxConfig->get('EPH_DETECT_LANG')) {
             unset($cookie->detect_language);
         }
 
@@ -686,7 +686,7 @@ class Tools {
 
             $params = $_GET;
 
-            if (Configuration::get(Configuration::REWRITING_SETTINGS) || !Language::isMultiLanguageActivated()) {
+            if (Context::getContext()->phenyxConfig->get('EPH_REWRITING_SETTINGS') || !Language::isMultiLanguageActivated()) {
                 unset($params['id_lang']);
             }
 
@@ -707,7 +707,7 @@ class Tools {
             $idCountry = (int) $address->id_country;
         } else
 
-        if (Configuration::get('EPH_DETECT_COUNTRY') && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+        if (Context::getContext()->phenyxConfig->get('EPH_DETECT_COUNTRY') && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             preg_match('#(?<=-)\w\w|\w\w(?!-)#', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $array);
 
             if (is_array($array) && isset($array[0]) && Validate::isLanguageIsoCode($array[0])) {
@@ -717,7 +717,7 @@ class Tools {
         }
 
         if (!isset($idCountry) || !$idCountry) {
-            $idCountry = (int) Configuration::get('EPH_COUNTRY_DEFAULT');
+            $idCountry = (int) Context::getContext()->phenyxConfig->get('EPH_COUNTRY_DEFAULT');
         }
 
         return (int) $idCountry;
@@ -1061,7 +1061,7 @@ class Tools {
         }
 
         if ($http) {
-            $host = (Configuration::get(Configuration::SSL_ENABLED) ? 'https://' : 'http://') . $host;
+            $host = (Context::getContext()->phenyxConfig->get('EPH_SSL_ENABLED') ? 'https://' : 'http://') . $host;
         }
 
         return $host;
@@ -1141,7 +1141,7 @@ class Tools {
         }
 
         if ($allowAccentedChars === null) {
-            $allowAccentedChars = Configuration::get('EPH_ALLOW_ACCENTED_CHARS_URL');
+            $allowAccentedChars = Context::getContext()->phenyxConfig->get('EPH_ALLOW_ACCENTED_CHARS_URL');
         }
 
         $returnStr = trim($str);
@@ -1841,7 +1841,7 @@ class Tools {
         }
 
         if ($http) {
-            $domain = (Configuration::get(Configuration::SSL_ENABLED) ? 'https://' : 'http://') . $domain;
+            $domain = (Context::getContext()->phenyxConfig->get('EPH_SSL_ENABLED') ? 'https://' : 'http://') . $domain;
         }
 
         return $domain;
@@ -1876,15 +1876,15 @@ class Tools {
         }
 
         if (is_null($cache_control)) {
-            $cache_control = (int) Configuration::get('EPH_HTACCESS_CACHE_CONTROL');
+            $cache_control = (int) Context::getContext()->phenyxConfig->get('EPH_HTACCESS_CACHE_CONTROL');
         }
 
         if (is_null($disable_multiviews)) {
-            $disable_multiviews = (int) Configuration::get('EPH_HTACCESS_DISABLE_MULTIVIEWS');
+            $disable_multiviews = (int) Context::getContext()->phenyxConfig->get('EPH_HTACCESS_DISABLE_MULTIVIEWS');
         }
 
         if ($disable_modsec === null) {
-            $disable_modsec = (int) Configuration::get('EPH_HTACCESS_DISABLE_MODSEC');
+            $disable_modsec = (int) Context::getContext()->phenyxConfig->get('EPH_HTACCESS_DISABLE_MODSEC');
         }
 
         // Check current content of .htaccess and save all code outside of ephenyx comments
@@ -2017,7 +2017,7 @@ class Tools {
 
         $media_domains = '';
 
-        if (Configuration::get('EPH_WEBSERVICE_CGI_HOST')) {
+        if (Context::getContext()->phenyxConfig->get('EPH_WEBSERVICE_CGI_HOST')) {
             fwrite($write_fd, "RewriteCond %{HTTP:Authorization} ^(.*)\nRewriteRule . - [E=HTTP_AUTHORIZATION:%1]\n\n");
         }
 
@@ -2048,7 +2048,7 @@ class Tools {
                 }
 
                 if (!$rewrite_settings) {
-                    $rewrite_settings = (int) Configuration::get(Configuration::REWRITING_SETTINGS);
+                    $rewrite_settings = (int) Context::getContext()->phenyxConfig->get('EPH_REWRITING_SETTINGS');
                 }
 
                 $domain_rewrite_cond = 'RewriteCond %{HTTP_HOST} ^' . $domain . '$' . "\n";
@@ -2554,7 +2554,7 @@ FileETag none
 
     public static function generateIndex() {
 
-        if (defined('_DB_PREFIX_') && Configuration::get('EPH_DISABLE_OVERRIDES')) {
+        if (defined('_DB_PREFIX_') && Context::getContext()->phenyxConfig->get('EPH_DISABLE_OVERRIDES')) {
             PhenyxAutoload::getInstance()->_include_override_path = false;
         }
 
@@ -2622,7 +2622,7 @@ FileETag none
 
         $smarty = $context->smarty;
 
-        if (!Configuration::get('EPH_SMARTY_CACHE')) {
+        if (!Context::getContext()->phenyxConfig->get('EPH_SMARTY_CACHE')) {
             return;
         }
 
@@ -2835,14 +2835,14 @@ FileETag none
 
         $context = Context::getContext();
 
-        $ajax_mode = Configuration::get('EPH_FRONT_AJAX') ? 1 : 0;
-        $cms_ajax_mode = Configuration::get('EPH_CMS_AJAX') ? 1 : 0;
+        $ajax_mode = Context::getContext()->phenyxConfig->get('EPH_FRONT_AJAX') ? 1 : 0;
+        $cms_ajax_mode = Context::getContext()->phenyxConfig->get('EPH_CMS_AJAX') ? 1 : 0;
 
         $idCms = (int) $idCms;
 
         $path = '<span class="navigation_end">' . $path . '</span>';
 
-        $pipe = Configuration::get('EPH_NAVIGATION_PIPE');
+        $pipe = Context::getContext()->phenyxConfig->get('EPH_NAVIGATION_PIPE');
 
         if (empty($pipe)) {
             $pipe = '>';
@@ -2883,14 +2883,14 @@ FileETag none
 
         $context = Context::getContext();
 
-        $ajax_mode = Configuration::get('EPH_FRONT_AJAX') ? 1 : 0;
-        $wiki_ajax_mode = Configuration::get('EPH_WIKI_AJAX') ? 1 : 0;
+        $ajax_mode = Context::getContext()->phenyxConfig->get('EPH_FRONT_AJAX') ? 1 : 0;
+        $wiki_ajax_mode = Context::getContext()->phenyxConfig->get('EPH_WIKI_AJAX') ? 1 : 0;
 
         $idWiki = (int) $idWiki;
 
         $path = '<span class="navigation_end">' . $path . '</span>';
 
-        $pipe = Configuration::get('EPH_NAVIGATION_PIPE');
+        $pipe = Context::getContext()->phenyxConfig->get('EPH_NAVIGATION_PIPE');
 
         if (empty($pipe)) {
             $pipe = '>';
@@ -3710,12 +3710,12 @@ FileETag none
         static $use_html_purifier = null;
         static $purifier = null;
 
-        if (defined('EPH_INSTALLATION_IN_PROGRESS') || !Configuration::configurationIsLoaded()) {
+        if (defined('EPH_INSTALLATION_IN_PROGRESS') || !Context::getContext()->phenyxConfig->configurationIsLoaded()) {
             return $html;
         }
 
         if ($use_html_purifier === null) {
-            $use_html_purifier = (bool) Configuration::get('EPH_USE_HTMLPURIFIER');
+            $use_html_purifier = (bool) Context::getContext()->phenyxConfig->get('EPH_USE_HTMLPURIFIER');
         }
 
         if ($use_html_purifier) {
@@ -3733,7 +3733,7 @@ FileETag none
                     $config->set('URI.UnescapeCharacters', implode('', $uriUnescape));
                 }
 
-                if (Configuration::get('EPH_ALLOW_HTML_IFRAME')) {
+                if (Context::getContext()->phenyxConfig->get('EPH_ALLOW_HTML_IFRAME')) {
                     $config->set('HTML.SafeIframe', true);
                     $config->set('HTML.SafeObject', true);
                     $config->set('URI.SafeIframeRegexp', '/.*/');
@@ -4391,7 +4391,8 @@ FileETag none
      */
     public static function getTimeZone() {
 
-        $timezone = Configuration::get('EPH_TIMEZONE');
+        $phenyxConfig = new Configuration();
+        $timezone = $phenyxConfig->get('EPH_TIMEZONE');
 
         if (!$timezone) {
             // Fallback use php timezone settings.
@@ -4403,7 +4404,7 @@ FileETag none
 
     public static function isWebPSupported() {
 
-        if (Configuration::get('plugin-webpconverter-demo-mode')) {
+        if (Context::getContext()->phenyxConfig->get('plugin-webpconverter-demo-mode')) {
             return false;
         }
 
@@ -4515,20 +4516,21 @@ FileETag none
 
     public static function sendEmail($postfields, $meta_description = null) {
 
-        $mail_allowed = Configuration::get('EPH_ALLOW_SEND_EMAIL') ? 1 : 0;
+        $phenyxConfig = new Configuration();
+        $mail_allowed = $phenyxConfig->get('EPH_ALLOW_SEND_EMAIL') ? 1 : 0;
         if($mail_allowed) {
             $context = Context::getContext();
 
             $htmlContent = $postfields['htmlContent'];
             $tpl = $context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'header.tpl');
-            $bckImg = !empty(Configuration::get('EPH_BCK_LOGO_MAIL')) ? 'https://' . $context->company->domain_ssl . '/content/img/' . Configuration::get('EPH_BCK_LOGO_MAIL') : false;
+            $bckImg = !empty($phenyxConfig->get('EPH_BCK_LOGO_MAIL')) ? 'https://' . $context->company->domain_ssl . '/content/img/' . $phenyxConfig->get('EPH_BCK_LOGO_MAIL') : false;
             $tpl->assign([
                 'title'        => $postfields['subject'],
                 'css_dir'      => 'https://' . $context->company->domain_ssl . $context->context->theme->css_theme,
                 'shop_link'    => $context->link->getBaseFrontLink(),
                 'shop_name'    => $context->company->company_name,
                 'bckImg'       => $bckImg,
-                'logoMailLink' => $context->link->getBaseFrontLink() . 'content/img/' . Configuration::get('EPH_LOGO_MAIL'),
+                'logoMailLink' => $context->link->getBaseFrontLink() . 'content/img/' . $phenyxConfig->get('EPH_LOGO_MAIL'),
             ]);
 
             if (!is_null($meta_description)) {
@@ -4540,22 +4542,22 @@ FileETag none
             $header = $tpl->fetch();
             $tpl = $context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'footer.tpl');
             $tpl->assign([
-                'tag' => Configuration::get('EPH_FOOTER_EMAIL'),
+                'tag' => $phenyxConfig->get('EPH_FOOTER_EMAIL'),
             ]);
             $footer = $tpl->fetch();
             $postfields['htmlContent'] = $header . $htmlContent . $footer;
-            $mail_method = Configuration::get('EPH_MAIL_METHOD');
+            $mail_method = $phenyxConfig->get('EPH_MAIL_METHOD');
 
             if ($mail_method == 1) {
-                $encrypt = Configuration::get('EPH_MAIL_SMTP_ENCRYPTION');
+                $encrypt = $phenyxConfig->get('EPH_MAIL_SMTP_ENCRYPTION');
                 $mail = new PHPMailer();
                 $mail->IsSMTP();
                 $mail->SMTPAuth = true;
-                $mail->Host = Configuration::get('EPH_MAIL_SERVER');
-                $mail->Port = Configuration::get('EPH_MAIL_SMTP_PORT');
+                $mail->Host = $phenyxConfig->get('EPH_MAIL_SERVER');
+                $mail->Port = $phenyxConfig->get('EPH_MAIL_SMTP_PORT');
             //$mail->SMTPDebug = SMTP::DEBUG_CONNECTION;
-                $mail->Username = Configuration::get('EPH_MAIL_USER');
-                $mail->Password = Configuration::get('EPH_MAIL_PASSWD');
+                $mail->Username = $phenyxConfig->get('EPH_MAIL_USER');
+                $mail->Password = $phenyxConfig->get('EPH_MAIL_PASSWD');
                 $mail->setFrom($postfields['sender']['email'], $postfields['sender']['name']);
 
                 foreach ($postfields['to'] as $key => $value) {
@@ -4588,7 +4590,7 @@ FileETag none
                 }
 
             } else if ($mail_method == 2) {
-                $api_key = Configuration::get('EPH_SENDINBLUE_API');
+                $api_key = $phenyxConfig->get('EPH_SENDINBLUE_API');
 
                 $curl = curl_init();
 
@@ -5067,7 +5069,7 @@ FileETag none
             $map_seeting[$seeting['base']] = $seeting;
         }
 
-        Configuration::updateValue('_EPH_SEETINGS_MAP_FILE_', Tools::jsonEncode($map_seeting));
+        $context->phenyxConfig->updateValue('_EPH_SEETINGS_MAP_FILE_', Tools::jsonEncode($map_seeting));
         return $map_seeting;
 
     }
@@ -5258,6 +5260,7 @@ FileETag none
 
     public static function singleFontsUrl() {
 
+        $phenyxConfig = new Configuration();
         $url = '//fonts.googleapis.com/css?family=';
         $main_str = '';
         $subsets_str = '';
@@ -5268,10 +5271,10 @@ FileETag none
         if (isset($font_types) && !empty($font_types)) {
 
             foreach ($font_types as $font_type) {
-                $famil = Configuration::get($font_type . '_family');
+                $famil = $phenyxConfig->get($font_type . '_family');
                 $all_fonts[$famil]['fonts'] = $famil;
-                $all_fonts[$famil]['variants'] = Configuration::get($font_type . '_variants');
-                $subset = Configuration::get($font_type . '_subsets');
+                $all_fonts[$famil]['variants'] = $phenyxConfig->get($font_type . '_variants');
+                $subset = $phenyxConfig->get($font_type . '_subsets');
 
                 if (isset($subset) && !empty($subset)) {
                     $subsetarr = @explode(",", $subset);
@@ -5326,8 +5329,8 @@ FileETag none
 
     public static function getPhenyxFontName($key) {
 
-        $name = str_replace(' ', '', Configuration::get($key . '_family'));
-        return $name . '_' . Configuration::get($key . '_variants');
+        $name = str_replace(' ', '', Context::getContext()->phenyxConfig->get($key . '_family'));
+        return $name . '_' . Context::getContext()->phenyxConfig->get($key . '_variants');
     }
 
     public static function GetPhenyxFontsURL($key = "", $var = [], $sub = [], $family = '') {
@@ -5343,9 +5346,9 @@ FileETag none
         }
 
         if (empty($family)) {
-            $family = Configuration::get($key . '_family');
-            $variants = Configuration::get($key . '_variants');
-            $subsets = Configuration::get($key . '_subsets');
+            $family = Context::getContext()->phenyxConfig->get($key . '_family');
+            $variants = Context::getContext()->phenyxConfig->get($key . '_variants');
+            $subsets = Context::getContext()->phenyxConfig->get($key . '_subsets');
 
             if (isset($family) && !empty($family)) {
                 $family = str_replace(" ", "+", $family);
@@ -5400,9 +5403,9 @@ FileETag none
             $link = 'https://ephenyxapi.com/css?family=';
         }
 
-        $family = Configuration::get($key . '_family');
-        $variants = Configuration::get($key . '_variants');
-        $subsets = Configuration::get($key . '_subsets');
+        $family = Context::getContext()->phenyxConfig->get($key . '_family');
+        $variants = Context::getContext()->phenyxConfig->get($key . '_variants');
+        $subsets = Context::getContext()->phenyxConfig->get($key . '_subsets');
 
         if (isset($family) && !empty($family)) {
             $family = str_replace(" ", "+", $family);

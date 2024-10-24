@@ -12,7 +12,7 @@ if ($url == '') {
 
 $css_class = 'fb_like wpb_content_element fb_type_' . $type;
 
-$ssl_enable = Configuration::get('EPH_SSL_ENABLED');
+$ssl_enable = $this->context->phenyxConfig->get('EPH_SSL_ENABLED');
 $base = ($ssl_enable == 1) ? 'https://' : 'http://';
 
 $output = '<div class="' . $css_class . '"><iframe src="' . $base . 'www.facebook.com/plugins/like.php?href=' . $url . '&amp;layout=' . $type . '&amp;show_faces=false&amp;action=like&amp;colorscheme=light" scrolling="no" frameborder="0" allowTransparency="true"></iframe></div>' . $this->endBlockComment('fb_like') . "\n";

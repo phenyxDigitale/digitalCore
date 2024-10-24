@@ -1093,7 +1093,7 @@ class RevSliderAdmin extends RevSliderFunctionsAdmin {
                     $use_education = Plugin::isInstalled('ph_learning') ? 1 :0;
                     if($use_education) {
                         
-                        $use_category = Configuration::get('_EPHENYX_SHOP_ACTIVE_') ? 1 :0;
+                        $use_category = $this->context->phenyxConfig->get('_EPHENYX_SHOP_ACTIVE_') ? 1 :0;
                     }
 
 				$obj = [

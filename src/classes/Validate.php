@@ -465,7 +465,7 @@ class Validate {
      */
     public static function isLinkRewrite($link) {
 
-        if (Configuration::get('EPH_ALLOW_ACCENTED_CHARS_URL')) {
+        if ($this->context->phenyxConfig->get('EPH_ALLOW_ACCENTED_CHARS_URL')) {
             return (bool) preg_match(Tools::cleanNonUnicodeSupport('/^[_a-zA-Z0-9\pL\pS-]+$/u'), $link);
         }
 
@@ -485,7 +485,7 @@ class Validate {
      */
     public static function isRoutePattern($pattern) {
 
-        if (Configuration::get('EPH_ALLOW_ACCENTED_CHARS_URL')) {
+        if ($this->context->phenyxConfig->get('EPH_ALLOW_ACCENTED_CHARS_URL')) {
             return (bool) preg_match(Tools::cleanNonUnicodeSupport('/^[_a-zA-Z0-9\(\)\.{}:\/\pL\pS-]+$/u'), $pattern);
         }
 
@@ -1604,7 +1604,7 @@ class Validate {
      */
     public static function isOrderInvoiceNumber($id) {
 
-        return (preg_match('/^(?:' . Configuration::get('EPH_INVOICE_PREFIX', Context::getContext()->language->id) . ')\s*([0-9]+)$/i', $id));
+        return (preg_match('/^(?:' . $this->context->phenyxConfig->get('EPH_INVOICE_PREFIX', Context::getContext()->language->id) . ')\s*([0-9]+)$/i', $id));
     }
     
     public static function isBase64Image($base64) {

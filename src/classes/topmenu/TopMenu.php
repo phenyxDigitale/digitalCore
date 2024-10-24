@@ -390,7 +390,7 @@ class TopMenu extends PhenyxObjectModel {
     public function getFrontOutputValue() {
        
         
-        $is_ajax = Configuration::get('EPH_FRONT_AJAX') ? 1 : 0;
+        $is_ajax = $this->context->phenyxConfig->get('EPH_FRONT_AJAX') ? 1 : 0;
 
         $link = $this->context->link;
         $_iso_lang = Language::getIsoById($this->context->cookie->id_lang);
@@ -420,7 +420,7 @@ class TopMenu extends PhenyxObjectModel {
             $use_ajax = 0;
 
             if ($is_ajax) {
-                $use_ajax = Configuration::get('EPH_CMS_AJAX') ? 1 : 0;
+                $use_ajax = $this->context->phenyxConfig->get('EPH_CMS_AJAX') ? 1 : 0;
             }
 
             $cms = new CMS($this->id_cms, $this->context->cookie->id_lang);
@@ -479,7 +479,7 @@ class TopMenu extends PhenyxObjectModel {
             $use_ajax = 0;
 
             if ($is_ajax) {
-                $use_ajax = Configuration::get('EPH_PGF_AJAX') ? 1 : 0;
+                $use_ajax = $this->context->phenyxConfig->get('EPH_PGF_AJAX') ? 1 : 0;
             }
 
             $pfg = new PFGModel($this->id_pfg, $this->context->cookie->id_lang);
@@ -902,7 +902,7 @@ class TopMenu extends PhenyxObjectModel {
             if (Validate::isLoadedObject(Context::getContext()->user)) {
                 $groups = FrontController::getCurrentCustomerGroups();
             } else {
-                $groups = [(int) Configuration::get('EPH_UNIDENTIFIED_GROUP')];
+                $groups = [(int) $this->context->phenyxConfig->get('EPH_UNIDENTIFIED_GROUP')];
             }
 
         }
@@ -1146,7 +1146,7 @@ class TopMenu extends PhenyxObjectModel {
                 'menu_img_dir'     => __EPH_BASE_URI__ . $admin_webpath . '/themes/default/img/topmenu/',
                 'current_iso_lang' => Language::getIsoById($context->cookie->id_lang),
                 'current_id_lang'  => (int) $context->language->id,
-                'default_language' => (int) Configuration::get(Configuration::LANG_DEFAULT),
+                'default_language' => (int) $this->context->phenyxConfig->get('EPH_LANG_DEFAULT'),
                 'languages'        => Language::getLanguages(false),
                 'options'          => $configOptions,
             ]

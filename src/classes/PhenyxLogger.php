@@ -57,7 +57,7 @@ class PhenyxLogger extends PhenyxObjectModel {
      */
     public function sendByMail($log) {
         
-        if ((int)Configuration::get('EPH_LOGS_BY_EMAIL') <= (int)$log->severity) {
+        if ((int)$this->context->phenyxConfig->get('EPH_LOGS_BY_EMAIL') <= (int)$log->severity) {
             $tpl = $this->context->smarty->createTemplate(_EPH_MAIL_DIR_ . 'log_alert.tpl');
             $tpl->assign([
                 'message'         => $log->message,
@@ -66,8 +66,8 @@ class PhenyxLogger extends PhenyxObjectModel {
             ]);
             $postfields = [
                 'sender'      => [
-				    'name'  => sprintf($this->l("Administrative department of %s"), Configuration::get('EPH_SHOP_NAME')),
-				    'email' => Configuration::get('EPH_SHOP_EMAIL'),
+				    'name'  => sprintf($this->l("Administrative department of %s"), $this->context->phenyxConfig->get('EPH_SHOP_NAME')),
+				    'email' => $this->context->phenyxConfig->get('EPH_SHOP_EMAIL'),
                 ],
                 'to'          => [
                     [

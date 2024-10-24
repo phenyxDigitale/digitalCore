@@ -255,8 +255,12 @@ abstract class PhenyxController {
         }
 
         $this->context = Context::getContext();
+        if (!isset($this->context->phenyxConfig)) {
+            $this->context->phenyxConfig = new Configuration();
+            
+        }
 
-        $this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
+        $this->context->company = new Company($this->context->phenyxConfig->get('EPH_COMPANY_ID'));
                 
 
         if (!isset($this->context->_hook)) {
@@ -272,7 +276,7 @@ abstract class PhenyxController {
         }
 
         if (!isset($this->context->language)) {
-            $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT'))));
+            $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', $this->context->phenyxConfig->get('EPH_LANG_DEFAULT'))));
         }
 
         if (!isset($this->context->translations)) {
@@ -294,7 +298,7 @@ abstract class PhenyxController {
         ]);
 
         $this->context->controller = $this;
-        $this->context->cache_enable = Configuration::get('EPH_PAGE_CACHE_ENABLED');
+        $this->context->cache_enable = $this->context->phenyxConfig->get('EPH_PAGE_CACHE_ENABLED');
 
         if ($this->context->cache_enable) {
             $this->context->cache_api = CacheApi::getInstance();
@@ -322,7 +326,7 @@ abstract class PhenyxController {
             static::$_plugins = $this->getPlugins();
         }
 
-        static::$_is_merge_lang = Configuration::get('CURENT_MERGE_LANG_' . $this->context->language->iso_code, null, false);
+        static::$_is_merge_lang = $this->context->phenyxConfig->get('CURENT_MERGE_LANG_' . $this->context->language->iso_code, null, false);
 
         if (!static::$_is_merge_lang) {
             $this->mergeLanguages($this->context->language->iso_code);
@@ -628,7 +632,7 @@ abstract class PhenyxController {
         fclose($file);
 
         $this->context->translations = new Translate($iso, $this->context->company);
-        Configuration::updateValue('CURENT_MERGE_LANG_' . $this->context->language->iso_code, 1);
+        $this->context->phenyxConfig->updateValue('CURENT_MERGE_LANG_' . $this->context->language->iso_code, 1);
         return true;
 
     }
@@ -684,7 +688,7 @@ abstract class PhenyxController {
 
         $idLang = Tools::getValue('id_lang');
         $cookieIdLang = $this->context->cookie->id_lang;
-        $configurationIdLang = Configuration::get(Configuration::LANG_DEFAULT);
+        $configurationIdLang = $this->context->phenyxConfig->get('EPH_LANG_DEFAULT');
 
         $this->context->cookie->id_lang = $idLang;
         $language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', (int) $idLang)));
@@ -1067,8 +1071,8 @@ abstract class PhenyxController {
         if (!empty($html)) {
 
             $domAvailable = extension_loaded('dom') ? true : false;
-            $defer = (bool) Configuration::get('EPH_JS_DEFER');
-            $compress = (bool) Configuration::get('EPH_JS_HTML_BACKOFFICE_COMPRESSION');
+            $defer = (bool) $this->context->phenyxConfig->get('EPH_JS_DEFER');
+            $compress = (bool) $this->context->phenyxConfig->get('EPH_JS_HTML_BACKOFFICE_COMPRESSION');
 
             if ($defer && $domAvailable) {
                 $html = $this->context->media->deferInlineScripts($html);
@@ -1126,7 +1130,7 @@ abstract class PhenyxController {
         $html = trim($html);
 
         $domAvailable = extension_loaded('dom') ? true : false;
-        $defer = (bool) Configuration::get('EPH_JS_DEFER');
+        $defer = (bool) $this->context->phenyxConfig->get('EPH_JS_DEFER');
 
         $html = trim(str_replace(['</body>', '</html>'], '', $html)) . "\n";
         $this->ajax_head = str_replace(['<head>', '</head>'], '', $this->context->media->deferTagOutput('head', $html));
@@ -1720,6 +1724,7 @@ abstract class PhenyxController {
             'id_lang_default'    => $this->default_language,
             'languages'          => Language::getLanguages(false),
             'tabs'               => $this->ajaxOptions,
+            'allow_acc_char'     => $this->context->phenyxConfig->get('EPH_ALLOW_ACCENTED_CHARS_URL') ? $this->context->phenyxConfig->get('EPH_ALLOW_ACCENTED_CHARS_URL') : 0,
             'bo_imgdir'          => __EPH_BASE_URI__ . 'content/backoffice/' . $this->bo_theme . '/img/',
         ]);
 
@@ -1831,7 +1836,7 @@ abstract class PhenyxController {
 
         if ($layout) {
 
-            $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
+            $defer = (bool) $this->context->phenyxConfig->get('EPH_JS_BACKOFFICE_DEFER');
 
             if ($this->cachable) {
 
@@ -1854,13 +1859,13 @@ abstract class PhenyxController {
 
             $domAvailable = extension_loaded('dom') ? true : false;
 
-            if ((Configuration::get('EPH_CSS_BACKOFFICE_CACHE') || Configuration::get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
+            if (($this->context->phenyxConfig->get('EPH_CSS_BACKOFFICE_CACHE') || $this->context->phenyxConfig->get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
 
-                if (Configuration::get('EPH_CSS_BACKOFFICE_CACHE')) {
+                if ($this->context->phenyxConfig->get('EPH_CSS_BACKOFFICE_CACHE')) {
                     $this->extracss = $this->context->media->admincccCss($this->extracss);
                 }
 
-                if (Configuration::get('EPH_JS_BACKOFFICE_CACHE')) {
+                if ($this->context->phenyxConfig->get('EPH_JS_BACKOFFICE_CACHE')) {
                     $this->push_js_files = $this->context->media->admincccJS($this->push_js_files);
                 }
 
@@ -1907,7 +1912,7 @@ abstract class PhenyxController {
 
         if ($layout) {
 
-            $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
+            $defer = (bool) $this->context->phenyxConfig->get('EPH_JS_BACKOFFICE_DEFER');
 
             if ($this->cachable) {
 
@@ -1930,13 +1935,13 @@ abstract class PhenyxController {
 
             $domAvailable = extension_loaded('dom') ? true : false;
 
-            if ((Configuration::get('EPH_CSS_BACKOFFICE_CACHE') || Configuration::get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
+            if (($this->context->phenyxConfig->get('EPH_CSS_BACKOFFICE_CACHE') || $this->context->phenyxConfig->get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
 
-                if (Configuration::get('EPH_CSS_BACKOFFICE_CACHE')) {
+                if ($this->context->phenyxConfig->get('EPH_CSS_BACKOFFICE_CACHE')) {
                     $this->extracss = $this->context->media->admincccCss($this->extracss);
                 }
 
-                if (Configuration::get('EPH_JS_BACKOFFICE_CACHE')) {
+                if ($this->context->phenyxConfig->get('EPH_JS_BACKOFFICE_CACHE')) {
                     $this->push_js_files = $this->context->media->admincccJS($this->push_js_files);
                 }
 
@@ -1992,7 +1997,7 @@ abstract class PhenyxController {
         if (!empty($html)) {
             $javascript = "";
             $domAvailable = extension_loaded('dom') ? true : false;
-            $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
+            $defer = (bool) $this->context->phenyxConfig->get('EPH_JS_BACKOFFICE_DEFER');
 
             if ($defer && $domAvailable) {
                 $html = $this->context->media->deferInlineScripts($html);
@@ -2057,7 +2062,7 @@ abstract class PhenyxController {
 
             $javascript = "";
             $domAvailable = extension_loaded('dom') ? true : false;
-            $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
+            $defer = (bool) $this->context->phenyxConfig->get('EPH_JS_BACKOFFICE_DEFER');
 
             if ($defer && $domAvailable) {
                 $html = $this->context->media->deferInlineScripts($html);
@@ -2173,16 +2178,16 @@ abstract class PhenyxController {
 
         if ($layout) {
 
-            $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
+            $defer = (bool) $this->context->phenyxConfig->get('EPH_JS_BACKOFFICE_DEFER');
             $domAvailable = extension_loaded('dom') ? true : false;
 
-            if ((Configuration::get('EPH_CSS_BACKOFFICE_CACHE') || Configuration::get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
+            if (($this->context->phenyxConfig->get('EPH_CSS_BACKOFFICE_CACHE') || $this->context->phenyxConfig->get('EPH_JS_BACKOFFICE_CACHE')) && is_writable(_EPH_BO_ALL_THEMES_DIR_ . 'backend/cache')) {
 
-                if (Configuration::get('EPH_CSS_BACKOFFICE_CACHE')) {
+                if ($this->context->phenyxConfig->get('EPH_CSS_BACKOFFICE_CACHE')) {
                     $this->extracss = $this->context->media->admincccCss($this->extracss);
                 }
 
-                if (Configuration::get('EPH_JS_BACKOFFICE_CACHE')) {
+                if ($this->context->phenyxConfig->get('EPH_JS_BACKOFFICE_CACHE')) {
                     $this->extraJs = $this->context->media->admincccJS($this->extraJs);
                 }
 
@@ -2238,7 +2243,7 @@ abstract class PhenyxController {
         if (!empty($html)) {
             $javascript = "";
             $domAvailable = extension_loaded('dom') ? true : false;
-            $defer = (bool) Configuration::get('EPH_JS_BACKOFFICE_DEFER');
+            $defer = (bool) $this->context->phenyxConfig->get('EPH_JS_BACKOFFICE_DEFER');
 
             if ($defer && $domAvailable) {
                 $html = $this->context->media->deferInlineScripts($html);
@@ -2866,7 +2871,7 @@ abstract class PhenyxController {
     public function getLanguages() {
 
         $cookie = $this->context->cookie;
-        $this->allow_employee_form_lang = (int) Configuration::get('EPH_BO_ALLOW_EMPLOYEE_FORM_LANG');
+        $this->allow_employee_form_lang = (int) $this->context->phenyxConfig->get('EPH_BO_ALLOW_EMPLOYEE_FORM_LANG');
 
         if ($this->allow_employee_form_lang && !$cookie->employee_form_lang) {
             $cookie->employee_form_lang = (int) $this->default_language;
@@ -3660,7 +3665,7 @@ abstract class PhenyxController {
 
     protected function displayProfilingConfiguration() {
 
-        $compileType = Configuration::get('EPH_PAGE_CACHE_TYPE');
+        $compileType = $this->context->phenyxConfig->get('EPH_PAGE_CACHE_TYPE');
         $this->content_ajax .= '
         <div class="col-4">
             <table class="table table-condensed">
@@ -3670,7 +3675,7 @@ abstract class PhenyxController {
                 <tr><td>' . $this->la('MySQL version') . '</td><td>' . $this->getMySQLVersionColor(Db::getInstance()->getVersion()) . '</td></tr>
                 <tr><td>' . $this->la('Memory limit') . '</td><td>' . ini_get('memory_limit') . '</td></tr>
                 <tr><td>' . $this->la('Max execution time') . '</td><td>' . ini_get('max_execution_time') . 's</td></tr>
-                <tr><td>' . $this->la('Smarty cache') . '</td><td><span style="color:' . (Configuration::get('EPH_PAGE_CACHE_ENABLED') ? 'green">enabled' : 'red">disabled') . '</td></tr>
+                <tr><td>' . $this->la('Smarty cache') . '</td><td><span style="color:' . ($this->context->phenyxConfig->get('EPH_PAGE_CACHE_ENABLED') ? 'green">enabled' : 'red">disabled') . '</td></tr>
                 <tr><td>' . $this->la('Smarty Compilation') . '</td><td><span style="color:' . ($compileType == 'AwsRedis' ? 'green">' . $this->la('Redis') : '#EF8B00">' . $compileType) . '</td></tr>
             </table>
         </div>';

@@ -84,7 +84,7 @@ abstract class CacheApi {
 
 	public static function isEnabled() {
 
-		return (bool) Configuration::get('EPH_CACHE_ENABLED');
+		return (bool) Context::getContext()->phenyxConfig->get('EPH_CACHE_ENABLED');
 	}
 
 	public function get($key) {

@@ -746,7 +746,7 @@ class Composer {
         $css = Tools::getValue('css');
         $type = Tools::getValue('type');
         $optionname = "_wpb_{$type}_{$post_id}_{$id_lang}_css";
-        Configuration::updateValue($optionname, $css, true);
+        $this->context->phenyxConfig->updateValue($optionname, $css, true);
         die();
     }
 
@@ -1345,7 +1345,7 @@ class Composer {
 
         $id_lang = $context->language->id;
         $optname = "_wpb_{$page_type}_{$post_id}_{$id_lang}_css";
-        $post_custom_css[$id_lang] = Configuration::get($optname);
+        $post_custom_css[$id_lang] = $this->context->phenyxConfig->get($optname);
 
         $css_custom_out = (isset($post_custom_css[$id_lang]) && !empty($post_custom_css[$id_lang])) ? $post_custom_css[$id_lang] : '';
 

@@ -453,7 +453,7 @@ abstract class PluginStats extends Plugin {
     public function engineGraph($params) {
 
         $context = Context::getContext();
-        $render = Configuration::get('EPH_STATS_RENDER');
+        $render = $this->context->phenyxConfig->get('EPH_STATS_RENDER');
         $idEmployee = (int) $context->employee->id;
         $idLang = (int) $context->language->id;
 
@@ -493,7 +493,7 @@ abstract class PluginStats extends Plugin {
 
     public function engineGrid($params) {
 
-        $render = Configuration::get('EPH_STATS_GRID_RENDER');
+        $render = $this->context->phenyxConfig->get('EPH_STATS_GRID_RENDER');
         $grider = 'grider.php?render=' . $render . '&engine=grid&plugin=' . Tools::safeOutput(Tools::getValue('plugin'));
 
         $context = Context::getContext();

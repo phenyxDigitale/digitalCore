@@ -23,7 +23,7 @@ class PhenyxMaintenance {
     public static function run() {
 
         $now = time();
-        $lastRun = Configuration::get('PHENYX_MAINTENANCE_LAST_RUN');
+        $lastRun = Context::getContext()->phenyxConfig->get('PHENYX_MAINTENANCE_LAST_RUN');
 
         if ($now - $lastRun > 86400) {
             // Run daily tasks.
@@ -32,7 +32,7 @@ class PhenyxMaintenance {
             PhenyxTools::cleanPlugins();
             PhenyxTools::cleanHook();
 
-            Configuration::updateGlobalValue('PHENYX_MAINTENANCE_LAST_RUN', $now);
+            Context::getContext()->phenyxConfig->updateGlobalValue('PHENYX_MAINTENANCE_LAST_RUN', $now);
         }
 
     }

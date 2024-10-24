@@ -30,10 +30,14 @@ class Translate {
     public function __construct($iso = null, Company $company = null, $affectContext = true) {
         
         $this->context = Context::getContext();
+        if (!isset($this->context->phenyxConfig)) {
+            $this->context->phenyxConfig = new Configuration();
+            
+        }
         
         if(!isset($this->context->company)) {
             if(is_null($company)) {
-                $this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
+                $this->context->company = new Company($this->context->phenyxConfig->get('EPH_COMPANY_ID'));
             } else {
                 $this->context->company = $company;
             }

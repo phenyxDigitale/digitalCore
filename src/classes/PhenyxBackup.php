@@ -38,8 +38,8 @@ class PhenyxBackup {
             $this->id = $this->getRealBackupPath($filename);
         }
 
-        $psBackupAll = Configuration::get('EPH_BACKUP_ALL');
-        $psBackupDropTable = Configuration::get('EPH_BACKUP_DROP_TABLE');
+        $psBackupAll = $this->context->phenyxConfig->get('EPH_BACKUP_ALL');
+        $psBackupDropTable = $this->context->phenyxConfig->get('EPH_BACKUP_DROP_TABLE');
         $this->psBackupAll = $psBackupAll !== false ? $psBackupAll : true;
         $this->psBackupDropTable = $psBackupDropTable !== false ? $psBackupDropTable : true;
     }

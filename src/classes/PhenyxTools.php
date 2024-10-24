@@ -26,13 +26,13 @@ class PhenyxTools {
 	public function __construct() {
 
 		$this->context = Context::getContext();
-		$this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
+		$this->context->company = new Company($this->context->phenyxConfig->get('EPH_COMPANY_ID'));
 		$this->context->theme = new Theme((int) $this->context->company->id_theme);
 		$this->default_theme = $this->context->theme->directory;
-		$this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT'))));
+		$this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', $this->context->phenyxConfig->get('EPH_LANG_DEFAULT'))));
 
 		$this->_url = _EPH_PHENYX_API_;
-		$string = Configuration::get('_EPHENYX_LICENSE_KEY_', null, false) . '/' . $this->context->company->company_url;
+		$string = $this->context->phenyxConfig->get('_EPHENYX_LICENSE_KEY_', null, false) . '/' . $this->context->company->company_url;
 		$this->_crypto_key = Tools::encrypt_decrypt('encrypt', $string, _PHP_ENCRYPTION_KEY_, _COOKIE_KEY_);
 
 		$this->license = $this->checkLicense();
@@ -307,6 +307,11 @@ class PhenyxTools {
 		}
 
 	}
+    
+    public static function getConfiguration($tags) {
+        
+        return Context::getContext()->phenyxConfig->get($tags);
+    }
 
 	public static function addJsDef($jsDef) {
 
@@ -323,7 +328,7 @@ class PhenyxTools {
 
 		$data_array = [
 			'action'      => 'checkLicence',
-			'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_', null, false),
+			'license_key' => $this->context->phenyxConfig->get('_EPHENYX_LICENSE_KEY_', null, false),
 			'crypto_key'  => $this->_crypto_key,
 		];
 		$curl = new Curl();
@@ -339,7 +344,7 @@ class PhenyxTools {
 
 		$data_array = [
 			'action'      => 'getPhenyxPlugins',
-			'license_key' => Configuration::get('_EPHENYX_LICENSE_KEY_', null, false),
+			'license_key' => $this->context->phenyxConfig->get('_EPHENYX_LICENSE_KEY_', null, false),
 			'crypto_key'  => $this->_crypto_key,
 		];
 		$curl = new Curl();
@@ -373,7 +378,7 @@ class PhenyxTools {
 		fwrite($confFile, '<?php' . PHP_EOL . PHP_EOL);
 
 		$caches = ['CacheMemcache', 'CacheApc', 'FileBased', 'AwsRedis', 'CacheMemcached', 'CacheXcache'];
-		$current_cache = !(empty(Configuration::get('EPH_PAGE_CACHE_TYPE'))) ? Configuration::get('EPH_PAGE_CACHE_TYPE') : 'FileBased';
+		$current_cache = !(empty($this->context->phenyxConfig->get('EPH_PAGE_CACHE_TYPE'))) ? $this->context->phenyxConfig->get('EPH_PAGE_CACHE_TYPE') : 'FileBased';
 
 		$datas = [
 			['_EPH_CACHING_SYSTEM_', (defined('_EPH_CACHING_SYSTEM_') && in_array(_EPH_CACHING_SYSTEM_, $caches)) ? _EPH_CACHING_SYSTEM_ : $current_cache],
@@ -1308,7 +1313,7 @@ class PhenyxTools {
 		fclose($file);
 
 		$this->context->translations = new Translate($iso, $this->context->company);
-		Configuration::updateValue('CURENT_MERGE_LANG_' . $this->context->language->iso_code, 1);
+		$this->context->phenyxConfig->updateValue('CURENT_MERGE_LANG_' . $this->context->language->iso_code, 1);
 
 		return true;
 

@@ -68,6 +68,10 @@ class Hook extends PhenyxObjectModel {
        
         $this->className = get_class($this);
         $this->context = Context::getContext();
+        if (!isset($this->context->phenyxConfig)) {
+            $this->context->phenyxConfig = new Configuration();
+            
+        }
         
         if (!isset(PhenyxObjectModel::$loaded_classes[$this->className])) {
             $this->def = PhenyxObjectModel::getDefinition($this->className);            
@@ -88,7 +92,7 @@ class Hook extends PhenyxObjectModel {
 
         }
 
-        $this->id_lang = (Language::getLanguage($idLang) !== false) ? $idLang : Configuration::get(Configuration::LANG_DEFAULT);
+        $this->id_lang = (Language::getLanguage($idLang) !== false) ? $idLang : $this->context->phenyxConfig->get('EPH_LANG_DEFAULT');
         $this->context->_hook = $this;
         //$this->context->hook_args = $this->getHookArgs();
 
@@ -175,11 +179,11 @@ class Hook extends PhenyxObjectModel {
         if ($force) {
             $args_conf_id = $this->getIdByName('actionHookExtraArgs');
         } else {
-            $args_conf_id = Configuration::get('_EPH_MAIN_ARG_ID_') ? Configuration::get('_EPH_MAIN_ARG_ID_') : $this->getIdByName('actionHookExtraArgs');
+            $args_conf_id = $this->context->phenyxConfig->get('_EPH_MAIN_ARG_ID_') ? $this->context->phenyxConfig->get('_EPH_MAIN_ARG_ID_') : $this->getIdByName('actionHookExtraArgs');
         }
 
         if ($args_conf_id > 0) {
-            Configuration::updateValue('_EPH_MAIN_ARG_ID_', $args_conf_id);
+            $this->context->phenyxConfig->updateValue('_EPH_MAIN_ARG_ID_', $args_conf_id);
             $plugins = $this->getPluginsFromHook($args_conf_id, null);
 
             foreach ($plugins as $plugin) {
@@ -203,7 +207,7 @@ class Hook extends PhenyxObjectModel {
 
             }
 
-            Configuration::updateValue('_EPH_MAIN_ARG_VALUE_', Tools::jsonEncode($args));
+            $this->context->phenyxConfig->updateValue('_EPH_MAIN_ARG_VALUE_', Tools::jsonEncode($args));
         }
 
         return $args;
@@ -442,7 +446,7 @@ class Hook extends PhenyxObjectModel {
 
         }
 
-        if (!Configuration::get('EPH_PAGE_CACHE_ENABLED')) {
+        if (!$this->context->phenyxConfig->get('EPH_PAGE_CACHE_ENABLED')) {
 
             return $this->execWithoutCache($hookName, $hookArgs, $idPlugin, $arrayReturn, $checkExceptions, $usePush, $objectReturn);
         }
@@ -519,7 +523,7 @@ class Hook extends PhenyxObjectModel {
         static $disableNonNativePlugins = null;
 
         if ($disableNonNativePlugins === null) {
-            $disableNonNativePlugins = (bool) Configuration::get('EPH_DISABLE_NON_NATIVE_PLUGIN');
+            $disableNonNativePlugins = (bool) $this->context->phenyxConfig->get('EPH_DISABLE_NON_NATIVE_PLUGIN');
         }
 
         if (($idPlugin && !is_numeric((int) $idPlugin)) || !Validate::isHookName($hookName)) {
@@ -674,9 +678,9 @@ class Hook extends PhenyxObjectModel {
                         $groups = $context->user->getGroups();
                     } else
                     if (isset($this->context->user) && $this->context->user->isLogged(true)) {
-                        $groups = [(int) Configuration::get('EPH_GUEST_GROUP')];
+                        $groups = [(int) $this->context->phenyxConfig->get('EPH_GUEST_GROUP')];
                     } else {
-                        $groups = [(int) Configuration::get('EPH_UNIDENTIFIED_GROUP')];
+                        $groups = [(int) $this->context->phenyxConfig->get('EPH_UNIDENTIFIED_GROUP')];
                     }
 
                 }
@@ -880,7 +884,7 @@ class Hook extends PhenyxObjectModel {
         // Define if we will log plugins performances for this session
 
         if (Plugin::$_log_plugins_perfs === null) {
-            $modulo = _EPH_DEBUG_PROFILING_ ? 1 : Configuration::get('EPH_log_plugins_perfs_MODULO');
+            $modulo = _EPH_DEBUG_PROFILING_ ? 1 : $this->context->phenyxConfig->get('EPH_log_plugins_perfs_MODULO');
             Plugin::$_log_plugins_perfs = ($modulo && mt_rand(0, $modulo - 1) == 0);
 
             if (Plugin::$_log_plugins_perfs) {
@@ -909,7 +913,7 @@ class Hook extends PhenyxObjectModel {
 
     public function getCachedHooks() {
 
-        $hookSettings = json_decode(Configuration::get('EPH_PAGE_CACHE_HOOKS'), true);
+        $hookSettings = json_decode($this->context->phenyxConfig->get('EPH_PAGE_CACHE_HOOKS'), true);
 
         if (!is_array($hookSettings)) {
             return [];

@@ -363,7 +363,7 @@ class TopMenuColumn extends PhenyxObjectModel {
 
     public function getFrontOutputValue() {
 
-        $is_ajax = Configuration::get('EPH_FRONT_AJAX') ? 1 : 0;
+        $is_ajax = $this->context->phenyxConfig->get('EPH_FRONT_AJAX') ? 1 : 0;
         $link = $this->context->link;
         $_iso_lang = Language::getIsoById($this->context->cookie->id_lang);
         $return = false;
@@ -392,7 +392,7 @@ class TopMenuColumn extends PhenyxObjectModel {
             $use_ajax = 0;
 
             if ($is_ajax) {
-                $use_ajax = Configuration::get('EPH_CMS_AJAX') ? 1 : 0;
+                $use_ajax = $this->context->phenyxConfig->get('EPH_CMS_AJAX') ? 1 : 0;
             }
 
             $cms = new CMS($this->id_cms, $this->context->cookie->id_lang);
@@ -447,7 +447,7 @@ class TopMenuColumn extends PhenyxObjectModel {
             $use_ajax = 0;
 
             if ($is_ajax) {
-                $use_ajax = Configuration::get('EPH_PGF_AJAX') ? 1 : 0;
+                $use_ajax = $this->context->phenyxConfig->get('EPH_PGF_AJAX') ? 1 : 0;
             }
 
             $pfg = new PFGModel($this->id_pfg, $this->context->cookie->id_lang);

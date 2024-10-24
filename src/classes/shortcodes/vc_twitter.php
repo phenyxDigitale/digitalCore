@@ -10,7 +10,7 @@ extract(Composer::shortcode_atts([
 
 Context::getContext()->controller->addJS(_EPH_ADMIN_THEME_DIR_ . '/composer/jquery.tweet/jquery.tweet.js');
 
-$ssl_enable = Configuration::get('EPH_SSL_ENABLED');
+$ssl_enable = $this->context->phenyxConfig->get('EPH_SSL_ENABLED');
 $base = ($ssl_enable == 1) ? 'https://' : 'http://';
 
 $el_class = $this->getExtraClass($el_class);

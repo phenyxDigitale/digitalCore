@@ -31,6 +31,8 @@ class Context {
 	/** @var Company */
 	public $company;
     
+    public $phenyxConfig;
+    
     public $license;
 	
 	/** @var Customer */
@@ -136,11 +138,11 @@ class Context {
 
 			if ($this->checkMobileContext()) {
 
-				if (isset(Context::getContext()->cookie->no_mobile) && Context::getContext()->cookie->no_mobile == false && (int) Configuration::get('EPH_ALLOW_MOBILE_DEVICE') != 0) {
+				if (isset(Context::getContext()->cookie->no_mobile) && Context::getContext()->cookie->no_mobile == false && (int) $this->context->phenyxConfig->get('EPH_ALLOW_MOBILE_DEVICE') != 0) {
 					$this->mobile_device = true;
 				} else {
 
-					switch ((int) Configuration::get('EPH_ALLOW_MOBILE_DEVICE')) {
+					switch ((int) $this->context->phenyxConfig->get('EPH_ALLOW_MOBILE_DEVICE')) {
 					case 1: // Only for mobile device
 
 						if ($this->isMobile() && !$this->isTablet()) {
@@ -326,7 +328,7 @@ class Context {
 
 		return isset($_SERVER['HTTP_USER_AGENT'])
 		&& isset(Context::getContext()->cookie)
-		&& (bool) Configuration::get('EPH_ALLOW_MOBILE_DEVICE')
+		&& (bool) $this->context->phenyxConfig->get('EPH_ALLOW_MOBILE_DEVICE')
 		&& !Context::getContext()->cookie->no_mobile;
 	}
 

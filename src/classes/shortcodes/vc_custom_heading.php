@@ -4,7 +4,7 @@ $output = $text = $google_fonts = $font_container = $el_class = $css = $google_f
 extract($this->getAttributes($atts));
 extract($this->getStyles($el_class, $css, $google_fonts_data, $font_container_data, $atts));
 //$settings = get_option( 'wpb_js_google_fonts_subsets' );
-$settings = Configuration::get('wpb_js_google_fonts_subsets');
+$settings = $this->context->phenyxConfig->get('wpb_js_google_fonts_subsets');
 $subsets = '';
 
 if (is_array($settings) && !empty($settings)) {

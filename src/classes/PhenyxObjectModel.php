@@ -228,12 +228,16 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             }
         }
         
+        if (!isset($this->context->phenyxConfig)) {
+            $this->context->phenyxConfig = new Configuration();
+            
+        }
         if (!isset($this->context->company)) {
-            $this->context->company = new Company(Configuration::get('EPH_COMPANY_ID'));
+            $this->context->company = new Company($this->context->phenyxConfig->get('EPH_COMPANY_ID'));
             
         }
         if (!isset($this->context->language)) {
-            $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', Configuration::get('EPH_LANG_DEFAULT')))); 
+            $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', $this->context->phenyxConfig->get('EPH_LANG_DEFAULT')))); 
         }
            
         
@@ -252,6 +256,15 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         
         if (!isset($this->context->phenyxgrid)) {
             $this->context->phenyxgrid = new ParamGrid();
+        }
+        
+        if (!isset($this->context->cache_enable)) {
+            $this->context->cache_enable = $this->context->phenyxConfig->get('EPH_PAGE_CACHE_ENABLED');
+        }  
+         
+
+         if ($this->context->cache_enable && !is_object($this->context->cache_api)) {
+            $this->context->cache_api = CacheApi::getInstance();
         }
 
         if (!isset(PhenyxObjectModel::$loaded_classes[$this->className])) {
@@ -274,7 +287,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         }
 
         if ($idLang !== null) {
-            $this->id_lang = (Language::getLanguage($idLang) !== false) ? $idLang : Configuration::get(Configuration::LANG_DEFAULT);
+            $this->id_lang = (Language::getLanguage($idLang) !== false) ? $idLang : $this->context->phenyxConfig->get('EPH_LANG_DEFAULT');
         }
 
         if (_EPH_DEBUG_PROFILING_ || _EPH_ADMIN_DEBUG_PROFILING_) {
@@ -585,7 +598,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
                 } else
 
                 if (!empty($data['required'])) {
-                    $value = $value[Configuration::get(Configuration::LANG_DEFAULT)];
+                    $value = $value[$this->context->phenyxConfig->get('EPH_LANG_DEFAULT')];
                 } else {
                     $value = '';
                 }
@@ -1056,7 +1069,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
             if (in_array($fieldName, $this->fieldsRequiredLang)) {
                 $fields[$idLanguage][$fieldName] = pSQL($this->id_lang ? $this->$fieldName : $this->{$fieldName}
 
-                    [Configuration::get(Configuration::LANG_DEFAULT)], $html);
+                    [$this->context->phenyxConfig->get('EPH_LANG_DEFAULT')], $html);
             } else {
                 $fields[$idLanguage][$fieldName] = '';
             }
@@ -1096,7 +1109,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
     public function validateFieldsLang($die = true, $errorReturn = false) {
 
-        $idLangDefault = Configuration::get(Configuration::LANG_DEFAULT);
+        $idLangDefault = $this->context->phenyxConfig->get('EPH_LANG_DEFAULT');
 
         foreach ($this->def['fields'] as $field => $data) {
 
@@ -1145,11 +1158,11 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
         static $psAllowHtmlIframe = null;
 
         if ($psLangDefault === null) {
-            $psLangDefault = Configuration::get(Configuration::LANG_DEFAULT);
+            $psLangDefault = $this->context->phenyxConfig->get('EPH_LANG_DEFAULT');
         }
 
         if ($psAllowHtmlIframe === null) {
-            $psAllowHtmlIframe = (int) Configuration::get(Configuration::ALLOW_HTML_IFRAME);
+            $psAllowHtmlIframe = (int) $this->context->phenyxConfig->get('EPH_ALLOW_HTML_IFRAME');
         }
 
         $this->cacheFieldsRequiredDatabase();
@@ -2077,12 +2090,12 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
         $logo = '';
 
-        if (Configuration::get('EPH_LOGO_INVOICE') != false && file_exists(_EPH_IMG_DIR_ . Configuration::get('EPH_LOGO_INVOICE'))) {
-            $logo = '/content/img/' . Configuration::get('EPH_LOGO_INVOICE');
+        if ($this->context->phenyxConfig->get('EPH_LOGO_INVOICE') != false && file_exists(_EPH_IMG_DIR_ . $this->context->phenyxConfig->get('EPH_LOGO_INVOICE'))) {
+            $logo = '/content/img/' . $this->context->phenyxConfig->get('EPH_LOGO_INVOICE');
         } else
 
-        if (Configuration::get('EPH_LOGO') != false && file_exists(_EPH_IMG_DIR_ . Configuration::get('EPH_LOGO'))) {
-            $logo = '/content/img/' . Configuration::get('EPH_LOGO');
+        if ($this->context->phenyxConfig->get('EPH_LOGO') != false && file_exists(_EPH_IMG_DIR_ . $this->context->phenyxConfig->get('EPH_LOGO'))) {
+            $logo = '/content/img/' . $this->context->phenyxConfig->get('EPH_LOGO');
         }
 
         return $logo;

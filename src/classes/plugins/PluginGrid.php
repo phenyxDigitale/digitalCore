@@ -212,7 +212,7 @@ abstract class PluginGrid extends Plugin {
      */
     public function engine($params) {
 
-        if (!($render = Configuration::get('EPH_STATS_GRID_RENDER'))) {
+        if (!($render = $this->context->phenyxConfig->get('EPH_STATS_GRID_RENDER'))) {
             return Tools::displayError('No grid engine selected');
         }
 

@@ -13,12 +13,12 @@ class ComposerSeetings {
 	
 	public static function get($option_name) {
 
-		return Configuration::get(self::$field_prefix . $option_name);
+		return $this->context->phenyxConfig->get(self::$field_prefix . $option_name);
 	}
 
 	public static function set($option_name, $value) {
 
-		return Configuration::updateValue(self::$field_prefix . $option_name, $value);
+		return $this->context->phenyxConfig->updateValue(self::$field_prefix . $option_name, $value);
 	}
 
 

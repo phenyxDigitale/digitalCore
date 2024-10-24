@@ -35,7 +35,7 @@ class GsiteMap extends PhenyxObjectModel {
 
 		parent::__construct($id);
         
-        $this->disable_link = !empty(Configuration::get('GSITEMAP_DISABLE_LINKS')) ? explode(', ', Configuration::get('GSITEMAP_DISABLE_LINKS')) : [];
+        $this->disable_link = !empty($this->context->phenyxConfig->get('GSITEMAP_DISABLE_LINKS')) ? explode(', ', $this->context->phenyxConfig->get('GSITEMAP_DISABLE_LINKS')) : [];
 
 		$this->type_array = ['home', 'meta', 'cms', 'plugin'];
 		$sitemapTypes = $this->context->_hook->exec('actionGetSiteMapType', ['type_array' => $this->type_array], null, true);
@@ -156,7 +156,7 @@ class GsiteMap extends PhenyxObjectModel {
 		foreach ($link_sitemap as $key => $file) {
 			fwrite($write_fd, '<url>' . "\r\n");
 			$lastmod = (isset($file['lastmod']) && !empty($file['lastmod'])) ? date('c', strtotime($file['lastmod'])) : null;
-			$this->_addSitemapNode($write_fd, htmlspecialchars(strip_tags($file['link'])), $this->_getPriorityPage($file['page']), Configuration::get('GSITEMAP_FREQUENCY'), $lastmod);
+			$this->_addSitemapNode($write_fd, htmlspecialchars(strip_tags($file['link'])), $this->_getPriorityPage($file['page']), $this->context->phenyxConfig->get('GSITEMAP_FREQUENCY'), $lastmod);
 
 			if ($file['image']) {
 				$this->_addSitemapNodeImage(
@@ -266,8 +266,8 @@ class GsiteMap extends PhenyxObjectModel {
 		}
 
 		$this->_createIndexSitemap();
-		Configuration::updateValue('GSITEMAP_LAST_EXPORT', date('r'));
-		Tools::file_get_contents('http://www.google.com/webmasters/sitemaps/ping?sitemap=' . urlencode('http' . (Configuration::get('EPH_SSL_ENABLED') ? 's' : '') . '://' . Tools::getDomain(false, true) . $this->context->company->physical_uri . $this->context->company->virtual_uri . $this->context->language->id . '_index_sitemap.xml'));
+		$this->context->phenyxConfig->updateValue('GSITEMAP_LAST_EXPORT', date('r'));
+		Tools::file_get_contents('http://www.google.com/webmasters/sitemaps/ping?sitemap=' . urlencode('http' . ($this->context->phenyxConfig->get('EPH_SSL_ENABLED') ? 's' : '') . '://' . Tools::getDomain(false, true) . $this->context->company->physical_uri . $this->context->company->virtual_uri . $this->context->language->id . '_index_sitemap.xml'));
 
 		if ($this->cron) {
 			die();
@@ -279,17 +279,17 @@ class GsiteMap extends PhenyxObjectModel {
 
 	protected function _addSitemapNode($fd, $loc, $priority, $change_freq, $last_mod = null) {
 
-		fwrite($fd, '<loc>' . (Configuration::get('EPH_REWRITING_SETTINGS') ? '<![CDATA[' . $loc . ']]>' : $loc) . '</loc>' . "\r\n" . '<priority>' . number_format($priority, 1, '.', '') . '</priority>' . "\r\n" . ($last_mod ? '<lastmod>' . date('c', strtotime($last_mod)) . '</lastmod>' : '') . "\r\n" . '<changefreq>' . $change_freq . '</changefreq>' . "\r\n");
+		fwrite($fd, '<loc>' . ($this->context->phenyxConfig->get('EPH_REWRITING_SETTINGS') ? '<![CDATA[' . $loc . ']]>' : $loc) . '</loc>' . "\r\n" . '<priority>' . number_format($priority, 1, '.', '') . '</priority>' . "\r\n" . ($last_mod ? '<lastmod>' . date('c', strtotime($last_mod)) . '</lastmod>' : '') . "\r\n" . '<changefreq>' . $change_freq . '</changefreq>' . "\r\n");
 	}
 
 	protected function _addSitemapNodeImage($fd, $link, $title, $caption) {
 
-		fwrite($fd, '<image:image>' . "\r\n" . '<image:loc>' . (Configuration::get('EPH_REWRITING_SETTINGS') ? '<![CDATA[' . $link . ']]>' : $link) . '</image:loc>' . "\r\n" . '<image:caption><![CDATA[' . $caption . ']]></image:caption>' . "\r\n" . '<image:title><![CDATA[' . $title . ']]></image:title>' . "\r\n" . '</image:image>' . "\r\n");
+		fwrite($fd, '<image:image>' . "\r\n" . '<image:loc>' . ($this->context->phenyxConfig->get('EPH_REWRITING_SETTINGS') ? '<![CDATA[' . $link . ']]>' : $link) . '</image:loc>' . "\r\n" . '<image:caption><![CDATA[' . $caption . ']]></image:caption>' . "\r\n" . '<image:title><![CDATA[' . $title . ']]></image:title>' . "\r\n" . '</image:image>' . "\r\n");
 	}
 
 	protected function _getPriorityPage($page) {
 
-		return Configuration::get('GSITEMAP_PRIORITY_' . Tools::strtoupper($page)) ? Configuration::get('GSITEMAP_PRIORITY_' . Tools::strtoupper($page)) : 0.1;
+		return $this->context->phenyxConfig->get('GSITEMAP_PRIORITY_' . Tools::strtoupper($page)) ? $this->context->phenyxConfig->get('GSITEMAP_PRIORITY_' . Tools::strtoupper($page)) : 0.1;
 	}
 
 	protected function _createIndexSitemap() {
@@ -305,7 +305,7 @@ class GsiteMap extends PhenyxObjectModel {
 
 		foreach ($sitemaps as $link) {
 			$sitemap = $xml_feed->addChild('sitemap');
-			$sitemap->addChild('loc', 'http' . (Configuration::get('EPH_SSL_ENABLED') && Configuration::get('EPH_SSL_ENABLED_EVERYWHERE') ? 's' : '') . '://' . Tools::getDomain(false, true) . __EPH_BASE_URI__ . $link['link']);
+			$sitemap->addChild('loc', 'http' . ($this->context->phenyxConfig->get('EPH_SSL_ENABLED') && $this->context->phenyxConfig->get('EPH_SSL_ENABLED_EVERYWHERE') ? 's' : '') . '://' . Tools::getDomain(false, true) . __EPH_BASE_URI__ . $link['link']);
 			$sitemap->addChild('lastmod', date('c'));
 		}
 
@@ -378,7 +378,7 @@ class GsiteMap extends PhenyxObjectModel {
 
 	protected function _getHomeLink(&$link_sitemap, $lang, &$index, &$i) {
 
-		if (Configuration::get('EPH_SSL_ENABLED') && Configuration::get('EPH_SSL_ENABLED_EVERYWHERE')) {
+		if ($this->context->phenyxConfig->get('EPH_SSL_ENABLED') && $this->context->phenyxConfig->get('EPH_SSL_ENABLED_EVERYWHERE')) {
 			$protocol = 'https://';
 		} else {
 			$protocol = 'http://';
@@ -585,7 +585,7 @@ class GsiteMap extends PhenyxObjectModel {
             if (file_exists($this->sm_file) && filesize($this->sm_file)) {
                 fwrite($writeFd, "# Sitemap\n");
                 $sitemapFilename = basename($this->sm_file);
-                fwrite($writeFd, 'Sitemap: ' . (Configuration::get(Configuration::SSL_ENABLED) ? 'https://' : 'http://') . $_SERVER['SERVER_NAME'] . __EPH_BASE_URI__ . $sitemapFilename . "\n");
+                fwrite($writeFd, 'Sitemap: ' . ($this->context->phenyxConfig->get('EPH_SSL_ENABLED') ? 'https://' : 'http://') . $_SERVER['SERVER_NAME'] . __EPH_BASE_URI__ . $sitemapFilename . "\n");
             }
 
             $this->context->_hook->exec(
@@ -644,7 +644,7 @@ class GsiteMap extends PhenyxObjectModel {
         // Rewrite files
         $tab['Files'] = [];
 
-        if (Configuration::get(Configuration::REWRITING_SETTINGS)) {
+        if ($this->context->phenyxConfig->get('EPH_REWRITING_SETTINGS')) {
             $sql = new DbQuery();
             $sql->select('ml.url_rewrite, l.iso_code');
             $sql->from('meta', 'm');
