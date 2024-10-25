@@ -85,24 +85,25 @@ class Translation extends PhenyxObjectModel {
     }
     
     public function updateGlobalTranslations($translations) {
-        
-        foreach($translations as $translation) {
-            if(!empty($translation['translation'])) {
-                $id_translation = $this->getExistingObjectTranslation($translation['iso_code'], $translation['origin']);
+        if(is_array($translations)) {
+            foreach($translations as $translation) {
+                if(!empty($translation['translation'])) {
+                    $id_translation = $this->getExistingObjectTranslation($translation['iso_code'], $translation['origin']);
             
-                if(!is_null($id_translation)) {
-                    $translation = new Translation($id_translation);
-                    $translation->translation = $translation['translation'];
-                    $translation->update();
-                } else {
-                    $translation = new Translation();
-                    $translation->iso_code = $translation['iso_code'];
-                    $translation->origin = $translation['origin'];
-                    $translation->translation = $translation['translation'];
-                    $translation->add();
+                    if(!is_null($id_translation)) {
+                        $translation = new Translation($id_translation);
+                        $translation->translation = $translation['translation'];
+                        $translation->update();
+                    } else {
+                        $translation = new Translation();
+                        $translation->iso_code = $translation['iso_code'];
+                        $translation->origin = $translation['origin'];
+                        $translation->translation = $translation['translation'];
+                        $translation->add();
+                    }
                 }
-            }
             
+            }
         }
             
         
