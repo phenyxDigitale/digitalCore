@@ -137,12 +137,12 @@ class Context {
 			$this->mobile_device = false;
 
 			if ($this->checkMobileContext()) {
-
-				if (isset(Context::getContext()->cookie->no_mobile) && Context::getContext()->cookie->no_mobile == false && (int) $this->context->phenyxConfig->get('EPH_ALLOW_MOBILE_DEVICE') != 0) {
+                $phenyxConfig = Configuration::getInstance();
+				if (isset(Context::getContext()->cookie->no_mobile) && Context::getContext()->cookie->no_mobile == false && (int) $phenyxConfig->get('EPH_ALLOW_MOBILE_DEVICE') != 0) {
 					$this->mobile_device = true;
 				} else {
-
-					switch ((int) $this->context->phenyxConfig->get('EPH_ALLOW_MOBILE_DEVICE')) {
+                    
+					switch ((int) $phenyxConfig->get('EPH_ALLOW_MOBILE_DEVICE')) {
 					case 1: // Only for mobile device
 
 						if ($this->isMobile() && !$this->isTablet()) {
@@ -303,7 +303,7 @@ class Context {
 	protected function checkMobileContext() {
 
 		// Check mobile context
-        $phenyxConfig = new Configuration();
+        $phenyxConfig = Configuration::getInstance();
 
 		if (Tools::isSubmit('no_mobile_theme')) {
 			Context::getContext()->cookie->no_mobile = true;
