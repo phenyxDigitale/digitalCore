@@ -902,7 +902,7 @@ class TopMenu extends PhenyxObjectModel {
             if (Validate::isLoadedObject(Context::getContext()->user)) {
                 $groups = FrontController::getCurrentCustomerGroups();
             } else {
-                $groups = [(int) $this->context->phenyxConfig->get('EPH_UNIDENTIFIED_GROUP')];
+                $groups = [(int) Context::getContext()->phenyxConfig->get('EPH_UNIDENTIFIED_GROUP')];
             }
 
         }
