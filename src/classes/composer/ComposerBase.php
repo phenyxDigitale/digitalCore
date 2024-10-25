@@ -223,10 +223,11 @@ class ComposerBase {
 		}
 
 		if (!empty($page_id)) {
+            $phenyxConfig = new Configuration();
 			$id = $page_id;
 			$optionname = "_wpb_{$page_type}_{$id}_{$id_lang}_css";
 
-			$post_custom_css = $this->context->phenyxConfig->get($optionname);
+			$post_custom_css = $phenyxConfig->get($optionname);
 
 			if (!empty($post_custom_css)) {
 				echo '<style type="text/css" data-type="vc_custom-css">';
