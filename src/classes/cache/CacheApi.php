@@ -81,6 +81,11 @@ abstract class CacheApi {
 
 		return static::$instance;
 	}
+    
+    public static function retrieveAll()
+    {
+        return CacheApi::$local;
+    }
 
 	public static function isEnabled() {
 
