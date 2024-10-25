@@ -199,6 +199,28 @@ class SmartyTools {
         
     }
     
+    public static function getAdminTranslation($string, $className) {
+        
+        $context = Context::getContext();
+        if (!isset($context->phenyxConfig)) {
+            $context->phenyxConfig = new Configuration();
+            
+        }
+        if (!isset($context->company)) {
+            $context->company = new Company($context->phenyxConfig->get('EPH_COMPANY_ID'));
+            
+        }
+        if (!isset($context->language)) {
+            $context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', $context->phenyxConfig->get('EPH_LANG_DEFAULT')))); 
+        }
+        if (!isset($context->translations)) {
+
+            $context->translations = new Translate($context->language->iso_code, $context->company);
+        }
+        return $context->translations->getAdminTranslation($string, $$className);
+        
+    }
+    
     public static function arrayChunk($array, $length, $preserve_keys = false) {
         
         if(is_array($array)) {
