@@ -303,6 +303,7 @@ class Context {
 	protected function checkMobileContext() {
 
 		// Check mobile context
+        $phenyxConfig = new Configuration();
 
 		if (Tools::isSubmit('no_mobile_theme')) {
 			Context::getContext()->cookie->no_mobile = true;
@@ -328,7 +329,7 @@ class Context {
 
 		return isset($_SERVER['HTTP_USER_AGENT'])
 		&& isset(Context::getContext()->cookie)
-		&& (bool) $this->context->phenyxConfig->get('EPH_ALLOW_MOBILE_DEVICE')
+		&& (bool) $phenyxConfig->get('EPH_ALLOW_MOBILE_DEVICE')
 		&& !Context::getContext()->cookie->no_mobile;
 	}
 
