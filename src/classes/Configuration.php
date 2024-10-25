@@ -9,6 +9,7 @@ class Configuration extends PhenyxObjectModel {
 
     // Default configuration consts
     // @since 1.0.1
+    protected static $instance;
        
     const ONE_PHONE_AT_LEAST = 'EPH_ONE_PHONE_AT_LEAST';
     const GROUP_FEATURE_ACTIVE = 'EPH_GROUP_FEATURE_ACTIVE';
@@ -187,6 +188,15 @@ class Configuration extends PhenyxObjectModel {
        
         
     }
+    
+    public static function getInstance() {
+       
+		if (!isset(static::$instance)) {
+			static::$instance = new Configuration();
+		}
+        
+		return static::$instance;
+	}
     
     
     // @codingStandardsIgnoreEnd
