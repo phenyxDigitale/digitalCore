@@ -25,7 +25,8 @@ class Adapter_Configuration implements Core_Business_ConfigurationInterface {
         if (defined($key)) {
             return constant($key);
         } else {
-            return $this->context->phenyxConfig->get($key);
+            $phenyxConfig = new Configuration();
+            return $phenyxConfig->get($key);
         }
 
     }
