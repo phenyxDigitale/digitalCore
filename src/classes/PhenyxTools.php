@@ -26,6 +26,10 @@ class PhenyxTools {
 	public function __construct() {
 
 		$this->context = Context::getContext();
+        if (!isset($this->context->phenyxConfig)) {
+            $this->context->phenyxConfig =  Configuration::getInstance();
+            
+        }
 		$this->context->company = new Company($this->context->phenyxConfig->get('EPH_COMPANY_ID'));
 		$this->context->theme = new Theme((int) $this->context->company->id_theme);
 		$this->default_theme = $this->context->theme->directory;
