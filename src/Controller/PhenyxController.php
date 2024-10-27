@@ -276,7 +276,7 @@ abstract class PhenyxController {
         }
 
         if (!isset($this->context->language)) {
-            $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', $this->context->phenyxConfig->get('EPH_LANG_DEFAULT'))));
+            $this->context->language = Tools::jsonDecode(Tools::jsonEncode(Language::buildObject('Language', $this->context->phenyxConfig->get('EPH_LANG_DEFAULT'))));
         }
 
         if (!isset($this->context->translations)) {
@@ -666,7 +666,7 @@ abstract class PhenyxController {
 
         $idLang = Tools::getValue('id_lang');
 
-        $language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', (int) $idLang)));
+        $language = Tools::jsonDecode(Tools::jsonEncode(Language::buildObject('Language', (int) $idLang)));
 
         if (Validate::isLoadedObject($language) && $language->active) {
             $this->context->cookie->id_lang = $idLang;
@@ -691,7 +691,7 @@ abstract class PhenyxController {
         $configurationIdLang = $this->context->phenyxConfig->get('EPH_LANG_DEFAULT');
 
         $this->context->cookie->id_lang = $idLang;
-        $language = Tools::jsonDecode(Tools::jsonEncode(Language::construct('Language', (int) $idLang)));
+        $language = Tools::jsonDecode(Tools::jsonEncode(Language::buildObject('Language', (int) $idLang)));
 
         if (Validate::isLoadedObject($language) && $language->active) {
             $this->_language = $this->context->language = $language;
