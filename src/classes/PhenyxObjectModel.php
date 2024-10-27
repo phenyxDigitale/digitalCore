@@ -364,7 +364,7 @@ abstract class PhenyxObjectModel implements Core_Foundation_Database_EntityInter
 
     }
 
-    public static function construct($className, $id, $id_lang = null) {
+    public static function buildObject($className, $id, $id_lang = null) {
 
         $def = PhenyxObjectModel::getDefinition($className);
         $sql = new DbQuery();
