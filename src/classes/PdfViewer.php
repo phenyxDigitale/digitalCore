@@ -634,12 +634,12 @@ class PdfViewer {
         $html = '<script type="text/javascript">'. PHP_EOL;
         if(count($this->extraVars)) {
             foreach($this->extraVars as $key => $value) {
-                $html .= 'var '.$key.' = "'.$value.'"'. PHP_EOL;
+                $html .= 'var '.$key.' = "'.$value.'";'. PHP_EOL;
             }
         }
         $html .= '$(document).ready(function () {'. PHP_EOL;
         $html .= '$("#'.$this->target.'").flipBook({'. PHP_EOL;
-        foreach($this->declared[] as $key) {
+        foreach($this->declared as $key) {
             if (property_exists($this, $key)) {
                 if (is_array($this->{$key})) {
 				    $html .= $this->deployArrayScript($key, $this->{$key}). PHP_EOL;
