@@ -128,6 +128,8 @@ class PdfViewer {
     public $floatingBtnShadow = '';
     public $floatingBtnTextShadow = '';
     public $floatingBtnBorder = '';
+    
+    public $hasTimer = false;
 
     public $btnOrder = [
         'currentPage',
@@ -619,16 +621,13 @@ class PdfViewer {
     public $declared = [];
     
     public $target;
+    
+    public $builder = [];
 
-	public function __construct($params, $target, $extraVars = []) {
+	public function __construct($target, $extraVars = []) {
         $this->target = $target;
         $this->extraVars = $extraVars;
-        foreach($params as $key => $value) {
-            if (property_exists($this, $key)) {
-                $this->declared[] = $key;
-                $this->{$key} = $value;
-            }
-        }
+        
 	}
     
     public function buildViewerScript() {
