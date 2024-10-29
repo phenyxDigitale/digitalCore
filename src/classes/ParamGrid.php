@@ -1005,7 +1005,7 @@ class ParamGrid {
 		if (Plugin::getPluginNameFromClass($currentClass)) {
 			$string = str_replace('\'', '\\\'', $string);
 
-			return Context::getContext()->translations->getPluginTranslation(Plugin::$classInPlugin[$currentClass], $string, $currentClass);
+			return $this->context->translations->getPluginTranslation(Plugin::$classInPlugin[$currentClass], $string, $currentClass);
 		}
 
 		global $_LANGADM;
