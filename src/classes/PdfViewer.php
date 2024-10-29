@@ -557,7 +557,7 @@ class PdfViewer {
             'enabled' => true
         ],
         [
-            id => 3,
+            'id' => 3,
             'title' => "Admin",
             'color' => "blue",
             'enabled' => true
