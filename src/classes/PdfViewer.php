@@ -27,7 +27,6 @@ class PdfViewer {
     
     public $pdfBrowserViewerIfMobile = 0;
     
-    public $pdfBrowserViewerIfMobile = false;
     public $pdfBrowserViewerIfIE = false;
     public $pdfBrowserViewerFullscreen = true;
     public $pdfBrowserViewerFullscreenTarget = "_blank";
